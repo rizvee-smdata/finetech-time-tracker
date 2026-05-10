@@ -1,17 +1,28 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { adminCreateUser, adminListUsers, importCustomers } from "@/lib/admin.functions";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  adminCreateUser,
+  adminListUsers,
+  importCustomers,
+  adminCreateCompany,
+  adminUpdateCompany,
+  adminDeleteCompany,
+  adminListCompanies,
+  adminSetUserCompanies,
+} from "@/lib/admin.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Upload, UserPlus, Users } from "lucide-react";
+import { Upload, UserPlus, Users, Building2, Trash2, Pencil } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   beforeLoad: async () => {
@@ -33,8 +44,11 @@ function SettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Admin tools — manage users and import customer data.</p>
+        <p className="text-sm text-muted-foreground">
+          Admin tools — manage Lavisho Group companies, users, and import customer data.
+        </p>
       </div>
+      <CompaniesCard />
       <CreateUserCard />
       <UsersListCard />
       <ImportCustomersCard />
@@ -42,16 +56,147 @@ function SettingsPage() {
   );
 }
 
+// ---------- Companies ----------
+
+function CompaniesCard() {
+  const list = useServerFn(adminListCompanies);
+  const create = useServerFn(adminCreateCompany);
+  const update = useServerFn(adminUpdateCompany);
+  const del = useServerFn(adminDeleteCompany);
+  const qc = useQueryClient();
+  const { refreshCompanies } = useAuth();
+
+  const { data } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
+  const [form, setForm] = useState({ name: "", slug: "" });
+  const [editing, setEditing] = useState<{ id: string; name: string; slug: string } | null>(null);
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-companies"] });
+    refreshCompanies();
+  };
+
+  const createM = useMutation({
+    mutationFn: async () => create({ data: form }),
+    onSuccess: () => { toast.success("Company created"); setForm({ name: "", slug: "" }); invalidate(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const updateM = useMutation({
+    mutationFn: async () => update({ data: editing! }),
+    onSuccess: () => { toast.success("Company updated"); setEditing(null); invalidate(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const delM = useMutation({
+    mutationFn: async (id: string) => del({ data: { id } }),
+    onSuccess: () => { toast.success("Company removed"); invalidate(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center gap-2">
+        <Building2 className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Lavisho Group companies</h2>
+      </div>
+      <form
+        onSubmit={(e) => { e.preventDefault(); createM.mutate(); }}
+        className="mb-6 grid gap-3 md:grid-cols-[1fr,1fr,auto]"
+      >
+        <div className="space-y-1.5">
+          <Label>Company name</Label>
+          <Input required maxLength={120} value={form.name}
+            onChange={(e) => {
+              const name = e.target.value;
+              setForm({
+                name,
+                slug: form.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60),
+              });
+            }} />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Slug</Label>
+          <Input required pattern="[a-z0-9-]+" value={form.slug}
+            onChange={(e) => setForm({ ...form, slug: e.target.value })} />
+        </div>
+        <div className="flex items-end">
+          <Button type="submit" disabled={createM.isPending}>Add company</Button>
+        </div>
+      </form>
+
+      <div className="divide-y divide-border">
+        {(data ?? []).map((c: any) => (
+          <div key={c.id} className="flex items-center justify-between gap-3 py-3">
+            {editing?.id === c.id ? (
+              <div className="flex flex-1 flex-wrap items-center gap-2">
+                <Input className="max-w-[200px]" value={editing.name}
+                  onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+                <Input className="max-w-[180px]" value={editing.slug}
+                  onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
+                <Button size="sm" onClick={() => updateM.mutate()}>Save</Button>
+                <Button size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <div className="font-medium">{c.name}</div>
+                  <div className="text-xs text-muted-foreground">{c.slug} · {c.member_count} member{c.member_count === 1 ? "" : "s"}</div>
+                </div>
+                <div className="flex gap-1">
+                  <Button size="icon" variant="ghost" onClick={() => setEditing({ id: c.id, name: c.name, slug: c.slug })}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost"
+                    onClick={() => { if (confirm(`Delete ${c.name}? This cannot be undone.`)) delM.mutate(c.id); }}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+        {!data?.length && <div className="py-6 text-center text-sm text-muted-foreground">No companies yet. Add the first sister concern above.</div>}
+      </div>
+    </Card>
+  );
+}
+
+// ---------- Create User ----------
+
+function CompanyMultiSelect({
+  value, onChange, companies,
+}: { value: string[]; onChange: (ids: string[]) => void; companies: any[] }) {
+  return (
+    <div className="space-y-2 rounded-md border border-border p-3">
+      {companies.length === 0 && <div className="text-xs text-muted-foreground">Create a company first.</div>}
+      {companies.map((c) => {
+        const checked = value.includes(c.id);
+        return (
+          <label key={c.id} className="flex cursor-pointer items-center gap-2 text-sm">
+            <Checkbox checked={checked} onCheckedChange={(v) => {
+              if (v) onChange([...value, c.id]);
+              else onChange(value.filter((x) => x !== c.id));
+            }} />
+            <span>{c.name}</span>
+          </label>
+        );
+      })}
+    </div>
+  );
+}
+
 function CreateUserCard() {
   const fn = useServerFn(adminCreateUser);
+  const list = useServerFn(adminListCompanies);
   const qc = useQueryClient();
-  const [form, setForm] = useState({ full_name: "", email: "", password: "", role: "employee" as Role });
+  const { data: companies } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
+  const [form, setForm] = useState({
+    full_name: "", email: "", password: "", role: "employee" as Role, company_ids: [] as string[],
+  });
 
   const m = useMutation({
     mutationFn: async () => fn({ data: form }),
     onSuccess: () => {
       toast.success("User created");
-      setForm({ full_name: "", email: "", password: "", role: "employee" });
+      setForm({ full_name: "", email: "", password: "", role: "employee", company_ids: [] });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Failed to create user"),
@@ -90,6 +235,14 @@ function CreateUserCard() {
             </SelectContent>
           </Select>
         </div>
+        <div className="space-y-1.5 md:col-span-2">
+          <Label>Assign to companies</Label>
+          <CompanyMultiSelect
+            companies={companies ?? []}
+            value={form.company_ids}
+            onChange={(ids) => setForm({ ...form, company_ids: ids })}
+          />
+        </div>
         <div className="md:col-span-2">
           <Button type="submit" disabled={m.isPending}>{m.isPending ? "Creating…" : "Create user"}</Button>
         </div>
@@ -98,12 +251,28 @@ function CreateUserCard() {
   );
 }
 
+// ---------- Users list ----------
+
 function UsersListCard() {
   const fn = useServerFn(adminListUsers);
-  const { data } = useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async () => fn(),
+  const setMembers = useServerFn(adminSetUserCompanies);
+  const list = useServerFn(adminListCompanies);
+  const qc = useQueryClient();
+  const { data: users } = useQuery({ queryKey: ["admin-users"], queryFn: () => fn() });
+  const { data: companies } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [draftIds, setDraftIds] = useState<string[]>([]);
+
+  const m = useMutation({
+    mutationFn: async () => setMembers({ data: { user_id: editingUserId!, company_ids: draftIds } }),
+    onSuccess: () => {
+      toast.success("Companies updated");
+      setEditingUserId(null);
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (e: any) => toast.error(e.message),
   });
+
   return (
     <Card className="p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -111,24 +280,56 @@ function UsersListCard() {
         <h2 className="font-semibold">All users</h2>
       </div>
       <div className="divide-y divide-border">
-        {(data ?? []).map((u: any) => (
-          <div key={u.id} className="flex items-center justify-between py-3">
-            <div>
-              <div className="text-sm font-medium">{u.full_name || u.email}</div>
-              <div className="text-xs text-muted-foreground">{u.email}</div>
+        {(users ?? []).map((u: any) => {
+          const userCompanies = (companies ?? []).filter((c: any) => u.company_ids?.includes(c.id));
+          return (
+            <div key={u.id} className="space-y-2 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-medium">{u.full_name || u.email}</div>
+                  <div className="text-xs text-muted-foreground">{u.email}</div>
+                </div>
+                <div className="flex flex-wrap items-center gap-1">
+                  {(u.roles ?? []).map((r: string) => (
+                    <Badge key={r} variant={r === "admin" ? "default" : "secondary"}>{r}</Badge>
+                  ))}
+                  <Button size="sm" variant="ghost"
+                    onClick={() => { setEditingUserId(u.id); setDraftIds(u.company_ids ?? []); }}>
+                    Manage companies
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {userCompanies.map((c: any) => (
+                  <Badge key={c.id} variant="outline">{c.name}</Badge>
+                ))}
+                {userCompanies.length === 0 && (
+                  <span className="text-xs text-muted-foreground">Not assigned to any company</span>
+                )}
+              </div>
+              {editingUserId === u.id && (
+                <div className="rounded-md border border-border p-3">
+                  <CompanyMultiSelect
+                    companies={companies ?? []}
+                    value={draftIds}
+                    onChange={setDraftIds}
+                  />
+                  <div className="mt-2 flex gap-2">
+                    <Button size="sm" onClick={() => m.mutate()} disabled={m.isPending}>Save</Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingUserId(null)}>Cancel</Button>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex gap-1">
-              {(u.roles ?? []).map((r: string) => (
-                <Badge key={r} variant={r === "admin" ? "default" : "secondary"}>{r}</Badge>
-              ))}
-            </div>
-          </div>
-        ))}
-        {!data?.length && <div className="py-6 text-center text-sm text-muted-foreground">No users yet.</div>}
+          );
+        })}
+        {!users?.length && <div className="py-6 text-center text-sm text-muted-foreground">No users yet.</div>}
       </div>
     </Card>
   );
 }
+
+// ---------- Import customers ----------
 
 function parseCsv(text: string): Record<string, string>[] {
   const lines = text.replace(/\r/g, "").split("\n").filter((l) => l.trim().length);
@@ -163,11 +364,15 @@ function mapKey(row: Record<string, string>, keys: string[]) {
 
 function ImportCustomersCard() {
   const fn = useServerFn(importCustomers);
+  const { companyId, company, companies } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<any[] | null>(null);
+  const [targetCompanyId, setTargetCompanyId] = useState<string | null>(companyId);
+
+  useMemo(() => { if (!targetCompanyId && companyId) setTargetCompanyId(companyId); }, [companyId, targetCompanyId]);
 
   const m = useMutation({
-    mutationFn: async (rows: any[]) => fn({ data: { rows } }),
+    mutationFn: async (rows: any[]) => fn({ data: { rows, company_id: targetCompanyId } }),
     onSuccess: (res: any) => {
       toast.success(`Imported ${res.inserted} customers`);
       setPreview(null);
@@ -210,6 +415,21 @@ function ImportCustomersCard() {
         <code className="rounded bg-muted px-1">email</code>,{" "}
         <code className="rounded bg-muted px-1">phone</code>.
       </p>
+
+      <div className="mb-4 grid gap-3 md:grid-cols-[1fr,auto] md:items-end">
+        <div className="space-y-1.5">
+          <Label>Import into company</Label>
+          <Select value={targetCompanyId ?? undefined} onValueChange={(v) => setTargetCompanyId(v)}>
+            <SelectTrigger><SelectValue placeholder={company?.name ?? "Select company"} /></SelectTrigger>
+            <SelectContent>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-3">
         <Input ref={inputRef} type="file" accept=".csv,text/csv" onChange={onFile} className="max-w-sm" />
         <Button
@@ -257,7 +477,7 @@ function ImportCustomersCard() {
             </table>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => m.mutate(preview)} disabled={m.isPending}>
+            <Button onClick={() => m.mutate(preview)} disabled={m.isPending || !targetCompanyId}>
               {m.isPending ? "Importing…" : `Import ${preview.length} customers`}
             </Button>
             <Button variant="outline" onClick={() => setPreview(null)}>Cancel</Button>
