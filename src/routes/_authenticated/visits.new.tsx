@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,8 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+} from "@/components/ui/command";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/visits/new")({
   component: NewVisit,
@@ -31,14 +37,41 @@ function NewVisit() {
   const { user, companyId, company } = useAuth();
   const nav = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState({
     customer_name: "", company: "", contact_number: "", location: "",
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
 
+  const { data: customers = [] } = useQuery({
+    queryKey: ["customers-picker", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("id, customer_name, contact_person, designation, email, phone")
+        .eq("company_id", companyId!)
+        .order("customer_name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [k]: e.target.value });
+
+  function pickCustomer(c: any) {
+    setSelectedId(c.id);
+    setForm((f) => ({
+      ...f,
+      customer_name: c.contact_person || c.customer_name,
+      company: c.customer_name || f.company,
+      contact_number: c.phone || f.contact_number,
+    }));
+    setPickerOpen(false);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,6 +108,8 @@ function NewVisit() {
     nav({ to: "/visits" });
   }
 
+  const selected = customers.find((c) => c.id === selectedId);
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <Button variant="ghost" size="sm" onClick={() => nav({ to: "/visits" })}>
@@ -89,8 +124,53 @@ function NewVisit() {
 
       <Card className="p-6">
         <form onSubmit={submit} className="space-y-5">
+          <Field label="Select customer (from imported list)" id="customer_picker">
+            <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between font-normal"
+                >
+                  {selected
+                    ? `${selected.customer_name}${selected.contact_person ? ` — ${selected.contact_person}` : ""}`
+                    : customers.length
+                      ? "Search and pick a customer..."
+                      : "No imported customers — fill details below"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search customers..." />
+                  <CommandList>
+                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandGroup>
+                      {customers.map((c) => (
+                        <CommandItem
+                          key={c.id}
+                          value={`${c.customer_name} ${c.contact_person ?? ""} ${c.email ?? ""} ${c.phone ?? ""}`}
+                          onSelect={() => pickCustomer(c)}
+                        >
+                          <Check className={cn("mr-2 h-4 w-4", selectedId === c.id ? "opacity-100" : "opacity-0")} />
+                          <div className="flex flex-col">
+                            <span className="font-medium">{c.customer_name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {[c.contact_person, c.designation, c.phone].filter(Boolean).join(" · ") || "—"}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </Field>
+
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Customer name *" id="customer_name">
+            <Field label="Contact / customer name *" id="customer_name">
               <Input id="customer_name" required value={form.customer_name} onChange={set("customer_name")} />
             </Field>
             <Field label="Company" id="company">
