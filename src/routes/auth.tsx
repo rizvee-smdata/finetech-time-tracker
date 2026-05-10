@@ -42,9 +42,20 @@ function AuthPage() {
   const [picked, setPicked] = useState<string>("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
+    const params = new URLSearchParams(window.location.search);
+    const forceLogout = params.get("logout") === "1";
+    (async () => {
+      if (forceLogout) {
+        await supabase.auth.signOut();
+        localStorage.removeItem(STORAGE_KEY);
+        toast.success("Signed out.");
+        // strip the query param
+        window.history.replaceState({}, "", "/auth");
+        return;
+      }
+      const { data } = await supabase.auth.getSession();
       if (data.session) await routeAfterAuth();
-    });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
