@@ -128,9 +128,9 @@ function CompaniesCard() {
             {editing?.id === c.id ? (
               <div className="flex flex-1 flex-wrap items-center gap-2">
                 <Input className="max-w-[200px]" value={editing.name}
-                  onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+                  onChange={(e) => setEditing(editing ? { ...editing, name: e.target.value } : null)} />
                 <Input className="max-w-[180px]" value={editing.slug}
-                  onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
+                  onChange={(e) => setEditing(editing ? { ...editing, slug: e.target.value } : null)} />
                 <Button size="sm" onClick={() => updateM.mutate()}>Save</Button>
                 <Button size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
               </div>
