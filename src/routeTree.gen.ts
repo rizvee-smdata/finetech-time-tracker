@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
+import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -64,6 +65,12 @@ const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   path: '/visits/new',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicHooksProcessRemindersRoute =
+  ApiPublicHooksProcessRemindersRouteImport.update({
+    id: '/api/public/hooks/process-reminders',
+    path: '/api/public/hooks/process-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,6 +92,7 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/visits/new'
     | '/visits/'
+    | '/api/public/hooks/process-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/visits/new'
     | '/visits'
+    | '/api/public/hooks/process-reminders'
   id:
     | '__root__'
     | '/'
@@ -129,12 +141,14 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/'
+    | '/api/public/hooks/process-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -202,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/hooks/process-reminders': {
+      id: '/api/public/hooks/process-reminders'
+      path: '/api/public/hooks/process-reminders'
+      fullPath: '/api/public/hooks/process-reminders'
+      preLoaderRoute: typeof ApiPublicHooksProcessRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -231,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
