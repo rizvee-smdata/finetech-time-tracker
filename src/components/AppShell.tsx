@@ -122,7 +122,17 @@ export function AppShell() {
         <main className="flex-1 p-4 md:p-8">
           {!companyId && companies.length === 0 && (
             <div className="mb-4 rounded-lg border border-border bg-warning/10 p-4 text-sm">
-              You're not assigned to any company yet. Ask an admin to add you to a Lavisho Group company.
+              {isAdmin ? (
+                <>
+                  No companies exist yet. Go to{" "}
+                  <Link to="/settings" className="font-medium text-primary underline">
+                    Settings
+                  </Link>{" "}
+                  to create your first Lavisho Group company and assign users.
+                </>
+              ) : (
+                <>You're not assigned to any company yet. Ask an admin to add you to a Lavisho Group company.</>
+              )}
             </div>
           )}
           <Outlet />
