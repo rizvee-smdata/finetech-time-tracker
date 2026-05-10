@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Users,
   ClipboardList,
+  Contact,
   Clock,
   LogOut,
   Bell,
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/visits", label: "Visits", icon: ClipboardList },
+  { to: "/customers", label: "Customers", icon: Contact },
   { to: "/check-in", label: "Time", icon: Clock },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];
