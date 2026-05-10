@@ -28,7 +28,7 @@ const schema = z.object({
 });
 
 function NewVisit() {
-  const { user } = useAuth();
+  const { user, companyId, company } = useAuth();
   const nav = useNavigate();
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
@@ -42,6 +42,10 @@ function NewVisit() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!companyId) {
+      toast.error("Select a company first");
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -50,6 +54,7 @@ function NewVisit() {
     setBusy(true);
     const payload = {
       user_id: user!.id,
+      company_id: companyId,
       customer_name: form.customer_name.trim(),
       company: form.company.trim() || null,
       contact_number: form.contact_number.trim() || null,
@@ -77,7 +82,9 @@ function NewVisit() {
       </Button>
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New visit report</h1>
-        <p className="text-sm text-muted-foreground">Log a customer visit and plan the next step.</p>
+        <p className="text-sm text-muted-foreground">
+          Logging visit for <span className="font-medium text-foreground">{company?.name ?? "—"}</span>.
+        </p>
       </div>
 
       <Card className="p-6">

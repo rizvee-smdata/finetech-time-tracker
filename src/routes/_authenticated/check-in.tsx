@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/check-in")({
 });
 
 function CheckInPage() {
-  const { user } = useAuth();
+  const { user, companyId } = useAuth();
   const qc = useQueryClient();
 
   const { data: open } = useQuery({
@@ -28,18 +28,21 @@ function CheckInPage() {
   });
 
   const { data: history } = useQuery({
-    queryKey: ["time-history", user?.id],
+    queryKey: ["time-history", user?.id, companyId],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase
+      const q = supabase
         .from("time_entries").select("*").eq("user_id", user!.id)
         .order("check_in", { ascending: false }).limit(20);
+      if (companyId) q.eq("company_id", companyId);
+      const { data } = await q;
       return data ?? [];
     },
   });
 
   async function checkIn() {
-    const { error } = await supabase.from("time_entries").insert({ user_id: user!.id });
+    if (!companyId) { toast.error("Select a company first"); return; }
+    const { error } = await supabase.from("time_entries").insert({ user_id: user!.id, company_id: companyId });
     if (error) toast.error(error.message);
     else { toast.success("Checked in"); qc.invalidateQueries(); }
   }
