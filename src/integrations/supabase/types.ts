@@ -14,9 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      companies: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_members: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_visits: {
         Row: {
           company: string | null
+          company_id: string | null
           contact_number: string | null
           created_at: string
           customer_name: string
@@ -33,6 +87,7 @@ export type Database = {
         }
         Insert: {
           company?: string | null
+          company_id?: string | null
           contact_number?: string | null
           created_at?: string
           customer_name: string
@@ -49,6 +104,7 @@ export type Database = {
         }
         Update: {
           company?: string | null
+          company_id?: string | null
           contact_number?: string | null
           created_at?: string
           customer_name?: string
@@ -63,10 +119,19 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customer_visits_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
+          company_id: string | null
           contact_person: string | null
           created_at: string
           created_by: string | null
@@ -78,6 +143,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_id?: string | null
           contact_person?: string | null
           created_at?: string
           created_by?: string | null
@@ -89,6 +155,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_id?: string | null
           contact_person?: string | null
           created_at?: string
           created_by?: string | null
@@ -99,7 +166,15 @@ export type Database = {
           phone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -134,6 +209,7 @@ export type Database = {
       reminders: {
         Row: {
           body: string | null
+          company_id: string | null
           created_at: string
           id: string
           read_at: string | null
@@ -144,6 +220,7 @@ export type Database = {
         }
         Insert: {
           body?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           read_at?: string | null
@@ -154,6 +231,7 @@ export type Database = {
         }
         Update: {
           body?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           read_at?: string | null
@@ -163,6 +241,13 @@ export type Database = {
           visit_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reminders_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reminders_visit_id_fkey"
             columns: ["visit_id"]
@@ -176,6 +261,7 @@ export type Database = {
         Row: {
           check_in: string
           check_out: string | null
+          company_id: string | null
           created_at: string
           id: string
           notes: string | null
@@ -184,6 +270,7 @@ export type Database = {
         Insert: {
           check_in?: string
           check_out?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -192,12 +279,21 @@ export type Database = {
         Update: {
           check_in?: string
           check_out?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -230,6 +326,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_company_member: {
+        Args: { _company_id: string; _user_id: string }
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }

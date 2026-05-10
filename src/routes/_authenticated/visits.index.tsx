@@ -14,17 +14,18 @@ export const Route = createFileRoute("/_authenticated/visits/")({
 });
 
 function VisitsList() {
-  const { user, isStaff } = useAuth();
+  const { user, isStaff, companyId } = useAuth();
   const [q, setQ] = useState("");
 
   const { data } = useQuery({
-    queryKey: ["visits", user?.id, isStaff],
+    queryKey: ["visits", user?.id, isStaff, companyId],
     enabled: !!user,
     queryFn: async () => {
       const query = supabase
         .from("customer_visits")
         .select("*, profiles:user_id(full_name, email)")
         .order("meeting_at", { ascending: false });
+      if (companyId) query.eq("company_id", companyId);
       if (!isStaff) query.eq("user_id", user!.id);
       const { data, error } = await query;
       if (error) throw error;

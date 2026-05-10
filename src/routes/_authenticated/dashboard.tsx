@@ -13,10 +13,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { user, isStaff } = useAuth();
+  const { user, isStaff, companyId, company } = useAuth();
 
   const { data: stats } = useQuery({
-    queryKey: ["dashboard-stats", user?.id, isStaff],
+    queryKey: ["dashboard-stats", user?.id, isStaff, companyId],
     enabled: !!user,
     queryFn: async () => {
       const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
@@ -27,6 +27,7 @@ function Dashboard() {
         .select("id, customer_name, company, meeting_at, next_meeting_at, next_action, user_id", { count: "exact" })
         .order("meeting_at", { ascending: false })
         .limit(5);
+      if (companyId) visitsQ.eq("company_id", companyId);
       if (!isStaff) visitsQ.eq("user_id", user!.id);
       const { data: recent } = await visitsQ;
 
@@ -34,6 +35,7 @@ function Dashboard() {
         .from("customer_visits")
         .select("id", { count: "exact", head: true })
         .gte("meeting_at", todayStart.toISOString());
+      if (companyId) todayQ.eq("company_id", companyId);
       if (!isStaff) todayQ.eq("user_id", user!.id);
       const { count: todayCount } = await todayQ;
 
@@ -44,6 +46,7 @@ function Dashboard() {
         .lte("next_meeting_at", next7.toISOString())
         .order("next_meeting_at", { ascending: true })
         .limit(5);
+      if (companyId) upcomingQ.eq("company_id", companyId);
       if (!isStaff) upcomingQ.eq("user_id", user!.id);
       const { data: upcoming } = await upcomingQ;
 
@@ -63,7 +66,9 @@ function Dashboard() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Welcome back. Here's what's happening today.</p>
+          <p className="text-sm text-muted-foreground">
+            {company ? `${company.name} — ` : ""}Welcome back. Here's what's happening today.
+          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline"><Link to="/check-in"><Clock className="mr-2 h-4 w-4" />Time clock</Link></Button>

@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Clock } from "lucide-react";
+import { Clock, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -25,19 +26,54 @@ const schema = z.object({
   fullName: z.string().trim().max(100).optional(),
 });
 
+const STORAGE_KEY = "lavisho.activeCompany";
+
+type Step = "auth" | "pickCompany";
+
 function AuthPage() {
   const nav = useNavigate();
+  const [step, setStep] = useState<Step>("auth");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [picked, setPicked] = useState<string>("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav({ to: "/dashboard" });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (data.session) await routeAfterAuth();
     });
-  }, [nav]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function routeAfterAuth() {
+    const { data: roles } = await supabase
+      .from("user_roles").select("role").eq("user_id", (await supabase.auth.getUser()).data.user!.id);
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    const { data: comps } = await supabase.from("companies").select("id, name").order("name");
+    const list = comps ?? [];
+    if (list.length === 0) {
+      if (isAdmin) {
+        // first-time admin: skip company picking, can create in settings
+        nav({ to: "/settings" });
+      } else {
+        toast.error("You're not assigned to any company yet. Contact an admin.");
+        await supabase.auth.signOut();
+      }
+      return;
+    }
+    if (list.length === 1) {
+      localStorage.setItem(STORAGE_KEY, list[0].id);
+      nav({ to: "/dashboard" });
+      return;
+    }
+    setCompanies(list);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    setPicked(stored && list.some((c) => c.id === stored) ? stored : list[0].id);
+    setStep("pickCompany");
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,18 +94,24 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Account created. You're signed in.");
+        toast.success("Account created.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      nav({ to: "/dashboard" });
+      await routeAfterAuth();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Authentication failed";
       toast.error(msg);
     } finally {
       setBusy(false);
     }
+  }
+
+  function continueWithCompany() {
+    if (!picked) return;
+    localStorage.setItem(STORAGE_KEY, picked);
+    nav({ to: "/dashboard" });
   }
 
   return (
@@ -91,46 +133,73 @@ function AuthPage() {
           </div>
         </div>
 
-        <div className="mb-6 flex rounded-lg bg-muted p-1">
-          <button
-            type="button"
-            onClick={() => setMode("signin")}
-            className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("signup")}
-            className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-          >
-            Create account
-          </button>
-        </div>
-
-        <form onSubmit={submit} className="space-y-4">
-          {mode === "signup" && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Full name</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
+        {step === "pickCompany" ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Building2 className="h-4 w-4 text-primary" />
+              Select your company
             </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
+            <p className="text-sm text-muted-foreground">
+              You belong to multiple Lavisho Group companies. Choose which one to work in.
+            </p>
+            <Select value={picked} onValueChange={setPicked}>
+              <SelectTrigger><SelectValue placeholder="Select company" /></SelectTrigger>
+              <SelectContent>
+                {companies.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button className="w-full" onClick={continueWithCompany}>Continue</Button>
+            <button type="button" className="w-full text-xs text-muted-foreground hover:underline"
+              onClick={async () => { await supabase.auth.signOut(); setStep("auth"); }}>
+              Sign in as a different user
+            </button>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          <Button type="submit" disabled={busy} className="w-full">
-            {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
-          </Button>
-        </form>
+        ) : (
+          <>
+            <div className="mb-6 flex rounded-lg bg-muted p-1">
+              <button
+                type="button"
+                onClick={() => setMode("signin")}
+                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("signup")}
+                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
+              >
+                Create account
+              </button>
+            </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          New employees are added with the <strong>Employee</strong> role. Admins can promote to Manager or Admin.
-        </p>
+            <form onSubmit={submit} className="space-y-4">
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full name</Label>
+                  <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+              </div>
+              <Button type="submit" disabled={busy} className="w-full">
+                {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
+              </Button>
+            </form>
+
+            <p className="mt-6 text-center text-xs text-muted-foreground">
+              The first user to register becomes Admin and can create companies & invite the rest of the team.
+            </p>
+          </>
+        )}
       </Card>
     </div>
   );

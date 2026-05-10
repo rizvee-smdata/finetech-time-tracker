@@ -18,6 +18,7 @@ const createUserSchema = z.object({
   password: z.string().min(8).max(72),
   full_name: z.string().trim().min(1).max(120),
   role: z.enum(["admin", "manager", "employee"]),
+  company_ids: z.array(z.string().uuid()).optional().default([]),
 });
 
 export const adminCreateUser = createServerFn({ method: "POST" })
@@ -40,6 +41,11 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         .insert({ user_id: newUserId, role: data.role });
       if (rErr) throw new Error(rErr.message);
     }
+    if (data.company_ids.length) {
+      await supabaseAdmin
+        .from("company_members")
+        .insert(data.company_ids.map((cid) => ({ company_id: cid, user_id: newUserId })));
+    }
     return { ok: true, id: newUserId };
   });
 
@@ -47,13 +53,15 @@ export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const [{ data: profiles }, { data: roles }] = await Promise.all([
+    const [{ data: profiles }, { data: roles }, { data: members }] = await Promise.all([
       supabaseAdmin.from("profiles").select("id, full_name, email, created_at"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
+      supabaseAdmin.from("company_members").select("user_id, company_id"),
     ]);
     return (profiles ?? []).map((p) => ({
       ...p,
       roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role),
+      company_ids: (members ?? []).filter((m) => m.user_id === p.id).map((m) => m.company_id),
     }));
   });
 
@@ -68,7 +76,10 @@ const customerRow = z.object({
 export const importCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z.object({ rows: z.array(customerRow).min(1).max(2000) }).parse(d),
+    z.object({
+      rows: z.array(customerRow).min(1).max(2000),
+      company_id: z.string().uuid().nullable().optional(),
+    }).parse(d),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -79,10 +90,89 @@ export const importCustomers = createServerFn({ method: "POST" })
       email: r.email ? r.email : null,
       phone: r.phone || null,
       created_by: context.userId,
+      company_id: data.company_id ?? null,
     }));
     const { error, count } = await supabaseAdmin
       .from("customers")
       .insert(rows, { count: "exact" });
     if (error) throw new Error(error.message);
     return { inserted: count ?? rows.length };
+  });
+
+// ---------- Companies ----------
+
+const companySchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  slug: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, dashes"),
+});
+
+export const adminCreateCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => companySchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data: created, error } = await supabaseAdmin
+      .from("companies")
+      .insert({ name: data.name, slug: data.slug })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return created;
+  });
+
+export const adminUpdateCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { error } = await supabaseAdmin
+      .from("companies")
+      .update({ name: data.name, slug: data.slug })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminListCompanies = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const [{ data: companies }, { data: members }] = await Promise.all([
+      supabaseAdmin.from("companies").select("*").order("name"),
+      supabaseAdmin.from("company_members").select("company_id, user_id"),
+    ]);
+    return (companies ?? []).map((c) => ({
+      ...c,
+      member_count: (members ?? []).filter((m) => m.company_id === c.id).length,
+    }));
+  });
+
+export const adminSetUserCompanies = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      user_id: z.string().uuid(),
+      company_ids: z.array(z.string().uuid()),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    await supabaseAdmin.from("company_members").delete().eq("user_id", data.user_id);
+    if (data.company_ids.length) {
+      const { error } = await supabaseAdmin
+        .from("company_members")
+        .insert(data.company_ids.map((cid) => ({ company_id: cid, user_id: data.user_id })));
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
   });

@@ -9,8 +9,10 @@ import {
   Bell,
   Menu,
   Settings,
+  Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +24,7 @@ const nav = [
 ];
 
 export function AppShell() {
-  const { user, isStaff, isAdmin, signOut } = useAuth();
+  const { user, isStaff, isAdmin, companies, companyId, setCompanyId, company, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const path = router.state.location.pathname;
@@ -33,6 +35,22 @@ export function AppShell() {
     ...(isAdmin ? [{ to: "/settings", label: "Settings", icon: Settings }] : []),
   ];
 
+  const switcher = companies.length > 0 && (
+    <div className="px-3 pb-2">
+      <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Building2 className="h-3 w-3" /> Company
+      </div>
+      <Select value={companyId ?? undefined} onValueChange={(v) => setCompanyId(v)}>
+        <SelectTrigger className="h-9"><SelectValue placeholder="Select company" /></SelectTrigger>
+        <SelectContent>
+          {companies.map((c) => (
+            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar (mobile) */}
@@ -40,7 +58,9 @@ export function AppShell() {
         <button onClick={() => setOpen(!open)} className="rounded-md p-2 hover:bg-accent">
           <Menu className="h-5 w-5" />
         </button>
-        <div className="font-semibold tracking-tight text-primary">Lavisho Tracker</div>
+        <div className="truncate font-semibold tracking-tight text-primary">
+          {company?.name ?? "Lavisho Tracker"}
+        </div>
         <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
       </header>
 
@@ -48,7 +68,7 @@ export function AppShell() {
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-card transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-border bg-card transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
             open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}
         >
@@ -56,12 +76,13 @@ export function AppShell() {
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-[var(--gradient-primary)] text-primary-foreground font-bold shadow-[var(--shadow-elegant)]">
               L
             </div>
-            <div>
-              <div className="text-sm font-semibold">Lavisho Group</div>
-              <div className="text-xs text-muted-foreground">Time Tracker</div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold">Lavisho Group</div>
+              <div className="truncate text-xs text-muted-foreground">{company?.name ?? "Time Tracker"}</div>
             </div>
           </div>
-          <nav className="space-y-1 p-3">
+          <div className="pt-3">{switcher}</div>
+          <nav className="flex-1 space-y-1 p-3">
             {items.map((it) => {
               const active = path.startsWith(it.to);
               const Icon = it.icon;
@@ -83,7 +104,7 @@ export function AppShell() {
               );
             })}
           </nav>
-          <div className="absolute bottom-0 left-0 right-0 border-t border-border p-3">
+          <div className="border-t border-border p-3">
             <div className="mb-2 truncate px-3 text-xs text-muted-foreground">{user?.email}</div>
             <Button variant="outline" size="sm" className="w-full" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" /> Sign out
@@ -99,6 +120,11 @@ export function AppShell() {
         )}
 
         <main className="flex-1 p-4 md:p-8">
+          {!companyId && companies.length === 0 && (
+            <div className="mb-4 rounded-lg border border-border bg-warning/10 p-4 text-sm">
+              You're not assigned to any company yet. Ask an admin to add you to a Lavisho Group company.
+            </div>
+          )}
           <Outlet />
         </main>
       </div>
