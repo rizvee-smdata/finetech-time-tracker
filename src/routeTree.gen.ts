@@ -9,38 +9,150 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
+import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
+import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
+import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRemindersRoute = AuthenticatedRemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
+  id: '/check-in',
+  path: '/check-in',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedVisitsIndexRoute =
+  AuthenticatedVisitsIndexRouteImport.update({
+    id: '/visits/',
+    path: '/visits/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
+  id: '/visits/new',
+  path: '/visits/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/check-in': typeof AuthenticatedCheckInRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/reminders': typeof AuthenticatedRemindersRoute
+  '/team': typeof AuthenticatedTeamRoute
+  '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/': typeof AuthenticatedVisitsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/check-in': typeof AuthenticatedCheckInRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/reminders': typeof AuthenticatedRemindersRoute
+  '/team': typeof AuthenticatedTeamRoute
+  '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits': typeof AuthenticatedVisitsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/check-in'
+    | '/dashboard'
+    | '/reminders'
+    | '/team'
+    | '/visits/new'
+    | '/visits/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/check-in'
+    | '/dashboard'
+    | '/reminders'
+    | '/team'
+    | '/visits/new'
+    | '/visits'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/check-in'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/reminders'
+    | '/_authenticated/team'
+    | '/_authenticated/visits/new'
+    | '/_authenticated/visits/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +160,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reminders': {
+      id: '/_authenticated/reminders'
+      path: '/reminders'
+      fullPath: '/reminders'
+      preLoaderRoute: typeof AuthenticatedRemindersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/check-in': {
+      id: '/_authenticated/check-in'
+      path: '/check-in'
+      fullPath: '/check-in'
+      preLoaderRoute: typeof AuthenticatedCheckInRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/visits/': {
+      id: '/_authenticated/visits/'
+      path: '/visits'
+      fullPath: '/visits/'
+      preLoaderRoute: typeof AuthenticatedVisitsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/visits/new': {
+      id: '/_authenticated/visits/new'
+      path: '/visits/new'
+      fullPath: '/visits/new'
+      preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
