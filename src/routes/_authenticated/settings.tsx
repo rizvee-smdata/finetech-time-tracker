@@ -125,15 +125,20 @@ function CompaniesCard() {
       <div className="divide-y divide-border">
         {(data ?? []).map((c: any) => (
           <div key={c.id} className="flex items-center justify-between gap-3 py-3">
-            {editing?.id === c.id ? (
-              <div className="flex flex-1 flex-wrap items-center gap-2">
-                <Input className="max-w-[200px]" value={editing.name}
-                  onChange={(e) => setEditing(editing ? { ...editing, name: e.target.value } : null)} />
-                <Input className="max-w-[180px]" value={editing.slug}
-                  onChange={(e) => setEditing(editing ? { ...editing, slug: e.target.value } : null)} />
-                <Button size="sm" onClick={() => updateM.mutate()}>Save</Button>
-                <Button size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-              </div>
+            {editing && editing.id === c.id ? (
+              (() => {
+                const ed = editing;
+                return (
+                  <div className="flex flex-1 flex-wrap items-center gap-2">
+                    <Input className="max-w-[200px]" value={ed.name}
+                      onChange={(e) => setEditing({ ...ed, name: e.target.value })} />
+                    <Input className="max-w-[180px]" value={ed.slug}
+                      onChange={(e) => setEditing({ ...ed, slug: e.target.value })} />
+                    <Button size="sm" onClick={() => updateM.mutate()}>Save</Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+                  </div>
+                );
+              })()
             ) : (
               <>
                 <div>
