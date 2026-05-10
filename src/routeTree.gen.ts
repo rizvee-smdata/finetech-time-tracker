@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
@@ -37,6 +38,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedRemindersRoute = AuthenticatedRemindersRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/check-in': typeof AuthenticatedCheckInRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reminders': typeof AuthenticatedRemindersRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/check-in': typeof AuthenticatedCheckInRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reminders': typeof AuthenticatedRemindersRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/check-in'
     | '/dashboard'
     | '/reminders'
+    | '/settings'
     | '/team'
     | '/visits/new'
     | '/visits/'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/check-in'
     | '/dashboard'
     | '/reminders'
+    | '/settings'
     | '/team'
     | '/visits/new'
     | '/visits'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/_authenticated/check-in'
     | '/_authenticated/dashboard'
     | '/_authenticated/reminders'
+    | '/_authenticated/settings'
     | '/_authenticated/team'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/'
@@ -179,6 +191,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/reminders': {
@@ -230,6 +249,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
@@ -239,6 +259,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,

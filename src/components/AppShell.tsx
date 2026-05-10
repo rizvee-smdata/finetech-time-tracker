@@ -8,6 +8,7 @@ import {
   LogOut,
   Bell,
   Menu,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -21,12 +22,16 @@ const nav = [
 ];
 
 export function AppShell() {
-  const { user, isStaff, signOut } = useAuth();
+  const { user, isStaff, isAdmin, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const path = router.state.location.pathname;
 
-  const items = [...nav, ...(isStaff ? [{ to: "/team", label: "Team", icon: Users }] : [])];
+  const items = [
+    ...nav,
+    ...(isStaff ? [{ to: "/team", label: "Team", icon: Users }] : []),
+    ...(isAdmin ? [{ to: "/settings", label: "Settings", icon: Settings }] : []),
+  ];
 
   return (
     <div className="min-h-screen bg-background">

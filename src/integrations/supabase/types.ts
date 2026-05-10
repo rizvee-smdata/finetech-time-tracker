@@ -65,6 +65,42 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          contact_person: string | null
+          created_at: string
+          created_by: string | null
+          customer_name: string
+          designation: string | null
+          email: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_name: string
+          designation?: string | null
+          email?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          designation?: string | null
+          email?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
