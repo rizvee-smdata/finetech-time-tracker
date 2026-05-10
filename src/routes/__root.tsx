@@ -79,9 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Daily field activity, customer visits and follow-up tracking for Lavisho Group." },
       { name: "author", content: "Lavisho Group" },
       { property: "og:title", content: "Lavisho Time Tracker" },
-      { property: "og:description", content: "Daily field activity, customer visits and follow-up tracking." },
+      { property: "og:description", content: "Daily field activity, customer visits and follow-up tracking for Lavisho Group." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Lavisho Time Tracker" },
+      { name: "twitter:description", content: "Daily field activity, customer visits and follow-up tracking for Lavisho Group." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e4836aad-0856-4800-b495-1f4f7da85e53/id-preview-76c68726--4b057a3a-1c4d-4b4b-afb2-b4ad1f521b36.lovable.app-1778434740060.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e4836aad-0856-4800-b495-1f4f7da85e53/id-preview-76c68726--4b057a3a-1c4d-4b4b-afb2-b4ad1f521b36.lovable.app-1778434740060.png" },
     ],
     links: [
       {
