@@ -4,9 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/team")({
   beforeLoad: async () => {
@@ -23,6 +26,8 @@ export const Route = createFileRoute("/_authenticated/team")({
 
 function TeamPage() {
   const { isAdmin } = useAuth();
+
+  const [selected, setSelected] = useState<{ id: string; name: string; scope: "today" | "all" } | null>(null);
 
   const { data: members, refetch } = useQuery({
     queryKey: ["team-members"],
@@ -46,6 +51,21 @@ function TeamPage() {
           isCheckedIn: !!open,
         };
       });
+    },
+  });
+
+  const { data: visitDetails, isLoading: loadingDetails } = useQuery({
+    queryKey: ["team-visit-details", selected?.id, selected?.scope],
+    enabled: !!selected,
+    queryFn: async () => {
+      let q = supabase.from("customer_visits").select("*").eq("user_id", selected!.id).order("meeting_at", { ascending: false });
+      if (selected!.scope === "today") {
+        const start = new Date(); start.setHours(0, 0, 0, 0);
+        q = q.gte("meeting_at", start.toISOString());
+      }
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
     },
   });
 
@@ -80,14 +100,22 @@ function TeamPage() {
               {m.isCheckedIn && <Badge className="bg-success text-success-foreground">On clock</Badge>}
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
-              <div className="rounded-md bg-muted p-2">
+              <button
+                type="button"
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "today" })}
+                className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
+              >
                 <div className="text-xs text-muted-foreground">Today</div>
                 <div className="font-semibold">{m.todayVisits}</div>
-              </div>
-              <div className="rounded-md bg-muted p-2">
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "all" })}
+                className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
+              >
                 <div className="text-xs text-muted-foreground">Total visits</div>
                 <div className="font-semibold">{m.totalVisits}</div>
-              </div>
+              </button>
             </div>
             {isAdmin && (
               <div className="mt-4">
@@ -105,6 +133,41 @@ function TeamPage() {
           </Card>
         ))}
       </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selected?.name} — {selected?.scope === "today" ? "Today's visits" : "All visits"}
+            </DialogTitle>
+          </DialogHeader>
+          {loadingDetails ? (
+            <div className="text-sm text-muted-foreground">Loading…</div>
+          ) : (visitDetails ?? []).length === 0 ? (
+            <div className="text-sm text-muted-foreground">No visits found.</div>
+          ) : (
+            <div className="space-y-3">
+              {(visitDetails ?? []).map((v: any) => (
+                <Card key={v.id} className="p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-medium">{v.customer_name}</div>
+                      {v.company && <div className="text-xs text-muted-foreground">{v.company}</div>}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{format(new Date(v.meeting_at), "PPp")}</div>
+                  </div>
+                  {v.contact_number && <div className="mt-1 text-xs">📞 {v.contact_number}</div>}
+                  {v.location && <div className="text-xs text-muted-foreground">📍 {v.location}</div>}
+                  {v.discussion_summary && <div className="mt-2 text-sm"><span className="font-medium">Discussion:</span> {v.discussion_summary}</div>}
+                  {v.next_action && <div className="text-sm"><span className="font-medium">Next action:</span> {v.next_action}</div>}
+                  {v.next_meeting_at && <div className="text-xs text-muted-foreground">Next meeting: {format(new Date(v.next_meeting_at), "PPp")}</div>}
+                  {v.remarks && <div className="text-xs text-muted-foreground mt-1">Remarks: {v.remarks}</div>}
+                </Card>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
