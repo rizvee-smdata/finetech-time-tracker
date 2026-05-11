@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   adminCreateUser,
   adminListUsers,
+  adminDeleteUser,
+  adminResetPassword,
   importCustomers,
   adminCreateCompany,
   adminUpdateCompany,
