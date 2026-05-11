@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   adminCreateUser,
   adminListUsers,
+  adminDeleteUser,
+  adminResetPassword,
   importCustomers,
   adminCreateCompany,
   adminUpdateCompany,
@@ -262,11 +264,16 @@ function UsersListCard() {
   const fn = useServerFn(adminListUsers);
   const setMembers = useServerFn(adminSetUserCompanies);
   const list = useServerFn(adminListCompanies);
+  const delUser = useServerFn(adminDeleteUser);
+  const resetPwd = useServerFn(adminResetPassword);
   const qc = useQueryClient();
+  const { user } = useAuth();
   const { data: users } = useQuery({ queryKey: ["admin-users"], queryFn: () => fn() });
   const { data: companies } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [draftIds, setDraftIds] = useState<string[]>([]);
+  const [pwdUserId, setPwdUserId] = useState<string | null>(null);
+  const [newPwd, setNewPwd] = useState("");
 
   const m = useMutation({
     mutationFn: async () => setMembers({ data: { user_id: editingUserId!, company_ids: draftIds } }),
@@ -275,6 +282,18 @@ function UsersListCard() {
       setEditingUserId(null);
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const delM = useMutation({
+    mutationFn: async (id: string) => delUser({ data: { user_id: id } }),
+    onSuccess: () => { toast.success("User deleted"); qc.invalidateQueries({ queryKey: ["admin-users"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const pwdM = useMutation({
+    mutationFn: async () => resetPwd({ data: { user_id: pwdUserId!, password: newPwd } }),
+    onSuccess: () => { toast.success("Password updated"); setPwdUserId(null); setNewPwd(""); },
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -287,6 +306,7 @@ function UsersListCard() {
       <div className="divide-y divide-border">
         {(users ?? []).map((u: any) => {
           const userCompanies = (companies ?? []).filter((c: any) => u.company_ids?.includes(c.id));
+          const isSelf = u.id === user?.id;
           return (
             <div key={u.id} className="space-y-2 py-3">
               <div className="flex items-center justify-between gap-3">
@@ -302,6 +322,16 @@ function UsersListCard() {
                     onClick={() => { setEditingUserId(u.id); setDraftIds(u.company_ids ?? []); }}>
                     Manage companies
                   </Button>
+                  <Button size="sm" variant="ghost"
+                    onClick={() => { setPwdUserId(u.id); setNewPwd(""); }}>
+                    Change password
+                  </Button>
+                  {!isSelf && (
+                    <Button size="icon" variant="ghost"
+                      onClick={() => { if (confirm(`Delete ${u.email}? This permanently removes the account.`)) delM.mutate(u.id); }}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-1">
@@ -323,6 +353,16 @@ function UsersListCard() {
                     <Button size="sm" onClick={() => m.mutate()} disabled={m.isPending}>Save</Button>
                     <Button size="sm" variant="outline" onClick={() => setEditingUserId(null)}>Cancel</Button>
                   </div>
+                </div>
+              )}
+              {pwdUserId === u.id && (
+                <div className="flex flex-wrap items-end gap-2 rounded-md border border-border p-3">
+                  <div className="flex-1 space-y-1.5 min-w-[200px]">
+                    <Label>New password (min 8 chars)</Label>
+                    <Input type="text" minLength={8} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} />
+                  </div>
+                  <Button size="sm" disabled={pwdM.isPending || newPwd.length < 8} onClick={() => pwdM.mutate()}>Update password</Button>
+                  <Button size="sm" variant="outline" onClick={() => { setPwdUserId(null); setNewPwd(""); }}>Cancel</Button>
                 </div>
               )}
             </div>
