@@ -11,18 +11,40 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { BookOpen, Plus, Search } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { BookOpen, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/visits/")({
   component: VisitsList,
 });
 
+type Visit = {
+  id: string;
+  user_id: string;
+  company_id: string | null;
+  customer_name: string;
+  company: string | null;
+  contact_number: string | null;
+  location: string | null;
+  meeting_at: string;
+  discussion_summary: string | null;
+  next_action: string | null;
+  next_meeting_at: string | null;
+  remarks: string | null;
+  status: string;
+};
+
 function VisitsList() {
   const { user, isStaff, companyId } = useAuth();
+  const qc = useQueryClient();
   const [q, setQ] = useState("");
+  const [editing, setEditing] = useState<Visit | null>(null);
 
   const { data } = useQuery({
     queryKey: ["visits", user?.id, isStaff, companyId],
@@ -30,13 +52,22 @@ function VisitsList() {
     queryFn: async () => {
       const query = supabase
         .from("customer_visits")
-        .select("*, profiles:user_id(full_name, email)")
+        .select("*")
         .order("meeting_at", { ascending: false });
       if (companyId) query.eq("company_id", companyId);
       if (!isStaff) query.eq("user_id", user!.id);
       const { data, error } = await query;
       if (error) throw error;
-      return data ?? [];
+      const visits = (data ?? []) as Visit[];
+
+      // Fetch author names separately (no FK between customer_visits and profiles)
+      let profilesMap = new Map<string, { full_name: string | null; email: string | null }>();
+      if (isStaff && visits.length) {
+        const ids = Array.from(new Set(visits.map((v) => v.user_id)));
+        const { data: profs } = await supabase.from("profiles").select("id, full_name, email").in("id", ids);
+        for (const p of profs ?? []) profilesMap.set(p.id, { full_name: p.full_name, email: p.email });
+      }
+      return visits.map((v) => ({ ...v, author: profilesMap.get(v.user_id) ?? null }));
     },
   });
 
@@ -50,6 +81,13 @@ function VisitsList() {
       v.discussion_summary?.toLowerCase().includes(s)
     );
   });
+
+  async function deleteVisit(id: string) {
+    const { error } = await supabase.from("customer_visits").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
+    qc.invalidateQueries({ queryKey: ["visits"] });
+  }
 
   return (
     <div className="space-y-6">
@@ -75,7 +113,7 @@ function VisitsList() {
             No entries yet. Click "New visit" or "Office study" to add one.
           </Card>
         )}
-        {filtered.map((v) => {
+        {filtered.map((v: any) => {
           const isStudy = v.status === "office_study";
           return (
             <Card key={v.id} className="p-5">
@@ -98,15 +136,37 @@ function VisitsList() {
                   <div className="text-xs text-muted-foreground">
                     {format(new Date(v.meeting_at), "PPpp")}
                     {v.location && <> · {v.location}</>}
-                    {isStaff && v.profiles && <> · {(v.profiles as any).full_name || (v.profiles as any).email}</>}
+                    {isStaff && v.author && <> · {v.author.full_name || v.author.email}</>}
                   </div>
                 </div>
-                {v.next_meeting_at && (
-                  <div className="text-right text-xs">
-                    <div className="text-muted-foreground">Next meeting</div>
-                    <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  {v.next_meeting_at && (
+                    <div className="text-right text-xs">
+                      <div className="text-muted-foreground">Next meeting</div>
+                      <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
+                    </div>
+                  )}
+                  <Button size="icon" variant="ghost" onClick={() => setEditing(v)} title="Edit">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="icon" variant="ghost" title="Delete">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
+                        <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deleteVisit(v.id)}>Delete</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
               {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap">{v.discussion_summary}</p>}
               {v.next_action && (
@@ -119,7 +179,124 @@ function VisitsList() {
           );
         })}
       </div>
+
+      <EditVisitDialog visit={editing} onClose={() => setEditing(null)} />
     </div>
+  );
+}
+
+function toLocalInput(iso: string | null) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0, 16);
+}
+
+function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState<any>({});
+
+  useEffect(() => {
+    if (!visit) return;
+    setForm({
+      customer_name: visit.customer_name ?? "",
+      company: visit.company ?? "",
+      contact_number: visit.contact_number ?? "",
+      location: visit.location ?? "",
+      meeting_at: toLocalInput(visit.meeting_at),
+      discussion_summary: visit.discussion_summary ?? "",
+      next_action: visit.next_action ?? "",
+      next_meeting_at: toLocalInput(visit.next_meeting_at),
+      remarks: visit.remarks ?? "",
+    });
+  }, [visit]);
+
+  async function save() {
+    if (!visit) return;
+    setBusy(true);
+    const { error } = await supabase
+      .from("customer_visits")
+      .update({
+        customer_name: form.customer_name,
+        company: form.company || null,
+        contact_number: form.contact_number || null,
+        location: form.location || null,
+        meeting_at: form.meeting_at ? new Date(form.meeting_at).toISOString() : visit.meeting_at,
+        discussion_summary: form.discussion_summary || null,
+        next_action: form.next_action || null,
+        next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
+        remarks: form.remarks || null,
+      })
+      .eq("id", visit.id);
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Visit updated");
+    qc.invalidateQueries({ queryKey: ["visits"] });
+    onClose();
+  }
+
+  const isStudy = visit?.status === "office_study";
+
+  return (
+    <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit {isStudy ? "office study" : "visit"}</DialogTitle>
+          <DialogDescription>Update the details and save.</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-2">
+          {!isStudy && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>Customer name *</Label>
+                <Input value={form.customer_name || ""} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Company</Label>
+                <Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Contact number</Label>
+                <Input value={form.contact_number || ""} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Location</Label>
+                <Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+              </div>
+            </div>
+          )}
+          <div className="grid gap-2">
+            <Label>Meeting date & time *</Label>
+            <Input type="datetime-local" value={form.meeting_at || ""} onChange={(e) => setForm({ ...form, meeting_at: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label>{isStudy ? "Notes" : "Discussion summary"}</Label>
+            <Textarea rows={3} value={form.discussion_summary || ""} onChange={(e) => setForm({ ...form, discussion_summary: e.target.value })} />
+          </div>
+          {!isStudy && (
+            <>
+              <div className="grid gap-2">
+                <Label>Next action</Label>
+                <Textarea rows={2} value={form.next_action || ""} onChange={(e) => setForm({ ...form, next_action: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Next meeting</Label>
+                <Input type="datetime-local" value={form.next_meeting_at || ""} onChange={(e) => setForm({ ...form, next_meeting_at: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Remarks</Label>
+                <Textarea rows={2} value={form.remarks || ""} onChange={(e) => setForm({ ...form, remarks: e.target.value })} />
+              </div>
+            </>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save changes"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
