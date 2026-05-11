@@ -27,6 +27,8 @@ export const Route = createFileRoute("/_authenticated/team")({
 function TeamPage() {
   const { isAdmin } = useAuth();
 
+  const [selected, setSelected] = useState<{ id: string; name: string; scope: "today" | "all" } | null>(null);
+
   const { data: members, refetch } = useQuery({
     queryKey: ["team-members"],
     queryFn: async () => {
@@ -49,6 +51,21 @@ function TeamPage() {
           isCheckedIn: !!open,
         };
       });
+    },
+  });
+
+  const { data: visitDetails, isLoading: loadingDetails } = useQuery({
+    queryKey: ["team-visit-details", selected?.id, selected?.scope],
+    enabled: !!selected,
+    queryFn: async () => {
+      let q = supabase.from("customer_visits").select("*").eq("user_id", selected!.id).order("meeting_at", { ascending: false });
+      if (selected!.scope === "today") {
+        const start = new Date(); start.setHours(0, 0, 0, 0);
+        q = q.gte("meeting_at", start.toISOString());
+      }
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
     },
   });
 
