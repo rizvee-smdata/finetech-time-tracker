@@ -102,7 +102,7 @@ function TeamPage() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
               <button
                 type="button"
-                onClick={() => setSelected({ id: m.id, name: m.full_name || m.email, scope: "today" })}
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "today" })}
                 className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
               >
                 <div className="text-xs text-muted-foreground">Today</div>
@@ -110,7 +110,7 @@ function TeamPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setSelected({ id: m.id, name: m.full_name || m.email, scope: "all" })}
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "all" })}
                 className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
               >
                 <div className="text-xs text-muted-foreground">Total visits</div>
