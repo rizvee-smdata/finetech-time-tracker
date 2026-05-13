@@ -29,6 +29,8 @@ type Visit = {
   user_id: string;
   company_id: string | null;
   customer_name: string;
+  designation: string | null;
+  email: string | null;
   company: string | null;
   contact_number: string | null;
   location: string | null;
