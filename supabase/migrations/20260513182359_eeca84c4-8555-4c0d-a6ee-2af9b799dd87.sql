@@ -1,0 +1,1 @@
+DELETE FROM public.customers WHERE kind = 'partner' AND created_at = '2026-05-13 18:21:18.919281+00';
