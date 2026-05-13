@@ -29,6 +29,8 @@ type Visit = {
   user_id: string;
   company_id: string | null;
   customer_name: string;
+  designation: string | null;
+  email: string | null;
   company: string | null;
   contact_number: string | null;
   location: string | null;
@@ -201,6 +203,8 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
     if (!visit) return;
     setForm({
       customer_name: visit.customer_name ?? "",
+      designation: visit.designation ?? "",
+      email: visit.email ?? "",
       company: visit.company ?? "",
       contact_number: visit.contact_number ?? "",
       location: visit.location ?? "",
@@ -219,6 +223,8 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
       .from("customer_visits")
       .update({
         customer_name: form.customer_name,
+        designation: form.designation || null,
+        email: form.email || null,
         company: form.company || null,
         contact_number: form.contact_number || null,
         location: form.location || null,
@@ -255,6 +261,14 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
               <div className="grid gap-2">
                 <Label>Company</Label>
                 <Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Designation</Label>
+                <Input value={form.designation || ""} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Email</Label>
+                <Input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
               <div className="grid gap-2">
                 <Label>Contact number</Label>

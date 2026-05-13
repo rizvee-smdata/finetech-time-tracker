@@ -1,0 +1,1 @@
+ALTER TABLE public.customer_visits ADD COLUMN IF NOT EXISTS designation text, ADD COLUMN IF NOT EXISTS email text;

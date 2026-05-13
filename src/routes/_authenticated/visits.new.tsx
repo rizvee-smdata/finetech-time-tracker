@@ -23,6 +23,8 @@ export const Route = createFileRoute("/_authenticated/visits/new")({
 
 const schema = z.object({
   customer_name: z.string().trim().min(1).max(120),
+  designation: z.string().trim().max(120).optional().or(z.literal("")),
+  email: z.string().trim().max(160).email().optional().or(z.literal("")),
   company: z.string().trim().max(120).optional().or(z.literal("")),
   contact_number: z.string().trim().max(40).optional().or(z.literal("")),
   location: z.string().trim().max(200).optional().or(z.literal("")),
@@ -40,7 +42,7 @@ function NewVisit() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    customer_name: "", company: "", contact_number: "", location: "",
+    customer_name: "", designation: "", email: "", company: "", contact_number: "", location: "",
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
@@ -67,6 +69,8 @@ function NewVisit() {
     setForm((f) => ({
       ...f,
       customer_name: c.contact_person || c.customer_name,
+      designation: c.designation || f.designation,
+      email: c.email || f.email,
       company: c.customer_name || f.company,
       contact_number: c.phone || f.contact_number,
     }));
@@ -89,6 +93,8 @@ function NewVisit() {
       user_id: user!.id,
       company_id: companyId,
       customer_name: form.customer_name.trim(),
+      designation: form.designation.trim() || null,
+      email: form.email.trim() || null,
       company: form.company.trim() || null,
       contact_number: form.contact_number.trim() || null,
       location: form.location.trim() || null,
@@ -175,6 +181,12 @@ function NewVisit() {
             </Field>
             <Field label="Company" id="company">
               <Input id="company" value={form.company} onChange={set("company")} />
+            </Field>
+            <Field label="Designation" id="designation">
+              <Input id="designation" value={form.designation} onChange={set("designation")} placeholder="e.g. Purchase Manager" />
+            </Field>
+            <Field label="Email" id="email">
+              <Input id="email" type="email" value={form.email} onChange={set("email")} placeholder="name@company.com" />
             </Field>
             <Field label="Contact number" id="contact_number">
               <Input id="contact_number" value={form.contact_number} onChange={set("contact_number")} />

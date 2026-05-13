@@ -74,7 +74,9 @@ export type Database = {
           contact_number: string | null
           created_at: string
           customer_name: string
+          designation: string | null
           discussion_summary: string | null
+          email: string | null
           id: string
           location: string | null
           meeting_at: string
@@ -91,7 +93,9 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           customer_name: string
+          designation?: string | null
           discussion_summary?: string | null
+          email?: string | null
           id?: string
           location?: string | null
           meeting_at: string
@@ -108,7 +112,9 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           customer_name?: string
+          designation?: string | null
           discussion_summary?: string | null
+          email?: string | null
           id?: string
           location?: string | null
           meeting_at?: string
