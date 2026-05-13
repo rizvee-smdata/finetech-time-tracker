@@ -100,9 +100,16 @@ export function ContactsManager({
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
         {isStaff && (
-          <Button onClick={() => setAdding(true)}>
-            <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {isAdmin && (
+              <Button variant="outline" onClick={() => setImporting(true)}>
+                <Upload className="mr-2 h-4 w-4" />Import CSV
+              </Button>
+            )}
+            <Button onClick={() => setAdding(true)}>
+              <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+            </Button>
+          </div>
         )}
       </header>
 
