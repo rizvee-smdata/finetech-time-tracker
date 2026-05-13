@@ -263,6 +263,14 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
                 <Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} />
               </div>
               <div className="grid gap-2">
+                <Label>Designation</Label>
+                <Input value={form.designation || ""} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Email</Label>
+                <Input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
                 <Label>Contact number</Label>
                 <Input value={form.contact_number || ""} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
               </div>
