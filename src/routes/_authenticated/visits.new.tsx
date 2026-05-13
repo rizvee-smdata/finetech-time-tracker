@@ -182,6 +182,12 @@ function NewVisit() {
             <Field label="Company" id="company">
               <Input id="company" value={form.company} onChange={set("company")} />
             </Field>
+            <Field label="Designation" id="designation">
+              <Input id="designation" value={form.designation} onChange={set("designation")} placeholder="e.g. Purchase Manager" />
+            </Field>
+            <Field label="Email" id="email">
+              <Input id="email" type="email" value={form.email} onChange={set("email")} placeholder="name@company.com" />
+            </Field>
             <Field label="Contact number" id="contact_number">
               <Input id="contact_number" value={form.contact_number} onChange={set("contact_number")} />
             </Field>
