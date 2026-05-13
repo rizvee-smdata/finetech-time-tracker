@@ -203,6 +203,8 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
     if (!visit) return;
     setForm({
       customer_name: visit.customer_name ?? "",
+      designation: visit.designation ?? "",
+      email: visit.email ?? "",
       company: visit.company ?? "",
       contact_number: visit.contact_number ?? "",
       location: visit.location ?? "",
