@@ -93,6 +93,8 @@ function NewVisit() {
       user_id: user!.id,
       company_id: companyId,
       customer_name: form.customer_name.trim(),
+      designation: form.designation.trim() || null,
+      email: form.email.trim() || null,
       company: form.company.trim() || null,
       contact_number: form.contact_number.trim() || null,
       location: form.location.trim() || null,
