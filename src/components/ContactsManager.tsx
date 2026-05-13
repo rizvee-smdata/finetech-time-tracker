@@ -47,12 +47,13 @@ export function ContactsManager({
   singular: string;
   plural: string;
 }) {
-  const { companyId, isStaff } = useAuth();
+  const { companyId, isStaff, isAdmin } = useAuth();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Contact | null>(null);
   const [deleting, setDeleting] = useState<Contact | null>(null);
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const queryKey = [`contacts-${kind}`, companyId];
 
