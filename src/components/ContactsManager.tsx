@@ -187,6 +187,16 @@ export function ContactsManager({
         onSaved={() => qc.invalidateQueries({ queryKey })}
       />
 
+      <ImportDialog
+        open={importing}
+        kind={kind}
+        singular={singular}
+        plural={plural}
+        companyId={companyId}
+        onClose={() => setImporting(false)}
+        onSaved={() => qc.invalidateQueries({ queryKey })}
+      />
+
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
