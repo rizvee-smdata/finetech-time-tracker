@@ -69,6 +69,8 @@ function NewVisit() {
     setForm((f) => ({
       ...f,
       customer_name: c.contact_person || c.customer_name,
+      designation: c.designation || f.designation,
+      email: c.email || f.email,
       company: c.customer_name || f.company,
       contact_number: c.phone || f.contact_number,
     }));
