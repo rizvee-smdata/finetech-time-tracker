@@ -10,12 +10,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from "@/components/ui/command";
 import { toast } from "sonner";
 import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ContactType = "customer" | "partner" | "consultant";
+const TYPE_LABELS: Record<ContactType, { singular: string; plural: string }> = {
+  customer: { singular: "Customer", plural: "customers" },
+  partner: { singular: "Partner", plural: "partners" },
+  consultant: { singular: "Consultant", plural: "consultants" },
+};
 
 export const Route = createFileRoute("/_authenticated/visits/new")({
   component: NewVisit,
