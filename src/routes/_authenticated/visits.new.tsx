@@ -124,7 +124,8 @@ function NewVisit() {
     nav({ to: "/visits" });
   }
 
-  const selected = customers.find((c) => c.id === selectedId);
+  const selected = contacts.find((c: any) => c.id === selectedId);
+  const typeLabel = TYPE_LABELS[contactType];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
