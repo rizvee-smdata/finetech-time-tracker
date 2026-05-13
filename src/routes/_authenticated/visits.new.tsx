@@ -42,7 +42,7 @@ function NewVisit() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    customer_name: "", company: "", contact_number: "", location: "",
+    customer_name: "", designation: "", email: "", company: "", contact_number: "", location: "",
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
