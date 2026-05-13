@@ -141,7 +141,18 @@ function NewVisit() {
 
       <Card className="p-6">
         <form onSubmit={submit} className="space-y-5">
-          <Field label="Select customer (from imported list)" id="customer_picker">
+          <Field label="Visit type *" id="contact_type">
+            <Select value={contactType} onValueChange={(v) => { setContactType(v as ContactType); setSelectedId(null); }}>
+              <SelectTrigger id="contact_type"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="customer">Customer</SelectItem>
+                <SelectItem value="partner">Partner</SelectItem>
+                <SelectItem value="consultant">Consultant</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field label={`Select ${typeLabel.singular.toLowerCase()} (from list)`} id="customer_picker">
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -152,19 +163,19 @@ function NewVisit() {
                 >
                   {selected
                     ? `${selected.customer_name}${selected.contact_person ? ` — ${selected.contact_person}` : ""}`
-                    : customers.length
-                      ? "Search and pick a customer..."
-                      : "No imported customers — fill details below"}
+                    : contacts.length
+                      ? `Search and pick a ${typeLabel.singular.toLowerCase()}...`
+                      : `No ${typeLabel.plural} yet — fill details below`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Search customers..." />
+                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} />
                   <CommandList>
-                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandEmpty>No {typeLabel.singular.toLowerCase()} found.</CommandEmpty>
                     <CommandGroup>
-                      {customers.map((c) => (
+                      {contacts.map((c: any) => (
                         <CommandItem
                           key={c.id}
                           value={`${c.customer_name} ${c.contact_person ?? ""} ${c.email ?? ""} ${c.phone ?? ""}`}
