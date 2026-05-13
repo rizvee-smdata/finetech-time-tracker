@@ -223,6 +223,8 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
       .from("customer_visits")
       .update({
         customer_name: form.customer_name,
+        designation: form.designation || null,
+        email: form.email || null,
         company: form.company || null,
         contact_number: form.contact_number || null,
         location: form.location || null,
