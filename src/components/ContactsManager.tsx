@@ -1,7 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { importCustomers } from "@/lib/admin.functions";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,7 +19,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Pencil, Trash2, Plus } from "lucide-react";
+import { Search, Users, Pencil, Trash2, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export type ContactKind = "customer" | "partner" | "consultant";
@@ -44,12 +47,13 @@ export function ContactsManager({
   singular: string;
   plural: string;
 }) {
-  const { companyId, isStaff } = useAuth();
+  const { companyId, isStaff, isAdmin } = useAuth();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Contact | null>(null);
   const [deleting, setDeleting] = useState<Contact | null>(null);
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const queryKey = [`contacts-${kind}`, companyId];
 
@@ -96,9 +100,16 @@ export function ContactsManager({
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
         {isStaff && (
-          <Button onClick={() => setAdding(true)}>
-            <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {isAdmin && (
+              <Button variant="outline" onClick={() => setImporting(true)}>
+                <Upload className="mr-2 h-4 w-4" />Import CSV
+              </Button>
+            )}
+            <Button onClick={() => setAdding(true)}>
+              <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+            </Button>
+          </div>
         )}
       </header>
 
@@ -173,6 +184,16 @@ export function ContactsManager({
         singular={singular}
         contact={editing}
         onClose={() => setEditing(null)}
+        onSaved={() => qc.invalidateQueries({ queryKey })}
+      />
+
+      <ImportDialog
+        open={importing}
+        kind={kind}
+        singular={singular}
+        plural={plural}
+        companyId={companyId}
+        onClose={() => setImporting(false)}
         onSaved={() => qc.invalidateQueries({ queryKey })}
       />
 
@@ -274,6 +295,157 @@ function ContactDialog({
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function parseCsv(text: string): Record<string, string>[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length);
+  if (!lines.length) return [];
+  const splitLine = (line: string) => {
+    const out: string[] = [];
+    let cur = "";
+    let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (c === "," && !inQ) { out.push(cur); cur = ""; }
+      else cur += c;
+    }
+    out.push(cur);
+    return out.map((s) => s.trim());
+  };
+  const headers = splitLine(lines[0]).map((h) => h.toLowerCase().replace(/\s+/g, "_"));
+  return lines.slice(1).map((l) => {
+    const cols = splitLine(l);
+    const row: Record<string, string> = {};
+    headers.forEach((h, i) => (row[h] = cols[i] ?? ""));
+    return row;
+  });
+}
+
+function mapKey(row: Record<string, string>, keys: string[]) {
+  for (const k of keys) if (row[k]) return row[k];
+  return "";
+}
+
+function ImportDialog({
+  open, kind, singular, plural, companyId, onClose, onSaved,
+}: {
+  open: boolean;
+  kind: ContactKind;
+  singular: string;
+  plural: string;
+  companyId: string | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const fn = useServerFn(importCustomers);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<any[] | null>(null);
+
+  const m = useMutation({
+    mutationFn: async (rows: any[]) => fn({ data: { rows, company_id: companyId, kind } }),
+    onSuccess: (res: any) => {
+      toast.success(`Imported ${res.inserted} ${plural.toLowerCase()}`);
+      setPreview(null);
+      if (inputRef.current) inputRef.current.value = "";
+      onSaved();
+      onClose();
+    },
+    onError: (e: any) => toast.error(e.message ?? "Import failed"),
+  });
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const raw = parseCsv(text);
+    const mapped = raw
+      .map((r) => ({
+        customer_name: mapKey(r, ["customer_name", "customer", "name", "company", `${kind}_name`]),
+        contact_person: mapKey(r, ["contact_person", "contact", "contact_name", "person"]),
+        designation: mapKey(r, ["designation", "title", "role"]),
+        email: mapKey(r, ["email", "email_address", "e-mail"]),
+        phone: mapKey(r, ["phone", "phone_number", "mobile", "contact_number"]),
+      }))
+      .filter((r) => r.customer_name);
+    if (!mapped.length) {
+      toast.error(`No valid rows found. Required column: ${kind}_name or customer_name`);
+      return;
+    }
+    setPreview(mapped);
+  }
+
+  function reset() {
+    setPreview(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) { reset(); onClose(); } }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Import {plural.toLowerCase()}</DialogTitle>
+          <DialogDescription>
+            Upload a CSV with columns: <code className="rounded bg-muted px-1">{kind}_name</code> (or{" "}
+            <code className="rounded bg-muted px-1">customer_name</code>),{" "}
+            <code className="rounded bg-muted px-1">contact_person</code>,{" "}
+            <code className="rounded bg-muted px-1">designation</code>,{" "}
+            <code className="rounded bg-muted px-1">email</code>,{" "}
+            <code className="rounded bg-muted px-1">phone</code>.
+          </DialogDescription>
+        </DialogHeader>
+
+        {!companyId && (
+          <p className="text-sm text-destructive">Select a company first.</p>
+        )}
+
+        <div className="space-y-3">
+          <Input ref={inputRef} type="file" accept=".csv,text/csv" onChange={onFile} disabled={!companyId} />
+          {preview && (
+            <div className="max-h-64 overflow-auto rounded-md border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{singular}</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {preview.slice(0, 20).map((r, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{r.customer_name}</TableCell>
+                      <TableCell>{r.contact_person || "—"}</TableCell>
+                      <TableCell>{r.email || "—"}</TableCell>
+                      <TableCell>{r.phone || "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {preview.length > 20 && (
+                <div className="border-t border-border p-2 text-center text-xs text-muted-foreground">
+                  +{preview.length - 20} more rows
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => { reset(); onClose(); }}>Cancel</Button>
+          <Button
+            onClick={() => preview && m.mutate(preview)}
+            disabled={!preview || m.isPending || !companyId}
+          >
+            {m.isPending ? "Importing..." : preview ? `Import ${preview.length} ${plural.toLowerCase()}` : "Choose a file"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

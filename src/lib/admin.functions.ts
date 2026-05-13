@@ -107,6 +107,7 @@ export const importCustomers = createServerFn({ method: "POST" })
     z.object({
       rows: z.array(customerRow).min(1).max(2000),
       company_id: z.string().uuid().nullable().optional(),
+      kind: z.enum(["customer", "partner", "consultant"]).optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
@@ -119,6 +120,7 @@ export const importCustomers = createServerFn({ method: "POST" })
       phone: r.phone || null,
       created_by: context.userId,
       company_id: data.company_id ?? null,
+      kind: data.kind ?? "customer",
     }));
     const { error, count } = await supabaseAdmin
       .from("customers")
