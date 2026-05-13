@@ -23,6 +23,8 @@ export const Route = createFileRoute("/_authenticated/visits/new")({
 
 const schema = z.object({
   customer_name: z.string().trim().min(1).max(120),
+  designation: z.string().trim().max(120).optional().or(z.literal("")),
+  email: z.string().trim().max(160).email().optional().or(z.literal("")),
   company: z.string().trim().max(120).optional().or(z.literal("")),
   contact_number: z.string().trim().max(40).optional().or(z.literal("")),
   location: z.string().trim().max(200).optional().or(z.literal("")),
