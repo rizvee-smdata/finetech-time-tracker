@@ -15,8 +15,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
+import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
@@ -51,6 +53,11 @@ const AuthenticatedRemindersRoute = AuthenticatedRemindersRouteImport.update({
   path: '/reminders',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -61,6 +68,12 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedConsultantsRoute =
+  AuthenticatedConsultantsRouteImport.update({
+    id: '/consultants',
+    path: '/consultants',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   id: '/check-in',
   path: '/check-in',
@@ -88,8 +101,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/check-in': typeof AuthenticatedCheckInRoute
+  '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/partners': typeof AuthenticatedPartnersRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -101,8 +116,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/check-in': typeof AuthenticatedCheckInRoute
+  '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/partners': typeof AuthenticatedPartnersRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -116,8 +133,10 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
+  '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
@@ -131,8 +150,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/check-in'
+    | '/consultants'
     | '/customers'
     | '/dashboard'
+    | '/partners'
     | '/reminders'
     | '/settings'
     | '/team'
@@ -144,8 +165,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/check-in'
+    | '/consultants'
     | '/customers'
     | '/dashboard'
+    | '/partners'
     | '/reminders'
     | '/settings'
     | '/team'
@@ -158,8 +181,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/check-in'
+    | '/_authenticated/consultants'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
+    | '/_authenticated/partners'
     | '/_authenticated/reminders'
     | '/_authenticated/settings'
     | '/_authenticated/team'
@@ -219,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRemindersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partners': {
+      id: '/_authenticated/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof AuthenticatedPartnersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -231,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/customers'
       preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/consultants': {
+      id: '/_authenticated/consultants'
+      path: '/consultants'
+      fullPath: '/consultants'
+      preLoaderRoute: typeof AuthenticatedConsultantsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/check-in': {
@@ -266,8 +305,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
+  AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
@@ -277,8 +318,10 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
+  AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,

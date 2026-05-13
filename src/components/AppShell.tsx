@@ -5,6 +5,8 @@ import {
   Users,
   ClipboardList,
   Contact,
+  Handshake,
+  Briefcase,
   Clock,
   LogOut,
   Bell,
@@ -21,6 +23,8 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/customers", label: "Customers", icon: Contact },
+  { to: "/partners", label: "Partners", icon: Handshake },
+  { to: "/consultants", label: "Consultants", icon: Briefcase },
   { to: "/check-in", label: "Time", icon: Clock },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];

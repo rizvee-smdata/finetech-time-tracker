@@ -10,12 +10,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from "@/components/ui/command";
 import { toast } from "sonner";
 import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ContactType = "customer" | "partner" | "consultant";
+const TYPE_LABELS: Record<ContactType, { singular: string; plural: string }> = {
+  customer: { singular: "Customer", plural: "customers" },
+  partner: { singular: "Partner", plural: "partners" },
+  consultant: { singular: "Consultant", plural: "consultants" },
+};
 
 export const Route = createFileRoute("/_authenticated/visits/new")({
   component: NewVisit,
@@ -41,20 +49,22 @@ function NewVisit() {
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [contactType, setContactType] = useState<ContactType>("customer");
   const [form, setForm] = useState({
     customer_name: "", designation: "", email: "", company: "", contact_number: "", location: "",
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
 
-  const { data: customers = [] } = useQuery({
-    queryKey: ["customers-picker", companyId],
+  const { data: contacts = [] } = useQuery({
+    queryKey: ["contacts-picker", companyId, contactType],
     enabled: !!companyId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
         .select("id, customer_name, contact_person, designation, email, phone")
         .eq("company_id", companyId!)
+        .eq("kind", contactType)
         .order("customer_name");
       if (error) throw error;
       return data ?? [];
@@ -104,7 +114,7 @@ function NewVisit() {
       next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
       remarks: form.remarks.trim() || null,
     };
-    const { error } = await supabase.from("customer_visits").insert(payload);
+    const { error } = await supabase.from("customer_visits").insert({ ...payload, contact_type: contactType });
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -114,7 +124,8 @@ function NewVisit() {
     nav({ to: "/visits" });
   }
 
-  const selected = customers.find((c) => c.id === selectedId);
+  const selected = contacts.find((c: any) => c.id === selectedId);
+  const typeLabel = TYPE_LABELS[contactType];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -130,7 +141,18 @@ function NewVisit() {
 
       <Card className="p-6">
         <form onSubmit={submit} className="space-y-5">
-          <Field label="Select customer (from imported list)" id="customer_picker">
+          <Field label="Visit type *" id="contact_type">
+            <Select value={contactType} onValueChange={(v) => { setContactType(v as ContactType); setSelectedId(null); }}>
+              <SelectTrigger id="contact_type"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="customer">Customer</SelectItem>
+                <SelectItem value="partner">Partner</SelectItem>
+                <SelectItem value="consultant">Consultant</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field label={`Select ${typeLabel.singular.toLowerCase()} (from list)`} id="customer_picker">
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -141,19 +163,19 @@ function NewVisit() {
                 >
                   {selected
                     ? `${selected.customer_name}${selected.contact_person ? ` — ${selected.contact_person}` : ""}`
-                    : customers.length
-                      ? "Search and pick a customer..."
-                      : "No imported customers — fill details below"}
+                    : contacts.length
+                      ? `Search and pick a ${typeLabel.singular.toLowerCase()}...`
+                      : `No ${typeLabel.plural} yet — fill details below`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Search customers..." />
+                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} />
                   <CommandList>
-                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandEmpty>No {typeLabel.singular.toLowerCase()} found.</CommandEmpty>
                     <CommandGroup>
-                      {customers.map((c) => (
+                      {contacts.map((c: any) => (
                         <CommandItem
                           key={c.id}
                           value={`${c.customer_name} ${c.contact_person ?? ""} ${c.email ?? ""} ${c.phone ?? ""}`}
