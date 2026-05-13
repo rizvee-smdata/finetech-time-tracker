@@ -49,20 +49,22 @@ function NewVisit() {
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [contactType, setContactType] = useState<ContactType>("customer");
   const [form, setForm] = useState({
     customer_name: "", designation: "", email: "", company: "", contact_number: "", location: "",
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
 
-  const { data: customers = [] } = useQuery({
-    queryKey: ["customers-picker", companyId],
+  const { data: contacts = [] } = useQuery({
+    queryKey: ["contacts-picker", companyId, contactType],
     enabled: !!companyId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
         .select("id, customer_name, contact_person, designation, email, phone")
         .eq("company_id", companyId!)
+        .eq("kind", contactType)
         .order("customer_name");
       if (error) throw error;
       return data ?? [];
