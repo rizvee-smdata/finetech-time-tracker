@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MicButton } from "@/components/MicButton";
 
 type ContactType = "customer" | "partner" | "consultant";
 const TYPE_LABELS: Record<ContactType, { singular: string; plural: string }> = {
@@ -224,13 +225,25 @@ function NewVisit() {
             </Field>
           </div>
 
-          <Field label="Discussion summary / outcome" id="discussion_summary">
+          <Field
+            label="Discussion summary / outcome"
+            id="discussion_summary"
+            action={<MicButton onTranscript={(t) => setForm((f) => ({ ...f, discussion_summary: (f.discussion_summary ? f.discussion_summary + " " : "") + t }))} />}
+          >
             <Textarea id="discussion_summary" rows={4} value={form.discussion_summary} onChange={set("discussion_summary")} placeholder="What was discussed and the result of the visit." />
           </Field>
-          <Field label="Next action / follow-up" id="next_action">
+          <Field
+            label="Next action / follow-up"
+            id="next_action"
+            action={<MicButton onTranscript={(t) => setForm((f) => ({ ...f, next_action: (f.next_action ? f.next_action + " " : "") + t }))} />}
+          >
             <Textarea id="next_action" rows={3} value={form.next_action} onChange={set("next_action")} placeholder="Follow-up steps, tasks, scheduled activities." />
           </Field>
-          <Field label="Remarks" id="remarks">
+          <Field
+            label="Remarks"
+            id="remarks"
+            action={<MicButton onTranscript={(t) => setForm((f) => ({ ...f, remarks: (f.remarks ? f.remarks + " " : "") + t }))} />}
+          >
             <Textarea id="remarks" rows={2} value={form.remarks} onChange={set("remarks")} placeholder="Important notes, observations, special requirements." />
           </Field>
 
@@ -244,10 +257,13 @@ function NewVisit() {
   );
 }
 
-function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
+function Field({ label, id, children, action }: { label: string; id: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label htmlFor={id}>{label}</Label>
+        {action}
+      </div>
       {children}
     </div>
   );
