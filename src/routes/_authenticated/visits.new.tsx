@@ -257,10 +257,13 @@ function NewVisit() {
   );
 }
 
-function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
+function Field({ label, id, children, action }: { label: string; id: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label htmlFor={id}>{label}</Label>
+        {action}
+      </div>
       {children}
     </div>
   );
