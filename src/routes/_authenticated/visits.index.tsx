@@ -93,6 +93,8 @@ function VisitsList() {
     qc.invalidateQueries({ queryKey: ["visits"] });
   }
 
+  const pg = usePagination(filtered, 20);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
