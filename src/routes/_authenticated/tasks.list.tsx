@@ -150,7 +150,7 @@ function ListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tasks.data.map((t) => (
+              {pg.paged.map((t) => (
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => setEditing(t)}>
                   <TableCell className="font-medium max-w-[280px] truncate">{t.title}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{t.tms_projects?.name ?? "—"}</TableCell>
