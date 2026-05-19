@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Bell, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, isPast } from "date-fns";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/reminders")({
   component: RemindersPage,
