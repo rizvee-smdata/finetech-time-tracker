@@ -122,14 +122,15 @@ export const Screenshot: React.FC<{
         </div>
       </AbsoluteFill>
 
-      {/* Caption */}
+      {/* Caption — top-left, above the screenshot */}
       <div
         style={{
           position: "absolute",
-          left: 80,
-          bottom: 70,
-          transform: `translateY(${captionY}px)`,
+          left: 70,
+          top: 60,
+          transform: `translateY(${captionY * -1}px)`,
           opacity: captionIn,
+          maxWidth: 1780,
         }}
       >
         <div
@@ -140,19 +141,21 @@ export const Screenshot: React.FC<{
             color: "#fff",
             fontFamily: sora,
             fontWeight: 700,
-            fontSize: 18,
+            fontSize: 16,
             borderRadius: 999,
-            letterSpacing: 1,
+            letterSpacing: 1.5,
           }}
         >
           {step}
         </div>
-        <div style={{ fontFamily: sora, fontWeight: 800, fontSize: 52, color: C.text, marginTop: 14, lineHeight: 1.1 }}>
-          {title}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 24, marginTop: 8, flexWrap: "wrap" }}>
+          <div style={{ fontFamily: sora, fontWeight: 800, fontSize: 42, color: C.text, lineHeight: 1.1 }}>
+            {title}
+          </div>
+          {subtitle && (
+            <div style={{ fontFamily: inter, fontSize: 20, color: C.sub, lineHeight: 1.3 }}>{subtitle}</div>
+          )}
         </div>
-        {subtitle && (
-          <div style={{ fontFamily: inter, fontSize: 22, color: C.sub, marginTop: 8, maxWidth: 900 }}>{subtitle}</div>
-        )}
       </div>
     </AbsoluteFill>
   );
