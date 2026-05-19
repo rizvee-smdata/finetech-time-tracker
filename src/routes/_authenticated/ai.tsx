@@ -77,9 +77,25 @@ function AIPage() {
           </div>
         </div>
         {messages.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={() => setMessages([])}>
-            <RotateCcw className="mr-1 h-4 w-4" /> New chat
-          </Button>
+          <div className="flex flex-wrap items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportTranscriptToExcel(`ask-ai-${Date.now()}.xlsx`, messages)}
+            >
+              <FileSpreadsheet className="mr-1 h-4 w-4" /> Excel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportTranscriptToPDF(`ask-ai-${Date.now()}.pdf`, "Ask AI Conversation", messages)}
+            >
+              <FileText className="mr-1 h-4 w-4" /> PDF
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setMessages([])}>
+              <RotateCcw className="mr-1 h-4 w-4" /> New chat
+            </Button>
+          </div>
         )}
       </div>
 
