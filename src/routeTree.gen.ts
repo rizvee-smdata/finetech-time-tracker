@@ -22,6 +22,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
+import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
@@ -100,6 +101,11 @@ const AuthenticatedConsultantsRoute =
 const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   id: '/check-in',
   path: '/check-in',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAiRoute = AuthenticatedAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedVisitsIndexRoute =
@@ -185,6 +191,7 @@ const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/ai': typeof AuthenticatedAiRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/ai': typeof AuthenticatedAiRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/ai'
     | '/check-in'
     | '/consultants'
     | '/customers'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/ai'
     | '/check-in'
     | '/consultants'
     | '/customers'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/ai'
     | '/_authenticated/check-in'
     | '/_authenticated/consultants'
     | '/_authenticated/customers'
@@ -453,6 +465,13 @@ declare module '@tanstack/react-router' {
       path: '/check-in'
       fullPath: '/check-in'
       preLoaderRoute: typeof AuthenticatedCheckInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ai': {
+      id: '/_authenticated/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AuthenticatedAiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/': {
@@ -612,6 +631,7 @@ const AuthenticatedTasksRouteWithChildren =
   AuthenticatedTasksRoute._addFileChildren(AuthenticatedTasksRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
@@ -627,6 +647,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAiRoute: AuthenticatedAiRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,

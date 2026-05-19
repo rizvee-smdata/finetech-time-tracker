@@ -15,6 +15,7 @@ import {
   Building2,
   CheckSquare,
   BarChart3,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ai", label: "Ask AI", icon: Sparkles },
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },
@@ -35,6 +37,7 @@ const nav = [
 const staffNav = [
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
+
 
 export function AppShell() {
   const { user, isStaff, isAdmin, companies, companyId, setCompanyId, company, signOut } = useAuth();
