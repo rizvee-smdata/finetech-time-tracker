@@ -31,6 +31,9 @@ function RemindersPage() {
     qc.invalidateQueries();
   }
 
+  const list = reminders ?? [];
+  const pg = usePagination(list, 20);
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -38,12 +41,12 @@ function RemindersPage() {
         <p className="text-sm text-muted-foreground">Upcoming meetings and follow-ups.</p>
       </div>
       <div className="space-y-3">
-        {(reminders ?? []).length === 0 && (
+        {list.length === 0 && (
           <Card className="p-10 text-center text-sm text-muted-foreground">
             No reminders. They'll appear here automatically before scheduled meetings.
           </Card>
         )}
-        {(reminders ?? []).map((r) => (
+        {pg.paged.map((r) => (
           <Card key={r.id} className={`p-5 ${r.read_at ? "opacity-60" : ""}`}>
             <div className="flex items-start gap-4">
               <div className={`grid h-10 w-10 place-items-center rounded-full ${isPast(new Date(r.remind_at)) ? "bg-warning/20 text-warning" : "bg-primary/10 text-primary"}`}>
@@ -63,6 +66,7 @@ function RemindersPage() {
           </Card>
         ))}
       </div>
+      <PaginationBar {...pg} label="reminders" />
     </div>
   );
 }
