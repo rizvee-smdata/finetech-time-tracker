@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
+import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
@@ -21,8 +22,19 @@ import { Route as AuthenticatedCustomersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
+import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
+import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
+import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
+import { Route as AuthenticatedTasksListRouteImport } from './routes/_authenticated/tasks.list'
+import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authenticated/tasks.gantt'
+import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
+import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
+import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
+import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
+import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -41,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -85,16 +102,78 @@ const AuthenticatedVisitsIndexRoute =
     path: '/visits/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
   path: '/visits/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTasksReportsRoute =
+  AuthenticatedTasksReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedTasksProjectsRoute =
+  AuthenticatedTasksProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedTasksListRoute = AuthenticatedTasksListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedTasksGanttRoute = AuthenticatedTasksGanttRouteImport.update({
+  id: '/gantt',
+  path: '/gantt',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedTasksCalendarRoute =
+  AuthenticatedTasksCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedTasksBoardRoute = AuthenticatedTasksBoardRouteImport.update({
+  id: '/board',
+  path: '/board',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedTasksTaskIdRoute =
+  AuthenticatedTasksTaskIdRouteImport.update({
+    id: '/$taskId',
+    path: '/$taskId',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const ApiPublicHooksTmsOverdueScanRoute =
+  ApiPublicHooksTmsOverdueScanRouteImport.update({
+    id: '/api/public/hooks/tms-overdue-scan',
+    path: '/api/public/hooks/tms-overdue-scan',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksProcessRemindersRoute =
   ApiPublicHooksProcessRemindersRouteImport.update({
     id: '/api/public/hooks/process-reminders',
     path: '/api/public/hooks/process-reminders',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedTasksProjectsProjectIdRoute =
+  AuthenticatedTasksProjectsProjectIdRouteImport.update({
+    id: '/$projectId',
+    path: '/$projectId',
+    getParentRoute: () => AuthenticatedTasksProjectsRoute,
+  } as any)
+const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
+  AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport.update({
+    id: '/sprints/$sprintId',
+    path: '/sprints/$sprintId',
+    getParentRoute: () => AuthenticatedTasksProjectsProjectIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -107,10 +186,22 @@ export interface FileRoutesByFullPath {
   '/partners': typeof AuthenticatedPartnersRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/tasks/board': typeof AuthenticatedTasksBoardRoute
+  '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
+  '/tasks/list': typeof AuthenticatedTasksListRoute
+  '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
+  '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -123,9 +214,20 @@ export interface FileRoutesByTo {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/tasks/board': typeof AuthenticatedTasksBoardRoute
+  '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
+  '/tasks/list': typeof AuthenticatedTasksListRoute
+  '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
+  '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -139,10 +241,22 @@ export interface FileRoutesById {
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
+  '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/_authenticated/tasks/gantt': typeof AuthenticatedTasksGanttRoute
+  '/_authenticated/tasks/list': typeof AuthenticatedTasksListRoute
+  '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
+  '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,10 +270,22 @@ export interface FileRouteTypes {
     | '/partners'
     | '/reminders'
     | '/settings'
+    | '/tasks'
     | '/team'
+    | '/tasks/$taskId'
+    | '/tasks/board'
+    | '/tasks/calendar'
+    | '/tasks/gantt'
+    | '/tasks/list'
+    | '/tasks/projects'
+    | '/tasks/reports'
     | '/visits/new'
+    | '/tasks/'
     | '/visits/'
+    | '/tasks/projects/$projectId'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/tms-overdue-scan'
+    | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,9 +298,20 @@ export interface FileRouteTypes {
     | '/reminders'
     | '/settings'
     | '/team'
+    | '/tasks/$taskId'
+    | '/tasks/board'
+    | '/tasks/calendar'
+    | '/tasks/gantt'
+    | '/tasks/list'
+    | '/tasks/projects'
+    | '/tasks/reports'
     | '/visits/new'
+    | '/tasks'
     | '/visits'
+    | '/tasks/projects/$projectId'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/tms-overdue-scan'
+    | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
     | '__root__'
     | '/'
@@ -187,10 +324,22 @@ export interface FileRouteTypes {
     | '/_authenticated/partners'
     | '/_authenticated/reminders'
     | '/_authenticated/settings'
+    | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/_authenticated/tasks/$taskId'
+    | '/_authenticated/tasks/board'
+    | '/_authenticated/tasks/calendar'
+    | '/_authenticated/tasks/gantt'
+    | '/_authenticated/tasks/list'
+    | '/_authenticated/tasks/projects'
+    | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
+    | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
+    | '/_authenticated/tasks/projects/$projectId'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/tms-overdue-scan'
+    | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -198,6 +347,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
+  ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -228,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks': {
+      id: '/_authenticated/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -286,12 +443,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tasks/': {
+      id: '/_authenticated/tasks/'
+      path: '/'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
       path: '/visits/new'
       fullPath: '/visits/new'
       preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/reports': {
+      id: '/_authenticated/tasks/reports'
+      path: '/reports'
+      fullPath: '/tasks/reports'
+      preLoaderRoute: typeof AuthenticatedTasksReportsRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/projects': {
+      id: '/_authenticated/tasks/projects'
+      path: '/projects'
+      fullPath: '/tasks/projects'
+      preLoaderRoute: typeof AuthenticatedTasksProjectsRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/list': {
+      id: '/_authenticated/tasks/list'
+      path: '/list'
+      fullPath: '/tasks/list'
+      preLoaderRoute: typeof AuthenticatedTasksListRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/gantt': {
+      id: '/_authenticated/tasks/gantt'
+      path: '/gantt'
+      fullPath: '/tasks/gantt'
+      preLoaderRoute: typeof AuthenticatedTasksGanttRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/calendar': {
+      id: '/_authenticated/tasks/calendar'
+      path: '/calendar'
+      fullPath: '/tasks/calendar'
+      preLoaderRoute: typeof AuthenticatedTasksCalendarRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/board': {
+      id: '/_authenticated/tasks/board'
+      path: '/board'
+      fullPath: '/tasks/board'
+      preLoaderRoute: typeof AuthenticatedTasksBoardRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/$taskId': {
+      id: '/_authenticated/tasks/$taskId'
+      path: '/$taskId'
+      fullPath: '/tasks/$taskId'
+      preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/api/public/hooks/tms-overdue-scan': {
+      id: '/api/public/hooks/tms-overdue-scan'
+      path: '/api/public/hooks/tms-overdue-scan'
+      fullPath: '/api/public/hooks/tms-overdue-scan'
+      preLoaderRoute: typeof ApiPublicHooksTmsOverdueScanRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/process-reminders': {
       id: '/api/public/hooks/process-reminders'
@@ -300,8 +520,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/tasks/projects/$projectId': {
+      id: '/_authenticated/tasks/projects/$projectId'
+      path: '/$projectId'
+      fullPath: '/tasks/projects/$projectId'
+      preLoaderRoute: typeof AuthenticatedTasksProjectsProjectIdRouteImport
+      parentRoute: typeof AuthenticatedTasksProjectsRoute
+    }
+    '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': {
+      id: '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
+      path: '/sprints/$sprintId'
+      fullPath: '/tasks/projects/$projectId/sprints/$sprintId'
+      preLoaderRoute: typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport
+      parentRoute: typeof AuthenticatedTasksProjectsProjectIdRoute
+    }
   }
 }
+
+interface AuthenticatedTasksProjectsProjectIdRouteChildren {
+  AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute: typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
+}
+
+const AuthenticatedTasksProjectsProjectIdRouteChildren: AuthenticatedTasksProjectsProjectIdRouteChildren =
+  {
+    AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute:
+      AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute,
+  }
+
+const AuthenticatedTasksProjectsProjectIdRouteWithChildren =
+  AuthenticatedTasksProjectsProjectIdRoute._addFileChildren(
+    AuthenticatedTasksProjectsProjectIdRouteChildren,
+  )
+
+interface AuthenticatedTasksProjectsRouteChildren {
+  AuthenticatedTasksProjectsProjectIdRoute: typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+}
+
+const AuthenticatedTasksProjectsRouteChildren: AuthenticatedTasksProjectsRouteChildren =
+  {
+    AuthenticatedTasksProjectsProjectIdRoute:
+      AuthenticatedTasksProjectsProjectIdRouteWithChildren,
+  }
+
+const AuthenticatedTasksProjectsRouteWithChildren =
+  AuthenticatedTasksProjectsRoute._addFileChildren(
+    AuthenticatedTasksProjectsRouteChildren,
+  )
+
+interface AuthenticatedTasksRouteChildren {
+  AuthenticatedTasksTaskIdRoute: typeof AuthenticatedTasksTaskIdRoute
+  AuthenticatedTasksBoardRoute: typeof AuthenticatedTasksBoardRoute
+  AuthenticatedTasksCalendarRoute: typeof AuthenticatedTasksCalendarRoute
+  AuthenticatedTasksGanttRoute: typeof AuthenticatedTasksGanttRoute
+  AuthenticatedTasksListRoute: typeof AuthenticatedTasksListRoute
+  AuthenticatedTasksProjectsRoute: typeof AuthenticatedTasksProjectsRouteWithChildren
+  AuthenticatedTasksReportsRoute: typeof AuthenticatedTasksReportsRoute
+  AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
+}
+
+const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
+  AuthenticatedTasksTaskIdRoute: AuthenticatedTasksTaskIdRoute,
+  AuthenticatedTasksBoardRoute: AuthenticatedTasksBoardRoute,
+  AuthenticatedTasksCalendarRoute: AuthenticatedTasksCalendarRoute,
+  AuthenticatedTasksGanttRoute: AuthenticatedTasksGanttRoute,
+  AuthenticatedTasksListRoute: AuthenticatedTasksListRoute,
+  AuthenticatedTasksProjectsRoute: AuthenticatedTasksProjectsRouteWithChildren,
+  AuthenticatedTasksReportsRoute: AuthenticatedTasksReportsRoute,
+  AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
+}
+
+const AuthenticatedTasksRouteWithChildren =
+  AuthenticatedTasksRoute._addFileChildren(AuthenticatedTasksRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
@@ -311,6 +600,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
@@ -324,6 +614,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
@@ -337,6 +628,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
+  ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

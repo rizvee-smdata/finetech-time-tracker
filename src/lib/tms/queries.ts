@@ -1,0 +1,94 @@
+import { supabase } from "@/integrations/supabase/client";
+import type { TaskWithRels } from "./types";
+
+const TASK_SELECT = `
+  *,
+  tms_task_statuses(id, name, color, is_terminal),
+  tms_projects(id, name, color),
+  tms_task_assignees(
+    user_id, role,
+    profiles:user_id(id, full_name, avatar_url)
+  )
+`;
+
+export async function fetchTasks(params: {
+  companyId: string;
+  projectId?: string | null;
+  sprintId?: string | null;
+  assigneeUserId?: string | null;
+  createdByUserId?: string | null;
+  statusId?: string | null;
+  priority?: string | null;
+  search?: string | null;
+  includeDone?: boolean;
+}): Promise<TaskWithRels[]> {
+  let q = supabase
+    .from("tms_tasks")
+    .select(TASK_SELECT)
+    .eq("company_id", params.companyId)
+    .is("deleted_at", null)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (params.projectId) q = q.eq("project_id", params.projectId);
+  if (params.sprintId) q = q.eq("sprint_id", params.sprintId);
+  if (params.statusId) q = q.eq("status_id", params.statusId);
+  if (params.priority) q = q.eq("priority", params.priority as "low");
+  if (params.createdByUserId) q = q.eq("created_by", params.createdByUserId);
+  if (params.search) q = q.ilike("title", `%${params.search}%`);
+
+  const { data, error } = await q;
+  if (error) throw error;
+  let rows = (data ?? []) as unknown as TaskWithRels[];
+
+  if (params.assigneeUserId) {
+    rows = rows.filter((r) =>
+      r.tms_task_assignees.some((a) => a.user_id === params.assigneeUserId),
+    );
+  }
+  if (!params.includeDone) {
+    rows = rows.filter((r) => !r.tms_task_statuses?.is_terminal);
+  }
+  return rows;
+}
+
+export async function fetchStatuses(companyId: string, projectId?: string | null) {
+  const { data, error } = await supabase
+    .from("tms_task_statuses")
+    .select("*")
+    .eq("company_id", companyId)
+    .or(projectId ? `project_id.is.null,project_id.eq.${projectId}` : "project_id.is.null")
+    .order("sort_order");
+  if (error) throw error;
+  const byName = new Map<string, (typeof data)[number]>();
+  for (const s of data ?? []) {
+    const existing = byName.get(s.name);
+    if (!existing || (s.project_id && !existing.project_id)) byName.set(s.name, s);
+  }
+  return Array.from(byName.values()).sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export async function fetchProjects(companyId: string, includeArchived = false) {
+  let q = supabase
+    .from("tms_projects")
+    .select("*")
+    .eq("company_id", companyId)
+    .order("name");
+  if (!includeArchived) q = q.is("archived_at", null);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Members of the active company, queried via company_members → profiles. */
+export async function fetchCompanyMembers(companyId: string) {
+  const { data, error } = await supabase
+    .from("company_members")
+    .select("user_id, profiles:user_id(id, full_name, avatar_url, email)")
+    .eq("company_id", companyId);
+  if (error) throw error;
+  return (data ?? [])
+    .map((r) => r.profiles)
+    .filter((p): p is { id: string; full_name: string | null; avatar_url: string | null; email: string | null } => !!p)
+    .sort((a, b) => (a.full_name ?? "").localeCompare(b.full_name ?? ""));
+}
