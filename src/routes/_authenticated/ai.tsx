@@ -2,11 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, RotateCcw, Loader2 } from "lucide-react";
+import { Send, Sparkles, RotateCcw, Loader2, FileSpreadsheet, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { aiChat } from "@/lib/ai-chat.functions";
+import { exportTranscriptToExcel, exportTranscriptToPDF } from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ai")({
