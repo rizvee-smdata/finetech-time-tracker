@@ -74,49 +74,51 @@ export const Screenshot: React.FC<{
             src={staticFile(src)}
             style={{ width: "100%", height: "calc(100% - 32px)", objectFit: "fill", background: "#fff" }}
           />
-          {/* Highlights */}
-          {highlights.map((h, i) => {
-            const delay = 10 + i * 6;
-            const pulse = spring({ frame: frame - delay, fps, config: { damping: 12, stiffness: 120 } });
-            const ring = 0.5 + 0.5 * Math.sin((frame - delay) * 0.25);
-            return (
-              <div
-                key={i}
-                style={{
-                  position: "absolute",
-                  left: `${h.x * 100}%`,
-                  top: `${h.y * 100}%`,
-                  width: `${h.w * 100}%`,
-                  height: `${h.h * 100}%`,
-                  border: `3px solid ${C.accent}`,
-                  borderRadius: 12,
-                  boxShadow: `0 0 ${20 + ring * 20}px ${C.accent}`,
-                  opacity: pulse,
-                  transform: `scale(${interpolate(pulse, [0, 1], [1.15, 1])})`,
-                }}
-              >
-                {h.label && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -36,
-                      left: 0,
-                      background: C.accent,
-                      color: "#06281E",
-                      fontFamily: sora,
-                      fontWeight: 700,
-                      fontSize: 16,
-                      padding: "6px 12px",
-                      borderRadius: 8,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {h.label}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* Highlights — positioned relative to the image area (below the 32px title bar) */}
+          <div style={{ position: "absolute", left: 0, right: 0, top: 32, bottom: 0 }}>
+            {highlights.map((h, i) => {
+              const delay = 10 + i * 6;
+              const pulse = spring({ frame: frame - delay, fps, config: { damping: 12, stiffness: 120 } });
+              const ring = 0.5 + 0.5 * Math.sin((frame - delay) * 0.25);
+              return (
+                <div
+                  key={i}
+                  style={{
+                    position: "absolute",
+                    left: `${h.x * 100}%`,
+                    top: `${h.y * 100}%`,
+                    width: `${h.w * 100}%`,
+                    height: `${h.h * 100}%`,
+                    border: `3px solid ${C.accent}`,
+                    borderRadius: 12,
+                    boxShadow: `0 0 ${20 + ring * 20}px ${C.accent}`,
+                    opacity: pulse,
+                    transform: `scale(${interpolate(pulse, [0, 1], [1.15, 1])})`,
+                  }}
+                >
+                  {h.label && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -36,
+                        left: 0,
+                        background: C.accent,
+                        color: "#06281E",
+                        fontFamily: sora,
+                        fontWeight: 700,
+                        fontSize: 16,
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {h.label}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </AbsoluteFill>
 
