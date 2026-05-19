@@ -59,10 +59,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "company_members_company_fk"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "company_members_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_members_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -346,6 +360,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tms_checklist_assignee_fk"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_checklist_done_by_fk"
+            columns: ["done_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_checklist_items_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
@@ -379,6 +407,13 @@ export type Database = {
             columns: ["comment_id"]
             isOneToOne: false
             referencedRelation: "tms_task_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_comment_reactions_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -471,6 +506,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tms_milestones_created_by_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_milestones_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -539,6 +581,13 @@ export type Database = {
             referencedRelation: "tms_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tms_project_members_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tms_projects: {
@@ -604,6 +653,20 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tms_projects_created_by_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_projects_owner_fk"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tms_saved_views: {
@@ -646,6 +709,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_saved_views_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -702,6 +772,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tms_sprints_created_by_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_sprints_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -736,6 +813,13 @@ export type Database = {
           task_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tms_task_activity_actor_fk"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tms_task_activity_task_id_fkey"
             columns: ["task_id"]
@@ -773,6 +857,13 @@ export type Database = {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_task_assignees_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -813,10 +904,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tms_task_attachments_comment_fk"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "tms_task_comments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_task_attachments_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_task_attachments_user_fk"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -856,6 +961,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tms_task_comments_author_fk"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tms_task_comments_parent_comment_id_fkey"
             columns: ["parent_comment_id"]
@@ -1086,6 +1198,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tms_tasks_created_by_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_tasks_milestone_id_fkey"
             columns: ["milestone_id"]
             isOneToOne: false
@@ -1156,6 +1275,13 @@ export type Database = {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_time_logs_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
