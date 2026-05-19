@@ -34,7 +34,8 @@ export const Screenshot: React.FC<{
       <AbsoluteFill
         style={{
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "flex-end",
+          paddingBottom: 50,
           opacity: imgOpacity,
         }}
       >
