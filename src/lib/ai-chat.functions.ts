@@ -223,21 +223,22 @@ export const aiChat = createServerFn({ method: "POST" })
           const since = days ? new Date(Date.now() - days * 86400000).toISOString() : null;
           let vq = supabase.from("customer_visits").select("id", { count: "exact", head: true });
           if (since) vq = vq.gte("meeting_at", since);
-          const [v, e, c, p, k] = await Promise.all([
+          const [v, e, cust, partners, consultants] = await Promise.all([
             vq,
             supabase.from("profiles").select("id", { count: "exact", head: true }),
-            supabase.from("customers").select("id", { count: "exact", head: true }),
-            supabase.from("partners").select("id", { count: "exact", head: true }),
-            supabase.from("consultants").select("id", { count: "exact", head: true }),
+            supabase.from("customers").select("id", { count: "exact", head: true }).eq("kind", "customer"),
+            supabase.from("customers").select("id", { count: "exact", head: true }).eq("kind", "partner"),
+            supabase.from("customers").select("id", { count: "exact", head: true }).eq("kind", "consultant"),
           ]);
           return {
             window_days: days ?? "all-time",
             visits: v.count ?? 0,
             employees: e.count ?? 0,
-            customers: c.count ?? 0,
-            partners: p.count ?? 0,
-            consultants: k.count ?? 0,
+            customers: cust.count ?? 0,
+            partners: partners.count ?? 0,
+            consultants: consultants.count ?? 0,
           };
+
         },
       }),
     };
