@@ -21,6 +21,7 @@ import { TaskQuickAdd } from "@/components/tms/TaskQuickAdd";
 import { Button } from "@/components/ui/button";
 import { useSavedViews } from "@/lib/tms/saved-views";
 import { PRIORITIES } from "@/lib/tms/types";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/tasks/list")({
   component: ListPage,
