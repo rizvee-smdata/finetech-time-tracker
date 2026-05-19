@@ -12,8 +12,8 @@ export const Route = createFileRoute("/api/public/hooks/tms-overdue-scan")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apikey = request.headers.get("apikey");
-        if (!apikey || apikey !== process.env.SUPABASE_PUBLISHABLE_KEY) {
+        const secret = request.headers.get("x-cron-secret");
+        if (!secret || secret !== process.env.CRON_SECRET) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },
