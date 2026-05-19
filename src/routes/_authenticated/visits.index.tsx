@@ -193,6 +193,8 @@ function VisitsList() {
         })}
       </div>
 
+      <PaginationBar {...pg} label="visits" />
+
       <ViewVisitDialog
         visit={viewing}
         onClose={() => setViewing(null)}
