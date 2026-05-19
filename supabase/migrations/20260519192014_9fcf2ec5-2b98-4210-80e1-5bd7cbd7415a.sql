@@ -1,0 +1,1 @@
+CREATE POLICY "Reminders delete" ON public.reminders FOR DELETE TO authenticated USING (auth.uid() = user_id OR has_role(auth.uid(), 'admin'::app_role));
