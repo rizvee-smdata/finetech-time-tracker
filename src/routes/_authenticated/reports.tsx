@@ -286,6 +286,13 @@ function RankTable({
 }) {
   const total = rows.reduce((s, r) => s + r.count, 0);
   const max = Math.max(1, ...rows.map((r) => r.count));
+  const header = [columnLabel, "Visits", "% of total"];
+  const body = rows.map((r) => [
+    r.label + (r.sub ? ` (${r.sub})` : ""),
+    r.count,
+    total ? ((r.count / total) * 100).toFixed(1) + "%" : "0%",
+  ]);
+  const base = filename.replace(/\.csv$/i, "");
   return (
     <Card className="mt-3">
       <CardHeader className="flex flex-row items-start justify-between gap-2">
@@ -293,19 +300,32 @@ function RankTable({
           <CardTitle className="flex items-center gap-2 text-base">{icon}{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={!rows.length}
-          onClick={() =>
-            downloadCSV(filename, [
-              [columnLabel, "Visits", "% of total"],
-              ...rows.map((r) => [r.label + (r.sub ? ` (${r.sub})` : ""), r.count, total ? ((r.count / total) * 100).toFixed(1) + "%" : "0%"]),
-            ])
-          }
-        >
-          <Download className="mr-1.5 h-4 w-4" /> CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!rows.length}
+            onClick={() => downloadCSV(`${base}.csv`, [header, ...body])}
+          >
+            <Download className="mr-1.5 h-4 w-4" /> CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!rows.length}
+            onClick={() => exportToExcel(`${base}.xlsx`, columnLabel, header, body)}
+          >
+            <FileSpreadsheet className="mr-1.5 h-4 w-4" /> Excel
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!rows.length}
+            onClick={() => exportToPDF(`${base}.pdf`, title, header, body)}
+          >
+            <FileText className="mr-1.5 h-4 w-4" /> PDF
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {rows.length === 0 ? (
