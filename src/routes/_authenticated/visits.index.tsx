@@ -47,6 +47,7 @@ function VisitsList() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Visit | null>(null);
+  const [viewing, setViewing] = useState<any | null>(null);
 
   const { data } = useQuery({
     queryKey: ["visits", user?.id, isStaff, companyId],
