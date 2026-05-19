@@ -176,16 +176,17 @@ export const aiChat = createServerFn({ method: "POST" })
 
       rank_contacts: tool({
         description:
-          "Rank partners or consultants by number of related visits (matched by company name). type: 'partner' | 'consultant'.",
+          "Rank partners or consultants by number of related visits (matched by customer_name substring). type: 'partner' | 'consultant'.",
         inputSchema: z.object({
           type: z.enum(["partner", "consultant"]),
           days: z.number().int().min(1).max(3650).optional(),
           limit: z.number().int().min(1).max(50).optional(),
         }),
         execute: async ({ type, days, limit = 10 }) => {
-          const table = type === "partner" ? "partners" : "consultants";
-          // @ts-expect-error dynamic table
-          const { data: contacts, error: cErr } = await supabase.from(table).select("id, name, company");
+          const { data: contacts, error: cErr } = await supabase
+            .from("customers")
+            .select("id, customer_name")
+            .eq("kind", type);
           if (cErr) return { error: cErr.message };
 
           let q = supabase.from("customer_visits").select("company, customer_name, meeting_at").limit(5000);
@@ -196,21 +197,22 @@ export const aiChat = createServerFn({ method: "POST" })
           const { data: visits, error: vErr } = await q;
           if (vErr) return { error: vErr.message };
 
-          const results = (contacts ?? []).map((c: { id: string; name: string; company: string | null }) => {
-            const count = (visits ?? []).filter((v) => {
-              const target = (c.company ?? c.name ?? "").toLowerCase();
-              if (!target) return false;
-              return (
-                (v.company ?? "").toLowerCase().includes(target) ||
-                (v.customer_name ?? "").toLowerCase().includes(target)
-              );
-            }).length;
-            return { name: c.name, company: c.company, visits: count };
+          const results = (contacts ?? []).map((c) => {
+            const target = (c.customer_name ?? "").toLowerCase();
+            const count = target
+              ? (visits ?? []).filter(
+                  (v) =>
+                    (v.company ?? "").toLowerCase().includes(target) ||
+                    (v.customer_name ?? "").toLowerCase().includes(target),
+                ).length
+              : 0;
+            return { name: c.customer_name, visits: count };
           });
           results.sort((a, b) => b.visits - a.visits);
           return { type, results: results.slice(0, limit) };
         },
       }),
+
 
       summary_stats: tool({
         description: "Overall summary counts: total visits, employees, customers, partners, consultants.",
