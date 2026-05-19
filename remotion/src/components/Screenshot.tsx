@@ -72,7 +72,7 @@ export const Screenshot: React.FC<{
           </div>
           <Img
             src={staticFile(src)}
-            style={{ width: "100%", height: "calc(100% - 32px)", objectFit: "contain", objectPosition: "top", background: "#fff" }}
+            style={{ width: "100%", height: "calc(100% - 32px)", objectFit: "fill", background: "#fff" }}
           />
           {/* Highlights */}
           {highlights.map((h, i) => {
