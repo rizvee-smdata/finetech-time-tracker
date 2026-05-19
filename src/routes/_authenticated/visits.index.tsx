@@ -119,7 +119,14 @@ function VisitsList() {
         {filtered.map((v: any) => {
           const isStudy = v.status === "office_study";
           return (
-            <Card key={v.id} className="p-5">
+            <Card
+              key={v.id}
+              className="p-5 cursor-pointer transition-colors hover:bg-accent/30"
+              onClick={() => setViewing(v)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewing(v); } }}
+            >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="font-semibold flex items-center gap-2">
