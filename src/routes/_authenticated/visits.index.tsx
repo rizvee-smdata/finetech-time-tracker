@@ -190,6 +190,12 @@ function VisitsList() {
         })}
       </div>
 
+      <ViewVisitDialog
+        visit={viewing}
+        onClose={() => setViewing(null)}
+        onEdit={(v) => { setViewing(null); setEditing(v); }}
+        isStaff={isStaff}
+      />
       <EditVisitDialog visit={editing} onClose={() => setEditing(null)} />
     </div>
   );
