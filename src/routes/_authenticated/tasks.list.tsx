@@ -186,6 +186,8 @@ function ListPage() {
         )}
       </Card>
 
+      <PaginationBar {...pg} label="tasks" />
+
       <TaskFormDialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)} editing={editing} />
     </div>
   );
