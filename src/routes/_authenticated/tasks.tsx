@@ -10,7 +10,8 @@ export const Route = createFileRoute("/_authenticated/tasks")({
   component: TasksLayout,
 });
 
-const TABS = [
+type Tab = { to: string; label: string; icon: typeof Inbox; exact?: boolean };
+const TABS: Tab[] = [
   { to: "/tasks", label: "My Tasks", icon: Inbox, exact: true },
   { to: "/tasks/board", label: "Board", icon: LayoutGrid },
   { to: "/tasks/list", label: "List", icon: List },
@@ -18,7 +19,7 @@ const TABS = [
   { to: "/tasks/gantt", label: "Gantt", icon: GanttChart },
   { to: "/tasks/projects", label: "Projects", icon: Folder },
   { to: "/tasks/reports", label: "Reports", icon: BarChart3 },
-] as const;
+];
 
 function TasksLayout() {
   const [open, setOpen] = useState(false);
