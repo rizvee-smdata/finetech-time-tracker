@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Search, Users, Upload, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
