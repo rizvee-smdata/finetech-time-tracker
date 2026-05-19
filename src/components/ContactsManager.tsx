@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Search, Users, Pencil, Trash2, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export type ContactKind = "customer" | "partner" | "consultant";
 
