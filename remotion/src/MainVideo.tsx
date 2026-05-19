@@ -15,14 +15,14 @@ type Scene = {
 const scenes: Scene[] = [
   {
     audio: "audio/01-intro.mp3",
-    duration: F(22),
+    duration: F(26.2),
     render: () => (
       <Title headline="Lavisho Time Tracker" tagline="আপনার দৈনিক কাজের সঙ্গী" />
     ),
   },
   {
     audio: "audio/02-login.mp3",
-    duration: F(23),
+    duration: F(27.5),
     render: () => (
       <Screenshot
         src="images/login.png"
@@ -35,7 +35,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/03-company.mp3",
-    duration: F(17),
+    duration: F(22.4),
     render: () => (
       <Screenshot
         src="images/company.png"
@@ -48,7 +48,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/04-dashboard.mp3",
-    duration: F(21),
+    duration: F(28),
     render: () => (
       <Screenshot
         src="images/dashboard.png"
