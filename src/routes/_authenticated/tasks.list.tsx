@@ -76,6 +76,8 @@ function ListPage() {
     }),
   });
 
+  const pg = usePagination(tasks.data ?? [], 20);
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 items-center">
