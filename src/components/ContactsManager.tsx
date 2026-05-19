@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Search, Users, Pencil, Trash2, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export type ContactKind = "customer" | "partner" | "consultant";
 
@@ -92,6 +93,8 @@ export function ContactsManager({
     qc.invalidateQueries({ queryKey });
   }
 
+  const pg = usePagination(filtered, 20);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -141,7 +144,7 @@ export function ContactsManager({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((c) => (
+              {pg.paged.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.customer_name}</TableCell>
                   <TableCell>{c.contact_person || "—"}</TableCell>
@@ -165,9 +168,7 @@ export function ContactsManager({
         )}
       </Card>
 
-      <div className="text-xs text-muted-foreground">
-        {filtered.length} {filtered.length === 1 ? singular.toLowerCase() : plural.toLowerCase()}
-      </div>
+      <PaginationBar {...pg} label={plural.toLowerCase()} />
 
       <ContactDialog
         open={adding}
