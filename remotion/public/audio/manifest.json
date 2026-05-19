@@ -1,0 +1,46 @@
+[
+  {
+    "id": "01-intro",
+    "file": "audio/01-intro.mp3"
+  },
+  {
+    "id": "02-login",
+    "file": "audio/02-login.mp3"
+  },
+  {
+    "id": "03-company",
+    "file": "audio/03-company.mp3"
+  },
+  {
+    "id": "04-dashboard",
+    "file": "audio/04-dashboard.mp3"
+  },
+  {
+    "id": "05-contacts",
+    "file": "audio/05-contacts.mp3"
+  },
+  {
+    "id": "06-add-contact",
+    "file": "audio/06-add-contact.mp3"
+  },
+  {
+    "id": "07-visits",
+    "file": "audio/07-visits.mp3"
+  },
+  {
+    "id": "08-voice",
+    "file": "audio/08-voice.mp3"
+  },
+  {
+    "id": "09-checkin",
+    "file": "audio/09-checkin.mp3"
+  },
+  {
+    "id": "10-reminders",
+    "file": "audio/10-reminders.mp3"
+  },
+  {
+    "id": "11-outro",
+    "file": "audio/11-outro.mp3"
+  }
+]
