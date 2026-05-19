@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Search, Users, Upload, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
@@ -74,6 +75,8 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
+  const pg = usePagination(filtered, 20);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -116,7 +119,7 @@ function CustomersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((c) => (
+              {pg.paged.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.customer_name}</TableCell>
                   <TableCell>{c.contact_person || "—"}</TableCell>
@@ -140,9 +143,7 @@ function CustomersPage() {
         )}
       </Card>
 
-      <div className="text-xs text-muted-foreground">
-        {filtered.length} customer{filtered.length === 1 ? "" : "s"}
-      </div>
+      <PaginationBar {...pg} label="customers" />
 
       <EditCustomerDialog
         customer={editing}

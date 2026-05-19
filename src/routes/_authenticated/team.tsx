@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState } from "react";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/team")({
   beforeLoad: async () => {
@@ -77,6 +78,8 @@ function TeamPage() {
     else { toast.success("Role updated"); refetch(); }
   }
 
+  const pg = usePagination(members ?? [], 20);
+
   return (
     <div className="space-y-6">
       <div>
@@ -85,7 +88,7 @@ function TeamPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {(members ?? []).map((m) => (
+        {pg.paged.map((m) => (
           <Card key={m.id} className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -133,6 +136,8 @@ function TeamPage() {
           </Card>
         ))}
       </div>
+
+      <PaginationBar {...pg} label="members" />
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">

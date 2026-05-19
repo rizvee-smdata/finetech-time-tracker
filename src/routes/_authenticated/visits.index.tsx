@@ -19,6 +19,7 @@ import { BookOpen, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/visits/")({
   component: VisitsList,
@@ -92,6 +93,8 @@ function VisitsList() {
     qc.invalidateQueries({ queryKey: ["visits"] });
   }
 
+  const pg = usePagination(filtered, 20);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -116,7 +119,7 @@ function VisitsList() {
             No entries yet. Click "New visit" or "Office study" to add one.
           </Card>
         )}
-        {filtered.map((v: any) => {
+        {pg.paged.map((v: any) => {
           const isStudy = v.status === "office_study";
           return (
             <Card
@@ -189,6 +192,8 @@ function VisitsList() {
           );
         })}
       </div>
+
+      <PaginationBar {...pg} label="visits" />
 
       <ViewVisitDialog
         visit={viewing}

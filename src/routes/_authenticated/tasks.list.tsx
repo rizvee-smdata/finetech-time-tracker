@@ -21,6 +21,7 @@ import { TaskQuickAdd } from "@/components/tms/TaskQuickAdd";
 import { Button } from "@/components/ui/button";
 import { useSavedViews } from "@/lib/tms/saved-views";
 import { PRIORITIES } from "@/lib/tms/types";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/tasks/list")({
   component: ListPage,
@@ -74,6 +75,8 @@ function ListPage() {
       includeDone,
     }),
   });
+
+  const pg = usePagination(tasks.data ?? [], 20);
 
   return (
     <div className="space-y-3">
@@ -147,7 +150,7 @@ function ListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tasks.data.map((t) => (
+              {pg.paged.map((t) => (
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => setEditing(t)}>
                   <TableCell className="font-medium max-w-[280px] truncate">{t.title}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{t.tms_projects?.name ?? "—"}</TableCell>
@@ -182,6 +185,8 @@ function ListPage() {
           </Table>
         )}
       </Card>
+
+      <PaginationBar {...pg} label="tasks" />
 
       <TaskFormDialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)} editing={editing} />
     </div>

@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 type Visibility = Database["public"]["Enums"]["tms_project_visibility"];
 type Status = Database["public"]["Enums"]["tms_project_status"];
@@ -35,6 +36,9 @@ function ProjectsPage() {
     enabled: !!companyId,
     queryFn: () => fetchProjects(companyId!, true),
   });
+
+  const pg = usePagination(projects.data ?? [], 20);
+
 
   return (
     <div className="space-y-3">
@@ -54,9 +58,12 @@ function ProjectsPage() {
           action={<Button onClick={() => setOpen(true)}><Plus className="size-4 mr-2" /> Create project</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {projects.data.map((p) => <ProjectCard key={p.id} project={p} />)}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {pg.paged.map((p) => <ProjectCard key={p.id} project={p} />)}
+          </div>
+          <PaginationBar {...pg} label="projects" />
+        </>
       )}
 
       <ProjectFormDialog open={open} onOpenChange={setOpen} />
