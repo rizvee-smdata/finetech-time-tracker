@@ -119,7 +119,7 @@ function VisitsList() {
             No entries yet. Click "New visit" or "Office study" to add one.
           </Card>
         )}
-        {filtered.map((v: any) => {
+        {pg.paged.map((v: any) => {
           const isStudy = v.status === "office_study";
           return (
             <Card
