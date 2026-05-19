@@ -19,6 +19,7 @@ import { BookOpen, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 export const Route = createFileRoute("/_authenticated/visits/")({
   component: VisitsList,
