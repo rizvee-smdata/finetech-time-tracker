@@ -85,8 +85,8 @@ function TeamPage() {
         <p className="text-sm text-muted-foreground">Monitor employee activity and manage access.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {(members ?? []).map((m) => (
+      {(() => null)()}
+      <TeamGrid members={members ?? []} setSelected={setSelected} setRole={setRole} isAdmin={isAdmin} currentUserId={user?.id} />
           <Card key={m.id} className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
