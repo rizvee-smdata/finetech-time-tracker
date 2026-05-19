@@ -156,16 +156,16 @@ function VisitsList() {
                       <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
                     </div>
                   )}
-                  <Button size="icon" variant="ghost" onClick={() => setEditing(v)} title="Edit">
+                  <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditing(v); }} title="Edit">
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="ghost" title="Delete">
+                      <Button size="icon" variant="ghost" title="Delete" onClick={(e) => e.stopPropagation()}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
                         <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
@@ -178,7 +178,7 @@ function VisitsList() {
                   </AlertDialog>
                 </div>
               </div>
-              {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap">{v.discussion_summary}</p>}
+              {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-3">{v.discussion_summary}</p>}
               {v.next_action && (
                 <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-sm">
                   <span className="font-medium text-accent-foreground">Next action: </span>{v.next_action}
