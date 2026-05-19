@@ -1,46 +1,68 @@
 [
   {
     "id": "01-intro",
-    "file": "audio/01-intro.mp3"
+    "file": "audio/01-intro.mp3",
+    "durationSec": 25.344,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "02-login",
-    "file": "audio/02-login.mp3"
+    "file": "audio/02-login.mp3",
+    "durationSec": 26.688,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "03-company",
-    "file": "audio/03-company.mp3"
+    "file": "audio/03-company.mp3",
+    "durationSec": 21.6,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "04-dashboard",
-    "file": "audio/04-dashboard.mp3"
+    "file": "audio/04-dashboard.mp3",
+    "durationSec": 27.168,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "05-contacts",
-    "file": "audio/05-contacts.mp3"
+    "file": "audio/05-contacts.mp3",
+    "durationSec": 27.576,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "06-add-contact",
-    "file": "audio/06-add-contact.mp3"
+    "file": "audio/06-add-contact.mp3",
+    "durationSec": 28.704,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "07-visits",
-    "file": "audio/07-visits.mp3"
+    "file": "audio/07-visits.mp3",
+    "durationSec": 26.472,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "08-voice",
-    "file": "audio/08-voice.mp3"
+    "file": "audio/08-voice.mp3",
+    "durationSec": 43.968,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "09-checkin",
-    "file": "audio/09-checkin.mp3"
+    "file": "audio/09-checkin.mp3",
+    "durationSec": 23.712,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "10-reminders",
-    "file": "audio/10-reminders.mp3"
+    "file": "audio/10-reminders.mp3",
+    "durationSec": 22.008,
+    "voice": "bn-BD-NabanitaNeural"
   },
   {
     "id": "11-outro",
-    "file": "audio/11-outro.mp3"
+    "file": "audio/11-outro.mp3",
+    "durationSec": 17.592,
+    "voice": "bn-BD-NabanitaNeural"
   }
 ]
