@@ -143,9 +143,7 @@ function CustomersPage() {
         )}
       </Card>
 
-      <div className="text-xs text-muted-foreground">
-        {filtered.length} customer{filtered.length === 1 ? "" : "s"}
-      </div>
+      <PaginationBar {...pg} label="customers" />
 
       <EditCustomerDialog
         customer={editing}
