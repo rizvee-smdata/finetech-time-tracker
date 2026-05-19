@@ -78,6 +78,8 @@ function TeamPage() {
     else { toast.success("Role updated"); refetch(); }
   }
 
+  const pg = usePagination(members ?? [], 20);
+
   return (
     <div className="space-y-6">
       <div>
