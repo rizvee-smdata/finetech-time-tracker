@@ -144,7 +144,7 @@ export function ContactsManager({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((c) => (
+              {pg.paged.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.customer_name}</TableCell>
                   <TableCell>{c.contact_person || "—"}</TableCell>
