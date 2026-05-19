@@ -47,6 +47,7 @@ function VisitsList() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Visit | null>(null);
+  const [viewing, setViewing] = useState<any | null>(null);
 
   const { data } = useQuery({
     queryKey: ["visits", user?.id, isStaff, companyId],
@@ -118,7 +119,14 @@ function VisitsList() {
         {filtered.map((v: any) => {
           const isStudy = v.status === "office_study";
           return (
-            <Card key={v.id} className="p-5">
+            <Card
+              key={v.id}
+              className="p-5 cursor-pointer transition-colors hover:bg-accent/30"
+              onClick={() => setViewing(v)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewing(v); } }}
+            >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="font-semibold flex items-center gap-2">
@@ -148,16 +156,16 @@ function VisitsList() {
                       <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
                     </div>
                   )}
-                  <Button size="icon" variant="ghost" onClick={() => setEditing(v)} title="Edit">
+                  <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditing(v); }} title="Edit">
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="ghost" title="Delete">
+                      <Button size="icon" variant="ghost" title="Delete" onClick={(e) => e.stopPropagation()}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
                         <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
@@ -170,7 +178,7 @@ function VisitsList() {
                   </AlertDialog>
                 </div>
               </div>
-              {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap">{v.discussion_summary}</p>}
+              {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-3">{v.discussion_summary}</p>}
               {v.next_action && (
                 <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-sm">
                   <span className="font-medium text-accent-foreground">Next action: </span>{v.next_action}
@@ -182,6 +190,12 @@ function VisitsList() {
         })}
       </div>
 
+      <ViewVisitDialog
+        visit={viewing}
+        onClose={() => setViewing(null)}
+        onEdit={(v) => { setViewing(null); setEditing(v); }}
+        isStaff={isStaff}
+      />
       <EditVisitDialog visit={editing} onClose={() => setEditing(null)} />
     </div>
   );
@@ -367,6 +381,88 @@ function OfficeStudyDialog() {
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
           <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="grid gap-1">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-sm">{value}</div>
+    </div>
+  );
+}
+
+function ViewVisitDialog({
+  visit, onClose, onEdit, isStaff,
+}: { visit: any | null; onClose: () => void; onEdit: (v: Visit) => void; isStaff: boolean }) {
+  if (!visit) return null;
+  const isStudy = visit.status === "office_study";
+  const dash = <span className="text-muted-foreground">—</span>;
+
+  return (
+    <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office study</>) : visit.customer_name}
+            {isStudy && <Badge variant="secondary">No visit</Badge>}
+          </DialogTitle>
+          <DialogDescription>
+            {format(new Date(visit.meeting_at), "PPpp")}
+            {isStaff && visit.author && <> · {visit.author.full_name || visit.author.email}</>}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-4 py-2">
+          {!isStudy && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <DetailRow label="Customer" value={visit.customer_name || dash} />
+              <DetailRow label="Company" value={visit.company || dash} />
+              <DetailRow label="Designation" value={visit.designation || dash} />
+              <DetailRow label="Email" value={visit.email || dash} />
+              <DetailRow label="Contact number" value={visit.contact_number || dash} />
+              <DetailRow label="Location" value={visit.location || dash} />
+            </div>
+          )}
+
+          <DetailRow
+            label={isStudy ? "Notes" : "Discussion summary"}
+            value={visit.discussion_summary
+              ? <p className="whitespace-pre-wrap">{visit.discussion_summary}</p>
+              : dash}
+          />
+
+          {!isStudy && (
+            <>
+              <DetailRow
+                label="Next action"
+                value={visit.next_action
+                  ? <p className="whitespace-pre-wrap">{visit.next_action}</p>
+                  : dash}
+              />
+              <DetailRow
+                label="Next meeting"
+                value={visit.next_meeting_at ? format(new Date(visit.next_meeting_at), "PPpp") : dash}
+              />
+              <DetailRow
+                label="Remarks"
+                value={visit.remarks
+                  ? <p className="whitespace-pre-wrap">{visit.remarks}</p>
+                  : dash}
+              />
+            </>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Close</Button>
+          <Button onClick={() => onEdit(visit)}>
+            <Pencil className="mr-2 h-4 w-4" />Edit
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
