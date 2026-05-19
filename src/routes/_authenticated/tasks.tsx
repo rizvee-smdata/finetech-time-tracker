@@ -51,7 +51,7 @@ function TasksLayout() {
           return (
             <Link
               key={t.to}
-              to={t.to}
+              to={t.to as "/tasks"}
               className={cn(
                 "flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
                 active
