@@ -61,7 +61,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/05-contacts.mp3",
-    duration: F(24),
+    duration: F(28.4),
     render: () => (
       <Screenshot
         src="images/partners.png"
@@ -77,7 +77,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/06-add-contact.mp3",
-    duration: F(39),
+    duration: F(29.5),
     render: () => (
       <Screenshot
         src="images/add-partner.png"
@@ -90,7 +90,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/07-visits.mp3",
-    duration: F(21),
+    duration: F(27.3),
     render: () => (
       <Screenshot
         src="images/visits.png"
@@ -103,7 +103,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/08-voice.mp3",
-    duration: F(38),
+    duration: F(44.8),
     render: () => (
       <Screenshot
         src="images/visit-form-voice.png"
