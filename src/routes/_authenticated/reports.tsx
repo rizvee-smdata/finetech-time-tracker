@@ -13,8 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { BarChart3, Download, TrendingUp, TrendingDown, Users, Building2, Handshake } from "lucide-react";
+import { BarChart3, Download, FileSpreadsheet, FileText, TrendingUp, TrendingDown, Users, Building2, Handshake } from "lucide-react";
 import { format, subDays, startOfDay } from "date-fns";
+import { exportToExcel, exportToPDF } from "@/lib/export-utils";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   component: ReportsPage,
