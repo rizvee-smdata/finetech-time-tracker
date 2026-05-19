@@ -120,7 +120,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/09-checkin.mp3",
-    duration: F(19),
+    duration: F(24.5),
     render: () => (
       <Screenshot
         src="images/checkin.png"
@@ -133,7 +133,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/10-reminders.mp3",
-    duration: F(20),
+    duration: F(22.8),
     render: () => (
       <Screenshot
         src="images/reminders.png"
@@ -146,7 +146,7 @@ const scenes: Scene[] = [
   },
   {
     audio: "audio/11-outro.mp3",
-    duration: F(14),
+    duration: F(18.3),
     render: () => (
       <Title headline="lavishott.cloud" tagline="ফিল্ড একটিভিটি ও ভিজিট রিপোর্টিং" />
     ),
