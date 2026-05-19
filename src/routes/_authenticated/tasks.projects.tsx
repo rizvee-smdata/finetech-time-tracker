@@ -37,6 +37,9 @@ function ProjectsPage() {
     queryFn: () => fetchProjects(companyId!, true),
   });
 
+  const pg = usePagination(projects.data ?? [], 20);
+
+
   return (
     <div className="space-y-3">
       <div className="flex justify-end">
