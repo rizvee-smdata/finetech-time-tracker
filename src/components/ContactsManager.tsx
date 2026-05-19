@@ -168,9 +168,7 @@ export function ContactsManager({
         )}
       </Card>
 
-      <div className="text-xs text-muted-foreground">
-        {filtered.length} {filtered.length === 1 ? singular.toLowerCase() : plural.toLowerCase()}
-      </div>
+      <PaginationBar {...pg} label={plural.toLowerCase()} />
 
       <ContactDialog
         open={adding}
