@@ -18,9 +18,19 @@ After getting tool results, summarize them in plain English.`;
 
 export const aiChat = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { messages: ChatMsg[] }) => {
-    if (!Array.isArray(input?.messages)) throw new Error("messages required");
-    return input;
+  .inputValidator((input: unknown) => {
+    const schema = z.object({
+      messages: z
+        .array(
+          z.object({
+            role: z.enum(["user", "assistant", "system"]),
+            content: z.string().min(1).max(8000),
+          }),
+        )
+        .min(1)
+        .max(50),
+    });
+    return schema.parse(input) as { messages: ChatMsg[] };
   })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
