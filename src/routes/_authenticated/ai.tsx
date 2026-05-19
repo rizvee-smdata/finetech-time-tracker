@@ -2,11 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, RotateCcw, Loader2 } from "lucide-react";
+import { Send, Sparkles, RotateCcw, Loader2, FileSpreadsheet, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { aiChat } from "@/lib/ai-chat.functions";
+import { exportTranscriptToExcel, exportTranscriptToPDF } from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ai")({
@@ -76,9 +77,25 @@ function AIPage() {
           </div>
         </div>
         {messages.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={() => setMessages([])}>
-            <RotateCcw className="mr-1 h-4 w-4" /> New chat
-          </Button>
+          <div className="flex flex-wrap items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportTranscriptToExcel(`ask-ai-${Date.now()}.xlsx`, messages)}
+            >
+              <FileSpreadsheet className="mr-1 h-4 w-4" /> Excel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportTranscriptToPDF(`ask-ai-${Date.now()}.pdf`, "Ask AI Conversation", messages)}
+            >
+              <FileText className="mr-1 h-4 w-4" /> PDF
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setMessages([])}>
+              <RotateCcw className="mr-1 h-4 w-4" /> New chat
+            </Button>
+          </div>
         )}
       </div>
 
