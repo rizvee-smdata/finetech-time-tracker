@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
 type Visibility = Database["public"]["Enums"]["tms_project_visibility"];
 type Status = Database["public"]["Enums"]["tms_project_status"];
