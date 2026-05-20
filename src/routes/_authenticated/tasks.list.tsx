@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/tasks/list")({
 });
 
 function ListPage() {
-  const { companyId } = useAuth();
+  const { companyId, ready } = useAuth();
   const [projectId, setProjectId] = useState<string | null>(null);
   const [statusId, setStatusId] = useState<string | null>(null);
   const [priority, setPriority] = useState<string | null>(null);
@@ -55,17 +55,17 @@ function ListPage() {
 
   const projects = useQuery({
     queryKey: ["tms-projects", companyId],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchProjects(companyId!),
   });
   const statuses = useQuery({
     queryKey: ["tms-statuses", companyId, projectId],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchStatuses(companyId!, projectId),
   });
   const tasks = useQuery({
     queryKey: ["tms-tasks", "list", companyId, projectId, statusId, priority, search, includeDone],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchTasks({
       companyId: companyId!,
       projectId,
