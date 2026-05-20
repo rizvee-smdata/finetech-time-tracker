@@ -36,9 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [companyId, setCompanyIdState] = useState<string | null>(
-    () => (typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null),
-  );
+  const [companyId, setCompanyIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const setCompanyId = useCallback((id: string | null) => {
@@ -54,7 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const list = (data ?? []) as Company[];
     setCompanies(list);
     setCompanyIdState((prev) => {
-      if (prev && list.some((c) => c.id === prev)) return prev;
+      const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+      const candidate = prev ?? stored;
+      if (candidate && list.some((c) => c.id === candidate)) return candidate;
       const next = list[0]?.id ?? null;
       if (typeof window !== "undefined") {
         if (next) localStorage.setItem(STORAGE_KEY, next);
