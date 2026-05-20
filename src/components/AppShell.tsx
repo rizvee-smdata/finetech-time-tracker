@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -40,10 +40,22 @@ const staffNav = [
 
 
 export function AppShell() {
-  const { user, isStaff, isAdmin, companies, companyId, setCompanyId, company, signOut } = useAuth();
+  const { user, isStaff, isAdmin, companies, companyId, setCompanyId, company, loading, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const path = router.state.location.pathname;
+
+  useEffect(() => {
+    if (!loading && !user) window.location.href = "/auth";
+  }, [loading, user]);
+
+  if (loading) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
+        Loading…
+      </div>
+    );
+  }
 
   const items = [
     ...nav,
