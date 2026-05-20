@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/tasks/board")({
 });
 
 function BoardPage() {
-  const { companyId } = useAuth();
+  const { companyId, ready } = useAuth();
   const qc = useQueryClient();
   const [projectId, setProjectId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -41,17 +41,17 @@ function BoardPage() {
 
   const projects = useQuery({
     queryKey: ["tms-projects", companyId],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchProjects(companyId!),
   });
   const statuses = useQuery({
     queryKey: ["tms-statuses", companyId, projectId],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchStatuses(companyId!, projectId),
   });
   const tasks = useQuery({
     queryKey: ["tms-tasks", "board", companyId, projectId, search],
-    enabled: !!companyId,
+    enabled: ready && !!companyId,
     queryFn: () => fetchTasks({ companyId: companyId!, projectId, search: search || null, includeDone: true }),
   });
 
