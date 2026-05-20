@@ -21,6 +21,7 @@ interface AuthCtx {
   companyId: string | null;
   company: Company | null;
   loading: boolean;
+  ready: boolean;
   isStaff: boolean;
   isAdmin: boolean;
   setCompanyId: (id: string | null) => void;
@@ -101,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     companyId,
     company: companies.find((c) => c.id === companyId) ?? null,
     loading,
+    ready: !loading && !!session?.user,
     isStaff: roles.includes("admin") || roles.includes("manager"),
     isAdmin: roles.includes("admin"),
     setCompanyId,
