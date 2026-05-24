@@ -54,6 +54,7 @@ import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
+import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
@@ -341,6 +342,12 @@ const AuthenticatedReportsVisitsRoute =
   AuthenticatedReportsVisitsRouteImport.update({
     id: '/visits',
     path: '/visits',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedReportsTeamRoute =
+  AuthenticatedReportsTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
 const AuthenticatedReportsSalesRoute =
@@ -686,6 +693,7 @@ export interface FileRoutesByFullPath {
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
+  '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -771,6 +779,7 @@ export interface FileRoutesByTo {
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
+  '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -867,6 +876,7 @@ export interface FileRoutesById {
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
+  '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -963,6 +973,7 @@ export interface FileRouteTypes {
     | '/planning/team'
     | '/planning/upcoming'
     | '/reports/sales'
+    | '/reports/team'
     | '/reports/visits'
     | '/surveys/new'
     | '/surveys/templates'
@@ -1048,6 +1059,7 @@ export interface FileRouteTypes {
     | '/planning/team'
     | '/planning/upcoming'
     | '/reports/sales'
+    | '/reports/team'
     | '/reports/visits'
     | '/surveys/new'
     | '/surveys/templates'
@@ -1143,6 +1155,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
     | '/_authenticated/reports/sales'
+    | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
@@ -1501,6 +1514,13 @@ declare module '@tanstack/react-router' {
       path: '/visits'
       fullPath: '/reports/visits'
       preLoaderRoute: typeof AuthenticatedReportsVisitsRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reports/team': {
+      id: '/_authenticated/reports/team'
+      path: '/team'
+      fullPath: '/reports/team'
+      preLoaderRoute: typeof AuthenticatedReportsTeamRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
     '/_authenticated/reports/sales': {
@@ -1992,12 +2012,14 @@ const AuthenticatedPlanningRouteWithChildren =
 
 interface AuthenticatedReportsRouteChildren {
   AuthenticatedReportsSalesRoute: typeof AuthenticatedReportsSalesRoute
+  AuthenticatedReportsTeamRoute: typeof AuthenticatedReportsTeamRoute
   AuthenticatedReportsVisitsRoute: typeof AuthenticatedReportsVisitsRoute
   AuthenticatedReportsIndexRoute: typeof AuthenticatedReportsIndexRoute
 }
 
 const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
   AuthenticatedReportsSalesRoute: AuthenticatedReportsSalesRoute,
+  AuthenticatedReportsTeamRoute: AuthenticatedReportsTeamRoute,
   AuthenticatedReportsVisitsRoute: AuthenticatedReportsVisitsRoute,
   AuthenticatedReportsIndexRoute: AuthenticatedReportsIndexRoute,
 }
