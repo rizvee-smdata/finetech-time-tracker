@@ -128,7 +128,7 @@ export function LeadFormDialog({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Expected value (₹)">
+            <Field label="Expected value ($)">
               <Input type="number" value={form.expected_value ?? ""} onChange={(e) => setForm({ ...form, expected_value: e.target.value })} />
             </Field>
             <Field label="Probability (%)">
