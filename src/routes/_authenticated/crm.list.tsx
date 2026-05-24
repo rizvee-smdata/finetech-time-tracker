@@ -15,6 +15,7 @@ import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2 } from 
 import { STAGES, stageMeta, formatMoney, type CrmStage, type Lead } from "@/lib/crm/types";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { ImportLeadsDialog } from "@/components/crm/ImportLeadsDialog";
+import { SavedViewsMenu, type SavedFilters } from "@/components/crm/SavedViewsMenu";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
 import { format } from "date-fns";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
@@ -174,6 +175,17 @@ function ListPage() {
               {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
             </SelectContent>
           </Select>
+          <SavedViewsMenu
+            currentFilters={{ search, company, stage, assignee, dateFrom, dateTo } as SavedFilters}
+            onApply={(f: any) => {
+              setSearch(f.search ?? "");
+              setCompany(f.company ?? "");
+              setStage(f.stage ?? "all");
+              setAssignee(f.assignee ?? "all");
+              setDateFrom(f.dateFrom ?? "");
+              setDateTo(f.dateTo ?? "");
+            }}
+          />
           <Button variant="outline" onClick={() => exportLeadsCsv(leads)} disabled={leads.length === 0}>
             <Download className="mr-2 h-4 w-4" />Export CSV
           </Button>
