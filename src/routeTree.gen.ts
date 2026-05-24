@@ -37,9 +37,11 @@ import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmTemplatesRouteImport } from './routes/_authenticated/crm.templates'
+import { Route as AuthenticatedCrmTargetsRouteImport } from './routes/_authenticated/crm.targets'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
 import { Route as AuthenticatedCrmSequencesRouteImport } from './routes/_authenticated/crm.sequences'
 import { Route as AuthenticatedCrmRenewalsRouteImport } from './routes/_authenticated/crm.renewals'
+import { Route as AuthenticatedCrmQuotesRouteImport } from './routes/_authenticated/crm.quotes'
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
@@ -48,6 +50,7 @@ import { Route as AuthenticatedCrmHotRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenticated/crm.forecast'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
+import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
@@ -203,6 +206,11 @@ const AuthenticatedCrmTemplatesRoute =
     path: '/templates',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmTargetsRoute = AuthenticatedCrmTargetsRouteImport.update({
+  id: '/targets',
+  path: '/targets',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmSettingsRoute =
   AuthenticatedCrmSettingsRouteImport.update({
     id: '/settings',
@@ -221,6 +229,11 @@ const AuthenticatedCrmRenewalsRoute =
     path: '/renewals',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmQuotesRoute = AuthenticatedCrmQuotesRouteImport.update({
+  id: '/quotes',
+  path: '/quotes',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmPipelineRoute =
   AuthenticatedCrmPipelineRouteImport.update({
     id: '/pipeline',
@@ -264,6 +277,12 @@ const AuthenticatedCrmCatalogRoute = AuthenticatedCrmCatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmActivityRoute =
+  AuthenticatedCrmActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmAccountsRoute =
   AuthenticatedCrmAccountsRouteImport.update({
     id: '/accounts',
@@ -323,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
+  '/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
@@ -331,9 +351,11 @@ export interface FileRoutesByFullPath {
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -368,6 +390,7 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
+  '/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
@@ -376,9 +399,11 @@ export interface FileRoutesByTo {
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -417,6 +442,7 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
+  '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/forecast': typeof AuthenticatedCrmForecastRoute
@@ -425,9 +451,11 @@ export interface FileRoutesById {
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/_authenticated/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/_authenticated/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/_authenticated/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/_authenticated/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/_authenticated/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -466,6 +494,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/crm/$leadId'
     | '/crm/accounts'
+    | '/crm/activity'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/forecast'
@@ -474,9 +503,11 @@ export interface FileRouteTypes {
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
+    | '/crm/quotes'
     | '/crm/renewals'
     | '/crm/sequences'
     | '/crm/settings'
+    | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
     | '/tasks/$taskId'
@@ -511,6 +542,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/crm/$leadId'
     | '/crm/accounts'
+    | '/crm/activity'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/forecast'
@@ -519,9 +551,11 @@ export interface FileRouteTypes {
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
+    | '/crm/quotes'
     | '/crm/renewals'
     | '/crm/sequences'
     | '/crm/settings'
+    | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
     | '/tasks/$taskId'
@@ -559,6 +593,7 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/_authenticated/crm/$leadId'
     | '/_authenticated/crm/accounts'
+    | '/_authenticated/crm/activity'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/forecast'
@@ -567,9 +602,11 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
     | '/_authenticated/crm/pipeline'
+    | '/_authenticated/crm/quotes'
     | '/_authenticated/crm/renewals'
     | '/_authenticated/crm/sequences'
     | '/_authenticated/crm/settings'
+    | '/_authenticated/crm/targets'
     | '/_authenticated/crm/templates'
     | '/_authenticated/crm/territories'
     | '/_authenticated/tasks/$taskId'
@@ -797,6 +834,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmTemplatesRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/targets': {
+      id: '/_authenticated/crm/targets'
+      path: '/targets'
+      fullPath: '/crm/targets'
+      preLoaderRoute: typeof AuthenticatedCrmTargetsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/settings': {
       id: '/_authenticated/crm/settings'
       path: '/settings'
@@ -816,6 +860,13 @@ declare module '@tanstack/react-router' {
       path: '/renewals'
       fullPath: '/crm/renewals'
       preLoaderRoute: typeof AuthenticatedCrmRenewalsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/quotes': {
+      id: '/_authenticated/crm/quotes'
+      path: '/quotes'
+      fullPath: '/crm/quotes'
+      preLoaderRoute: typeof AuthenticatedCrmQuotesRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/crm/pipeline': {
@@ -874,6 +925,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmCatalogRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/activity': {
+      id: '/_authenticated/crm/activity'
+      path: '/activity'
+      fullPath: '/crm/activity'
+      preLoaderRoute: typeof AuthenticatedCrmActivityRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/accounts': {
       id: '/_authenticated/crm/accounts'
       path: '/accounts'
@@ -929,6 +987,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
   AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
+  AuthenticatedCrmActivityRoute: typeof AuthenticatedCrmActivityRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmForecastRoute: typeof AuthenticatedCrmForecastRoute
@@ -937,9 +996,11 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
+  AuthenticatedCrmQuotesRoute: typeof AuthenticatedCrmQuotesRoute
   AuthenticatedCrmRenewalsRoute: typeof AuthenticatedCrmRenewalsRoute
   AuthenticatedCrmSequencesRoute: typeof AuthenticatedCrmSequencesRoute
   AuthenticatedCrmSettingsRoute: typeof AuthenticatedCrmSettingsRoute
+  AuthenticatedCrmTargetsRoute: typeof AuthenticatedCrmTargetsRoute
   AuthenticatedCrmTemplatesRoute: typeof AuthenticatedCrmTemplatesRoute
   AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
@@ -948,6 +1009,7 @@ interface AuthenticatedCrmRouteChildren {
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmLeadIdRoute: AuthenticatedCrmLeadIdRoute,
   AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
+  AuthenticatedCrmActivityRoute: AuthenticatedCrmActivityRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmForecastRoute: AuthenticatedCrmForecastRoute,
@@ -956,9 +1018,11 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
+  AuthenticatedCrmQuotesRoute: AuthenticatedCrmQuotesRoute,
   AuthenticatedCrmRenewalsRoute: AuthenticatedCrmRenewalsRoute,
   AuthenticatedCrmSequencesRoute: AuthenticatedCrmSequencesRoute,
   AuthenticatedCrmSettingsRoute: AuthenticatedCrmSettingsRoute,
+  AuthenticatedCrmTargetsRoute: AuthenticatedCrmTargetsRoute,
   AuthenticatedCrmTemplatesRoute: AuthenticatedCrmTemplatesRoute,
   AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
