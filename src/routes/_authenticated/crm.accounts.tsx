@@ -119,6 +119,8 @@ function AccountsPage() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((a) => {
             const terr = territories.data?.find((t) => t.id === a.territory_id);
+            const owner = members.data?.find((m) => m.id === a.primary_owner);
+            const s = accountStats.data?.get(a.id) ?? { count: 0, value: 0, won: 0, open: 0 };
             return (
               <Card key={a.id} className="p-4 space-y-2">
                 <div className="flex items-start justify-between gap-2">
@@ -142,25 +144,34 @@ function AccountsPage() {
                   {a.phone && <div className="flex items-center gap-1"><Phone className="h-3 w-3" />{a.phone}</div>}
                   {a.website && <div className="flex items-center gap-1"><Globe className="h-3 w-3" /><span className="truncate">{a.website}</span></div>}
                   {a.address && <div className="flex items-center gap-1"><MapPin className="h-3 w-3" /><span className="truncate">{a.address}</span></div>}
-                  {terr && <div>Territory: {terr.name}</div>}
+                  {terr && <div>Territory: <span className="text-foreground">{terr.name}</span></div>}
+                  {owner && <div>Owner: <span className="text-foreground">{owner.full_name ?? owner.email}</span></div>}
                 </div>
-                <Link to="/crm/list" className="text-xs text-primary hover:underline">View leads →</Link>
+                <div className="flex items-center justify-between pt-1 border-t mt-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-medium">{s.count}</span>
+                    <span className="text-muted-foreground">leads ·</span>
+                    <span className="font-medium">${s.value.toLocaleString()}</span>
+                  </div>
+                  <Link to="/crm/list" className="text-xs text-primary hover:underline">View →</Link>
+                </div>
               </Card>
             );
           })}
         </div>
       )}
 
-      <AccountDialog open={open} onOpenChange={setOpen} companyId={companyId} editing={editing} territories={territories.data ?? []} />
+      <AccountDialog open={open} onOpenChange={setOpen} companyId={companyId} editing={editing} territories={territories.data ?? []} members={members.data ?? []} />
     </div>
   );
 }
 
 function AccountDialog({
-  open, onOpenChange, companyId, editing, territories,
+  open, onOpenChange, companyId, editing, territories, members,
 }: {
   open: boolean; onOpenChange: (b: boolean) => void; companyId: string;
   editing: Account | null; territories: { id: string; name: string }[];
+  members: { id: string; full_name: string | null; email: string | null }[];
 }) {
   const qc = useQueryClient();
   const { user } = useAuth();
