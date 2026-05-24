@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, CheckCheck, X } from "lucide-react";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 export function NotificationBell({ compact = false }: { compact?: boolean }) {
   const { user, ready } = useAuth();
   const qc = useQueryClient();
+  const channelId = useId();
 
   const { data: items = [] } = useQuery({
     queryKey: ["notifications", user?.id],
@@ -32,9 +33,9 @@ export function NotificationBell({ compact = false }: { compact?: boolean }) {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!ready || !user) return;
     const ch = supabase
-      .channel("notifications-bell")
+      .channel(`notifications-bell:${user.id}:${channelId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "reminders", filter: `user_id=eq.${user.id}` },
@@ -42,7 +43,7 @@ export function NotificationBell({ compact = false }: { compact?: boolean }) {
       )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user, qc]);
+  }, [channelId, ready, user, qc]);
 
   const unread = items.filter((i) => !i.read_at);
   const unreadCount = unread.length;
