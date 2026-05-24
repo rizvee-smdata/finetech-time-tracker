@@ -143,13 +143,15 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
       await replaceQuoteLineItems(quoteId, items);
 
       if (action === "send") {
-        if (needsApproval && approval_status !== "approved") {
+        const currentApproval = isEdit ? quote.approval_status : approval_status;
+        if (needsApproval && currentApproval !== "approved") {
           toast.error(`Discount ≥ ${APPROVAL_THRESHOLD}% needs approval first`);
         } else {
           const { error } = await sb.from("crm_quotes").update({ status: "sent" }).eq("id", quoteId);
           if (error) throw error;
         }
       }
+
 
       qc.invalidateQueries({ queryKey: ["crm-quotes", leadId] });
       qc.invalidateQueries({ queryKey: ["crm-activities", leadId] });
