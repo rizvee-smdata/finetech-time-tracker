@@ -1,85 +1,52 @@
-# DeskIQ Meeting Intelligence Module
+# Deal Health Score + Next Best Action
 
-A new module added to the existing CRM. Three tabs: **New Meeting**, **History**, **Action Items**.
+Build a new "Deals" module in DeskIQ with local health-score calculation and AI-powered Next Best Actions, mirroring the Meetings module's architecture (localStorage store + Lovable AI Gateway via `createServerFn`).
 
-## AI Provider — important change from spec
+## AI provider note
+The spec calls `api.anthropic.com` directly with a hardcoded key — that would leak the key in client code. I'll route the AI call through a TanStack `createServerFn` to the **Lovable AI Gateway** using `google/gemini-3-flash-preview` with structured tool-calling (no API key needed, consistent with the Meetings module). All prompt fields, response shape, and downstream UI match the spec exactly.
 
-Your spec asks for a direct call to `api.anthropic.com` from the browser. I will NOT do that:
-- It would expose an API key in client code
-- It would require you to provide an Anthropic key
-
-Instead I'll use the project's built-in **Lovable AI Gateway** (no key needed from you, already wired in this project). It runs server-side via a TanStack server function, uses **Gemini 3 Flash** by default, and returns the exact same JSON shape your spec defines. Behavior is identical from the UI's perspective.
-
-If you specifically want Anthropic Claude, say so and I'll add an `ANTHROPIC_API_KEY` secret and swap the model.
-
-## Routes
-
-```
-/meetings              → New Meeting (form + results)
-/meetings/history      → Past meetings list with search/filter
-/meetings/actions      → Aggregated action items
-```
-
-Added as a new top-level "Meetings" section in the existing AppShell sidebar.
+Currency: previous turn switched the app to USD. I'll keep the `Deal.currency` type as `'BDT' | 'USD'` per spec but seed deals with `USD` and format via the existing `en-US` formatter. (If you want seeds in BDT, say the word.)
 
 ## Files
 
-**Server**
-- `src/lib/meetings/analyze.functions.ts` — `analyzeMeeting` serverFn → Lovable AI Gateway, returns `ProcessedMeeting` JSON
-- `src/lib/meetings/types.ts` — Meeting, ProcessedMeeting, ActionItem, CRMUpdate
-- `src/lib/meetings/storage.ts` — localStorage hydration/persist (`deskiq_meetings`), seed data
+**Types & logic**
+- `src/lib/deals/types.ts` — `Deal`, `DealStage`, `Interaction`, `DealHealth`, `ScoreBreakdown`, `NextBestAction`, `AIDealAnalysis`
+- `src/lib/deals/scoring.ts` — `calculateHealthScore(deal)` exactly per spec
+- `src/lib/deals/storage.ts` — `useDealsStore` hook (localStorage `deskiq_deals`, pub/sub, CRUD, `addInteraction` auto-recalculates score, `toggleAction`, seed loader)
+- `src/lib/deals/seed.ts` — 5 seed deals with 4–6 interactions each
+- `src/lib/deals/analyze.functions.ts` — `analyzeDeal` serverFn (Lovable AI Gateway + tool calling → `AIDealAnalysis`)
+- `src/lib/deals/winloss.functions.ts` — `generateWinLossReport` serverFn
 
-**Routes**
-- `src/routes/_authenticated/meetings.tsx` — layout with tab nav
-- `src/routes/_authenticated/meetings.index.tsx` — New Meeting page
-- `src/routes/_authenticated/meetings.history.tsx`
-- `src/routes/_authenticated/meetings.actions.tsx`
+**Routes** (`src/routes/_authenticated/`)
+- `deals.tsx` — tab layout (Pipeline / Action Center / Win-Loss)
+- `deals.index.tsx` — Pipeline Overview (summary bar + kanban)
+- `deals.$dealId.tsx` — Deal Detail (4 tabs: AI Analysis, Next Best Actions, Timeline, Intelligence)
+- `deals.actions.tsx` — Action Center
+- `deals.insights.tsx` — Win/Loss Insights
 
-**Components**
-- `src/components/meetings/MeetingForm.tsx` — title, client, company, datetime, attendees tag input, raw notes, tips box
-- `src/components/meetings/ProcessingState.tsx` — 3-step animated status
-- `src/components/meetings/ResultsView.tsx` — wraps the 5 sections
-- `src/components/meetings/SummaryCard.tsx` — amber border, sentiment badge, deal stage pill
-- `src/components/meetings/ActionItemsTable.tsx` — table with checkboxes, priority colors, "Add to My Tasks"
-- `src/components/meetings/IntelligencePanels.tsx` — 3-col pain points / objections / next steps, inline editable
-- `src/components/meetings/CRMUpdatesList.tsx` — accept/reject toggles + Apply All
-- `src/components/meetings/FollowUpEmail.tsx` — subject + body, Copy / Regenerate / Gmail mailto / Save
-- `src/components/meetings/MeetingHistoryCard.tsx`
-- `src/components/meetings/ActionItemRow.tsx`
+**Components** (`src/components/deals/`)
+- `HealthGauge.tsx` — animated circular SVG gauge (sizes: sm/md/lg), traffic-light colors
+- `DealCard.tsx` — kanban card with gauge, badges, trend, top NBA preview
+- `PipelineBoard.tsx` — 6-column kanban
+- `PipelineSummary.tsx` — 4 metric cards
+- `PipelineFilters.tsx` — search/filter/sort + Recalculate All
+- `StageStepper.tsx` — horizontal stage progress
+- `ScoreBreakdownChart.tsx` — horizontal bars for 4 components
+- `AIAnalysisPanel.tsx` — diagnosis + win prob + risks + signals + competitor strategy + coaching tip
+- `NextBestActionCard.tsx` — priority/urgency/impact badges, expandable draft with copy/edit, mark complete
+- `InteractionTimeline.tsx` + `AddInteractionForm.tsx`
+- `DealIntelligence.tsx` — Recharts (interaction freq bar, sentiment trend line, stage benchmark)
+- `ActionCenterList.tsx` — grouped by urgency with Done/Snooze
+- `WinLossInsights.tsx` — 4 metric cards + Recharts + AI report button
 
-## Design
+**Navigation**
+- Add "Deals" to `src/components/AppShell.tsx` sidebar
 
-- Uses existing dark theme tokens (already dark slate). Adds amber accent (#F59E0B) and electric blue (#3B82F6) as `--meeting-accent` / `--meeting-action` tokens in `src/styles.css`.
-- Glassmorphism: `bg-card/60 backdrop-blur border border-border/50`
-- Monospace (`font-mono`) for timestamps
-- Sentiment: 🟢 / 🟡 / 🔴 colored badges
+## Health scoring
+Implemented verbatim from spec (recency/engagement/momentum/sentiment, each max 25). Status thresholds: ≥70 healthy, ≥40 at_risk, else stalling. Trend computed by comparing to previous stored score.
 
-## State & persistence
-
-- `useMeetingsStore` hook (localStorage-backed) — array of `Meeting`, with `addMeeting`, `updateMeeting`, `toggleActionItem`, `acceptCrmUpdate`
-- Hydrates on mount; writes on every change
-- Per-meeting status: `raw | processing | processed`
-- 2 seed meetings (Jamuna Bank / Square Pharmaceuticals) preloaded on first run
-
-## AI server function
-
-```ts
-// src/lib/meetings/analyze.functions.ts
-export const analyzeMeeting = createServerFn({ method: 'POST' })
-  .inputValidator((d: { title, clientName, clientCompany, date, attendees, rawNotes, regenerateInstruction? }) => d)
-  .handler(async ({ data }) => {
-    // POST to https://ai.gateway.lovable.dev/v1/chat/completions
-    // model: google/gemini-3-flash-preview
-    // Uses tool-calling for structured ProcessedMeeting output
-    // Handles 429/402 with friendly errors
-    return processed;
-  });
-```
+## AI serverFn shape
+`analyzeDeal({ dealId })` → tool-call `return_deal_analysis` returns `{ dealDiagnosis, winProbability, estimatedCloseDate, riskFactors[], positiveSignals[], nextBestActions[], competitorStrategy, dealCoachingTip }`. Maps `nextBestActions` into `NextBestAction[]` with generated IDs + `completed: false`. Handles 429/402 with toasts.
 
 ## Acceptance criteria coverage
-
-All 10 items from your spec are covered. Gmail uses `mailto:?subject=&body=`. CSV export on actions page via a small util.
-
-## Out of scope (the 4 follow-ups you mentioned)
-
-I'll do the initial build only. The 4 follow-up prompts (regenerate-with-instructions, talk-time analyzer, WhatsApp share, Gmail MCP send) come after — send them one at a time as you suggested.
+All 10 acceptance items covered. Out of scope: the 4 follow-up prompts (daily briefing, email tracking sim, deal comparison, Meeting Intelligence cross-link).
