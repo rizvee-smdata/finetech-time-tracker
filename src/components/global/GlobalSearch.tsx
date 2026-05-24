@@ -102,7 +102,7 @@ export function GlobalSearch() {
       out[k] = out[k].slice(0, 6);
     });
     return out;
-  }, [q, deals, meetings, proposals, router]);
+  }, [q, deals, proposals, router]);
 
   return (
     <>
