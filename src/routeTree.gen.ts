@@ -48,6 +48,7 @@ import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
+import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -295,6 +296,12 @@ const AuthenticatedPlanningNewRoute =
   AuthenticatedPlanningNewRouteImport.update({
     id: '/new',
     path: '/new',
+    getParentRoute: () => AuthenticatedPlanningRoute,
+  } as any)
+const AuthenticatedPlanningPlanIdRoute =
+  AuthenticatedPlanningPlanIdRouteImport.update({
+    id: '/$planId',
+    path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
 const AuthenticatedExpensesSettingsRoute =
@@ -581,6 +588,7 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
@@ -655,6 +663,7 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
@@ -737,6 +746,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
@@ -819,6 +829,7 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
@@ -893,6 +904,7 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
@@ -974,6 +986,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
+    | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
@@ -1286,6 +1299,13 @@ declare module '@tanstack/react-router' {
       path: '/new'
       fullPath: '/planning/new'
       preLoaderRoute: typeof AuthenticatedPlanningNewRouteImport
+      parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/planning/$planId': {
+      id: '/_authenticated/planning/$planId'
+      path: '/$planId'
+      fullPath: '/planning/$planId'
+      preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
     '/_authenticated/expenses/settings': {
@@ -1678,6 +1698,7 @@ const AuthenticatedExpensesRouteWithChildren =
   )
 
 interface AuthenticatedPlanningRouteChildren {
+  AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
   AuthenticatedPlanningNewRoute: typeof AuthenticatedPlanningNewRoute
   AuthenticatedPlanningTeamRoute: typeof AuthenticatedPlanningTeamRoute
   AuthenticatedPlanningUpcomingRoute: typeof AuthenticatedPlanningUpcomingRoute
@@ -1685,6 +1706,7 @@ interface AuthenticatedPlanningRouteChildren {
 }
 
 const AuthenticatedPlanningRouteChildren: AuthenticatedPlanningRouteChildren = {
+  AuthenticatedPlanningPlanIdRoute: AuthenticatedPlanningPlanIdRoute,
   AuthenticatedPlanningNewRoute: AuthenticatedPlanningNewRoute,
   AuthenticatedPlanningTeamRoute: AuthenticatedPlanningTeamRoute,
   AuthenticatedPlanningUpcomingRoute: AuthenticatedPlanningUpcomingRoute,
