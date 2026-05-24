@@ -12,7 +12,9 @@ function CrmLayout() {
     { to: "/crm/pipeline", label: "Pipeline" },
     { to: "/crm/list", label: "List" },
     { to: "/crm/dashboard", label: "Dashboard" },
+    { to: "/crm/catalog", label: "Catalog" },
   ];
+
   // Detail view: hide tabs
   const isDetail = /^\/crm\/[^/]+$/.test(path) && !tabs.some((t) => path === t.to);
 
