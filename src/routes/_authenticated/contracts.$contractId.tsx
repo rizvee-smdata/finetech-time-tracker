@@ -16,7 +16,7 @@ import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import {
-  CONTRACT_STATUS_META, CONTRACT_TYPE_LABEL, PAYMENT_STATUS_META, formatBDT,
+  CONTRACT_STATUS_META, CONTRACT_TYPE_LABEL, PAYMENT_STATUS_META, formatUSD,
   type Contract, type Milestone, type PaymentStatus, type ContractStatus,
 } from "@/lib/contracts/types";
 
@@ -123,9 +123,9 @@ function ContractDetail() {
         </div>
         {c.notes && <p className="mt-3 whitespace-pre-wrap text-sm">{c.notes}</p>}
         <div className="mt-4 grid grid-cols-3 gap-3 text-center text-sm">
-          <div><div className="text-xs text-muted-foreground">Total</div><div className="font-semibold">{formatBDT(Number(c.total_value))}</div></div>
-          <div><div className="text-xs text-muted-foreground">Received</div><div className="font-semibold text-emerald-600">{formatBDT(received)}</div></div>
-          <div><div className="text-xs text-muted-foreground">Outstanding</div><div className="font-semibold text-amber-600">{formatBDT(outstanding)}</div></div>
+          <div><div className="text-xs text-muted-foreground">Total</div><div className="font-semibold">{formatUSD(Number(c.total_value))}</div></div>
+          <div><div className="text-xs text-muted-foreground">Received</div><div className="font-semibold text-emerald-600">{formatUSD(received)}</div></div>
+          <div><div className="text-xs text-muted-foreground">Outstanding</div><div className="font-semibold text-amber-600">{formatUSD(outstanding)}</div></div>
         </div>
       </Card>
 
@@ -157,7 +157,7 @@ function ContractDetail() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatBDT(Number(m.amount))}</div>
+                    <div className="font-semibold">{formatUSD(Number(m.amount))}</div>
                   </div>
                   <div className="flex items-center gap-1">
                     <Select value={m.status} onValueChange={(v) => setPayStatus.mutate({ id: m.id, status: v as PaymentStatus })}>
@@ -219,7 +219,7 @@ function AddMilestoneDialog({ contractId, onAdded }: { contractId: string; onAdd
           <div><Label>Name *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Advance 30%" /></div>
           <div className="grid grid-cols-2 gap-2">
             <div><Label>Due date *</Label><Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} /></div>
-            <div><Label>Amount (BDT) *</Label><Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
+            <div><Label>Amount (USD) *</Label><Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
           </div>
         </div>
         <DialogFooter>

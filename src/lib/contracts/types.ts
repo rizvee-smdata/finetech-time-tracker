@@ -60,8 +60,8 @@ export const PAYMENT_STATUS_META: Record<PaymentStatus, { label: string; tone: s
   cancelled: { label: "Cancelled", tone: "bg-destructive/10 text-destructive" },
 };
 
-export function formatBDT(n: number) {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "BDT", maximumFractionDigits: 0 }).format(n || 0);
+export function formatUSD(n: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n || 0);
 }
 
 export function daysBetween(a: Date, b: Date) {

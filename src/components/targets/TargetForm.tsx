@@ -75,7 +75,7 @@ export function NewTargetButton() {
         period_start: periodStart,
         period_end: periodEnd,
         target_value: num,
-        currency: "BDT",
+        currency: "USD",
         notes: notes || null,
         created_by: user?.id ?? null,
       });
@@ -158,7 +158,7 @@ export function NewTargetButton() {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Target value {METRIC_UNIT[metric] === "money" ? "(BDT)" : "(count)"}</Label>
+            <Label>Target value {METRIC_UNIT[metric] === "money" ? "(USD)" : "(count)"}</Label>
             <Input type="number" min={1} value={value} onChange={(e) => setValue(e.target.value)} />
           </div>
           <div className="space-y-1">

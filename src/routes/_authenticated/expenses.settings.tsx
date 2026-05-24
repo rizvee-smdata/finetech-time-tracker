@@ -101,7 +101,7 @@ function SettingsPage() {
               <div>
                 <div className="text-sm font-medium">{c.name}</div>
                 <div className="text-xs text-muted-foreground">
-                  {c.auto_approve_limit ? `Auto-approve under BDT ${Number(c.auto_approve_limit).toLocaleString()}` : "No auto-approve"}
+                  {c.auto_approve_limit ? `Auto-approve under USD ${Number(c.auto_approve_limit).toLocaleString()}` : "No auto-approve"}
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={() => removeCategory(c.id)}>
@@ -117,7 +117,7 @@ function SettingsPage() {
           </div>
           <div>
             <Label className="text-xs">Auto-approve under</Label>
-            <Input type="number" value={newLimit} onChange={(e) => setNewLimit(e.target.value)} placeholder="BDT" />
+            <Input type="number" value={newLimit} onChange={(e) => setNewLimit(e.target.value)} placeholder="USD" />
           </div>
         </div>
         <Button size="sm" onClick={addCategory} disabled={!newName.trim()}>

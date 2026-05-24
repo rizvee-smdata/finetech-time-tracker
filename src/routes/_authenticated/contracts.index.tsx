@@ -10,7 +10,7 @@ import { FileText, Plus, AlertTriangle } from "lucide-react";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { useState } from "react";
 import {
-  CONTRACT_STATUS_META, CONTRACT_TYPE_LABEL, formatBDT,
+  CONTRACT_STATUS_META, CONTRACT_TYPE_LABEL, formatUSD,
   type Contract, type Milestone,
 } from "@/lib/contracts/types";
 
@@ -65,9 +65,9 @@ function ContractsList() {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-4">
-        <Stat label="Contracted value" value={formatBDT(stats.total)} />
-        <Stat label="Received" value={formatBDT(stats.received)} tone="emerald" />
-        <Stat label="Outstanding" value={formatBDT(stats.outstanding)} tone="amber" />
+        <Stat label="Contracted value" value={formatUSD(stats.total)} />
+        <Stat label="Received" value={formatUSD(stats.received)} tone="emerald" />
+        <Stat label="Outstanding" value={formatUSD(stats.outstanding)} tone="amber" />
         <Stat label="Overdue milestones" value={String(stats.overdue)} tone={stats.overdue > 0 ? "destructive" : undefined} />
       </div>
 
@@ -109,7 +109,7 @@ function ContractsList() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-base font-semibold">{formatBDT(Number(c.total_value))}</div>
+                      <div className="text-base font-semibold">{formatUSD(Number(c.total_value))}</div>
                       <div className="text-xs text-muted-foreground">{pct}% collected</div>
                     </div>
                   </div>
