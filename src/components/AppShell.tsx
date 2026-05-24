@@ -18,6 +18,7 @@ import {
   Sparkles,
   Target,
   Receipt,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -33,6 +34,7 @@ const nav = [
   { to: "/partners", label: "Partners", icon: Handshake },
   { to: "/consultants", label: "Consultants", icon: Briefcase },
   { to: "/check-in", label: "Time", icon: Clock },
+  { to: "/attendance", label: "Attendance", icon: MapPin },
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/targets", label: "Targets", icon: Target },
   { to: "/reminders", label: "Reminders", icon: Bell },
