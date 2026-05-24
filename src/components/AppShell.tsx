@@ -18,6 +18,7 @@ import {
   Sparkles,
   Target,
   Receipt,
+  FileText,
   MapPin,
   Route as RouteIcon,
 } from "lucide-react";
