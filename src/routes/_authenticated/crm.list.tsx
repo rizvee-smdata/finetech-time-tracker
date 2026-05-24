@@ -209,6 +209,18 @@ function ListPage() {
               </SelectContent>
             </Select>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              if (confirm(`Delete ${selected.size} lead${selected.size > 1 ? "s" : ""}? This cannot be undone.`)) {
+                bulkDelete.mutate();
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4 mr-1" />Delete
+          </Button>
           <Button variant="ghost" size="sm" onClick={clearSelection}>Clear</Button>
         </Card>
       )}
