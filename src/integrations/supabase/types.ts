@@ -14,6 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance_records: {
+        Row: {
+          check_in_address: string | null
+          check_in_at: string | null
+          check_in_distance_m: number | null
+          check_in_lat: number | null
+          check_in_lng: number | null
+          check_in_within_geofence: boolean | null
+          check_out_address: string | null
+          check_out_at: string | null
+          check_out_distance_m: number | null
+          check_out_lat: number | null
+          check_out_lng: number | null
+          check_out_within_geofence: boolean | null
+          company_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["attendance_status"]
+          total_minutes: number | null
+          updated_at: string
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          check_in_address?: string | null
+          check_in_at?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
+          check_in_within_geofence?: boolean | null
+          check_out_address?: string | null
+          check_out_at?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
+          check_out_within_geofence?: boolean | null
+          company_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          total_minutes?: number | null
+          updated_at?: string
+          user_id: string
+          work_date?: string
+        }
+        Update: {
+          check_in_address?: string | null
+          check_in_at?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
+          check_in_within_geofence?: boolean | null
+          check_out_address?: string | null
+          check_out_at?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
+          check_out_within_geofence?: boolean | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          total_minutes?: number | null
+          updated_at?: string
+          user_id?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attendance_settings: {
+        Row: {
+          company_id: string
+          created_at: string
+          geofence_lat: number | null
+          geofence_lng: number | null
+          geofence_radius_m: number | null
+          geofence_required: boolean
+          half_day_after_minutes: number
+          late_threshold_minutes: number
+          updated_at: string
+          work_end_time: string
+          work_start_time: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          geofence_lat?: number | null
+          geofence_lng?: number | null
+          geofence_radius_m?: number | null
+          geofence_required?: boolean
+          half_day_after_minutes?: number
+          late_threshold_minutes?: number
+          updated_at?: string
+          work_end_time?: string
+          work_start_time?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          geofence_lat?: number | null
+          geofence_lng?: number | null
+          geofence_radius_m?: number | null
+          geofence_required?: boolean
+          half_day_after_minutes?: number
+          late_threshold_minutes?: number
+          updated_at?: string
+          work_end_time?: string
+          work_start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           created_at: string
@@ -2605,6 +2735,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "employee"
+      attendance_status: "present" | "late" | "absent" | "half_day" | "leave"
       crm_activity_type:
         | "note"
         | "call"
@@ -2795,6 +2926,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "employee"],
+      attendance_status: ["present", "late", "absent", "half_day", "leave"],
       crm_activity_type: [
         "note",
         "call",
