@@ -63,11 +63,15 @@ export function NextBestActionCard({ action, onToggle, onUpdateDraft, dealLabel 
   const { startTimer } = useTimeStore();
 
   const onStartTimer = () => {
-    // Infer dealId/client from dealLabel "Title — Company"
-    startTimer(action.action, {
-      category: action.actionType === "call" ? "Call" : action.actionType === "email" ? "Email" : action.actionType === "meeting" ? "Meeting" : "Admin",
-      billable: true,
-    });
+    const cat =
+      action.actionType === "meeting" || action.actionType === "demo"
+        ? "Client Meeting"
+        : action.actionType === "proposal"
+        ? "Proposal Writing"
+        : action.actionType === "call" || action.actionType === "email"
+        ? "Follow-up"
+        : "Business Development";
+    startTimer(action.action, { category: cat, billable: true });
     toast.success("Timer started");
     navigate({ to: "/time" });
   };
