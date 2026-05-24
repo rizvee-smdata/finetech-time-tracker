@@ -41,6 +41,7 @@ const nav = [
   { to: "/crm", label: "CRM", icon: Target },
   { to: "/meetings", label: "Meetings", icon: Mic },
   { to: "/deals", label: "Deal Health", icon: TrendingUp },
+  { to: "/proposals", label: "Proposals", icon: FileText },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
