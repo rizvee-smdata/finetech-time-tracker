@@ -26,8 +26,10 @@ export async function fetchLeads(params: {
   const userIds = Array.from(new Set(leads.map((l) => l.assigned_to).filter(Boolean))) as string[];
   if (userIds.length) {
     const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", userIds);
-    const map = new Map((profs ?? []).map((p: any) => [p.id, p]));
-    for (const l of leads) l.assignee = (l.assigned_to ? map.get(l.assigned_to) : null) ?? null;
+    const map = new Map<string, { id: string; full_name: string | null; email: string | null }>(
+      (profs ?? []).map((p: any) => [p.id, p]),
+    );
+    for (const l of leads) l.assignee = (l.assigned_to ? map.get(l.assigned_to) ?? null : null);
   }
   return leads;
 }
