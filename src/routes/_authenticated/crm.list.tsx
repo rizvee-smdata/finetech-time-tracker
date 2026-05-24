@@ -135,6 +135,20 @@ function ListPage() {
     onError: (e: any) => toast.error(e.message ?? "Failed"),
   });
 
+  const bulkDelete = useMutation({
+    mutationFn: async () => {
+      const ids = Array.from(selected);
+      const { error } = await sb.from("crm_leads").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`Deleted ${selected.size} lead${selected.size > 1 ? "s" : ""}`);
+      clearSelection();
+      qc.invalidateQueries({ queryKey: ["crm-leads"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed"),
+  });
+
   const selectedLeads = useMemo(() => leads.filter((l) => selected.has(l.id)), [leads, selected]);
 
   return (
