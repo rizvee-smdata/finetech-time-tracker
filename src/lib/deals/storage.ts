@@ -24,30 +24,13 @@ function readStore(key: string): Deal[] {
   try {
     const raw = localStorage.getItem(key);
     if (raw) return JSON.parse(raw) as Deal[];
-
-    // Legacy migration: if old un-scoped data exists, adopt it into this company once
-    const legacy = localStorage.getItem(BASE_KEY);
-    if (legacy) {
-      localStorage.setItem(key, legacy);
-      localStorage.removeItem(BASE_KEY);
-      return JSON.parse(legacy) as Deal[];
-    }
-
-    // First time ever: seed once into this company so the app isn't empty on first run.
-    // Other companies start empty so switching visibly changes the data.
-    if (!localStorage.getItem(SEEDED_FLAG)) {
-      const seeded = seedDeals().map(withHealth);
-      localStorage.setItem(key, JSON.stringify(seeded));
-      localStorage.setItem(SEEDED_FLAG, "1");
-      return seeded;
-    }
-
     localStorage.setItem(key, "[]");
     return [];
   } catch {
     return [];
   }
 }
+
 
 function writeStore(key: string, d: Deal[]) {
   if (typeof window === "undefined") return;
