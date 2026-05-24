@@ -1145,6 +1145,129 @@ export type Database = {
           },
         ]
       }
+      expense_approver_assignments: {
+        Row: {
+          approver_id: string
+          company_id: string
+          created_at: string
+          id: string
+          rep_id: string
+        }
+        Insert: {
+          approver_id: string
+          company_id: string
+          created_at?: string
+          id?: string
+          rep_id: string
+        }
+        Update: {
+          approver_id?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          rep_id?: string
+        }
+        Relationships: []
+      }
+      expense_categories: {
+        Row: {
+          auto_approve_limit: number | null
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          auto_approve_limit?: number | null
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          auto_approve_limit?: number | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category_id: string | null
+          category_name: string
+          company_id: string
+          created_at: string
+          currency: string
+          description: string | null
+          expense_date: string
+          id: string
+          lead_id: string | null
+          receipt_path: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_comment: string | null
+          status: Database["public"]["Enums"]["expense_status"]
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          visit_id: string | null
+        }
+        Insert: {
+          amount?: number
+          category_id?: string | null
+          category_name: string
+          company_id: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          lead_id?: string | null
+          receipt_path?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_comment?: string | null
+          status?: Database["public"]["Enums"]["expense_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+          visit_id?: string | null
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          category_name?: string
+          company_id?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          lead_id?: string | null
+          receipt_path?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_comment?: string | null
+          status?: Database["public"]["Enums"]["expense_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+          visit_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -2449,6 +2572,7 @@ export type Database = {
       crm_priority: "low" | "medium" | "high"
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
+      expense_status: "draft" | "submitted" | "approved" | "rejected"
       tms_assignee_role: "primary" | "collaborator" | "watcher"
       tms_dependency_type:
         | "blocks"
@@ -2633,6 +2757,7 @@ export const Constants = {
       crm_priority: ["low", "medium", "high"],
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
+      expense_status: ["draft", "submitted", "approved", "rejected"],
       tms_assignee_role: ["primary", "collaborator", "watcher"],
       tms_dependency_type: [
         "blocks",
