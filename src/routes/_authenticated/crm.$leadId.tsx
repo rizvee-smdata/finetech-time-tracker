@@ -177,6 +177,7 @@ function LeadDetail() {
           <TabsTrigger value="timeline">Timeline ({activities.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="tasks">Tasks ({tasks.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="quotes">Quotes ({quotes.data?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="visits">Visits ({relatedVisits.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="attachments">Files ({attachments.data?.length ?? 0})</TabsTrigger>
         </TabsList>
 
@@ -193,6 +194,10 @@ function LeadDetail() {
         <TabsContent value="quotes" className="space-y-4">
           <AddQuote leadId={leadId} companyId={lead.company_id} userId={user!.id} currentVersion={(quotes.data?.[0]?.version ?? 0) + 1} />
           <QuoteList items={quotes.data ?? []} />
+        </TabsContent>
+
+        <TabsContent value="visits" className="space-y-4">
+          <RelatedVisits items={relatedVisits.data ?? []} />
         </TabsContent>
 
         <TabsContent value="attachments" className="space-y-4">
