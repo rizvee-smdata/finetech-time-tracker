@@ -168,6 +168,16 @@ function LeadDetail() {
         </div>
 
         {lead.notes && <div className="mt-4 whitespace-pre-wrap rounded-md bg-muted/40 p-3 text-sm">{lead.notes}</div>}
+        {(lead.competitor_name || lead.competitor_price || lead.competitor_notes) && (
+          <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">Competitor</div>
+            <div className="mt-1 flex flex-wrap gap-3">
+              {lead.competitor_name && <span className="font-medium">{lead.competitor_name}</span>}
+              {lead.competitor_price != null && <span>{formatMoney(lead.competitor_price, lead.currency)}</span>}
+            </div>
+            {lead.competitor_notes && <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{lead.competitor_notes}</p>}
+          </div>
+        )}
         {lead.stage === "lost" && lead.lost_reason && (
           <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm">
             <span className="font-medium">Lost reason: </span>{lead.lost_reason}
