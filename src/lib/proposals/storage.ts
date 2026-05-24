@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 const PROP_BASE = "deskiq_proposals";
 const BLOCKS_BASE = "deskiq_proposal_blocks";
 const DRAFT_KEY = "deskiq_proposal_wizard_draft";
+const PROP_SEEDED_FLAG = "deskiq_proposals::__seeded__";
 
 const scoped = (base: string, companyId: string | null | undefined) =>
   companyId ? `${base}::${companyId}` : `${base}::__none__`;
@@ -36,12 +37,26 @@ function readProposals(key: string): Proposal[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(key);
-    if (!raw) {
+    if (raw) return JSON.parse(raw) as Proposal[];
+
+    // Legacy migration: adopt old un-scoped data into this company once
+    const legacy = localStorage.getItem(PROP_BASE);
+    if (legacy) {
+      localStorage.setItem(key, legacy);
+      localStorage.removeItem(PROP_BASE);
+      return JSON.parse(legacy) as Proposal[];
+    }
+
+    // First time: seed once. Other companies start empty so switching is visible.
+    if (!localStorage.getItem(PROP_SEEDED_FLAG)) {
       const seeded = seedProposals();
       localStorage.setItem(key, JSON.stringify(seeded));
+      localStorage.setItem(PROP_SEEDED_FLAG, "1");
       return seeded;
     }
-    return JSON.parse(raw) as Proposal[];
+
+    localStorage.setItem(key, "[]");
+    return [];
   } catch {
     return [];
   }
