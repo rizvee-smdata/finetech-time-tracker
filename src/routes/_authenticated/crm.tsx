@@ -15,6 +15,8 @@ function CrmLayout() {
     { to: "/crm/list", label: "List" },
     { to: "/crm/dashboard", label: "Dashboard" },
     { to: "/crm/activity", label: "Activity" },
+    { to: "/crm/calendar", label: "Calendar" },
+    { to: "/crm/leaderboard", label: "Leaderboard" },
     { to: "/crm/forecast", label: "Forecast" },
     { to: "/crm/targets", label: "Targets" },
     { to: "/crm/quotes", label: "Quotes" },

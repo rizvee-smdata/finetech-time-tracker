@@ -45,6 +45,7 @@ import { Route as AuthenticatedCrmQuotesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
+import { Route as AuthenticatedCrmLeaderboardRouteImport } from './routes/_authenticated/crm.leaderboard'
 import { Route as AuthenticatedCrmInboxRouteImport } from './routes/_authenticated/crm.inbox'
 import { Route as AuthenticatedCrmHotRouteImport } from './routes/_authenticated/crm.hot'
 import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenticated/crm.forecast'
@@ -251,6 +252,12 @@ const AuthenticatedCrmListRoute = AuthenticatedCrmListRouteImport.update({
   path: '/list',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmLeaderboardRoute =
+  AuthenticatedCrmLeaderboardRouteImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmInboxRoute = AuthenticatedCrmInboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
@@ -356,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -405,6 +413,7 @@ export interface FileRoutesByTo {
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -458,6 +467,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/_authenticated/crm/hot': typeof AuthenticatedCrmHotRoute
   '/_authenticated/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/_authenticated/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -511,6 +521,7 @@ export interface FileRouteTypes {
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
+    | '/crm/leaderboard'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -560,6 +571,7 @@ export interface FileRouteTypes {
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
+    | '/crm/leaderboard'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -612,6 +624,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/forecast'
     | '/_authenticated/crm/hot'
     | '/_authenticated/crm/inbox'
+    | '/_authenticated/crm/leaderboard'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
     | '/_authenticated/crm/pipeline'
@@ -903,6 +916,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmListRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/leaderboard': {
+      id: '/_authenticated/crm/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/crm/leaderboard'
+      preLoaderRoute: typeof AuthenticatedCrmLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/inbox': {
       id: '/_authenticated/crm/inbox'
       path: '/inbox'
@@ -1014,6 +1034,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmForecastRoute: typeof AuthenticatedCrmForecastRoute
   AuthenticatedCrmHotRoute: typeof AuthenticatedCrmHotRoute
   AuthenticatedCrmInboxRoute: typeof AuthenticatedCrmInboxRoute
+  AuthenticatedCrmLeaderboardRoute: typeof AuthenticatedCrmLeaderboardRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
@@ -1037,6 +1058,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmForecastRoute: AuthenticatedCrmForecastRoute,
   AuthenticatedCrmHotRoute: AuthenticatedCrmHotRoute,
   AuthenticatedCrmInboxRoute: AuthenticatedCrmInboxRoute,
+  AuthenticatedCrmLeaderboardRoute: AuthenticatedCrmLeaderboardRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
