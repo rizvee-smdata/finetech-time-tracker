@@ -39,7 +39,7 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
   }
 
   return (
-    <div className="flex gap-3 overflow-x-auto pb-3">
+    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-3">
       {STAGES.map((s) => {
         const list = byStage.get(s.id) ?? [];
         const total = list.reduce((sum, l) => sum + (l.expected_value ?? 0), 0);
@@ -50,7 +50,7 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
             onDragLeave={() => setDragOver(null)}
             onDrop={(e) => onDrop(s.id, e)}
             className={cn(
-              "min-w-[280px] w-[280px] flex-shrink-0 rounded-lg border bg-muted/30 transition-colors",
+              "min-w-0 rounded-lg border bg-muted/30 transition-colors",
               dragOver === s.id && "border-primary bg-primary/5",
             )}
           >
