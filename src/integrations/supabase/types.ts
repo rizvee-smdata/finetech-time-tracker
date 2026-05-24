@@ -180,6 +180,48 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_capture_keys: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          default_assignee: string | null
+          default_source: string
+          id: string
+          is_active: boolean
+          label: string
+          last_used_at: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          default_assignee?: string | null
+          default_source?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          last_used_at?: string | null
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          default_assignee?: string | null
+          default_source?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_used_at?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       crm_competitors: {
         Row: {
           company_id: string
