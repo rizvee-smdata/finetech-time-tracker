@@ -119,11 +119,11 @@ ${data.dataSnapshot ? `# Workspace snapshot\n${data.dataSnapshot}` : ""}`;
 
     const payload = await res.json();
     const args = payload?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-    if (!args) return { reply: "Sorry, I couldn't form a response.", actions: [] as Record<string, unknown>[] };
+    if (!args) return { reply: "Sorry, I couldn't form a response.", actionsJson: "[]" };
     try {
-      const parsed = JSON.parse(args) as { reply: string; actions?: Record<string, unknown>[] };
-      return { reply: parsed.reply, actions: parsed.actions ?? [] };
+      const parsed = JSON.parse(args) as { reply: string; actions?: unknown[] };
+      return { reply: parsed.reply, actionsJson: JSON.stringify(parsed.actions ?? []) };
     } catch {
-      return { reply: "Sorry, my response was malformed.", actions: [] as Record<string, unknown>[] };
+      return { reply: "Sorry, my response was malformed.", actionsJson: "[]" };
     }
   });
