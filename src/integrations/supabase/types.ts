@@ -1349,6 +1349,75 @@ export type Database = {
           },
         ]
       }
+      targets: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          metric: Database["public"]["Enums"]["target_metric"]
+          notes: string | null
+          period_end: string
+          period_kind: Database["public"]["Enums"]["target_period_kind"]
+          period_start: string
+          scope: Database["public"]["Enums"]["target_scope"]
+          target_value: number
+          territory_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          metric: Database["public"]["Enums"]["target_metric"]
+          notes?: string | null
+          period_end: string
+          period_kind?: Database["public"]["Enums"]["target_period_kind"]
+          period_start: string
+          scope: Database["public"]["Enums"]["target_scope"]
+          target_value: number
+          territory_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          metric?: Database["public"]["Enums"]["target_metric"]
+          notes?: string | null
+          period_end?: string
+          period_kind?: Database["public"]["Enums"]["target_period_kind"]
+          period_start?: string
+          scope?: Database["public"]["Enums"]["target_scope"]
+          target_value?: number
+          territory_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "targets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "targets_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "crm_territories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       time_entries: {
         Row: {
           check_in: string
@@ -2573,6 +2642,15 @@ export type Database = {
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      target_metric:
+        | "revenue"
+        | "visits"
+        | "new_leads"
+        | "won_leads"
+        | "quotes_sent"
+        | "meetings"
+      target_period_kind: "monthly" | "quarterly" | "yearly" | "custom"
+      target_scope: "user" | "territory" | "company"
       tms_assignee_role: "primary" | "collaborator" | "watcher"
       tms_dependency_type:
         | "blocks"
@@ -2758,6 +2836,16 @@ export const Constants = {
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      target_metric: [
+        "revenue",
+        "visits",
+        "new_leads",
+        "won_leads",
+        "quotes_sent",
+        "meetings",
+      ],
+      target_period_kind: ["monthly", "quarterly", "yearly", "custom"],
+      target_scope: ["user", "territory", "company"],
       tms_assignee_role: ["primary", "collaborator", "watcher"],
       tms_dependency_type: [
         "blocks",
