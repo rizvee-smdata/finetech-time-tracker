@@ -34,6 +34,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { MiniTimerWidget } from "@/components/time/MiniTimerWidget";
 import { NotificationCenter } from "@/components/global/NotificationCenter";
 import { GlobalSearch } from "@/components/global/GlobalSearch";
+import { AIAgentTrigger } from "@/components/global/AIAgent";
 
 
 const nav = [
@@ -126,6 +127,7 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
+          <AIAgentTrigger />
           <GlobalSearch />
           <NotificationCenter />
           <NotificationBell compact />
@@ -136,6 +138,7 @@ export function AppShell() {
 
       {/* Desktop floating bell */}
       <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
+        <AIAgentTrigger />
         <GlobalSearch />
         <MiniTimerWidget />
         <NotificationCenter />

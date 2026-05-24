@@ -1,63 +1,88 @@
-# Master Integration Plan — DeskIQ
+# DeskIQ Intelligence Layer
 
-This is a large, cross-cutting change touching every module. I'll build it in 7 focused phases so the app keeps compiling after each phase. Lovable AI Gateway (Gemini) is used for the morning briefing — no Anthropic key needed.
+Depth 3 = focused, high-impact AI everywhere — not a token feature in every form. One global agent + the highest-leverage inline assists per module.
 
-## Phase 1 — Unified state + global search
+## 1. Global AI Agent Sidebar (`/_authenticated`)
 
-- New `src/lib/app/DeskIQContext.tsx`
-  - `useReducer` over `{ meetings, deals, timeEntries, timerState, projectBudgets, proposals, notifications, settings, dailyBriefing, briefingDate }`
-  - Hydrates from each module's existing localStorage stores (no data migration); persists the *composite* under `deskiq_state` and re-syncs sub-stores on change so existing components keep working.
-  - Cross-module action creators: `meetingProcessed`, `timerStopped`, `proposalStatusChanged`, `actionCompleted`, `dealStageChanged`. Each pushes a `Notification` and recalculates affected deal health via existing `calculateHealthScore`.
-- `src/lib/app/types.ts` — `Notification`, `AppSettings`, `DailyBriefing`.
-- Mount provider in `src/routes/__root.tsx`.
-- `src/components/global/GlobalSearch.tsx` — CMD+K palette using shadcn `Command`, searches deals / meetings / proposals / time entries / actions, grouped results with module icons → router navigate.
-- Add search trigger + keyboard shortcut to `AppShell`.
+A right-side slide-over (CMD+J), context-aware of the current route.
 
-## Phase 2 — Meeting ↔ Deal Health
+- **Component**: `src/components/global/AIAgent.tsx` (sheet, chat UI, streaming).
+- **Server fn**: `src/lib/ai/agent.functions.ts` — `runAgent({ messages, route, context })` using Lovable AI Gateway, `google/gemini-3-flash-preview`, tool-calling enabled.
+- **Tool surface** (executed server-side then applied client-side via a single `applyAction` reducer):
+  - `search_data` — read deals / leads / meetings / tasks / proposals
+  - `update_deal_stage`, `add_deal_interaction`, `create_next_best_action`
+  - `create_task`, `complete_task`
+  - `draft_email`, `draft_proposal_section`
+  - `start_timer`, `stop_timer`
+  - `summarize_meeting`, `link_meeting_to_deal`
+- **Auto-apply**: every tool call returns `{ applied: true, undo: <snapshot> }` and shows an inline "Undo" chip in the chat for 30s. No confirmation modal — user asked for full agent.
+- **Safety rails**: hard-disallow destructive ops (delete deal, delete user, mass updates >5 rows) — agent returns "needs confirmation" instead.
+- **Page context**: each route registers `useAIContext({ summary, entities })` so the agent prompt always carries "you are on /deals/abc — deal: Jamuna Bank, stage Negotiation".
 
-- In `src/components/meetings/ResultsView.tsx` add a "Link to Deal" `Select` (deals from context).
-- On select → dispatch `meetingProcessed({ meetingId, dealId })`:
-  - Appends an `Interaction` (type derived from meeting title keywords; sentiment from meeting sentiment; notes = summary).
-  - Recalculates `DealHealth`, toast `Deal health updated: {name} {prev} → {new} {emoji}`.
+## 2. Inline AI assists (the high-leverage ones)
 
-## Phase 3 — Meeting → Proposal & Deal → Proposal
+| Module | Surface | Action |
+|---|---|---|
+| CRM Lead form | "✨ Score & enrich" button | AI scores 0-100 + tags industry/tier/reasoning |
+| CRM Lead detail | "Draft outreach" | Personalized first-touch email (BD market tone) |
+| CRM Lead row | Inline "Next step" chip | One-sentence next action (regenerable) |
+| Deals detail | "Coach me" panel | 3-bullet coaching: risks, what to say, when |
+| Deals pipeline | "Weekly digest" button (top) | Markdown digest of stalled / hot / closing-this-week |
+| Tasks board | "Plan my day" (top of board) | Generates an ordered list with reasoning, one-click apply as task order |
+| Planning new | "Suggest plan" | Drafts plan items from open deals + recent meetings |
+| Visits new | "Summarize notes" on textarea | Cleans up raw notes → structured summary + tags |
+| Meetings ResultsView | (already has AI) — add "Generate follow-up tasks" | Creates tasks from action items in one click |
+| Reports index | "Explain this week" card | Narrative summary of pipeline + time + wins |
 
-- Add "📄 Start Proposal from This Meeting" button in `ResultsView` → navigates to `/proposals/new?fromMeeting=<id>`.
-- Add "📄 Generate Proposal for This Deal" on `deals.$dealId.tsx` → `/proposals/new?fromDeal=<id>`.
-- Extend `proposals.new.tsx` wizard to read those search params and pre-fill client info, pain points, objections, context (meeting) or CRM fields + products + competitor + NBA context (deal) via the wizard draft store.
+Each assist = one shared `<AIButton>` component + a thin server fn per use-case under `src/lib/ai/assists/`.
 
-## Phase 4 — Time Tracker → Deal Health
+## 3. Shared infrastructure
 
-- In time `storage.ts` stop-timer flow (or via context dispatch `timerStopped`):
-  - If `dealId` set: increment `deal.totalMinutes`, recompute `revenuePerHour = value / hours`, push budget alert if `hours > budget.budgetedHours * threshold`, recalculate health (adds an `Interaction` of type "work logged" with neutral sentiment so recency/engagement reflect activity).
-- `HoursValueScatter` already reads from store → updates live.
+- `src/lib/ai/gateway.ts` — already exists (`ai-gateway.ts`). Reused.
+- `src/lib/ai/agent.functions.ts` — new, the agent loop with tool dispatch.
+- `src/lib/ai/tools.ts` — tool schemas (zod) + server-side executors that read/write the existing localStorage stores via the existing `integrations.ts` helpers.
+- `src/lib/ai/context.tsx` — `<AIContextProvider>` + `useAIContext()` hook; mounted once in `_authenticated/route.tsx`.
+- `src/components/global/AIAgent.tsx` — the sheet, chat list (react-markdown), streaming, undo chips. Keyboard: CMD+J / CTRL+J.
+- `src/components/ai/AIButton.tsx` — small reusable button with spinner + result drawer.
+- `AppShell.tsx` — add a Sparkles trigger next to GlobalSearch on desktop and mobile.
 
-## Phase 5 — Proposal → Deal stage
+## 4. Architecture notes (technical)
 
-- Hook `useProposalsStore.updateStatus` to dispatch `proposalStatusChanged`:
-  - `sent` → set deal stage `Proposal`.
-  - `accepted` → stage `Closed Won` + confetti (lightweight inline canvas, no new dep) + win note.
-  - `rejected` → stage `Closed Lost` + open a small `WinLossNoteDialog`.
-  - Each recalculates health and emits a notification.
+```text
+User → AIAgent sheet → runAgent serverFn
+                          ↓ (tool call loop)
+                       Gemini decides → returns tool call
+                          ↓
+                       executor (server) returns data OR plan
+                          ↓
+                       sheet applies via window events
+                       (deskiq:deals-updated, deskiq:time-updated, etc.)
+                          ↓
+                       all existing stores auto-rehydrate
+```
 
-## Phase 6 — Action Item → Time Tracker
+- All state lives in localStorage today; agent reads/writes through the same `useDealsStore`/`useTimeStore`/`useProposalsStore` event channels that already exist — no schema changes, no migrations.
+- Streaming response via SSE through existing `ai-gateway.ts` pattern (already used by `briefing.functions.ts`).
+- One model: `google/gemini-3-flash-preview` for assists, `google/gemini-2.5-pro` only for the agent loop (better tool-calling).
 
-- `NextBestActionCard` / `ActionCenterList`: add "⏱️ Start Timer" button → `timerStore.start({ description: action.title, dealId, category: mapActionTypeToCategory(action.type) })` and navigate to `/time`.
+## 5. Out of scope for this pass (call out)
 
-## Phase 7 — Home / Notifications / Settings
+- Vector search / RAG over past meetings — would need pgvector, ask later.
+- Voice input for the agent — easy follow-up.
+- AI in Attendance, Expenses, Contracts, Surveys, Targets, Reminders — lower leverage, will add if you want a second pass.
+- Confirmation modals on destructive ops are *off* per your "full agent" pick; if you change your mind, flip one flag.
 
-- New `src/routes/_authenticated/index.tsx` (replace the current landing for authed users):
-  - `MorningBriefingCard` — server fn `generateBriefing` calls Lovable AI Gateway (`google/gemini-2.5-flash`) with the data snapshot, returns the JSON described in the prompt, cached per `briefingDate`. Manual refresh button.
-  - 4-widget grid: `PipelinePulseWidget`, `TodayActionsWidget`, `LiveTimerWidget` (reuses `LiveTimer`), `ProposalPipelineWidget`.
-- `NotificationCenter.tsx` — replaces the floating `AlertsBell`/`NotificationBell` combo. Sheet with categorized list (Urgent/Today/Updates/Wins), per-item dismiss + quick action, source-module badge.
-- `src/routes/_authenticated/settings.tsx` with tabs: Company Profile, Team, Working Hours, Deal Config (stage names, expected days, score thresholds), Proposal Defaults, Notification Preferences. All stored in `settings` slice of context. Scoring + alert thresholds read from settings (small refactor of `scoring.ts` to accept overrides; defaults unchanged).
+## 6. Build order (single pass)
 
-## Technical notes
+1. `lib/ai/context.tsx` + `_authenticated/route.tsx` wiring
+2. `lib/ai/tools.ts` (schemas + executors)
+3. `lib/ai/agent.functions.ts` (agent loop)
+4. `components/global/AIAgent.tsx` + `AppShell` trigger + CMD+J
+5. `components/ai/AIButton.tsx` + 10 inline assists (one server fn each, ~15 LOC each)
+6. Smoke-check build, fix types
 
-- Single source of truth: context owns the data; sub-store hooks become thin wrappers that read/write through context so existing components don't break. Where a wholesale refactor is too risky in one pass, the context *subscribes* to sub-store changes and *also* re-dispatches into sub-stores — this keeps the integration working without rewriting every component.
-- AI: Lovable AI Gateway (`LOVABLE_API_KEY` already provisioned) via existing `src/lib/ai-gateway.ts`. No new secrets.
-- No DB / Supabase migrations — everything stays in localStorage as the existing modules do.
-- Confetti: small inline implementation in `src/lib/ui/confetti.ts` (no new dep).
-- Acceptance: after each phase I'll spot-check the build output; final pass verifies all 12 acceptance criteria.
+Estimated ~15 files added, ~6 files touched.
 
-Shall I proceed with Phase 1?
+---
+
+Approve and I'll build it. Reply with any tweaks (e.g. "skip Reports", "use Gemini Pro for assists too", "require confirmation on destructive tools").
