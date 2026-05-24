@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { QuoteBuilderDialog } from "@/components/crm/QuoteBuilderDialog";
 import { CallsPanel } from "@/components/crm/CallsPanel";
+import { AIInsightsPanel } from "@/components/crm/AIInsightsPanel";
 
 
 const sb = supabase as any;
