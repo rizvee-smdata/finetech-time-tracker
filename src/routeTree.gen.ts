@@ -32,6 +32,7 @@ import { Route as AuthenticatedCustomersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedContractsRouteImport } from './routes/_authenticated/contracts'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
+import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
@@ -242,6 +243,11 @@ const AuthenticatedConsultantsRoute =
     path: '/consultants',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
+  id: '/command',
+  path: '/command',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   id: '/check-in',
   path: '/check-in',
@@ -790,6 +796,7 @@ export interface FileRoutesByFullPath {
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/audit': typeof AuthenticatedAuditRoute
   '/check-in': typeof AuthenticatedCheckInRoute
+  '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/contracts': typeof AuthenticatedContractsRouteWithChildren
   '/crm': typeof AuthenticatedCrmRouteWithChildren
@@ -907,6 +914,7 @@ export interface FileRoutesByTo {
   '/ai': typeof AuthenticatedAiRoute
   '/audit': typeof AuthenticatedAuditRoute
   '/check-in': typeof AuthenticatedCheckInRoute
+  '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -1014,6 +1022,7 @@ export interface FileRoutesById {
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
+  '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
   '/_authenticated/contracts': typeof AuthenticatedContractsRouteWithChildren
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
@@ -1134,6 +1143,7 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/audit'
     | '/check-in'
+    | '/command'
     | '/consultants'
     | '/contracts'
     | '/crm'
@@ -1251,6 +1261,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/audit'
     | '/check-in'
+    | '/command'
     | '/consultants'
     | '/customers'
     | '/dashboard'
@@ -1357,6 +1368,7 @@ export interface FileRouteTypes {
     | '/_authenticated/attendance'
     | '/_authenticated/audit'
     | '/_authenticated/check-in'
+    | '/_authenticated/command'
     | '/_authenticated/consultants'
     | '/_authenticated/contracts'
     | '/_authenticated/crm'
@@ -1641,6 +1653,13 @@ declare module '@tanstack/react-router' {
       path: '/consultants'
       fullPath: '/consultants'
       preLoaderRoute: typeof AuthenticatedConsultantsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/command': {
+      id: '/_authenticated/command'
+      path: '/command'
+      fullPath: '/command'
+      preLoaderRoute: typeof AuthenticatedCommandRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/check-in': {
@@ -2650,6 +2669,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
+  AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
   AuthenticatedContractsRoute: typeof AuthenticatedContractsRouteWithChildren
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
@@ -2678,6 +2698,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAttendanceRoute: AuthenticatedAttendanceRouteWithChildren,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
+  AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
   AuthenticatedContractsRoute: AuthenticatedContractsRouteWithChildren,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
