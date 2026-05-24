@@ -12,7 +12,7 @@ import type {
   InteractionType,
   Sentiment,
 } from "@/lib/deals/types";
-import type { Meeting } from "@/lib/meetings/types";
+
 import type { Proposal, ProposalStatus } from "@/lib/proposals/types";
 import { pushNotification } from "./notifications";
 import { getSettings } from "./settings";
@@ -80,39 +80,6 @@ function recalcDeal(deal: Deal): RecalcResult {
   };
 }
 
-// ── INTEGRATION 1: Meeting → Deal Health ────────────────────────────────────
-export function linkMeetingToDeal(meeting: Meeting, dealId: string) {
-  const deals = readDeals();
-  const idx = deals.findIndex((d) => d.id === dealId);
-  if (idx < 0) return null;
-  const target = deals[idx];
-  const interaction: Interaction = {
-    id: uid(),
-    type: inferInteractionType(meeting.title),
-    date: meeting.date,
-    notes: meeting.processed?.summary ?? meeting.rawNotes.slice(0, 280),
-    sentiment: (meeting.processed?.sentimentScore as Sentiment) ?? "neutral",
-    conductedBy: meeting.attendees[0] ?? "Me",
-  };
-  const updated: Deal = {
-    ...target,
-    interactions: [...target.interactions, interaction],
-    lastContactDate: interaction.date,
-  };
-  const result = recalcDeal(updated);
-  deals[idx] = result.deal;
-  writeDeals(deals);
-
-  pushNotification({
-    category: "update",
-    source: "meeting",
-    title: `Meeting linked to ${target.clientCompany}`,
-    description: `Deal health ${result.prevScore} → ${result.newScore} ${healthEmoji(result.deal.healthScore!.status)}`,
-    link: { to: "/deals/$dealId", params: { dealId } },
-    actionLabel: "Open deal",
-  });
-  return result;
-}
 
 
 // ── INTEGRATION 5: Proposal status → Deal stage ─────────────────────────────

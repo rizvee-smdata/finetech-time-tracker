@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { Search as SearchIcon, TrendingUp, Mic, FileText, CheckSquare } from "lucide-react";
+import { Search as SearchIcon, TrendingUp, FileText, CheckSquare } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { useDealsStore } from "@/lib/deals/storage";
-import { useMeetingsStore } from "@/lib/meetings/storage";
+
 import { useProposalsStore } from "@/lib/proposals/storage";
 
 
 type Hit = {
   id: string;
-  module: "deal" | "meeting" | "proposal" | "action";
+  module: "deal" | "proposal" | "action";
   label: string;
   sub?: string;
   onSelect: () => void;
@@ -29,7 +29,7 @@ export function GlobalSearch() {
   const [q, setQ] = useState("");
   const router = useRouter();
   const { deals } = useDealsStore();
-  const { meetings } = useMeetingsStore();
+  
   const { proposals } = useProposalsStore();
   
 
@@ -48,7 +48,6 @@ export function GlobalSearch() {
     const term = q.trim().toLowerCase();
     const out: Record<string, Hit[]> = {
       deal: [],
-      meeting: [],
       proposal: [],
       action: [],
     };
@@ -83,20 +82,6 @@ export function GlobalSearch() {
       });
     });
 
-    meetings.forEach((m) => {
-      if (match(`${m.title} ${m.clientCompany} ${m.rawNotes} ${m.processed?.summary ?? ""}`)) {
-        out.meeting.push({
-          id: `m-${m.id}`,
-          module: "meeting",
-          label: m.title,
-          sub: `${m.clientCompany} · ${new Date(m.date).toLocaleDateString()}`,
-          onSelect: () => {
-            setOpen(false);
-            router.navigate({ to: "/meetings" });
-          },
-        });
-      }
-    });
 
     proposals.forEach((p) => {
       if (match(`${p.title} ${p.clientCompany} ${p.clientName}`)) {
@@ -136,7 +121,7 @@ export function GlobalSearch() {
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
-          placeholder="Search deals, meetings, proposals…"
+          placeholder="Search deals, proposals, actions…"
           value={q}
           onValueChange={setQ}
         />
@@ -152,20 +137,6 @@ export function GlobalSearch() {
                 </CommandItem>
               ))}
             </CommandGroup>
-          )}
-          {hits.meeting.length > 0 && (
-            <>
-              <CommandSeparator />
-              <CommandGroup heading="Meetings">
-                {hits.meeting.map((h) => (
-                  <CommandItem key={h.id} onSelect={h.onSelect}>
-                    <Mic className="mr-2 h-3.5 w-3.5 text-blue-400" />
-                    <span className="flex-1">{h.label}</span>
-                    <span className="text-xs text-muted-foreground">{h.sub}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </>
           )}
           {hits.proposal.length > 0 && (
             <>
