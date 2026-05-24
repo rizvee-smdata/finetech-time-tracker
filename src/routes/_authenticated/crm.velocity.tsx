@@ -139,7 +139,7 @@ function VelocityPage() {
           <p className="text-sm text-muted-foreground">Time-in-stage, funnel conversion and sales cycle.</p>
         </div>
         <div className="flex items-center gap-2">
-          <AssigneeFilter value={assignee} onChange={setAssignee} />
+          <AssigneeFilter companyId={companyId} value={assignee} onChange={setAssignee} />
           <Select value={windowDays} onValueChange={setWindowDays}>
             <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>

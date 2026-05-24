@@ -35,6 +35,7 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedCrmVelocityRouteImport } from './routes/_authenticated/crm.velocity'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmTemplatesRouteImport } from './routes/_authenticated/crm.templates'
 import { Route as AuthenticatedCrmTargetsRouteImport } from './routes/_authenticated/crm.targets'
@@ -197,6 +198,12 @@ const AuthenticatedTasksTaskIdRoute =
     id: '/$taskId',
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedCrmVelocityRoute =
+  AuthenticatedCrmVelocityRouteImport.update({
+    id: '/velocity',
+    path: '/velocity',
+    getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
 const AuthenticatedCrmTerritoriesRoute =
   AuthenticatedCrmTerritoriesRouteImport.update({
@@ -389,6 +396,7 @@ export interface FileRoutesByFullPath {
   '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
+  '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -441,6 +449,7 @@ export interface FileRoutesByTo {
   '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
+  '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -497,6 +506,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/_authenticated/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
+  '/_authenticated/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -553,6 +563,7 @@ export interface FileRouteTypes {
     | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
+    | '/crm/velocity'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -605,6 +616,7 @@ export interface FileRouteTypes {
     | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
+    | '/crm/velocity'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -660,6 +672,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/targets'
     | '/_authenticated/crm/templates'
     | '/_authenticated/crm/territories'
+    | '/_authenticated/crm/velocity'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -871,6 +884,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/$taskId'
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/crm/velocity': {
+      id: '/_authenticated/crm/velocity'
+      path: '/velocity'
+      fullPath: '/crm/velocity'
+      preLoaderRoute: typeof AuthenticatedCrmVelocityRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/crm/territories': {
       id: '/_authenticated/crm/territories'
@@ -1086,6 +1106,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmTargetsRoute: typeof AuthenticatedCrmTargetsRoute
   AuthenticatedCrmTemplatesRoute: typeof AuthenticatedCrmTemplatesRoute
   AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
+  AuthenticatedCrmVelocityRoute: typeof AuthenticatedCrmVelocityRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedCrmAccountAccountIdRoute: typeof AuthenticatedCrmAccountAccountIdRoute
 }
@@ -1112,6 +1133,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmTargetsRoute: AuthenticatedCrmTargetsRoute,
   AuthenticatedCrmTemplatesRoute: AuthenticatedCrmTemplatesRoute,
   AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
+  AuthenticatedCrmVelocityRoute: AuthenticatedCrmVelocityRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedCrmAccountAccountIdRoute: AuthenticatedCrmAccountAccountIdRoute,
 }
