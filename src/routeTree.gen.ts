@@ -57,6 +57,7 @@ import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
 import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
+import { Route as AuthenticatedRemindersPreferencesRouteImport } from './routes/_authenticated/reminders.preferences'
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
@@ -362,6 +363,12 @@ const AuthenticatedReportsSalesRoute =
     id: '/sales',
     path: '/sales',
     getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedRemindersPreferencesRoute =
+  AuthenticatedRemindersPreferencesRouteImport.update({
+    id: '/preferences',
+    path: '/preferences',
+    getParentRoute: () => AuthenticatedRemindersRoute,
   } as any)
 const AuthenticatedPlanningUpcomingRoute =
   AuthenticatedPlanningUpcomingRouteImport.update({
@@ -699,6 +706,7 @@ export interface FileRoutesByFullPath {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -785,6 +793,7 @@ export interface FileRoutesByTo {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -883,6 +892,7 @@ export interface FileRoutesById {
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/_authenticated/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -981,6 +991,7 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/reminders/preferences'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -1067,6 +1078,7 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/reminders/preferences'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -1164,6 +1176,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
+    | '/_authenticated/reminders/preferences'
     | '/_authenticated/reports/sales'
     | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
@@ -1547,6 +1560,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/reports/sales'
       preLoaderRoute: typeof AuthenticatedReportsSalesRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reminders/preferences': {
+      id: '/_authenticated/reminders/preferences'
+      path: '/preferences'
+      fullPath: '/reminders/preferences'
+      preLoaderRoute: typeof AuthenticatedRemindersPreferencesRouteImport
+      parentRoute: typeof AuthenticatedRemindersRoute
     }
     '/_authenticated/planning/upcoming': {
       id: '/_authenticated/planning/upcoming'
@@ -2029,11 +2049,14 @@ const AuthenticatedPlanningRouteWithChildren =
   )
 
 interface AuthenticatedRemindersRouteChildren {
+  AuthenticatedRemindersPreferencesRoute: typeof AuthenticatedRemindersPreferencesRoute
   AuthenticatedRemindersIndexRoute: typeof AuthenticatedRemindersIndexRoute
 }
 
 const AuthenticatedRemindersRouteChildren: AuthenticatedRemindersRouteChildren =
   {
+    AuthenticatedRemindersPreferencesRoute:
+      AuthenticatedRemindersPreferencesRoute,
     AuthenticatedRemindersIndexRoute: AuthenticatedRemindersIndexRoute,
   }
 
