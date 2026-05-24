@@ -37,6 +37,7 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
 import { Route as AuthenticatedCrmVelocityRouteImport } from './routes/_authenticated/crm.velocity'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmTemplatesRouteImport } from './routes/_authenticated/crm.templates'
@@ -214,6 +215,12 @@ const AuthenticatedTasksTaskIdRoute =
     id: '/$taskId',
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedExpensesNewRoute =
+  AuthenticatedExpensesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthenticatedExpensesRoute,
   } as any)
 const AuthenticatedCrmVelocityRoute =
   AuthenticatedCrmVelocityRouteImport.update({
@@ -433,6 +440,7 @@ export interface FileRoutesByFullPath {
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -490,6 +498,7 @@ export interface FileRoutesByTo {
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -552,6 +561,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -614,6 +624,7 @@ export interface FileRouteTypes {
     | '/crm/templates'
     | '/crm/territories'
     | '/crm/velocity'
+    | '/expenses/new'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -671,6 +682,7 @@ export interface FileRouteTypes {
     | '/crm/templates'
     | '/crm/territories'
     | '/crm/velocity'
+    | '/expenses/new'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -732,6 +744,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/templates'
     | '/_authenticated/crm/territories'
     | '/_authenticated/crm/velocity'
+    | '/_authenticated/expenses/new'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -960,6 +973,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/$taskId'
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/expenses/new': {
+      id: '/_authenticated/expenses/new'
+      path: '/new'
+      fullPath: '/expenses/new'
+      preLoaderRoute: typeof AuthenticatedExpensesNewRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/crm/velocity': {
       id: '/_authenticated/crm/velocity'
@@ -1243,10 +1263,12 @@ const AuthenticatedCrmRouteWithChildren =
   AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
 
 interface AuthenticatedExpensesRouteChildren {
+  AuthenticatedExpensesNewRoute: typeof AuthenticatedExpensesNewRoute
   AuthenticatedExpensesIndexRoute: typeof AuthenticatedExpensesIndexRoute
 }
 
 const AuthenticatedExpensesRouteChildren: AuthenticatedExpensesRouteChildren = {
+  AuthenticatedExpensesNewRoute: AuthenticatedExpensesNewRoute,
   AuthenticatedExpensesIndexRoute: AuthenticatedExpensesIndexRoute,
 }
 
