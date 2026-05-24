@@ -17,6 +17,7 @@ import {
   BarChart3,
   Sparkles,
   Target,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,6 +33,7 @@ const nav = [
   { to: "/partners", label: "Partners", icon: Handshake },
   { to: "/consultants", label: "Consultants", icon: Briefcase },
   { to: "/check-in", label: "Time", icon: Clock },
+  { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];
 

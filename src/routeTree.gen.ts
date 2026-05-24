@@ -18,6 +18,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
+import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
@@ -26,6 +27,7 @@ import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
+import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
@@ -35,6 +37,11 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
+import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
+import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
+import { Route as AuthenticatedExpensesApprovalsRouteImport } from './routes/_authenticated/expenses.approvals'
+import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses.$expenseId'
 import { Route as AuthenticatedCrmVelocityRouteImport } from './routes/_authenticated/crm.velocity'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmTemplatesRouteImport } from './routes/_authenticated/crm.templates'
@@ -111,6 +118,11 @@ const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -153,6 +165,12 @@ const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedTasksRoute,
 } as any)
+const AuthenticatedExpensesIndexRoute =
+  AuthenticatedExpensesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -201,6 +219,36 @@ const AuthenticatedTasksTaskIdRoute =
     id: '/$taskId',
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedExpensesSettingsRoute =
+  AuthenticatedExpensesSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
+const AuthenticatedExpensesReportsRoute =
+  AuthenticatedExpensesReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
+const AuthenticatedExpensesNewRoute =
+  AuthenticatedExpensesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
+const AuthenticatedExpensesApprovalsRoute =
+  AuthenticatedExpensesApprovalsRouteImport.update({
+    id: '/approvals',
+    path: '/approvals',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
+const AuthenticatedExpensesExpenseIdRoute =
+  AuthenticatedExpensesExpenseIdRouteImport.update({
+    id: '/$expenseId',
+    path: '/$expenseId',
+    getParentRoute: () => AuthenticatedExpensesRoute,
   } as any)
 const AuthenticatedCrmVelocityRoute =
   AuthenticatedCrmVelocityRouteImport.update({
@@ -389,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
@@ -419,6 +468,11 @@ export interface FileRoutesByFullPath {
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
+  '/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -428,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -475,6 +530,11 @@ export interface FileRoutesByTo {
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
+  '/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -484,6 +544,7 @@ export interface FileRoutesByTo {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
+  '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -505,6 +566,7 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
@@ -535,6 +597,11 @@ export interface FileRoutesById {
   '/_authenticated/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/crm/velocity': typeof AuthenticatedCrmVelocityRoute
+  '/_authenticated/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/_authenticated/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
+  '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -544,6 +611,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -565,6 +633,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/customers'
     | '/dashboard'
+    | '/expenses'
     | '/partners'
     | '/reminders'
     | '/reports'
@@ -595,6 +664,11 @@ export interface FileRouteTypes {
     | '/crm/templates'
     | '/crm/territories'
     | '/crm/velocity'
+    | '/expenses/$expenseId'
+    | '/expenses/approvals'
+    | '/expenses/new'
+    | '/expenses/reports'
+    | '/expenses/settings'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -604,6 +678,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/visits/new'
     | '/crm/'
+    | '/expenses/'
     | '/tasks/'
     | '/visits/'
     | '/crm/account/$accountId'
@@ -651,6 +726,11 @@ export interface FileRouteTypes {
     | '/crm/templates'
     | '/crm/territories'
     | '/crm/velocity'
+    | '/expenses/$expenseId'
+    | '/expenses/approvals'
+    | '/expenses/new'
+    | '/expenses/reports'
+    | '/expenses/settings'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -660,6 +740,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/visits/new'
     | '/crm'
+    | '/expenses'
     | '/tasks'
     | '/visits'
     | '/crm/account/$accountId'
@@ -680,6 +761,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
+    | '/_authenticated/expenses'
     | '/_authenticated/partners'
     | '/_authenticated/reminders'
     | '/_authenticated/reports'
@@ -710,6 +792,11 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/templates'
     | '/_authenticated/crm/territories'
     | '/_authenticated/crm/velocity'
+    | '/_authenticated/expenses/$expenseId'
+    | '/_authenticated/expenses/approvals'
+    | '/_authenticated/expenses/new'
+    | '/_authenticated/expenses/reports'
+    | '/_authenticated/expenses/settings'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -719,6 +806,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
     | '/_authenticated/crm/'
+    | '/_authenticated/expenses/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
     | '/_authenticated/crm/account/$accountId'
@@ -805,6 +893,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/expenses': {
+      id: '/_authenticated/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof AuthenticatedExpensesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -860,6 +955,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/'
       preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/expenses/': {
+      id: '/_authenticated/expenses/'
+      path: '/'
+      fullPath: '/expenses/'
+      preLoaderRoute: typeof AuthenticatedExpensesIndexRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/crm/': {
       id: '/_authenticated/crm/'
@@ -923,6 +1025,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/$taskId'
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/expenses/settings': {
+      id: '/_authenticated/expenses/settings'
+      path: '/settings'
+      fullPath: '/expenses/settings'
+      preLoaderRoute: typeof AuthenticatedExpensesSettingsRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
+    '/_authenticated/expenses/reports': {
+      id: '/_authenticated/expenses/reports'
+      path: '/reports'
+      fullPath: '/expenses/reports'
+      preLoaderRoute: typeof AuthenticatedExpensesReportsRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
+    '/_authenticated/expenses/new': {
+      id: '/_authenticated/expenses/new'
+      path: '/new'
+      fullPath: '/expenses/new'
+      preLoaderRoute: typeof AuthenticatedExpensesNewRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
+    '/_authenticated/expenses/approvals': {
+      id: '/_authenticated/expenses/approvals'
+      path: '/approvals'
+      fullPath: '/expenses/approvals'
+      preLoaderRoute: typeof AuthenticatedExpensesApprovalsRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
+    '/_authenticated/expenses/$expenseId': {
+      id: '/_authenticated/expenses/$expenseId'
+      path: '/$expenseId'
+      fullPath: '/expenses/$expenseId'
+      preLoaderRoute: typeof AuthenticatedExpensesExpenseIdRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/crm/velocity': {
       id: '/_authenticated/crm/velocity'
@@ -1205,6 +1342,29 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
 const AuthenticatedCrmRouteWithChildren =
   AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
 
+interface AuthenticatedExpensesRouteChildren {
+  AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
+  AuthenticatedExpensesApprovalsRoute: typeof AuthenticatedExpensesApprovalsRoute
+  AuthenticatedExpensesNewRoute: typeof AuthenticatedExpensesNewRoute
+  AuthenticatedExpensesReportsRoute: typeof AuthenticatedExpensesReportsRoute
+  AuthenticatedExpensesSettingsRoute: typeof AuthenticatedExpensesSettingsRoute
+  AuthenticatedExpensesIndexRoute: typeof AuthenticatedExpensesIndexRoute
+}
+
+const AuthenticatedExpensesRouteChildren: AuthenticatedExpensesRouteChildren = {
+  AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
+  AuthenticatedExpensesApprovalsRoute: AuthenticatedExpensesApprovalsRoute,
+  AuthenticatedExpensesNewRoute: AuthenticatedExpensesNewRoute,
+  AuthenticatedExpensesReportsRoute: AuthenticatedExpensesReportsRoute,
+  AuthenticatedExpensesSettingsRoute: AuthenticatedExpensesSettingsRoute,
+  AuthenticatedExpensesIndexRoute: AuthenticatedExpensesIndexRoute,
+}
+
+const AuthenticatedExpensesRouteWithChildren =
+  AuthenticatedExpensesRoute._addFileChildren(
+    AuthenticatedExpensesRouteChildren,
+  )
+
 interface AuthenticatedTasksProjectsProjectIdRouteChildren {
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute: typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -1267,6 +1427,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
@@ -1284,6 +1445,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
