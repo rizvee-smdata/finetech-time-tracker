@@ -23,18 +23,24 @@ export const Route = createFileRoute("/_authenticated/crm/list")({
 function ListPage() {
   const { companyId, ready } = useAuth();
   const [search, setSearch] = useState("");
+  const [company, setCompany] = useState("");
   const [stage, setStage] = useState<CrmStage | "all">("all");
   const [assignee, setAssignee] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [open, setOpen] = useState(false);
 
   const { data } = useQuery({
-    queryKey: ["crm-leads", companyId, stage, search, assignee],
+    queryKey: ["crm-leads", companyId, stage, search, company, assignee, dateFrom, dateTo],
     enabled: ready && !!companyId,
     queryFn: () => fetchLeads({
       companyId: companyId!,
       search: search || undefined,
+      company: company || undefined,
       stage: stage === "all" ? null : stage,
       assignedTo: assignee === "all" ? null : assignee,
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
     }),
   });
 
@@ -50,11 +56,14 @@ function ListPage() {
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" className="pl-9 w-56" />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" className="pl-9 w-48" />
           </div>
+          <Input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company…" className="w-36" />
+          <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-[150px]" title="Created from" />
+          <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-[150px]" title="Created to" />
           <AssigneeFilter companyId={companyId} value={assignee} onChange={setAssignee} />
           <Select value={stage} onValueChange={(v) => setStage(v as any)}>
-            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All stages</SelectItem>
               {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
@@ -63,6 +72,7 @@ function ListPage() {
           <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />New lead</Button>
         </div>
       </header>
+
 
 
       <Card>
