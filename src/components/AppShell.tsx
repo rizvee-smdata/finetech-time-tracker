@@ -109,10 +109,10 @@ export function AppShell() {
         </div>
       </header>
 
-      {/* Desktop top bar */}
-      <header className="sticky top-0 z-20 hidden h-14 items-center justify-end gap-2 border-b border-border bg-card/60 px-6 backdrop-blur md:flex">
+      {/* Desktop floating bell */}
+      <div className="fixed right-4 top-3 z-30 hidden md:block">
         <NotificationBell compact />
-      </header>
+      </div>
 
       <div className="flex">
         {/* Sidebar */}
