@@ -149,7 +149,7 @@ export function AppShell() {
           />
         )}
 
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 pb-20 md:p-8 md:pb-8">
           {!companyId && companies.length === 0 && !path.startsWith("/settings") && (
             <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-warning/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
               {isAdmin ? (
@@ -167,6 +167,32 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile bottom tab bar */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-card/95 backdrop-blur md:hidden">
+        {[
+          { to: "/crm", label: "Pipeline", icon: Target },
+          { to: "/visits", label: "Visits", icon: ClipboardList },
+          { to: "/tasks", label: "Tasks", icon: CheckSquare },
+          { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        ].map((it) => {
+          const active = path.startsWith(it.to);
+          const Icon = it.icon;
+          return (
+            <Link
+              key={it.to}
+              to={it.to}
+              className={cn(
+                "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+                active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Icon className="h-5 w-5" />
+              {it.label}
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

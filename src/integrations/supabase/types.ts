@@ -88,6 +88,158 @@ export type Database = {
           },
         ]
       }
+      crm_accounts: {
+        Row: {
+          address: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          industry: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          primary_owner: string | null
+          territory_id: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          industry?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          primary_owner?: string | null
+          territory_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          industry?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          primary_owner?: string | null
+          territory_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_accounts_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "crm_territories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_call_logs: {
+        Row: {
+          called_at: string
+          channel: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          lead_id: string
+          notes: string | null
+          outcome: Database["public"]["Enums"]["crm_call_outcome"] | null
+          user_id: string | null
+        }
+        Insert: {
+          called_at?: string
+          channel?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          lead_id: string
+          notes?: string | null
+          outcome?: Database["public"]["Enums"]["crm_call_outcome"] | null
+          user_id?: string | null
+        }
+        Update: {
+          called_at?: string
+          channel?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          lead_id?: string
+          notes?: string | null
+          outcome?: Database["public"]["Enums"]["crm_call_outcome"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      crm_competitors: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      crm_document_templates: {
+        Row: {
+          body: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       crm_lead_activities: {
         Row: {
           activity_type: Database["public"]["Enums"]["crm_activity_type"]
@@ -173,6 +325,32 @@ export type Database = {
           },
         ]
       }
+      crm_lead_products: {
+        Row: {
+          added_at: string
+          lead_id: string
+          product_id: string
+        }
+        Insert: {
+          added_at?: string
+          lead_id: string
+          product_id: string
+        }
+        Update: {
+          added_at?: string
+          lead_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_lead_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_lead_stage_history: {
         Row: {
           changed_at: string
@@ -213,9 +391,13 @@ export type Database = {
       }
       crm_leads: {
         Row: {
+          account_id: string | null
           assigned_to: string | null
           company_id: string
           company_name: string | null
+          competitor_name: string | null
+          competitor_notes: string | null
+          competitor_price: number | null
           contact_person: string | null
           created_at: string
           created_by: string
@@ -227,24 +409,35 @@ export type Database = {
           expected_close_date: string | null
           expected_value: number | null
           id: string
+          is_renewal: boolean
           last_activity_at: string
+          lead_source: Database["public"]["Enums"]["crm_lead_source_v2"]
           location: string | null
           lost_at: string | null
           lost_reason: string | null
           notes: string | null
+          parent_lead_id: string | null
           phone: string | null
+          priority: Database["public"]["Enums"]["crm_priority"]
           probability: number
+          renewal_date: string | null
+          renewal_kind: Database["public"]["Enums"]["crm_renewal_kind"]
           source: Database["public"]["Enums"]["crm_lead_source"]
           source_visit_id: string | null
           stage: Database["public"]["Enums"]["crm_lead_stage"]
           stage_changed_at: string
+          territory_id: string | null
           updated_at: string
           won_at: string | null
         }
         Insert: {
+          account_id?: string | null
           assigned_to?: string | null
           company_id: string
           company_name?: string | null
+          competitor_name?: string | null
+          competitor_notes?: string | null
+          competitor_price?: number | null
           contact_person?: string | null
           created_at?: string
           created_by: string
@@ -256,24 +449,35 @@ export type Database = {
           expected_close_date?: string | null
           expected_value?: number | null
           id?: string
+          is_renewal?: boolean
           last_activity_at?: string
+          lead_source?: Database["public"]["Enums"]["crm_lead_source_v2"]
           location?: string | null
           lost_at?: string | null
           lost_reason?: string | null
           notes?: string | null
+          parent_lead_id?: string | null
           phone?: string | null
+          priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          renewal_date?: string | null
+          renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
           source?: Database["public"]["Enums"]["crm_lead_source"]
           source_visit_id?: string | null
           stage?: Database["public"]["Enums"]["crm_lead_stage"]
           stage_changed_at?: string
+          territory_id?: string | null
           updated_at?: string
           won_at?: string | null
         }
         Update: {
+          account_id?: string | null
           assigned_to?: string | null
           company_id?: string
           company_name?: string | null
+          competitor_name?: string | null
+          competitor_notes?: string | null
+          competitor_price?: number | null
           contact_person?: string | null
           created_at?: string
           created_by?: string
@@ -285,30 +489,159 @@ export type Database = {
           expected_close_date?: string | null
           expected_value?: number | null
           id?: string
+          is_renewal?: boolean
           last_activity_at?: string
+          lead_source?: Database["public"]["Enums"]["crm_lead_source_v2"]
           location?: string | null
           lost_at?: string | null
           lost_reason?: string | null
           notes?: string | null
+          parent_lead_id?: string | null
           phone?: string | null
+          priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          renewal_date?: string | null
+          renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
           source?: Database["public"]["Enums"]["crm_lead_source"]
           source_visit_id?: string | null
           stage?: Database["public"]["Enums"]["crm_lead_stage"]
           stage_changed_at?: string
+          territory_id?: string | null
           updated_at?: string
           won_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "crm_leads_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_leads_parent_lead_id_fkey"
+            columns: ["parent_lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_leads_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "crm_territories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_products: {
+        Row: {
+          base_price: number
+          category: string | null
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category?: string | null
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          unit?: string | null
+          updated_at?: string
+        }
         Relationships: []
+      }
+      crm_quote_line_items: {
+        Row: {
+          created_at: string
+          discount_pct: number
+          id: string
+          name: string
+          product_id: string | null
+          quantity: number
+          quote_id: string
+          sort_order: number
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          name: string
+          product_id?: string | null
+          quantity?: number
+          quote_id: string
+          sort_order?: number
+          total?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          name?: string
+          product_id?: string | null
+          quantity?: number
+          quote_id?: string
+          sort_order?: number
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_quote_line_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_quote_line_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "crm_quotes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       crm_quotes: {
         Row: {
           amount: number
+          approval_comment: string | null
+          approval_requested_at: string | null
+          approval_requested_by: string | null
+          approval_status: Database["public"]["Enums"]["crm_approval_status"]
+          approved_at: string | null
+          approved_by: string | null
           company_id: string
           created_at: string
           created_by: string | null
           currency: string
           decided_at: string | null
+          discount_pct: number
           file_name: string | null
           file_path: string | null
           id: string
@@ -316,6 +649,8 @@ export type Database = {
           notes: string | null
           sent_at: string | null
           status: Database["public"]["Enums"]["crm_quote_status"]
+          subtotal: number
+          tax_pct: number
           title: string
           updated_at: string
           valid_until: string | null
@@ -323,11 +658,18 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          approval_comment?: string | null
+          approval_requested_at?: string | null
+          approval_requested_by?: string | null
+          approval_status?: Database["public"]["Enums"]["crm_approval_status"]
+          approved_at?: string | null
+          approved_by?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
           currency?: string
           decided_at?: string | null
+          discount_pct?: number
           file_name?: string | null
           file_path?: string | null
           id?: string
@@ -335,6 +677,8 @@ export type Database = {
           notes?: string | null
           sent_at?: string | null
           status?: Database["public"]["Enums"]["crm_quote_status"]
+          subtotal?: number
+          tax_pct?: number
           title: string
           updated_at?: string
           valid_until?: string | null
@@ -342,11 +686,18 @@ export type Database = {
         }
         Update: {
           amount?: number
+          approval_comment?: string | null
+          approval_requested_at?: string | null
+          approval_requested_by?: string | null
+          approval_status?: Database["public"]["Enums"]["crm_approval_status"]
+          approved_at?: string | null
+          approved_by?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
           currency?: string
           decided_at?: string | null
+          discount_pct?: number
           file_name?: string | null
           file_path?: string | null
           id?: string
@@ -354,6 +705,8 @@ export type Database = {
           notes?: string | null
           sent_at?: string | null
           status?: Database["public"]["Enums"]["crm_quote_status"]
+          subtotal?: number
+          tax_pct?: number
           title?: string
           updated_at?: string
           valid_until?: string | null
@@ -368,6 +721,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      crm_territories: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       customer_visits: {
         Row: {
@@ -1729,6 +2109,7 @@ export type Database = {
         Args: { _lead: string; _user: string }
         Returns: boolean
       }
+      crm_generate_renewal_leads: { Args: never; Returns: undefined }
       crm_remind_idle_leads: { Args: never; Returns: undefined }
       has_role: {
         Args: {
@@ -1768,7 +2149,20 @@ export type Database = {
         | "quote"
         | "attachment"
         | "created"
+      crm_approval_status: "not_requested" | "pending" | "approved" | "rejected"
+      crm_call_outcome:
+        | "interested"
+        | "follow_up"
+        | "not_interested"
+        | "no_answer"
       crm_lead_source: "visit" | "manual"
+      crm_lead_source_v2:
+        | "visit"
+        | "referral"
+        | "inbound"
+        | "cold_call"
+        | "manual"
+        | "other"
       crm_lead_stage:
         | "new"
         | "initial_contact"
@@ -1777,7 +2171,9 @@ export type Database = {
         | "closure"
         | "won"
         | "lost"
+      crm_priority: "low" | "medium" | "high"
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
+      crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       tms_assignee_role: "primary" | "collaborator" | "watcher"
       tms_dependency_type:
         | "blocks"
@@ -1934,7 +2330,22 @@ export const Constants = {
         "attachment",
         "created",
       ],
+      crm_approval_status: ["not_requested", "pending", "approved", "rejected"],
+      crm_call_outcome: [
+        "interested",
+        "follow_up",
+        "not_interested",
+        "no_answer",
+      ],
       crm_lead_source: ["visit", "manual"],
+      crm_lead_source_v2: [
+        "visit",
+        "referral",
+        "inbound",
+        "cold_call",
+        "manual",
+        "other",
+      ],
       crm_lead_stage: [
         "new",
         "initial_contact",
@@ -1944,7 +2355,9 @@ export const Constants = {
         "won",
         "lost",
       ],
+      crm_priority: ["low", "medium", "high"],
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
+      crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       tms_assignee_role: ["primary", "collaborator", "watcher"],
       tms_dependency_type: [
         "blocks",

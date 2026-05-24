@@ -23,6 +23,25 @@ export function stageMeta(s: CrmStage) {
   return STAGES.find((x) => x.id === s) ?? STAGES[0];
 }
 
+export type CrmPriority = "low" | "medium" | "high";
+export type CrmLeadSource = "visit" | "referral" | "inbound" | "cold_call" | "manual" | "other";
+export type CrmRenewalKind = "one_time" | "amc" | "subscription" | "retainer";
+
+export const PRIORITY_META: Record<CrmPriority, { label: string; badge: string }> = {
+  high: { label: "High", badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200" },
+  medium: { label: "Medium", badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200" },
+  low: { label: "Low", badge: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200" },
+};
+
+export const LEAD_SOURCES: { id: CrmLeadSource; label: string }[] = [
+  { id: "visit", label: "Visit" },
+  { id: "referral", label: "Referral" },
+  { id: "inbound", label: "Inbound" },
+  { id: "cold_call", label: "Cold Call" },
+  { id: "manual", label: "Manual" },
+  { id: "other", label: "Other" },
+];
+
 export type Lead = {
   id: string;
   company_id: string;
@@ -36,6 +55,17 @@ export type Lead = {
   email: string | null;
   location: string | null;
   stage: CrmStage;
+  priority: CrmPriority;
+  lead_source: CrmLeadSource;
+  account_id: string | null;
+  territory_id: string | null;
+  competitor_name: string | null;
+  competitor_price: number | null;
+  competitor_notes: string | null;
+  renewal_kind: CrmRenewalKind;
+  renewal_date: string | null;
+  is_renewal: boolean;
+  parent_lead_id: string | null;
   assigned_to: string | null;
   created_by: string;
   expected_value: number | null;
