@@ -84,8 +84,17 @@ export function useTimeStore() {
   useEffect(() => {
     refresh();
     listeners.add(refresh);
-    return () => { listeners.delete(refresh); };
+    if (typeof window !== "undefined") {
+      window.addEventListener("deskiq:time-updated", refresh);
+    }
+    return () => {
+      listeners.delete(refresh);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("deskiq:time-updated", refresh);
+      }
+    };
   }, [refresh]);
+
 
   const persistEntries = useCallback((next: TimeEntry[]) => { write(ENTRIES_KEY, next); notify(); }, []);
   const persistTimer = useCallback((next: TimerState | null) => {

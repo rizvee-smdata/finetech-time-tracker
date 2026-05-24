@@ -48,10 +48,17 @@ export function useDealsStore() {
     setDeals(readStore());
     const l = () => setDeals(readStore());
     listeners.add(l);
+    if (typeof window !== "undefined") {
+      window.addEventListener("deskiq:deals-updated", l);
+    }
     return () => {
       listeners.delete(l);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("deskiq:deals-updated", l);
+      }
     };
   }, []);
+
 
   const persist = useCallback((next: Deal[]) => {
     writeStore(next);
