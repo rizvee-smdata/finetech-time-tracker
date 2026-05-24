@@ -42,6 +42,7 @@ import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
 import { Route as AuthenticatedCrmInboxRouteImport } from './routes/_authenticated/crm.inbox'
+import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenticated/crm.forecast'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
@@ -226,6 +227,12 @@ const AuthenticatedCrmInboxRoute = AuthenticatedCrmInboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmForecastRoute =
+  AuthenticatedCrmForecastRouteImport.update({
+    id: '/forecast',
+    path: '/forecast',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/dashboard',
@@ -298,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
@@ -339,6 +347,7 @@ export interface FileRoutesByTo {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
@@ -384,6 +393,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/_authenticated/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/forecast'
     | '/crm/inbox'
     | '/crm/list'
     | '/crm/lost'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/forecast'
     | '/crm/inbox'
     | '/crm/list'
     | '/crm/lost'
@@ -514,6 +526,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/forecast'
     | '/_authenticated/crm/inbox'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
@@ -781,6 +794,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmInboxRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/forecast': {
+      id: '/_authenticated/crm/forecast'
+      path: '/forecast'
+      fullPath: '/crm/forecast'
+      preLoaderRoute: typeof AuthenticatedCrmForecastRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/dashboard': {
       id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
@@ -852,6 +872,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmForecastRoute: typeof AuthenticatedCrmForecastRoute
   AuthenticatedCrmInboxRoute: typeof AuthenticatedCrmInboxRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
@@ -867,6 +888,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmForecastRoute: AuthenticatedCrmForecastRoute,
   AuthenticatedCrmInboxRoute: AuthenticatedCrmInboxRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
