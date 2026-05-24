@@ -139,8 +139,8 @@ function ActivityFeedPage() {
             <SelectContent>
               <SelectItem value="all">All users</SelectItem>
               {(members.data ?? []).map((m: any) => (
-                <SelectItem key={m.user_id} value={m.user_id}>
-                  {m.profile?.full_name ?? m.profile?.email ?? m.user_id}
+                <SelectItem key={m.id} value={m.id}>
+                  {m.full_name ?? m.email ?? m.id}
                 </SelectItem>
               ))}
             </SelectContent>
