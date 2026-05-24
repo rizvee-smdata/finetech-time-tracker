@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Download, UserCog, ArrowRightLeft } from "lucide-react";
+import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2 } from "lucide-react";
 import { STAGES, stageMeta, formatMoney, type CrmStage, type Lead } from "@/lib/crm/types";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
+import { ImportLeadsDialog } from "@/components/crm/ImportLeadsDialog";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
 import { format } from "date-fns";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
@@ -62,6 +63,7 @@ function ListPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAssignee, setBulkAssignee] = useState<string>("");
   const [bulkStage, setBulkStage] = useState<CrmStage | "">("");
@@ -133,6 +135,20 @@ function ListPage() {
     onError: (e: any) => toast.error(e.message ?? "Failed"),
   });
 
+  const bulkDelete = useMutation({
+    mutationFn: async () => {
+      const ids = Array.from(selected);
+      const { error } = await sb.from("crm_leads").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`Deleted ${selected.size} lead${selected.size > 1 ? "s" : ""}`);
+      clearSelection();
+      qc.invalidateQueries({ queryKey: ["crm-leads"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed"),
+  });
+
   const selectedLeads = useMemo(() => leads.filter((l) => selected.has(l.id)), [leads, selected]);
 
   return (
@@ -160,6 +176,9 @@ function ListPage() {
           </Select>
           <Button variant="outline" onClick={() => exportLeadsCsv(leads)} disabled={leads.length === 0}>
             <Download className="mr-2 h-4 w-4" />Export CSV
+          </Button>
+          <Button variant="outline" onClick={() => setImportOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />Import CSV
           </Button>
           <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />New lead</Button>
         </div>
@@ -190,6 +209,18 @@ function ListPage() {
               </SelectContent>
             </Select>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              if (confirm(`Delete ${selected.size} lead${selected.size > 1 ? "s" : ""}? This cannot be undone.`)) {
+                bulkDelete.mutate();
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4 mr-1" />Delete
+          </Button>
           <Button variant="ghost" size="sm" onClick={clearSelection}>Clear</Button>
         </Card>
       )}
@@ -242,6 +273,11 @@ function ListPage() {
 
       <PaginationBar {...pg} label="leads" />
       <LeadFormDialog open={open} onOpenChange={setOpen} />
+      <ImportLeadsDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={() => qc.invalidateQueries({ queryKey: ["crm-leads"] })}
+      />
     </div>
   );
 }
