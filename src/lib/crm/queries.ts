@@ -9,7 +9,7 @@ const sb = supabase as unknown as {
 export async function fetchLeads(params: {
   companyId: string;
   stage?: CrmStage | null;
-  assignedTo?: string | null;
+  assignedTo?: string | null; // userId, "unassigned", or null/undefined for all
   search?: string | null;
 }): Promise<Lead[]> {
   let q = sb
@@ -18,7 +18,8 @@ export async function fetchLeads(params: {
     .eq("company_id", params.companyId)
     .order("last_activity_at", { ascending: false });
   if (params.stage) q = q.eq("stage", params.stage);
-  if (params.assignedTo) q = q.eq("assigned_to", params.assignedTo);
+  if (params.assignedTo === "unassigned") q = q.is("assigned_to", null);
+  else if (params.assignedTo) q = q.eq("assigned_to", params.assignedTo);
   if (params.search) q = q.ilike("customer_name", `%${params.search}%`);
   const { data, error } = await q;
   if (error) throw error;

@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Search } from "lucide-react";
 import { STAGES, stageMeta, formatMoney, type CrmStage } from "@/lib/crm/types";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
+import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
 import { format } from "date-fns";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
@@ -23,15 +24,17 @@ function ListPage() {
   const { companyId, ready } = useAuth();
   const [search, setSearch] = useState("");
   const [stage, setStage] = useState<CrmStage | "all">("all");
+  const [assignee, setAssignee] = useState<string>("all");
   const [open, setOpen] = useState(false);
 
   const { data } = useQuery({
-    queryKey: ["crm-leads", companyId, stage, search],
+    queryKey: ["crm-leads", companyId, stage, search, assignee],
     enabled: ready && !!companyId,
     queryFn: () => fetchLeads({
       companyId: companyId!,
       search: search || undefined,
       stage: stage === "all" ? null : stage,
+      assignedTo: assignee === "all" ? null : assignee,
     }),
   });
 
@@ -44,11 +47,12 @@ function ListPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Leads</h1>
           <p className="text-sm text-muted-foreground">{(data ?? []).length} total</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" className="pl-9 w-56" />
           </div>
+          <AssigneeFilter companyId={companyId} value={assignee} onChange={setAssignee} />
           <Select value={stage} onValueChange={(v) => setStage(v as any)}>
             <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -59,6 +63,7 @@ function ListPage() {
           <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />New lead</Button>
         </div>
       </header>
+
 
       <Card>
         <Table>
