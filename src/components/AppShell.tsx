@@ -103,7 +103,15 @@ export function AppShell() {
         <div className="truncate font-semibold tracking-tight text-primary">
           {company?.name ?? "Lavisho Tracker"}
         </div>
-        <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
+        <div className="flex items-center gap-1">
+          <NotificationBell compact />
+          <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
+        </div>
+      </header>
+
+      {/* Desktop top bar */}
+      <header className="sticky top-0 z-20 hidden h-14 items-center justify-end gap-2 border-b border-border bg-card/60 px-6 backdrop-blur md:flex">
+        <NotificationBell compact />
       </header>
 
       <div className="flex">
