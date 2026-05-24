@@ -243,6 +243,17 @@ function AccountDialog({
             </Select>
           </div>
           <div className="grid gap-1 sm:col-span-2">
+            <Label>Primary owner</Label>
+            <Select value={form.primary_owner ?? "none"} onValueChange={(v) => f("primary_owner", (v === "none" ? null : v) as any)}>
+              <SelectTrigger><SelectValue placeholder="— Unassigned —" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">— Unassigned —</SelectItem>
+                {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email ?? m.id}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Default rep for new leads under this account.</p>
+          </div>
+          <div className="grid gap-1 sm:col-span-2">
             <Label>Address</Label>
             <Input value={form.address ?? ""} onChange={(e) => f("address", e.target.value)} />
           </div>
