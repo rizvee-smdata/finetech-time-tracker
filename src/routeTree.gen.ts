@@ -41,6 +41,7 @@ import { Route as AuthenticatedCrmRenewalsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
+import { Route as AuthenticatedCrmInboxRouteImport } from './routes/_authenticated/crm.inbox'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
@@ -220,6 +221,11 @@ const AuthenticatedCrmListRoute = AuthenticatedCrmListRouteImport.update({
   path: '/list',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmInboxRoute = AuthenticatedCrmInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/dashboard',
@@ -292,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -332,6 +339,7 @@ export interface FileRoutesByTo {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -376,6 +384,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/inbox': typeof AuthenticatedCrmInboxRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -420,6 +429,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/inbox'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -460,6 +470,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/inbox'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -503,6 +514,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/inbox'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
     | '/_authenticated/crm/pipeline'
@@ -762,6 +774,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmListRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/inbox': {
+      id: '/_authenticated/crm/inbox'
+      path: '/inbox'
+      fullPath: '/crm/inbox'
+      preLoaderRoute: typeof AuthenticatedCrmInboxRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/dashboard': {
       id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
@@ -833,6 +852,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmInboxRoute: typeof AuthenticatedCrmInboxRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
@@ -847,6 +867,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmInboxRoute: AuthenticatedCrmInboxRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
@@ -962,3 +983,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
