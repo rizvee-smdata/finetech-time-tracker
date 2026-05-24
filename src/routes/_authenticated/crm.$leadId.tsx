@@ -29,6 +29,7 @@ import { QuoteBuilderDialog } from "@/components/crm/QuoteBuilderDialog";
 import { CallsPanel } from "@/components/crm/CallsPanel";
 import { AIInsightsPanel } from "@/components/crm/AIInsightsPanel";
 import { SequencesPanel } from "@/components/crm/SequencesPanel";
+import { LeadScoreCard } from "@/components/crm/LeadScoreCard";
 
 
 const sb = supabase as any;
@@ -186,6 +187,8 @@ function LeadDetail() {
           </div>
         )}
       </Card>
+
+      <LeadScoreCard lead={lead as any} activityCount={activities.data?.length ?? 0} />
 
       <Tabs defaultValue="timeline">
         <TabsList>
