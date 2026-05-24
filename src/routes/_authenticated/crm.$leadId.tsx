@@ -25,6 +25,8 @@ import { ArrowLeft, Mail, Phone, MapPin, Calendar, Pencil, Plus, Paperclip, Tras
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
+import { QuoteBuilderDialog } from "@/components/crm/QuoteBuilderDialog";
+
 
 const sb = supabase as any;
 
