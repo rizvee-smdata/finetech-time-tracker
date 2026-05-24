@@ -63,6 +63,7 @@ function ListPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAssignee, setBulkAssignee] = useState<string>("");
   const [bulkStage, setBulkStage] = useState<CrmStage | "">("");
