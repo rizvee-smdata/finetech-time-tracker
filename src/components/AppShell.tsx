@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/visits", label: "Visits", icon: ClipboardList },
+  { to: "/planning", label: "Planning", icon: MapPin },
   { to: "/crm", label: "CRM", icon: Target },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },
