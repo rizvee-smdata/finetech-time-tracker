@@ -192,9 +192,9 @@ function LeadDetail() {
         </TabsContent>
 
         <TabsContent value="quotes" className="space-y-4">
-          <AddQuote leadId={leadId} companyId={lead.company_id} userId={user!.id} currentVersion={(quotes.data?.[0]?.version ?? 0) + 1} />
-          <QuoteList items={quotes.data ?? []} />
+          <QuotesPanel leadId={leadId} companyId={lead.company_id} userId={user!.id} quotes={quotes.data ?? []} />
         </TabsContent>
+
 
         <TabsContent value="visits" className="space-y-4">
           <RelatedVisits items={relatedVisits.data ?? []} />
