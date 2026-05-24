@@ -1619,6 +1619,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email: Json
+          id: string
+          in_app: Json
+          push: Json
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: Json
+          id?: string
+          in_app?: Json
+          push?: Json
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: Json
+          id?: string
+          in_app?: Json
+          push?: Json
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1652,9 +1688,13 @@ export type Database = {
       reminders: {
         Row: {
           body: string | null
+          category: Database["public"]["Enums"]["notification_category"]
           company_id: string | null
           created_at: string
+          dismissed_at: string | null
           id: string
+          link_url: string | null
+          metadata: Json
           read_at: string | null
           remind_at: string
           title: string
@@ -1663,9 +1703,13 @@ export type Database = {
         }
         Insert: {
           body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
           company_id?: string | null
           created_at?: string
+          dismissed_at?: string | null
           id?: string
+          link_url?: string | null
+          metadata?: Json
           read_at?: string | null
           remind_at: string
           title: string
@@ -1674,9 +1718,13 @@ export type Database = {
         }
         Update: {
           body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
           company_id?: string | null
           created_at?: string
+          dismissed_at?: string | null
           id?: string
+          link_url?: string | null
+          metadata?: Json
           read_at?: string | null
           remind_at?: string
           title?: string
@@ -3251,6 +3299,19 @@ export type Database = {
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      notification_category:
+        | "general"
+        | "lead"
+        | "quote"
+        | "contract"
+        | "payment"
+        | "task"
+        | "visit"
+        | "attendance"
+        | "expense"
+        | "survey"
+        | "target"
+        | "system"
       payment_status: "pending" | "invoiced" | "received" | "cancelled"
       quote_share_response: "accepted" | "revision_requested"
       route_plan_status:
@@ -3458,6 +3519,20 @@ export const Constants = {
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      notification_category: [
+        "general",
+        "lead",
+        "quote",
+        "contract",
+        "payment",
+        "task",
+        "visit",
+        "attendance",
+        "expense",
+        "survey",
+        "target",
+        "system",
+      ],
       payment_status: ["pending", "invoiced", "received", "cancelled"],
       quote_share_response: ["accepted", "revision_requested"],
       route_plan_status: [
