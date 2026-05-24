@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useMeetingsStore } from "@/lib/meetings/storage";
+
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
@@ -36,8 +38,13 @@ import { fmtMoney, grandTotal, lineTotal, totalImplementationDays } from "@/lib/
 import { generateProposal } from "@/lib/proposals/generate.functions";
 
 export const Route = createFileRoute("/_authenticated/proposals/new")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    fromMeeting: typeof search.fromMeeting === "string" ? search.fromMeeting : undefined,
+    fromDeal: typeof search.fromDeal === "string" ? search.fromDeal : undefined,
+  }),
   component: ProposalWizardPage,
 });
+
 
 const STEPS = [
   { id: 1, label: "Client Info" },
