@@ -153,7 +153,7 @@ function AccountsPage() {
                     <span className="text-muted-foreground">leads ·</span>
                     <span className="font-medium">${s.value.toLocaleString()}</span>
                   </div>
-                  <Link to="/crm/list" className="text-xs text-primary hover:underline">View →</Link>
+                  <Link to="/crm/account/$accountId" params={{ accountId: a.id }} className="text-xs text-primary hover:underline">Open →</Link>
                 </div>
               </Card>
             );

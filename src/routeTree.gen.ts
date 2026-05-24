@@ -49,6 +49,7 @@ import { Route as AuthenticatedCrmLeaderboardRouteImport } from './routes/_authe
 import { Route as AuthenticatedCrmInboxRouteImport } from './routes/_authenticated/crm.inbox'
 import { Route as AuthenticatedCrmHotRouteImport } from './routes/_authenticated/crm.hot'
 import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenticated/crm.forecast'
+import { Route as AuthenticatedCrmDuplicatesRouteImport } from './routes/_authenticated/crm.duplicates'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
 import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenticated/crm.calendar'
@@ -275,6 +276,12 @@ const AuthenticatedCrmForecastRoute =
     path: '/forecast',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmDuplicatesRoute =
+  AuthenticatedCrmDuplicatesRouteImport.update({
+    id: '/duplicates',
+    path: '/duplicates',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/dashboard',
@@ -367,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
@@ -418,6 +426,7 @@ export interface FileRoutesByTo {
   '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
@@ -473,6 +482,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
   '/_authenticated/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/_authenticated/crm/hot': typeof AuthenticatedCrmHotRoute
   '/_authenticated/crm/inbox': typeof AuthenticatedCrmInboxRoute
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/crm/calendar'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/duplicates'
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
@@ -579,6 +590,7 @@ export interface FileRouteTypes {
     | '/crm/calendar'
     | '/crm/catalog'
     | '/crm/dashboard'
+    | '/crm/duplicates'
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
@@ -633,6 +645,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/calendar'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/duplicates'
     | '/_authenticated/crm/forecast'
     | '/_authenticated/crm/hot'
     | '/_authenticated/crm/inbox'
@@ -957,6 +970,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmForecastRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/duplicates': {
+      id: '/_authenticated/crm/duplicates'
+      path: '/duplicates'
+      fullPath: '/crm/duplicates'
+      preLoaderRoute: typeof AuthenticatedCrmDuplicatesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/dashboard': {
       id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
@@ -1051,6 +1071,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmCalendarRoute: typeof AuthenticatedCrmCalendarRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmDuplicatesRoute: typeof AuthenticatedCrmDuplicatesRoute
   AuthenticatedCrmForecastRoute: typeof AuthenticatedCrmForecastRoute
   AuthenticatedCrmHotRoute: typeof AuthenticatedCrmHotRoute
   AuthenticatedCrmInboxRoute: typeof AuthenticatedCrmInboxRoute
@@ -1076,6 +1097,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmCalendarRoute: AuthenticatedCrmCalendarRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmDuplicatesRoute: AuthenticatedCrmDuplicatesRoute,
   AuthenticatedCrmForecastRoute: AuthenticatedCrmForecastRoute,
   AuthenticatedCrmHotRoute: AuthenticatedCrmHotRoute,
   AuthenticatedCrmInboxRoute: AuthenticatedCrmInboxRoute,
