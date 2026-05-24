@@ -37,29 +37,13 @@ function readProposals(key: string): Proposal[] {
   try {
     const raw = localStorage.getItem(key);
     if (raw) return JSON.parse(raw) as Proposal[];
-
-    // Legacy migration: adopt old un-scoped data into this company once
-    const legacy = localStorage.getItem(PROP_BASE);
-    if (legacy) {
-      localStorage.setItem(key, legacy);
-      localStorage.removeItem(PROP_BASE);
-      return JSON.parse(legacy) as Proposal[];
-    }
-
-    // First time: seed once. Other companies start empty so switching is visible.
-    if (!localStorage.getItem(PROP_SEEDED_FLAG)) {
-      const seeded = seedProposals();
-      localStorage.setItem(key, JSON.stringify(seeded));
-      localStorage.setItem(PROP_SEEDED_FLAG, "1");
-      return seeded;
-    }
-
     localStorage.setItem(key, "[]");
     return [];
   } catch {
     return [];
   }
 }
+
 
 function readBlocks(key: string): TemplateBlock[] {
   if (typeof window === "undefined") return DEFAULT_BLOCKS;
