@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useMeetingsStore } from "@/lib/meetings/storage";
 
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -39,7 +38,6 @@ import { generateProposal } from "@/lib/proposals/generate.functions";
 
 export const Route = createFileRoute("/_authenticated/proposals/new")({
   validateSearch: (search: Record<string, unknown>) => ({
-    fromMeeting: typeof search.fromMeeting === "string" ? search.fromMeeting : undefined,
     fromDeal: typeof search.fromDeal === "string" ? search.fromDeal : undefined,
   }),
   component: ProposalWizardPage,
@@ -100,11 +98,10 @@ const initialState: WizardState = {
 function ProposalWizardPage() {
   const router = useRouter();
   const { deals } = useDealsStore();
-  const { meetings } = useMeetingsStore();
   const { upsert } = useProposalsStore();
   const { draft, save } = useWizardDraft();
   const generate = useServerFn(generateProposal);
-  const { fromMeeting, fromDeal } = Route.useSearch();
+  const { fromDeal } = Route.useSearch();
 
   const [state, setState] = useState<WizardState>(() => {
     if (draft?.data) {
@@ -116,24 +113,9 @@ function ProposalWizardPage() {
   const [genIndex, setGenIndex] = useState(-1);
   const [resultProposal, setResultProposal] = useState<Proposal | null>(null);
 
-  // Prefill from meeting or deal via search params (one-shot)
+  // Prefill from deal via search params (one-shot)
   useEffect(() => {
-    if (fromMeeting) {
-      const m = meetings.find((x) => x.id === fromMeeting);
-      if (m) {
-        setState((s) => ({
-          ...s,
-          clientName: m.clientName,
-          clientCompany: m.clientCompany,
-          painPoints: m.processed?.painPoints ?? s.painPoints,
-          competitors: m.processed?.objections ?? s.competitors,
-          previousContext: [
-            m.processed?.summary ?? m.rawNotes,
-            m.processed?.objections?.length ? `Objections: ${m.processed.objections.join("; ")}` : "",
-          ].filter(Boolean).join("\n\n"),
-        }));
-      }
-    } else if (fromDeal) {
+    if (fromDeal) {
       const d = deals.find((x) => x.id === fromDeal);
       if (d) {
         const painPoints = d.interactions
@@ -161,7 +143,7 @@ function ProposalWizardPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromMeeting, fromDeal, meetings.length, deals.length]);
+  }, [fromDeal, deals.length]);
 
 
 

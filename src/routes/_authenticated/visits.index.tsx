@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { convertVisitToLead } from "@/lib/crm/queries";
+import { VisitAIPanel } from "@/components/visits/VisitAIPanel";
 
 export const Route = createFileRoute("/_authenticated/visits/")({
   component: VisitsList,
@@ -462,6 +463,8 @@ function ViewVisitDialog({
               />
             </>
           )}
+
+          {!isStudy && <VisitAIPanel visit={visit} />}
         </div>
 
         <DialogFooter>

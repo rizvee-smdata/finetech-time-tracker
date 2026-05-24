@@ -2,31 +2,26 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const InputSchema = z.object({
-  title: z.string().min(1).max(300),
-  clientName: z.string().min(1).max(200),
-  clientCompany: z.string().min(1).max(200),
-  date: z.string().min(1).max(100),
-  attendees: z.array(z.string().max(200)).max(50),
-  rawNotes: z.string().min(1).max(20000),
-  regenerateInstruction: z.string().max(2000).optional(),
+  customerName: z.string().min(1).max(200),
+  company: z.string().max(200).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  meetingAt: z.string().min(1).max(100),
+  discussionSummary: z.string().min(1).max(20000),
+  nextAction: z.string().max(2000).optional().nullable(),
+  remarks: z.string().max(2000).optional().nullable(),
 });
 
 const tool = {
   type: "function" as const,
   function: {
-    name: "return_processed_meeting",
-    description: "Return structured meeting analysis.",
+    name: "return_processed_visit",
+    description: "Return structured analysis of a customer visit.",
     parameters: {
       type: "object",
       properties: {
-        summary: { type: "string" },
-        sentimentScore: { type: "string", enum: ["positive", "neutral", "negative"] },
-        dealStage: {
-          type: "string",
-          enum: ["Prospecting", "Discovery", "Proposal", "Negotiation", "Closed Won", "Closed Lost"],
-        },
+        summary: { type: "string", description: "3-4 sentence executive summary of the visit" },
+        sentiment: { type: "string", enum: ["positive", "neutral", "negative"] },
         painPoints: { type: "array", items: { type: "string" } },
-        objections: { type: "array", items: { type: "string" } },
         nextSteps: { type: "array", items: { type: "string" } },
         actionItems: {
           type: "array",
@@ -42,30 +37,15 @@ const tool = {
             additionalProperties: false,
           },
         },
-        crmUpdates: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              field: { type: "string" },
-              suggestedValue: { type: "string" },
-            },
-            required: ["field", "suggestedValue"],
-            additionalProperties: false,
-          },
-        },
         followUpSubject: { type: "string" },
         followUpEmail: { type: "string" },
       },
       required: [
         "summary",
-        "sentimentScore",
-        "dealStage",
+        "sentiment",
         "painPoints",
-        "objections",
         "nextSteps",
         "actionItems",
-        "crmUpdates",
         "followUpSubject",
         "followUpEmail",
       ],
@@ -74,34 +54,45 @@ const tool = {
   },
 };
 
-export const analyzeMeeting = createServerFn({ method: "POST" })
+export type VisitAnalysis = {
+  summary: string;
+  sentiment: "positive" | "neutral" | "negative";
+  painPoints: string[];
+  nextSteps: string[];
+  actionItems: { task: string; owner: string; deadline: string; priority: "high" | "medium" | "low" }[];
+  followUpSubject: string;
+  followUpEmail: string;
+};
+
+export const analyzeVisit = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<VisitAnalysis> => {
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) {
       throw new Error("AI service is not configured. Please contact support.");
     }
 
-    const userPrompt = `You are an expert CRM assistant and business development analyst.
+    const userPrompt = `You are an expert CRM assistant and field sales analyst.
 
-Analyze these meeting notes and call the return_processed_meeting tool with structured output.
+Analyze this customer visit and call the return_processed_visit tool with structured output.
 
-Meeting Context:
-- Title: ${data.title}
-- Client: ${data.clientName} from ${data.clientCompany}
-- Date: ${data.date}
-- Attendees: ${data.attendees.join(", ") || "—"}
+Visit Context:
+- Customer: ${data.customerName}${data.company ? ` from ${data.company}` : ""}
+- Location: ${data.location ?? "—"}
+- When: ${data.meetingAt}
+${data.nextAction ? `- Stated next action: ${data.nextAction}` : ""}
+${data.remarks ? `- Remarks: ${data.remarks}` : ""}
 
-Raw Notes:
-${data.rawNotes}
-
-${data.regenerateInstruction ? `Regeneration instruction: ${data.regenerateInstruction}` : ""}
+Discussion notes:
+${data.discussionSummary}
 
 Rules:
-- summary: 3-4 sentence executive summary
-- actionItems: extract every commitment, deadline, or task. Owner is a person name or "Me".
-- crmUpdates: suggest CRM field updates (e.g. Deal Stage, Deal Value, Close Date, Next Step, Competitor).
-- followUpEmail: complete professional follow-up email body addressed to ${data.clientName}, signed off generically (no fake names).
+- summary: 3-4 sentence executive summary highlighting outcomes and signals.
+- sentiment: gauge overall buyer attitude from the notes.
+- painPoints: explicit problems, frustrations, or unmet needs raised.
+- nextSteps: concrete moves the rep should make next (specific, not generic).
+- actionItems: every commitment/task with owner (person name or "Me"), realistic deadline, and priority.
+- followUpEmail: complete professional follow-up email body addressed to ${data.customerName}, signed off generically (no fake names).
 - Be specific. No placeholders.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -116,12 +107,12 @@ Rules:
           {
             role: "system",
             content:
-              "You are an expert CRM and sales analyst. Always respond by calling the return_processed_meeting tool.",
+              "You are an expert CRM and field sales analyst. Always respond by calling the return_processed_visit tool.",
           },
           { role: "user", content: userPrompt },
         ],
         tools: [tool],
-        tool_choice: { type: "function", function: { name: "return_processed_meeting" } },
+        tool_choice: { type: "function", function: { name: "return_processed_visit" } },
       }),
     });
 
@@ -145,24 +136,10 @@ Rules:
       throw new Error("AI did not return structured output. Please retry.");
     }
 
-    let parsed;
     try {
-      parsed = JSON.parse(argsStr);
-    } catch (e) {
+      return JSON.parse(argsStr) as VisitAnalysis;
+    } catch {
       console.error("Failed to parse tool args", argsStr);
       throw new Error("AI returned invalid JSON. Please retry.");
     }
-
-    return parsed as {
-      summary: string;
-      sentimentScore: "positive" | "neutral" | "negative";
-      dealStage: string;
-      painPoints: string[];
-      objections: string[];
-      nextSteps: string[];
-      actionItems: { task: string; owner: string; deadline: string; priority: "high" | "medium" | "low" }[];
-      crmUpdates: { field: string; suggestedValue: string }[];
-      followUpSubject: string;
-      followUpEmail: string;
-    };
   });
