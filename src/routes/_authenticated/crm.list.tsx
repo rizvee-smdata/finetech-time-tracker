@@ -177,6 +177,9 @@ function ListPage() {
           <Button variant="outline" onClick={() => exportLeadsCsv(leads)} disabled={leads.length === 0}>
             <Download className="mr-2 h-4 w-4" />Export CSV
           </Button>
+          <Button variant="outline" onClick={() => setImportOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />Import CSV
+          </Button>
           <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />New lead</Button>
         </div>
       </header>
