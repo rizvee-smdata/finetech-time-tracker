@@ -1,11 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import type { Proposal, ProposalSection, TemplateBlock, WizardDraft } from "./types";
 import { seedProposals } from "./seed";
 import { DEFAULT_BLOCKS } from "./templates";
+import { useAuth } from "@/hooks/use-auth";
 
-const PROP_KEY = "deskiq_proposals";
-const BLOCKS_KEY = "deskiq_proposal_blocks";
+const PROP_BASE = "deskiq_proposals";
+const BLOCKS_BASE = "deskiq_proposal_blocks";
 const DRAFT_KEY = "deskiq_proposal_wizard_draft";
+
+const scoped = (base: string, companyId: string | null | undefined) =>
+  companyId ? `${base}::${companyId}` : `${base}::__none__`;
 
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -28,13 +32,13 @@ function write(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-function readProposals(): Proposal[] {
+function readProposals(key: string): Proposal[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(PROP_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) {
       const seeded = seedProposals();
-      localStorage.setItem(PROP_KEY, JSON.stringify(seeded));
+      localStorage.setItem(key, JSON.stringify(seeded));
       return seeded;
     }
     return JSON.parse(raw) as Proposal[];
@@ -43,12 +47,12 @@ function readProposals(): Proposal[] {
   }
 }
 
-function readBlocks(): TemplateBlock[] {
+function readBlocks(key: string): TemplateBlock[] {
   if (typeof window === "undefined") return DEFAULT_BLOCKS;
   try {
-    const raw = localStorage.getItem(BLOCKS_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(BLOCKS_KEY, JSON.stringify(DEFAULT_BLOCKS));
+      localStorage.setItem(key, JSON.stringify(DEFAULT_BLOCKS));
       return DEFAULT_BLOCKS;
     }
     return JSON.parse(raw) as TemplateBlock[];
@@ -63,28 +67,34 @@ function notify() {
 }
 
 export function useProposalsStore() {
-  const [proposals, setProposals] = useState<Proposal[]>(() => readProposals());
-  const [blocks, setBlocks] = useState<TemplateBlock[]>(() => readBlocks());
+  const { companyId } = useAuth();
+  const propKey = useMemo(() => scoped(PROP_BASE, companyId), [companyId]);
+  const blocksKey = useMemo(() => scoped(BLOCKS_BASE, companyId), [companyId]);
+
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [blocks, setBlocks] = useState<TemplateBlock[]>([]);
 
   useEffect(() => {
+    setProposals(readProposals(propKey));
+    setBlocks(readBlocks(blocksKey));
     const fn = () => {
-      setProposals(readProposals());
-      setBlocks(readBlocks());
+      setProposals(readProposals(propKey));
+      setBlocks(readBlocks(blocksKey));
     };
     listeners.add(fn);
     return () => {
       listeners.delete(fn);
     };
-  }, []);
+  }, [propKey, blocksKey]);
 
   const saveAll = useCallback((next: Proposal[]) => {
-    write(PROP_KEY, next);
+    write(propKey, next);
     notify();
-  }, []);
+  }, [propKey]);
 
   const upsert = useCallback(
     (p: Proposal, changeNote = "Manual update") => {
-      const current = readProposals();
+      const current = readProposals(propKey);
       const idx = current.findIndex((x) => x.id === p.id);
       const prev = idx >= 0 ? current[idx] : undefined;
       const history = prev
@@ -111,29 +121,29 @@ export function useProposalsStore() {
       saveAll(updated);
       return next;
     },
-    [saveAll],
+    [saveAll, propKey],
   );
 
   const updateInPlace = useCallback(
     (p: Proposal) => {
-      const current = readProposals();
+      const current = readProposals(propKey);
       const next = current.map((x) => (x.id === p.id ? { ...p, updatedAt: new Date().toISOString() } : x));
       saveAll(next);
     },
-    [saveAll],
+    [saveAll, propKey],
   );
 
   const remove = useCallback(
     (id: string) => {
-      const next = readProposals().filter((x) => x.id !== id);
+      const next = readProposals(propKey).filter((x) => x.id !== id);
       saveAll(next);
     },
-    [saveAll],
+    [saveAll, propKey],
   );
 
   const duplicate = useCallback(
     (id: string) => {
-      const current = readProposals();
+      const current = readProposals(propKey);
       const src = current.find((x) => x.id === id);
       if (!src) return null;
       const copy: Proposal = {
@@ -153,12 +163,12 @@ export function useProposalsStore() {
       saveAll([copy, ...current]);
       return copy;
     },
-    [saveAll],
+    [saveAll, propKey],
   );
 
   const replaceSection = useCallback(
     (proposalId: string, section: ProposalSection) => {
-      const current = readProposals();
+      const current = readProposals(propKey);
       const next = current.map((p) =>
         p.id === proposalId
           ? {
@@ -170,22 +180,22 @@ export function useProposalsStore() {
       );
       saveAll(next);
     },
-    [saveAll],
+    [saveAll, propKey],
   );
 
   const upsertBlock = useCallback((block: TemplateBlock) => {
-    const current = readBlocks();
+    const current = readBlocks(blocksKey);
     const idx = current.findIndex((b) => b.id === block.id);
     const next = idx >= 0 ? current.map((b, i) => (i === idx ? block : b)) : [block, ...current];
-    write(BLOCKS_KEY, next);
+    write(blocksKey, next);
     notify();
-  }, []);
+  }, [blocksKey]);
 
   const removeBlock = useCallback((id: string) => {
-    const next = readBlocks().filter((b) => b.id !== id);
-    write(BLOCKS_KEY, next);
+    const next = readBlocks(blocksKey).filter((b) => b.id !== id);
+    write(blocksKey, next);
     notify();
-  }, []);
+  }, [blocksKey]);
 
   return {
     proposals,
