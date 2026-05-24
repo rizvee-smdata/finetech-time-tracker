@@ -34,6 +34,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { MiniTimerWidget } from "@/components/time/MiniTimerWidget";
 import { NotificationCenter } from "@/components/global/NotificationCenter";
 import { GlobalSearch } from "@/components/global/GlobalSearch";
+import { AIAgentTrigger } from "@/components/global/AIAgent";
 
 
 const nav = [
