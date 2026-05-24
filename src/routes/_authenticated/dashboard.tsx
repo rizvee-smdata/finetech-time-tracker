@@ -13,11 +13,11 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { user, isStaff, companyId, company } = useAuth();
+  const { user, isStaff, companyId, company, ready } = useAuth();
 
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats", user?.id, isStaff, companyId],
-    enabled: !!user,
+    enabled: ready,
     queryFn: async () => {
       const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
       const next7 = new Date(); next7.setDate(next7.getDate() + 7);
