@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeads } from "@/lib/crm/queries";
-import { STAGES, ACTIVE_STAGES, formatMoney, stageMeta } from "@/lib/crm/types";
+import { STAGES, ACTIVE_STAGES, formatMoney } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
+import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
 import { Trophy, TrendingUp, Users, Target } from "lucide-react";
 
 const sb = supabase as any;
@@ -15,18 +17,24 @@ export const Route = createFileRoute("/_authenticated/crm/dashboard")({
 
 function DashboardPage() {
   const { companyId, ready } = useAuth();
+  const [assignee, setAssignee] = useState<string>("all");
 
   const leads = useQuery({
-    queryKey: ["crm-leads", companyId, "dash"],
+    queryKey: ["crm-leads", companyId, "dash", assignee],
     enabled: ready && !!companyId,
-    queryFn: () => fetchLeads({ companyId: companyId! }),
+    queryFn: () => fetchLeads({
+      companyId: companyId!,
+      assignedTo: assignee === "all" ? null : assignee,
+    }),
   });
 
   const visitsCount = useQuery({
-    queryKey: ["crm-visit-count", companyId],
+    queryKey: ["crm-visit-count", companyId, assignee],
     enabled: ready && !!companyId,
     queryFn: async () => {
-      const { count } = await sb.from("customer_visits").select("id", { count: "exact", head: true }).eq("company_id", companyId).neq("status", "office_study");
+      let q = sb.from("customer_visits").select("id", { count: "exact", head: true }).eq("company_id", companyId).neq("status", "office_study");
+      if (assignee !== "all" && assignee !== "unassigned") q = q.eq("user_id", assignee);
+      const { count } = await q;
       return count ?? 0;
     },
   });
@@ -60,10 +68,14 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">CRM Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Pipeline health and conversion metrics.</p>
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">CRM Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Pipeline health and conversion metrics.</p>
+        </div>
+        <AssigneeFilter companyId={companyId} value={assignee} onChange={setAssignee} />
       </header>
+
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={Target} label="Active pipeline" value={formatMoney(pipelineValue)} sub={`${active.length} open leads`} />
