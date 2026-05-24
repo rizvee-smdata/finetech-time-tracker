@@ -221,6 +221,11 @@ function LeadDetail() {
           <AIInsightsPanel leadId={leadId} />
         </TabsContent>
 
+        <TabsContent value="sequences" className="space-y-4">
+          <SequencesPanel leadId={leadId} companyId={lead.company_id} userId={user!.id} />
+        </TabsContent>
+
+
 
         <TabsContent value="visits" className="space-y-4">
           <RelatedVisits items={relatedVisits.data ?? []} />
