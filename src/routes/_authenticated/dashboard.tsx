@@ -107,7 +107,7 @@ function Dashboard() {
               <div key={v.id} className="flex items-center justify-between rounded-md border border-border p-3">
                 <div>
                   <div className="font-medium">{v.customer_name}</div>
-                  <div className="text-xs text-muted-foreground">{v.company || "—"} · {format(new Date(v.meeting_at), "MMM d, p")}</div>
+                  <div className="text-xs text-muted-foreground">{v.company || "—"} · {formatDateTime(v.meeting_at)}</div>
                 </div>
               </div>
             ))}
@@ -122,7 +122,7 @@ function Dashboard() {
               <div key={v.id} className="rounded-md border border-border p-3">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">{v.customer_name}</div>
-                  <Badge variant="secondary">{format(new Date(v.next_meeting_at!), "MMM d, p")}</Badge>
+                  <Badge variant="secondary">{formatDateTime(v.next_meeting_at)}</Badge>
                 </div>
                 {v.next_action && <div className="mt-1 text-xs text-muted-foreground">{v.next_action}</div>}
               </div>
