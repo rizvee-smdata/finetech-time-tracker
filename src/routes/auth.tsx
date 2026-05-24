@@ -59,16 +59,15 @@ function AuthPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function routeAfterAuth() {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const currentUser = sessionData.session?.user ?? (await supabase.auth.getUser()).data.user;
-    if (!currentUser) {
-      toast.error("Please sign in again.");
+  async function routeAfterAuth(userId?: string) {
+    const currentUserId = userId ?? (await supabase.auth.getSession()).data.session?.user?.id;
+    if (!currentUserId) {
+      window.location.href = "/dashboard";
       return;
     }
 
     const { data: roles } = await supabase
-      .from("user_roles").select("role").eq("user_id", currentUser.id);
+      .from("user_roles").select("role").eq("user_id", currentUserId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     const { data: comps } = await supabase.from("companies").select("id, name").order("name");
     const list = comps ?? [];
@@ -114,8 +113,10 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Account created.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        await routeAfterAuth(data.user?.id);
+        return;
       }
       await routeAfterAuth();
     } catch (e: unknown) {

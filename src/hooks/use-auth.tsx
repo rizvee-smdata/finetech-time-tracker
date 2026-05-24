@@ -48,7 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadCompanies = useCallback(async () => {
-    const { data } = await supabase.from("companies").select("id, name, slug").order("name");
+    const { data, error } = await supabase.from("companies").select("id, name, slug").order("name");
+    if (error) {
+      console.error("Failed to load companies", error);
+      setCompanies([]);
+      return;
+    }
     const list = (data ?? []) as Company[];
     setCompanies(list);
     setCompanyIdState((prev) => {
@@ -65,33 +70,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadRoles = useCallback(async (uid: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    if (error) {
+      console.error("Failed to load roles", error);
+      setRoles([]);
+      return;
+    }
     setRoles((data ?? []).map((r) => r.role as AppRole));
   }, []);
 
   useEffect(() => {
     let mounted = true;
+    const loadingFallback = window.setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 2500);
 
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
       setSession(data.session);
       if (data.session?.user) {
-        void Promise.all([loadRoles(data.session.user.id), loadCompanies()]).finally(() => {
-          if (mounted) setLoading(false);
-        });
-      } else {
-        setLoading(false);
+        void loadRoles(data.session.user.id);
+        void loadCompanies();
       }
+      setLoading(false);
+      window.clearTimeout(loadingFallback);
+    }).catch((error) => {
+      console.error("Failed to restore auth session", error);
+      if (mounted) setLoading(false);
+      window.clearTimeout(loadingFallback);
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       if (!mounted) return;
       setSession(s);
+      setLoading(false);
+      window.clearTimeout(loadingFallback);
       if (s?.user) {
         setTimeout(() => {
           if (!mounted) return;
-          loadRoles(s.user.id);
-          loadCompanies();
+          void loadRoles(s.user.id);
+          void loadCompanies();
         }, 0);
       } else {
         setRoles([]);
@@ -101,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       mounted = false;
+      window.clearTimeout(loadingFallback);
       sub.subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
