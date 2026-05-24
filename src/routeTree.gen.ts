@@ -59,6 +59,7 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
+import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -332,6 +333,12 @@ const AuthenticatedTasksProjectsProjectIdRoute =
     path: '/$projectId',
     getParentRoute: () => AuthenticatedTasksProjectsRoute,
   } as any)
+const AuthenticatedCrmAccountAccountIdRoute =
+  AuthenticatedCrmAccountAccountIdRouteImport.update({
+    id: '/account/$accountId',
+    path: '/account/$accountId',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport.update({
     id: '/sprints/$sprintId',
@@ -385,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -435,6 +443,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -489,6 +498,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -543,6 +553,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/tasks/'
     | '/visits/'
+    | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -593,6 +604,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/tasks'
     | '/visits'
+    | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -646,6 +658,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
+    | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/tasks/projects/$projectId'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -1014,6 +1027,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedTasksProjectsRoute
     }
+    '/_authenticated/crm/account/$accountId': {
+      id: '/_authenticated/crm/account/$accountId'
+      path: '/account/$accountId'
+      fullPath: '/crm/account/$accountId'
+      preLoaderRoute: typeof AuthenticatedCrmAccountAccountIdRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': {
       id: '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
       path: '/sprints/$sprintId'
@@ -1046,6 +1066,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmTemplatesRoute: typeof AuthenticatedCrmTemplatesRoute
   AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
+  AuthenticatedCrmAccountAccountIdRoute: typeof AuthenticatedCrmAccountAccountIdRoute
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
@@ -1070,6 +1091,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmTemplatesRoute: AuthenticatedCrmTemplatesRoute,
   AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
+  AuthenticatedCrmAccountAccountIdRoute: AuthenticatedCrmAccountAccountIdRoute,
 }
 
 const AuthenticatedCrmRouteWithChildren =
