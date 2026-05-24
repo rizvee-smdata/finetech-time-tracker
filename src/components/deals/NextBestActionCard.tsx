@@ -10,15 +10,12 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Play,
 } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
 import type { NextBestAction } from "@/lib/deals/types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useTimeStore } from "@/lib/time/storage";
 
 const TYPE_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   call: Phone,
@@ -59,22 +56,6 @@ export function NextBestActionCard({ action, onToggle, onUpdateDraft, dealLabel 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(action.draftContent ?? "");
-  const navigate = useNavigate();
-  const { startTimer } = useTimeStore();
-
-  const onStartTimer = () => {
-    const cat =
-      action.actionType === "meeting" || action.actionType === "demo"
-        ? "Client Meeting"
-        : action.actionType === "proposal"
-        ? "Proposal Writing"
-        : action.actionType === "call" || action.actionType === "email"
-        ? "Follow-up"
-        : "Business Development";
-    startTimer(action.action, { category: cat, billable: true });
-    toast.success("Timer started");
-    navigate({ to: "/time" });
-  };
 
 
   return (
@@ -186,12 +167,6 @@ export function NextBestActionCard({ action, onToggle, onUpdateDraft, dealLabel 
               <Check className="mr-1 h-3 w-3" />
               {action.completed ? "Mark Open" : "Mark Complete"}
             </Button>
-            {!action.completed && (
-              <Button size="sm" variant="outline" onClick={onStartTimer}>
-                <Play className="mr-1 h-3 w-3" />
-                Start Timer
-              </Button>
-            )}
             {action.completed && action.completedAt && (
               <span className="font-mono text-[11px] text-muted-foreground">
                 ✓ {new Date(action.completedAt).toLocaleString()}
