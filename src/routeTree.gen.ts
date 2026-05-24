@@ -20,11 +20,13 @@ import { Route as AuthenticatedRemindersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
@@ -33,6 +35,10 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
+import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
+import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
+import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
@@ -92,6 +98,11 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedConsultantsRoute =
   AuthenticatedConsultantsRouteImport.update({
     id: '/consultants',
@@ -118,6 +129,11 @@ const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
@@ -163,6 +179,28 @@ const AuthenticatedTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
   } as any)
+const AuthenticatedCrmPipelineRoute =
+  AuthenticatedCrmPipelineRouteImport.update({
+    id: '/pipeline',
+    path: '/pipeline',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmListRoute = AuthenticatedCrmListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
+const AuthenticatedCrmDashboardRoute =
+  AuthenticatedCrmDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
+  id: '/$leadId',
+  path: '/$leadId',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -194,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AuthenticatedAiRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
+  '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/partners': typeof AuthenticatedPartnersRoute
@@ -202,6 +241,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/list': typeof AuthenticatedCrmListRoute
+  '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -210,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/crm/': typeof AuthenticatedCrmIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -230,6 +274,10 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/list': typeof AuthenticatedCrmListRoute
+  '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -238,6 +286,7 @@ export interface FileRoutesByTo {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/crm': typeof AuthenticatedCrmIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -253,6 +302,7 @@ export interface FileRoutesById {
   '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
+  '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
@@ -261,6 +311,10 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
+  '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -269,6 +323,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -284,6 +339,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/check-in'
     | '/consultants'
+    | '/crm'
     | '/customers'
     | '/dashboard'
     | '/partners'
@@ -292,6 +348,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/team'
+    | '/crm/$leadId'
+    | '/crm/dashboard'
+    | '/crm/list'
+    | '/crm/pipeline'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -300,6 +360,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/crm/'
     | '/tasks/'
     | '/visits/'
     | '/tasks/projects/$projectId'
@@ -320,6 +381,10 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/team'
+    | '/crm/$leadId'
+    | '/crm/dashboard'
+    | '/crm/list'
+    | '/crm/pipeline'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -328,6 +393,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/crm'
     | '/tasks'
     | '/visits'
     | '/tasks/projects/$projectId'
@@ -342,6 +408,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai'
     | '/_authenticated/check-in'
     | '/_authenticated/consultants'
+    | '/_authenticated/crm'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/partners'
@@ -350,6 +417,10 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/_authenticated/crm/$leadId'
+    | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/list'
+    | '/_authenticated/crm/pipeline'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -358,6 +429,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
+    | '/_authenticated/crm/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
     | '/_authenticated/tasks/projects/$projectId'
@@ -453,6 +525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm': {
+      id: '/_authenticated/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof AuthenticatedCrmRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/consultants': {
       id: '/_authenticated/consultants'
       path: '/consultants'
@@ -487,6 +566,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/'
       preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
+      path: '/'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
@@ -544,6 +630,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
+    '/_authenticated/crm/pipeline': {
+      id: '/_authenticated/crm/pipeline'
+      path: '/pipeline'
+      fullPath: '/crm/pipeline'
+      preLoaderRoute: typeof AuthenticatedCrmPipelineRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/list': {
+      id: '/_authenticated/crm/list'
+      path: '/list'
+      fullPath: '/crm/list'
+      preLoaderRoute: typeof AuthenticatedCrmListRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/dashboard': {
+      id: '/_authenticated/crm/dashboard'
+      path: '/dashboard'
+      fullPath: '/crm/dashboard'
+      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/$leadId': {
+      id: '/_authenticated/crm/$leadId'
+      path: '/$leadId'
+      fullPath: '/crm/$leadId'
+      preLoaderRoute: typeof AuthenticatedCrmLeadIdRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -574,6 +688,25 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedCrmRouteChildren {
+  AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
+  AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
+  AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
+  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
+}
+
+const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
+  AuthenticatedCrmLeadIdRoute: AuthenticatedCrmLeadIdRoute,
+  AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
+  AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
+  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
+}
+
+const AuthenticatedCrmRouteWithChildren =
+  AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
 
 interface AuthenticatedTasksProjectsProjectIdRouteChildren {
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute: typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
@@ -634,6 +767,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
+  AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
@@ -650,6 +784,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAiRoute: AuthenticatedAiRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
+  AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
@@ -675,13 +810,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
