@@ -35,10 +35,13 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
+import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
+import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
@@ -180,6 +183,18 @@ const AuthenticatedTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
   } as any)
+const AuthenticatedCrmTerritoriesRoute =
+  AuthenticatedCrmTerritoriesRouteImport.update({
+    id: '/territories',
+    path: '/territories',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmSettingsRoute =
+  AuthenticatedCrmSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmPipelineRoute =
   AuthenticatedCrmPipelineRouteImport.update({
     id: '/pipeline',
@@ -202,6 +217,12 @@ const AuthenticatedCrmCatalogRoute = AuthenticatedCrmCatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmAccountsRoute =
+  AuthenticatedCrmAccountsRouteImport.update({
+    id: '/accounts',
+    path: '/accounts',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
   id: '/$leadId',
   path: '/$leadId',
@@ -248,10 +269,13 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -282,10 +306,13 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -320,10 +347,13 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -358,10 +388,13 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/team'
     | '/crm/$leadId'
+    | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
+    | '/crm/settings'
+    | '/crm/territories'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -392,10 +425,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/crm/$leadId'
+    | '/crm/accounts'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
+    | '/crm/settings'
+    | '/crm/territories'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -429,10 +465,13 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/_authenticated/team'
     | '/_authenticated/crm/$leadId'
+    | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/pipeline'
+    | '/_authenticated/crm/settings'
+    | '/_authenticated/crm/territories'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -642,6 +681,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
+    '/_authenticated/crm/territories': {
+      id: '/_authenticated/crm/territories'
+      path: '/territories'
+      fullPath: '/crm/territories'
+      preLoaderRoute: typeof AuthenticatedCrmTerritoriesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/settings': {
+      id: '/_authenticated/crm/settings'
+      path: '/settings'
+      fullPath: '/crm/settings'
+      preLoaderRoute: typeof AuthenticatedCrmSettingsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/pipeline': {
       id: '/_authenticated/crm/pipeline'
       path: '/pipeline'
@@ -668,6 +721,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/crm/catalog'
       preLoaderRoute: typeof AuthenticatedCrmCatalogRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/accounts': {
+      id: '/_authenticated/crm/accounts'
+      path: '/accounts'
+      fullPath: '/crm/accounts'
+      preLoaderRoute: typeof AuthenticatedCrmAccountsRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/crm/$leadId': {
@@ -710,19 +770,25 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
+  AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
+  AuthenticatedCrmSettingsRoute: typeof AuthenticatedCrmSettingsRoute
+  AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmLeadIdRoute: AuthenticatedCrmLeadIdRoute,
+  AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
+  AuthenticatedCrmSettingsRoute: AuthenticatedCrmSettingsRoute,
+  AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 

@@ -12,7 +12,10 @@ function CrmLayout() {
     { to: "/crm/pipeline", label: "Pipeline" },
     { to: "/crm/list", label: "List" },
     { to: "/crm/dashboard", label: "Dashboard" },
+    { to: "/crm/accounts", label: "Accounts" },
     { to: "/crm/catalog", label: "Catalog" },
+    { to: "/crm/territories", label: "Territories" },
+    { to: "/crm/settings", label: "Settings" },
   ];
 
   // Detail view: hide tabs
