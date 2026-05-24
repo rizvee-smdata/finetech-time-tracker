@@ -84,8 +84,17 @@ export function useTimeStore() {
   useEffect(() => {
     refresh();
     listeners.add(refresh);
-    return () => { listeners.delete(refresh); };
+    if (typeof window !== "undefined") {
+      window.addEventListener("deskiq:time-updated", refresh);
+    }
+    return () => {
+      listeners.delete(refresh);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("deskiq:time-updated", refresh);
+      }
+    };
   }, [refresh]);
+
 
   const persistEntries = useCallback((next: TimeEntry[]) => { write(ENTRIES_KEY, next); notify(); }, []);
   const persistTimer = useCallback((next: TimerState | null) => {
@@ -171,8 +180,24 @@ export function useTimeStore() {
     };
     persistEntries([entry, ...ensureEntries()]);
     persistTimer(null);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("deskiq:time-updated"));
+      if (entry.dealId) {
+        // Fire-and-forget cross-module integration. Imported lazily to avoid
+        // circular import between time storage and integrations.
+        import("@/lib/app/integrations").then(({ logTimeAgainstDeal }) => {
+          logTimeAgainstDeal({
+            dealId: entry.dealId!,
+            minutes: entry.duration,
+            description: entry.description,
+            category: entry.category,
+          });
+        }).catch(() => {});
+      }
+    }
     return entry;
   }, [persistEntries, persistTimer]);
+
 
   const discardTimer = useCallback(() => persistTimer(null), [persistTimer]);
 

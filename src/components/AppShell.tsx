@@ -31,11 +31,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { AlertsBell } from "@/components/time/AlertsBell";
 import { MiniTimerWidget } from "@/components/time/MiniTimerWidget";
+import { NotificationCenter } from "@/components/global/NotificationCenter";
+import { GlobalSearch } from "@/components/global/GlobalSearch";
+
 
 const nav = [
+  { to: "/command", label: "Command Center", icon: Sparkles },
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/crm", label: "CRM", icon: Target },
@@ -121,18 +125,22 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
-          <AlertsBell />
+          <GlobalSearch />
+          <NotificationCenter />
           <NotificationBell compact />
           <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
         </div>
+
       </header>
 
       {/* Desktop floating bell */}
       <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
+        <GlobalSearch />
         <MiniTimerWidget />
-        <AlertsBell />
+        <NotificationCenter />
         <NotificationBell compact />
       </div>
+
 
       <div className="flex">
         {/* Sidebar */}

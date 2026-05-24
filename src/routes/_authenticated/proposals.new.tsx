@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useMeetingsStore } from "@/lib/meetings/storage";
+
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
@@ -36,8 +38,13 @@ import { fmtMoney, grandTotal, lineTotal, totalImplementationDays } from "@/lib/
 import { generateProposal } from "@/lib/proposals/generate.functions";
 
 export const Route = createFileRoute("/_authenticated/proposals/new")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    fromMeeting: typeof search.fromMeeting === "string" ? search.fromMeeting : undefined,
+    fromDeal: typeof search.fromDeal === "string" ? search.fromDeal : undefined,
+  }),
   component: ProposalWizardPage,
 });
+
 
 const STEPS = [
   { id: 1, label: "Client Info" },
@@ -93,9 +100,11 @@ const initialState: WizardState = {
 function ProposalWizardPage() {
   const router = useRouter();
   const { deals } = useDealsStore();
+  const { meetings } = useMeetingsStore();
   const { upsert } = useProposalsStore();
   const { draft, save } = useWizardDraft();
   const generate = useServerFn(generateProposal);
+  const { fromMeeting, fromDeal } = Route.useSearch();
 
   const [state, setState] = useState<WizardState>(() => {
     if (draft?.data) {
@@ -106,6 +115,55 @@ function ProposalWizardPage() {
   const [generating, setGenerating] = useState(false);
   const [genIndex, setGenIndex] = useState(-1);
   const [resultProposal, setResultProposal] = useState<Proposal | null>(null);
+
+  // Prefill from meeting or deal via search params (one-shot)
+  useEffect(() => {
+    if (fromMeeting) {
+      const m = meetings.find((x) => x.id === fromMeeting);
+      if (m) {
+        setState((s) => ({
+          ...s,
+          clientName: m.clientName,
+          clientCompany: m.clientCompany,
+          painPoints: m.processed?.painPoints ?? s.painPoints,
+          competitors: m.processed?.objections ?? s.competitors,
+          previousContext: [
+            m.processed?.summary ?? m.rawNotes,
+            m.processed?.objections?.length ? `Objections: ${m.processed.objections.join("; ")}` : "",
+          ].filter(Boolean).join("\n\n"),
+        }));
+      }
+    } else if (fromDeal) {
+      const d = deals.find((x) => x.id === fromDeal);
+      if (d) {
+        const painPoints = d.interactions
+          .slice(-5)
+          .map((i) => i.notes)
+          .filter(Boolean)
+          .slice(0, 5);
+        const nbaContext = (d.nextBestActions ?? [])
+          .filter((a) => !a.completed)
+          .slice(0, 3)
+          .map((a) => `• ${a.action} — ${a.reasoning}`)
+          .join("\n");
+        setState((s) => ({
+          ...s,
+          dealId: d.id,
+          clientName: d.clientName,
+          clientCompany: d.clientCompany,
+          clientIndustry: d.industry || s.clientIndustry,
+          competitors: d.competitors ?? s.competitors,
+          painPoints: painPoints.length ? painPoints : s.painPoints,
+          additionalInstructions: nbaContext
+            ? `Next best actions context:\n${nbaContext}`
+            : s.additionalInstructions,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromMeeting, fromDeal, meetings.length, deals.length]);
+
+
 
   // persist draft
   useEffect(() => {
