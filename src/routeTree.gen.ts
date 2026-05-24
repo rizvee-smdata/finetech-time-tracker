@@ -25,12 +25,14 @@ import { Route as AuthenticatedCustomersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
+import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
+import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
@@ -70,6 +72,10 @@ import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
+import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authenticated/attendance.team'
+import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
+import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
+import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
@@ -158,6 +164,11 @@ const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   path: '/check-in',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAttendanceRoute = AuthenticatedAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAiRoute = AuthenticatedAiRouteImport.update({
   id: '/ai',
   path: '/ai',
@@ -191,6 +202,12 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedAttendanceIndexRoute =
+  AuthenticatedAttendanceIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAttendanceRoute,
+  } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
   path: '/visits/new',
@@ -411,6 +428,30 @@ const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
   path: '/$leadId',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedAttendanceTeamRoute =
+  AuthenticatedAttendanceTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => AuthenticatedAttendanceRoute,
+  } as any)
+const AuthenticatedAttendanceSettingsRoute =
+  AuthenticatedAttendanceSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAttendanceRoute,
+  } as any)
+const AuthenticatedAttendanceReportsRoute =
+  AuthenticatedAttendanceReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAttendanceRoute,
+  } as any)
+const AuthenticatedAttendanceHistoryRoute =
+  AuthenticatedAttendanceHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedAttendanceRoute,
+  } as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -458,6 +499,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/ai': typeof AuthenticatedAiRoute
+  '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/check-in': typeof AuthenticatedCheckInRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
@@ -471,6 +513,10 @@ export interface FileRoutesByFullPath {
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
+  '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
+  '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
+  '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -510,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
@@ -536,6 +583,10 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
+  '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
+  '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
+  '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -575,6 +626,7 @@ export interface FileRoutesByTo {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/attendance': typeof AuthenticatedAttendanceIndexRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
@@ -594,6 +646,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/ai': typeof AuthenticatedAiRoute
+  '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
@@ -607,6 +660,10 @@ export interface FileRoutesById {
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
+  '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
+  '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
+  '/_authenticated/attendance/team': typeof AuthenticatedAttendanceTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -646,6 +703,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
@@ -665,6 +723,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/ai'
+    | '/attendance'
     | '/check-in'
     | '/consultants'
     | '/crm'
@@ -678,6 +737,10 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/team'
+    | '/attendance/history'
+    | '/attendance/reports'
+    | '/attendance/settings'
+    | '/attendance/team'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -717,6 +780,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/attendance/'
     | '/crm/'
     | '/expenses/'
     | '/targets/'
@@ -743,6 +807,10 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/team'
+    | '/attendance/history'
+    | '/attendance/reports'
+    | '/attendance/settings'
+    | '/attendance/team'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -782,6 +850,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/attendance'
     | '/crm'
     | '/expenses'
     | '/targets'
@@ -800,6 +869,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/ai'
+    | '/_authenticated/attendance'
     | '/_authenticated/check-in'
     | '/_authenticated/consultants'
     | '/_authenticated/crm'
@@ -813,6 +883,10 @@ export interface FileRouteTypes {
     | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/_authenticated/attendance/history'
+    | '/_authenticated/attendance/reports'
+    | '/_authenticated/attendance/settings'
+    | '/_authenticated/attendance/team'
     | '/_authenticated/crm/$leadId'
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/activity'
@@ -852,6 +926,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
+    | '/_authenticated/attendance/'
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
     | '/_authenticated/targets/'
@@ -990,6 +1065,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheckInRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/attendance': {
+      id: '/_authenticated/attendance'
+      path: '/attendance'
+      fullPath: '/attendance'
+      preLoaderRoute: typeof AuthenticatedAttendanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ai': {
       id: '/_authenticated/ai'
       path: '/ai'
@@ -1031,6 +1113,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/crm/'
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/attendance/': {
+      id: '/_authenticated/attendance/'
+      path: '/'
+      fullPath: '/attendance/'
+      preLoaderRoute: typeof AuthenticatedAttendanceIndexRouteImport
+      parentRoute: typeof AuthenticatedAttendanceRoute
     }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
@@ -1305,6 +1394,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmLeadIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/attendance/team': {
+      id: '/_authenticated/attendance/team'
+      path: '/team'
+      fullPath: '/attendance/team'
+      preLoaderRoute: typeof AuthenticatedAttendanceTeamRouteImport
+      parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/_authenticated/attendance/settings': {
+      id: '/_authenticated/attendance/settings'
+      path: '/settings'
+      fullPath: '/attendance/settings'
+      preLoaderRoute: typeof AuthenticatedAttendanceSettingsRouteImport
+      parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/_authenticated/attendance/reports': {
+      id: '/_authenticated/attendance/reports'
+      path: '/reports'
+      fullPath: '/attendance/reports'
+      preLoaderRoute: typeof AuthenticatedAttendanceReportsRouteImport
+      parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/_authenticated/attendance/history': {
+      id: '/_authenticated/attendance/history'
+      path: '/history'
+      fullPath: '/attendance/history'
+      preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
+      parentRoute: typeof AuthenticatedAttendanceRoute
+    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -1356,6 +1473,28 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAttendanceRouteChildren {
+  AuthenticatedAttendanceHistoryRoute: typeof AuthenticatedAttendanceHistoryRoute
+  AuthenticatedAttendanceReportsRoute: typeof AuthenticatedAttendanceReportsRoute
+  AuthenticatedAttendanceSettingsRoute: typeof AuthenticatedAttendanceSettingsRoute
+  AuthenticatedAttendanceTeamRoute: typeof AuthenticatedAttendanceTeamRoute
+  AuthenticatedAttendanceIndexRoute: typeof AuthenticatedAttendanceIndexRoute
+}
+
+const AuthenticatedAttendanceRouteChildren: AuthenticatedAttendanceRouteChildren =
+  {
+    AuthenticatedAttendanceHistoryRoute: AuthenticatedAttendanceHistoryRoute,
+    AuthenticatedAttendanceReportsRoute: AuthenticatedAttendanceReportsRoute,
+    AuthenticatedAttendanceSettingsRoute: AuthenticatedAttendanceSettingsRoute,
+    AuthenticatedAttendanceTeamRoute: AuthenticatedAttendanceTeamRoute,
+    AuthenticatedAttendanceIndexRoute: AuthenticatedAttendanceIndexRoute,
+  }
+
+const AuthenticatedAttendanceRouteWithChildren =
+  AuthenticatedAttendanceRoute._addFileChildren(
+    AuthenticatedAttendanceRouteChildren,
+  )
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
@@ -1513,6 +1652,7 @@ const AuthenticatedTasksRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
+  AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
@@ -1532,6 +1672,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAiRoute: AuthenticatedAiRoute,
+  AuthenticatedAttendanceRoute: AuthenticatedAttendanceRouteWithChildren,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
