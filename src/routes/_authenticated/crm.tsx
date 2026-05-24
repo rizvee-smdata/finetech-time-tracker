@@ -9,6 +9,7 @@ function CrmLayout() {
   const router = useRouter();
   const path = router.state.location.pathname;
   const tabs = [
+    { to: "/crm/inbox", label: "My day" },
     { to: "/crm/pipeline", label: "Pipeline" },
     { to: "/crm/list", label: "List" },
     { to: "/crm/dashboard", label: "Dashboard" },
