@@ -38,6 +38,7 @@ import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
+import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
@@ -196,6 +197,11 @@ const AuthenticatedCrmDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmCatalogRoute = AuthenticatedCrmCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
   id: '/$leadId',
   path: '/$leadId',
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
+  '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/team'
     | '/crm/$leadId'
+    | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/crm/$leadId'
+    | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/_authenticated/team'
     | '/_authenticated/crm/$leadId'
+    | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/pipeline'
@@ -651,6 +663,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/catalog': {
+      id: '/_authenticated/crm/catalog'
+      path: '/catalog'
+      fullPath: '/crm/catalog'
+      preLoaderRoute: typeof AuthenticatedCrmCatalogRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/$leadId': {
       id: '/_authenticated/crm/$leadId'
       path: '/$leadId'
@@ -691,6 +710,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
+  AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
@@ -699,6 +719,7 @@ interface AuthenticatedCrmRouteChildren {
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmLeadIdRoute: AuthenticatedCrmLeadIdRoute,
+  AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
