@@ -103,3 +103,13 @@ export const draftFollowup = createServerFn({ method: "POST" })
     });
     return { text: result.text };
   });
+
+export const winLossAnalysis = (await import("@tanstack/react-start")).createServerFn({ method: "POST" })
+  .middleware([(await import("@/integrations/supabase/auth-middleware")).requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    (await import("zod")).z.object({
+      companyId: (await import("zod")).z.string().uuid(),
+      windowDays: (await import("zod")).z.number().int().min(7).max(720).default(180),
+    }).parse(input),
+  )
+  .handler(async () => ({ text: "" }));
