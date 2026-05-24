@@ -265,7 +265,7 @@ function AddStopDialog({ planId, nextSeq, onAdded }: { planId: string; nextSeq: 
     queryFn: async () => {
       const { data, error } = await supabase
         .from("crm_leads")
-        .select("id, customer_name, company, location, address")
+        .select("id, customer_name, company_name, location")
         .order("updated_at", { ascending: false })
         .limit(50);
       if (error) throw error;
@@ -278,8 +278,8 @@ function AddStopDialog({ planId, nextSeq, onAdded }: { planId: string; nextSeq: 
     const l = (leads.data ?? []).find((x: any) => x.id === id);
     if (l) {
       setCustomerName(l.customer_name || "");
-      setLocationName(l.company || "");
-      setAddress(l.address || l.location || "");
+      setLocationName(l.company_name || "");
+      setAddress(l.location || "");
     }
   };
 
