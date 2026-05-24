@@ -37,7 +37,9 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
+import { Route as AuthenticatedExpensesApprovalsRouteImport } from './routes/_authenticated/expenses.approvals'
 import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses.$expenseId'
 import { Route as AuthenticatedCrmVelocityRouteImport } from './routes/_authenticated/crm.velocity'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
@@ -217,10 +219,22 @@ const AuthenticatedTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
   } as any)
+const AuthenticatedExpensesReportsRoute =
+  AuthenticatedExpensesReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
 const AuthenticatedExpensesNewRoute =
   AuthenticatedExpensesNewRouteImport.update({
     id: '/new',
     path: '/new',
+    getParentRoute: () => AuthenticatedExpensesRoute,
+  } as any)
+const AuthenticatedExpensesApprovalsRoute =
+  AuthenticatedExpensesApprovalsRouteImport.update({
+    id: '/approvals',
+    path: '/approvals',
     getParentRoute: () => AuthenticatedExpensesRoute,
   } as any)
 const AuthenticatedExpensesExpenseIdRoute =
@@ -448,7 +462,9 @@ export interface FileRoutesByFullPath {
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -507,7 +523,9 @@ export interface FileRoutesByTo {
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -571,7 +589,9 @@ export interface FileRoutesById {
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/crm/velocity': typeof AuthenticatedCrmVelocityRoute
   '/_authenticated/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
+  '/_authenticated/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
+  '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -635,7 +655,9 @@ export interface FileRouteTypes {
     | '/crm/territories'
     | '/crm/velocity'
     | '/expenses/$expenseId'
+    | '/expenses/approvals'
     | '/expenses/new'
+    | '/expenses/reports'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -694,7 +716,9 @@ export interface FileRouteTypes {
     | '/crm/territories'
     | '/crm/velocity'
     | '/expenses/$expenseId'
+    | '/expenses/approvals'
     | '/expenses/new'
+    | '/expenses/reports'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -757,7 +781,9 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/territories'
     | '/_authenticated/crm/velocity'
     | '/_authenticated/expenses/$expenseId'
+    | '/_authenticated/expenses/approvals'
     | '/_authenticated/expenses/new'
+    | '/_authenticated/expenses/reports'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -987,11 +1013,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
+    '/_authenticated/expenses/reports': {
+      id: '/_authenticated/expenses/reports'
+      path: '/reports'
+      fullPath: '/expenses/reports'
+      preLoaderRoute: typeof AuthenticatedExpensesReportsRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
     '/_authenticated/expenses/new': {
       id: '/_authenticated/expenses/new'
       path: '/new'
       fullPath: '/expenses/new'
       preLoaderRoute: typeof AuthenticatedExpensesNewRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
+    }
+    '/_authenticated/expenses/approvals': {
+      id: '/_authenticated/expenses/approvals'
+      path: '/approvals'
+      fullPath: '/expenses/approvals'
+      preLoaderRoute: typeof AuthenticatedExpensesApprovalsRouteImport
       parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/expenses/$expenseId': {
@@ -1284,13 +1324,17 @@ const AuthenticatedCrmRouteWithChildren =
 
 interface AuthenticatedExpensesRouteChildren {
   AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
+  AuthenticatedExpensesApprovalsRoute: typeof AuthenticatedExpensesApprovalsRoute
   AuthenticatedExpensesNewRoute: typeof AuthenticatedExpensesNewRoute
+  AuthenticatedExpensesReportsRoute: typeof AuthenticatedExpensesReportsRoute
   AuthenticatedExpensesIndexRoute: typeof AuthenticatedExpensesIndexRoute
 }
 
 const AuthenticatedExpensesRouteChildren: AuthenticatedExpensesRouteChildren = {
   AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
+  AuthenticatedExpensesApprovalsRoute: AuthenticatedExpensesApprovalsRoute,
   AuthenticatedExpensesNewRoute: AuthenticatedExpensesNewRoute,
+  AuthenticatedExpensesReportsRoute: AuthenticatedExpensesReportsRoute,
   AuthenticatedExpensesIndexRoute: AuthenticatedExpensesIndexRoute,
 }
 
@@ -1405,3 +1449,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
