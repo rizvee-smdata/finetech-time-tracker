@@ -7,7 +7,9 @@ import { fetchLeads } from "@/lib/crm/queries";
 import { STAGES, ACTIVE_STAGES, formatMoney } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
-import { Trophy, TrendingUp, Users, Target } from "lucide-react";
+import { Trophy, TrendingUp, Users, Target, AlertCircle } from "lucide-react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import { format, subMonths, startOfMonth } from "date-fns";
 
 const sb = supabase as any;
 
@@ -39,6 +41,24 @@ function DashboardPage() {
     },
   });
 
+  const overdueQ = useQuery({
+    queryKey: ["crm-overdue-tasks", companyId, assignee],
+    enabled: ready && !!companyId,
+    queryFn: async () => {
+      let q = sb.from("tms_tasks")
+        .select("id, title, due_date, lead_id, tms_task_assignees(user_id), tms_task_statuses(is_terminal)")
+        .eq("company_id", companyId)
+        .not("lead_id", "is", null)
+        .is("deleted_at", null)
+        .lt("due_date", new Date().toISOString().slice(0, 10));
+      const { data } = await q;
+      const list = (data ?? []).filter((t: any) => !t.tms_task_statuses?.is_terminal);
+      if (assignee === "all") return list;
+      if (assignee === "unassigned") return list.filter((t: any) => !t.tms_task_assignees?.length);
+      return list.filter((t: any) => (t.tms_task_assignees ?? []).some((a: any) => a.user_id === assignee));
+    },
+  });
+
   const all = leads.data ?? [];
   const won = all.filter((l) => l.stage === "won");
   const lost = all.filter((l) => l.stage === "lost");
@@ -48,6 +68,16 @@ function DashboardPage() {
   const wonValue = won.reduce((s, l) => s + (l.expected_value ?? 0), 0);
   const conversion = all.length ? Math.round((won.length / all.length) * 100) : 0;
   const visitConversion = (visitsCount.data ?? 0) ? Math.round((all.length / (visitsCount.data as number)) * 100) : 0;
+
+  // 6-month trend (created vs won, by month of creation/win)
+  const trend = Array.from({ length: 6 }).map((_, i) => {
+    const monthStart = startOfMonth(subMonths(new Date(), 5 - i));
+    const monthEnd = startOfMonth(subMonths(new Date(), 5 - i - 1));
+    const created = all.filter((l) => new Date(l.created_at) >= monthStart && new Date(l.created_at) < monthEnd).length;
+    const wonM = won.filter((l) => l.won_at && new Date(l.won_at) >= monthStart && new Date(l.won_at) < monthEnd).length;
+    return { month: format(monthStart, "MMM"), Created: created, Won: wonM };
+  });
+
 
   // Leaderboard
   const board = new Map<string, { name: string; won: number; value: number }>();
@@ -77,12 +107,30 @@ function DashboardPage() {
       </header>
 
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Kpi icon={Target} label="Active pipeline" value={formatMoney(pipelineValue)} sub={`${active.length} open leads`} />
         <Kpi icon={TrendingUp} label="Weighted forecast" value={formatMoney(weightedValue)} sub="Value × probability" />
         <Kpi icon={Trophy} label="Won this period" value={formatMoney(wonValue)} sub={`${won.length} deals · ${lost.length} lost`} />
         <Kpi icon={Users} label="Conversion" value={`${conversion}%`} sub={`${visitConversion}% from visits`} />
+        <Kpi icon={AlertCircle} label="Overdue tasks" value={String((overdueQ.data ?? []).length)} sub="On open leads" />
       </div>
+
+      <Card className="p-5">
+        <h2 className="mb-3 text-sm font-semibold">6-month trend</h2>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={trend}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="month" className="text-xs" />
+              <YAxis allowDecimals={false} className="text-xs" />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="Created" stroke="hsl(var(--primary))" strokeWidth={2} />
+              <Line type="monotone" dataKey="Won" stroke="#16a34a" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">

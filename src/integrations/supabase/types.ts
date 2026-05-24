@@ -1729,6 +1729,7 @@ export type Database = {
         Args: { _lead: string; _user: string }
         Returns: boolean
       }
+      crm_remind_idle_leads: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
