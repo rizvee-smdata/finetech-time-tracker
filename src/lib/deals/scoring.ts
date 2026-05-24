@@ -39,7 +39,7 @@ export function calculateHealthScore(deal: Deal, prevScore?: number, history?: {
     daysInStage <= expected * 2 ? 10 :
     daysInStage <= expected * 3 ? 5 : 0;
 
-  const recentSentiments = deal.interactions
+  const recentSentiments: number[] = deal.interactions
     .slice(-5)
     .map((i) => (i.sentiment === "positive" ? 1 : i.sentiment === "neutral" ? 0.5 : 0));
   const avgSentiment =
