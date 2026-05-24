@@ -21,17 +21,8 @@ export const Route = createFileRoute("/_authenticated/crm/catalog")({
 });
 
 function CatalogPage() {
-  const { profile } = useAuth();
-  const companyId = (profile as any)?.company_id || null;
-  const { data: companyMem } = useQuery({
-    queryKey: ["my-company"],
-    queryFn: async () => {
-      const { data } = await sb.from("company_members").select("company_id").limit(1).maybeSingle();
-      return data?.company_id ?? null;
-    },
-    enabled: !companyId,
-  });
-  const cid = companyId || companyMem;
+  const { companyId } = useAuth();
+  const cid = companyId;
 
   const products = useQuery({
     queryKey: ["crm-products", cid],
@@ -42,7 +33,8 @@ function CatalogPage() {
   const [editing, setEditing] = useState<CrmProduct | null>(null);
   const [open, setOpen] = useState(false);
 
-  if (!cid) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (!cid) return <p className="text-sm text-muted-foreground">Select a company to manage catalog.</p>;
+
 
   return (
     <div className="space-y-4">
