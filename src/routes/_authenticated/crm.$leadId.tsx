@@ -214,6 +214,10 @@ function LeadDetail() {
           <QuotesPanel leadId={leadId} companyId={lead.company_id} userId={user!.id} quotes={quotes.data ?? []} />
         </TabsContent>
 
+        <TabsContent value="ai" className="space-y-4">
+          <AIInsightsPanel leadId={leadId} />
+        </TabsContent>
+
 
         <TabsContent value="visits" className="space-y-4">
           <RelatedVisits items={relatedVisits.data ?? []} />
