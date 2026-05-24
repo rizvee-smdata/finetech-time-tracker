@@ -761,6 +761,39 @@ export type Database = {
           },
         ]
       }
+      crm_saved_views: {
+        Row: {
+          company_id: string
+          created_at: string
+          filters: Json
+          id: string
+          is_shared: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       crm_sequence_enrollments: {
         Row: {
           completed_at: string | null
