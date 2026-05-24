@@ -28,6 +28,7 @@ import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { QuoteBuilderDialog } from "@/components/crm/QuoteBuilderDialog";
 import { CallsPanel } from "@/components/crm/CallsPanel";
 import { AIInsightsPanel } from "@/components/crm/AIInsightsPanel";
+import { SequencesPanel } from "@/components/crm/SequencesPanel";
 
 
 const sb = supabase as any;
