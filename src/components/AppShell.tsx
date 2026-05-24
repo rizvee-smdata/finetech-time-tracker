@@ -21,6 +21,7 @@ import {
   FileText,
   MapPin,
   Route as RouteIcon,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
