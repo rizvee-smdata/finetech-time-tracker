@@ -51,6 +51,39 @@ function AccountsPage() {
     enabled: !!companyId,
   });
 
+  const members = useQuery({
+    queryKey: ["crm-members", companyId],
+    queryFn: async () => {
+      const { data: mem } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
+      const ids = (mem ?? []).map((m: any) => m.user_id);
+      if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
+      const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", ids);
+      return (profs ?? []) as { id: string; full_name: string | null; email: string | null }[];
+    },
+    enabled: !!companyId,
+  });
+
+  const accountStats = useQuery({
+    queryKey: ["crm-account-stats", companyId],
+    queryFn: async () => {
+      const { data } = await sb.from("crm_leads")
+        .select("account_id, expected_value, stage")
+        .eq("company_id", companyId);
+      const map = new Map<string, { count: number; value: number; won: number; open: number }>();
+      for (const l of (data ?? []) as any[]) {
+        if (!l.account_id) continue;
+        const b = map.get(l.account_id) ?? { count: 0, value: 0, won: 0, open: 0 };
+        b.count += 1;
+        b.value += Number(l.expected_value || 0);
+        if (l.stage === "won") b.won += 1;
+        else if (l.stage !== "lost") b.open += 1;
+        map.set(l.account_id, b);
+      }
+      return map;
+    },
+    enabled: !!companyId,
+  });
+
   async function remove(id: string) {
     if (!confirm("Delete this account? Leads will keep their data but unlink.")) return;
     const { error } = await sb.from("crm_accounts").delete().eq("id", id);
@@ -86,6 +119,8 @@ function AccountsPage() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((a) => {
             const terr = territories.data?.find((t) => t.id === a.territory_id);
+            const owner = members.data?.find((m) => m.id === a.primary_owner);
+            const s = accountStats.data?.get(a.id) ?? { count: 0, value: 0, won: 0, open: 0 };
             return (
               <Card key={a.id} className="p-4 space-y-2">
                 <div className="flex items-start justify-between gap-2">
@@ -109,25 +144,34 @@ function AccountsPage() {
                   {a.phone && <div className="flex items-center gap-1"><Phone className="h-3 w-3" />{a.phone}</div>}
                   {a.website && <div className="flex items-center gap-1"><Globe className="h-3 w-3" /><span className="truncate">{a.website}</span></div>}
                   {a.address && <div className="flex items-center gap-1"><MapPin className="h-3 w-3" /><span className="truncate">{a.address}</span></div>}
-                  {terr && <div>Territory: {terr.name}</div>}
+                  {terr && <div>Territory: <span className="text-foreground">{terr.name}</span></div>}
+                  {owner && <div>Owner: <span className="text-foreground">{owner.full_name ?? owner.email}</span></div>}
                 </div>
-                <Link to="/crm/list" className="text-xs text-primary hover:underline">View leads →</Link>
+                <div className="flex items-center justify-between pt-1 border-t mt-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-medium">{s.count}</span>
+                    <span className="text-muted-foreground">leads ·</span>
+                    <span className="font-medium">${s.value.toLocaleString()}</span>
+                  </div>
+                  <Link to="/crm/list" className="text-xs text-primary hover:underline">View →</Link>
+                </div>
               </Card>
             );
           })}
         </div>
       )}
 
-      <AccountDialog open={open} onOpenChange={setOpen} companyId={companyId} editing={editing} territories={territories.data ?? []} />
+      <AccountDialog open={open} onOpenChange={setOpen} companyId={companyId} editing={editing} territories={territories.data ?? []} members={members.data ?? []} />
     </div>
   );
 }
 
 function AccountDialog({
-  open, onOpenChange, companyId, editing, territories,
+  open, onOpenChange, companyId, editing, territories, members,
 }: {
   open: boolean; onOpenChange: (b: boolean) => void; companyId: string;
   editing: Account | null; territories: { id: string; name: string }[];
+  members: { id: string; full_name: string | null; email: string | null }[];
 }) {
   const qc = useQueryClient();
   const { user } = useAuth();
@@ -149,6 +193,7 @@ function AccountDialog({
       phone: form.phone || null,
       address: form.address || null,
       territory_id: form.territory_id || null,
+      primary_owner: form.primary_owner || null,
       notes: form.notes || null,
     };
     const op = editing
@@ -159,6 +204,7 @@ function AccountDialog({
     if (error) return toast.error(error.message);
     toast.success(editing ? "Updated" : "Created");
     qc.invalidateQueries({ queryKey: ["crm-accounts", companyId] });
+    qc.invalidateQueries({ queryKey: ["crm-account-stats", companyId] });
     onOpenChange(false);
     setForm({});
   }
@@ -195,6 +241,17 @@ function AccountDialog({
                 {territories.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+          <div className="grid gap-1 sm:col-span-2">
+            <Label>Primary owner</Label>
+            <Select value={form.primary_owner ?? "none"} onValueChange={(v) => f("primary_owner", (v === "none" ? null : v) as any)}>
+              <SelectTrigger><SelectValue placeholder="— Unassigned —" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">— Unassigned —</SelectItem>
+                {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email ?? m.id}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Default rep for new leads under this account.</p>
           </div>
           <div className="grid gap-1 sm:col-span-2">
             <Label>Address</Label>
