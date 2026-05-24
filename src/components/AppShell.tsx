@@ -23,7 +23,7 @@ import {
   Route as RouteIcon,
   MessageSquare,
   ScrollText,
-  Mic,
+  
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ const nav = [
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/crm", label: "CRM", icon: Target },
-  { to: "/meetings", label: "Meetings", icon: Mic },
+  
   { to: "/deals", label: "Deal Health", icon: TrendingUp },
   { to: "/proposals", label: "Proposals", icon: FileText },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
