@@ -45,11 +45,13 @@ import { Route as AuthenticatedCrmQuotesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
+import { Route as AuthenticatedCrmLeaderboardRouteImport } from './routes/_authenticated/crm.leaderboard'
 import { Route as AuthenticatedCrmInboxRouteImport } from './routes/_authenticated/crm.inbox'
 import { Route as AuthenticatedCrmHotRouteImport } from './routes/_authenticated/crm.hot'
 import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenticated/crm.forecast'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
+import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenticated/crm.calendar'
 import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
@@ -250,6 +252,12 @@ const AuthenticatedCrmListRoute = AuthenticatedCrmListRouteImport.update({
   path: '/list',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmLeaderboardRoute =
+  AuthenticatedCrmLeaderboardRouteImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmInboxRoute = AuthenticatedCrmInboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
@@ -277,6 +285,12 @@ const AuthenticatedCrmCatalogRoute = AuthenticatedCrmCatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmCalendarRoute =
+  AuthenticatedCrmCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmActivityRoute =
   AuthenticatedCrmActivityRouteImport.update({
     id: '/activity',
@@ -343,11 +357,13 @@ export interface FileRoutesByFullPath {
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
+  '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -391,11 +407,13 @@ export interface FileRoutesByTo {
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
+  '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/crm/hot': typeof AuthenticatedCrmHotRoute
   '/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -443,11 +461,13 @@ export interface FileRoutesById {
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
+  '/_authenticated/crm/calendar': typeof AuthenticatedCrmCalendarRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/forecast': typeof AuthenticatedCrmForecastRoute
   '/_authenticated/crm/hot': typeof AuthenticatedCrmHotRoute
   '/_authenticated/crm/inbox': typeof AuthenticatedCrmInboxRoute
+  '/_authenticated/crm/leaderboard': typeof AuthenticatedCrmLeaderboardRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
@@ -495,11 +515,13 @@ export interface FileRouteTypes {
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
+    | '/crm/calendar'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
+    | '/crm/leaderboard'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -543,11 +565,13 @@ export interface FileRouteTypes {
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
+    | '/crm/calendar'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/forecast'
     | '/crm/hot'
     | '/crm/inbox'
+    | '/crm/leaderboard'
     | '/crm/list'
     | '/crm/lost'
     | '/crm/pipeline'
@@ -594,11 +618,13 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/$leadId'
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/activity'
+    | '/_authenticated/crm/calendar'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/forecast'
     | '/_authenticated/crm/hot'
     | '/_authenticated/crm/inbox'
+    | '/_authenticated/crm/leaderboard'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
     | '/_authenticated/crm/pipeline'
@@ -890,6 +916,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmListRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/leaderboard': {
+      id: '/_authenticated/crm/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/crm/leaderboard'
+      preLoaderRoute: typeof AuthenticatedCrmLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/inbox': {
       id: '/_authenticated/crm/inbox'
       path: '/inbox'
@@ -923,6 +956,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/crm/catalog'
       preLoaderRoute: typeof AuthenticatedCrmCatalogRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/calendar': {
+      id: '/_authenticated/crm/calendar'
+      path: '/calendar'
+      fullPath: '/crm/calendar'
+      preLoaderRoute: typeof AuthenticatedCrmCalendarRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/crm/activity': {
@@ -988,11 +1028,13 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
   AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
   AuthenticatedCrmActivityRoute: typeof AuthenticatedCrmActivityRoute
+  AuthenticatedCrmCalendarRoute: typeof AuthenticatedCrmCalendarRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmForecastRoute: typeof AuthenticatedCrmForecastRoute
   AuthenticatedCrmHotRoute: typeof AuthenticatedCrmHotRoute
   AuthenticatedCrmInboxRoute: typeof AuthenticatedCrmInboxRoute
+  AuthenticatedCrmLeaderboardRoute: typeof AuthenticatedCrmLeaderboardRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
@@ -1010,11 +1052,13 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmLeadIdRoute: AuthenticatedCrmLeadIdRoute,
   AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
   AuthenticatedCrmActivityRoute: AuthenticatedCrmActivityRoute,
+  AuthenticatedCrmCalendarRoute: AuthenticatedCrmCalendarRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmForecastRoute: AuthenticatedCrmForecastRoute,
   AuthenticatedCrmHotRoute: AuthenticatedCrmHotRoute,
   AuthenticatedCrmInboxRoute: AuthenticatedCrmInboxRoute,
+  AuthenticatedCrmLeaderboardRoute: AuthenticatedCrmLeaderboardRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
