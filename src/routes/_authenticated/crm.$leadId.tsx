@@ -379,7 +379,7 @@ function AddQuote({ leadId, companyId, userId, currentVersion }: { leadId: strin
         <div className="grid gap-3 py-2">
           <div className="grid gap-2"><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
           <div className="grid gap-2 sm:grid-cols-2">
-            <div className="grid gap-2"><Label>Amount (₹)</Label><Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
+            <div className="grid gap-2"><Label>Amount ($)</Label><Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
             <div className="grid gap-2"><Label>Valid until</Label><Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
           </div>
           <div className="grid gap-2"><Label>Notes</Label><Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
