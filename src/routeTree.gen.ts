@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
@@ -102,6 +103,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QTokenRoute = QTokenRouteImport.update({
+  id: '/q/$token',
+  path: '/q/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
@@ -555,6 +561,7 @@ export interface FileRoutesByFullPath {
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/q/$token': typeof QTokenRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -630,6 +637,7 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/q/$token': typeof QTokenRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -713,6 +721,7 @@ export interface FileRoutesById {
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/q/$token': typeof QTokenRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -796,6 +805,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/team'
+    | '/q/$token'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -871,6 +881,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/team'
+    | '/q/$token'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -953,6 +964,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/q/$token'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -1020,6 +1032,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  QTokenRoute: typeof QTokenRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -1047,6 +1060,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/q/$token': {
+      id: '/q/$token'
+      path: '/q/$token'
+      fullPath: '/q/$token'
+      preLoaderRoute: typeof QTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/team': {
@@ -1837,6 +1857,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  QTokenRoute: QTokenRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,

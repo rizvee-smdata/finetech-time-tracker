@@ -29,7 +29,7 @@ export const getSharedQuote = createServerFn({ method: "POST" })
 
     const [{ data: items }, { data: company }, { data: lead }] = await Promise.all([
       supabaseAdmin.from("crm_quote_line_items").select("*").eq("quote_id", quote.id).order("sort_order"),
-      supabaseAdmin.from("companies").select("id, name, settings").eq("id", quote.company_id).maybeSingle(),
+      supabaseAdmin.from("companies").select("id, name").eq("id", quote.company_id).maybeSingle(),
       supabaseAdmin.from("crm_leads").select("customer_name, company_name, contact_person, email").eq("id", quote.lead_id).maybeSingle(),
     ]);
 
