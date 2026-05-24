@@ -80,11 +80,11 @@ function QuotesPage() {
           ? sb.from("profiles").select("id, full_name, email").in("id", userIds)
           : Promise.resolve({ data: [] }),
       ]);
-      const leadMap = new Map((leads ?? []).map((l: any) => [l.id, l]));
-      const profMap = new Map((profs ?? []).map((p: any) => [p.id, p]));
+      const leadMap = new Map<string, any>((leads ?? []).map((l: any) => [l.id, l]));
+      const profMap = new Map<string, any>((profs ?? []).map((p: any) => [p.id, p]));
       for (const r of rows) {
-        r.lead = leadMap.get(r.lead_id) ?? null;
-        r.creator = r.created_by ? profMap.get(r.created_by) ?? null : null;
+        r.lead = (leadMap.get(r.lead_id) as any) ?? null;
+        r.creator = r.created_by ? ((profMap.get(r.created_by) as any) ?? null) : null;
       }
       return rows;
     },
