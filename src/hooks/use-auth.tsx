@@ -81,6 +81,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    const loadingFallback = window.setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 2500);
 
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
@@ -90,14 +93,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         void loadCompanies();
       }
       setLoading(false);
+      window.clearTimeout(loadingFallback);
     }).catch((error) => {
       console.error("Failed to restore auth session", error);
       if (mounted) setLoading(false);
+      window.clearTimeout(loadingFallback);
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       if (!mounted) return;
       setSession(s);
+      setLoading(false);
+      window.clearTimeout(loadingFallback);
       if (s?.user) {
         setTimeout(() => {
           if (!mounted) return;
@@ -112,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       mounted = false;
+      window.clearTimeout(loadingFallback);
       sub.subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
