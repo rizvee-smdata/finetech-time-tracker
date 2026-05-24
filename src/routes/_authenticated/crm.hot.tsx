@@ -61,7 +61,7 @@ function HotLeadsPage() {
     const counts = activityCountsQ.data ?? {};
     return (leadsQ.data ?? [])
       .map((l: any) => scoreLead(l, counts[l.id] ?? 0))
-      .sort((a, b) => b.score - a.score);
+      .sort((a: ScoredLead, b: ScoredLead) => b.score - a.score);
   }, [leadsQ.data, activityCountsQ.data]);
 
   const filtered = scored.filter((l) => {
