@@ -30,6 +30,7 @@ function CrmLayout() {
     { to: "/crm/templates", label: "Templates" },
     { to: "/crm/sequences", label: "Sequences" },
     { to: "/crm/territories", label: "Territories" },
+    { to: "/crm/capture", label: "Capture" },
     { to: "/crm/settings", label: "Settings" },
   ];
 
