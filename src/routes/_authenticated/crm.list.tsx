@@ -273,6 +273,11 @@ function ListPage() {
 
       <PaginationBar {...pg} label="leads" />
       <LeadFormDialog open={open} onOpenChange={setOpen} />
+      <ImportLeadsDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={() => qc.invalidateQueries({ queryKey: ["crm-leads"] })}
+      />
     </div>
   );
 }
