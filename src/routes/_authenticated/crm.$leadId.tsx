@@ -54,6 +54,17 @@ function LeadDetail() {
       return data;
     },
   });
+  const relatedVisits = useQuery({
+    queryKey: ["crm-related-visits", leadId, lead?.customer_name, lead?.company_name, lead?.phone],
+    enabled: !!lead,
+    queryFn: () => fetchRelatedVisits({
+      companyId: lead!.company_id,
+      customerName: lead!.customer_name,
+      companyName: lead!.company_name,
+      phone: lead!.phone,
+      excludeId: lead!.source_visit_id,
+    }),
+  });
 
   if (leadQ.isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!lead) return <div className="text-sm text-muted-foreground">Lead not found.</div>;
