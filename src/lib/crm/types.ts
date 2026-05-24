@@ -85,10 +85,10 @@ export type Quote = {
   updated_at: string;
 };
 
-export function formatMoney(value: number | null | undefined, currency = "INR") {
+export function formatMoney(value: number | null | undefined, currency = "USD") {
   if (value == null) return "—";
   try {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+    return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
   } catch {
     return `${currency} ${value.toLocaleString()}`;
   }
