@@ -35,6 +35,7 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
@@ -180,6 +181,12 @@ const AuthenticatedTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
   } as any)
+const AuthenticatedCrmTerritoriesRoute =
+  AuthenticatedCrmTerritoriesRouteImport.update({
+    id: '/territories',
+    path: '/territories',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmPipelineRoute =
   AuthenticatedCrmPipelineRouteImport.update({
     id: '/pipeline',
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -286,6 +294,7 @@ export interface FileRoutesByTo {
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -324,6 +333,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
+  '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
+    | '/crm/territories'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/crm/dashboard'
     | '/crm/list'
     | '/crm/pipeline'
+    | '/crm/territories'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -433,6 +445,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/pipeline'
+    | '/_authenticated/crm/territories'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -642,6 +655,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
+    '/_authenticated/crm/territories': {
+      id: '/_authenticated/crm/territories'
+      path: '/territories'
+      fullPath: '/crm/territories'
+      preLoaderRoute: typeof AuthenticatedCrmTerritoriesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/pipeline': {
       id: '/_authenticated/crm/pipeline'
       path: '/pipeline'
@@ -714,6 +734,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
+  AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
@@ -723,6 +744,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
+  AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 
