@@ -1,9 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import type { Deal, Interaction, NextBestAction, AIDealAnalysis } from "./types";
 import { calculateHealthScore } from "./scoring";
 import { seedDeals } from "./seed";
+import { useAuth } from "@/hooks/use-auth";
 
-const KEY = "deskiq_deals";
+const BASE_KEY = "deskiq_deals";
+const keyFor = (companyId: string | null | undefined) =>
+  companyId ? `${BASE_KEY}::${companyId}` : `${BASE_KEY}::__none__`;
 
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -16,13 +19,13 @@ function withHealth(deal: Deal): Deal {
   return { ...deal, healthScore: calculateHealthScore(deal, prev, history) };
 }
 
-function readStore(): Deal[] {
+function readStore(key: string): Deal[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) {
       const seeded = seedDeals().map(withHealth);
-      localStorage.setItem(KEY, JSON.stringify(seeded));
+      localStorage.setItem(key, JSON.stringify(seeded));
       return seeded;
     }
     return JSON.parse(raw) as Deal[];
@@ -31,9 +34,9 @@ function readStore(): Deal[] {
   }
 }
 
-function writeStore(d: Deal[]) {
+function writeStore(key: string, d: Deal[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(d));
+  localStorage.setItem(key, JSON.stringify(d));
 }
 
 const listeners = new Set<() => void>();
@@ -42,11 +45,13 @@ function notify() {
 }
 
 export function useDealsStore() {
+  const { companyId } = useAuth();
+  const key = useMemo(() => keyFor(companyId), [companyId]);
   const [deals, setDeals] = useState<Deal[]>([]);
 
   useEffect(() => {
-    setDeals(readStore());
-    const l = () => setDeals(readStore());
+    setDeals(readStore(key));
+    const l = () => setDeals(readStore(key));
     listeners.add(l);
     if (typeof window !== "undefined") {
       window.addEventListener("deskiq:deals-updated", l);
@@ -57,31 +62,31 @@ export function useDealsStore() {
         window.removeEventListener("deskiq:deals-updated", l);
       }
     };
-  }, []);
+  }, [key]);
 
 
   const persist = useCallback((next: Deal[]) => {
-    writeStore(next);
+    writeStore(key, next);
     notify();
-  }, []);
+  }, [key]);
 
   const recalculate = useCallback(
     (id: string) => {
-      const next = readStore().map((d) => (d.id === id ? withHealth(d) : d));
+      const next = readStore(key).map((d) => (d.id === id ? withHealth(d) : d));
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const recalculateAll = useCallback(() => {
-    const next = readStore().map(withHealth);
+    const next = readStore(key).map(withHealth);
     persist(next);
-  }, [persist]);
+  }, [persist, key]);
 
   const addInteraction = useCallback(
     (dealId: string, input: Omit<Interaction, "id">) => {
       const interaction: Interaction = { ...input, id: uid() };
-      const next = readStore().map((d) => {
+      const next = readStore(key).map((d) => {
         if (d.id !== dealId) return d;
         const updated: Deal = {
           ...d,
@@ -92,22 +97,22 @@ export function useDealsStore() {
       });
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const setAIAnalysis = useCallback(
     (dealId: string, analysis: AIDealAnalysis, actions: NextBestAction[]) => {
-      const next = readStore().map((d) =>
+      const next = readStore(key).map((d) =>
         d.id === dealId ? { ...d, aiAnalysis: analysis, nextBestActions: actions } : d,
       );
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const toggleAction = useCallback(
     (dealId: string, actionId: string) => {
-      const next = readStore().map((d) => {
+      const next = readStore(key).map((d) => {
         if (d.id !== dealId || !d.nextBestActions) return d;
         return {
           ...d,
@@ -124,12 +129,12 @@ export function useDealsStore() {
       });
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const updateActionDraft = useCallback(
     (dealId: string, actionId: string, draftContent: string) => {
-      const next = readStore().map((d) => {
+      const next = readStore(key).map((d) => {
         if (d.id !== dealId || !d.nextBestActions) return d;
         return {
           ...d,
@@ -140,30 +145,30 @@ export function useDealsStore() {
       });
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const updateDeal = useCallback(
     (id: string, patch: Partial<Deal>) => {
-      const next = readStore().map((d) => (d.id === id ? withHealth({ ...d, ...patch }) : d));
+      const next = readStore(key).map((d) => (d.id === id ? withHealth({ ...d, ...patch }) : d));
       persist(next);
     },
-    [persist],
+    [persist, key],
   );
 
   const deleteDeal = useCallback(
     (id: string) => {
-      persist(readStore().filter((d) => d.id !== id));
+      persist(readStore(key).filter((d) => d.id !== id));
     },
-    [persist],
+    [persist, key],
   );
 
   const resetSeed = useCallback(() => {
     if (typeof window === "undefined") return;
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(key);
     const seeded = seedDeals().map(withHealth);
     persist(seeded);
-  }, [persist]);
+  }, [persist, key]);
 
   return {
     deals,
