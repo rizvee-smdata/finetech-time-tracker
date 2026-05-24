@@ -31,6 +31,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { AlertsBell } from "@/components/time/AlertsBell";
+import { MiniTimerWidget } from "@/components/time/MiniTimerWidget";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -43,7 +45,8 @@ const nav = [
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
   { to: "/consultants", label: "Consultants", icon: Briefcase },
-  { to: "/check-in", label: "Time", icon: Clock },
+  { to: "/time", label: "Time Tracker", icon: Clock },
+  { to: "/check-in", label: "Check-in", icon: Clock },
   { to: "/attendance", label: "Attendance", icon: MapPin },
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/contracts", label: "Contracts", icon: FileText },
@@ -117,13 +120,16 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
+          <AlertsBell />
           <NotificationBell compact />
           <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
         </div>
       </header>
 
       {/* Desktop floating bell */}
-      <div className="fixed right-4 top-3 z-30 hidden md:block">
+      <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
+        <MiniTimerWidget />
+        <AlertsBell />
         <NotificationBell compact />
       </div>
 
