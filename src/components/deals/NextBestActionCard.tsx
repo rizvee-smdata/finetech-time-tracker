@@ -10,12 +10,15 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  Play,
 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import type { NextBestAction } from "@/lib/deals/types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTimeStore } from "@/lib/time/storage";
 
 const TYPE_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   call: Phone,
