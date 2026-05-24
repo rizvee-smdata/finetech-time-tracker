@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
@@ -96,6 +97,11 @@ const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTargetsRoute = AuthenticatedTargetsRouteImport.update({
+  id: '/targets',
+  path: '/targets',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -442,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/targets': typeof AuthenticatedTargetsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
@@ -505,6 +512,7 @@ export interface FileRoutesByTo {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/targets': typeof AuthenticatedTargetsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
@@ -571,6 +579,7 @@ export interface FileRoutesById {
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/targets': typeof AuthenticatedTargetsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
@@ -638,6 +647,7 @@ export interface FileRouteTypes {
     | '/reminders'
     | '/reports'
     | '/settings'
+    | '/targets'
     | '/tasks'
     | '/team'
     | '/crm/$leadId'
@@ -701,6 +711,7 @@ export interface FileRouteTypes {
     | '/reminders'
     | '/reports'
     | '/settings'
+    | '/targets'
     | '/team'
     | '/crm/$leadId'
     | '/crm/accounts'
@@ -766,6 +777,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reminders'
     | '/_authenticated/reports'
     | '/_authenticated/settings'
+    | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
     | '/_authenticated/crm/$leadId'
@@ -863,6 +875,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/targets': {
+      id: '/_authenticated/targets'
+      path: '/targets'
+      fullPath: '/targets'
+      preLoaderRoute: typeof AuthenticatedTargetsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -1432,6 +1451,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
@@ -1450,6 +1470,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedTargetsRoute: AuthenticatedTargetsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
@@ -1471,3 +1492,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
