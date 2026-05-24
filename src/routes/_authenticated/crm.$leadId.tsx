@@ -28,6 +28,7 @@ import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { QuoteBuilderDialog } from "@/components/crm/QuoteBuilderDialog";
 import { CallsPanel } from "@/components/crm/CallsPanel";
 import { AIInsightsPanel } from "@/components/crm/AIInsightsPanel";
+import { SequencesPanel } from "@/components/crm/SequencesPanel";
 
 
 const sb = supabase as any;
@@ -193,6 +194,7 @@ function LeadDetail() {
           <TabsTrigger value="tasks">Tasks ({tasks.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="quotes">Quotes ({quotes.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="ai">AI</TabsTrigger>
+          <TabsTrigger value="sequences">Sequences</TabsTrigger>
           <TabsTrigger value="visits">Visits ({relatedVisits.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="attachments">Files ({attachments.data?.length ?? 0})</TabsTrigger>
         </TabsList>
@@ -218,6 +220,11 @@ function LeadDetail() {
         <TabsContent value="ai" className="space-y-4">
           <AIInsightsPanel leadId={leadId} />
         </TabsContent>
+
+        <TabsContent value="sequences" className="space-y-4">
+          <SequencesPanel leadId={leadId} companyId={lead.company_id} userId={user!.id} />
+        </TabsContent>
+
 
 
         <TabsContent value="visits" className="space-y-4">
