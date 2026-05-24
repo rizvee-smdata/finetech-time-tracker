@@ -188,6 +188,8 @@ function LeadDetail() {
         )}
       </Card>
 
+      <LeadScoreCard lead={lead} activityCount={activities.data?.length ?? 0} />
+
       <Tabs defaultValue="timeline">
         <TabsList>
           <TabsTrigger value="timeline">Timeline ({activities.data?.length ?? 0})</TabsTrigger>
