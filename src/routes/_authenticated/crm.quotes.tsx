@@ -12,6 +12,7 @@ import { formatMoney } from "@/lib/crm/types";
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { Check, X, FileText } from "lucide-react";
+import { ShareQuoteButton } from "@/components/portal/ShareQuoteButton";
 
 const sb = supabase as any;
 
@@ -225,6 +226,7 @@ function QuotesPage() {
               <div className="text-right">
                 <div className="font-semibold">{formatMoney(Number(q.amount) || 0, q.currency)}</div>
               </div>
+              {user?.id && <ShareQuoteButton quoteId={q.id} userId={user.id} />}
               {canApprove && q.approval_status === "pending" && (
                 <div className="flex gap-1">
                   <Button

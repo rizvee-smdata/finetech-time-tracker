@@ -838,6 +838,97 @@ export type Database = {
           },
         ]
       }
+      crm_quote_share_views: {
+        Row: {
+          id: string
+          ip: string | null
+          location: string | null
+          share_id: string
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          ip?: string | null
+          location?: string | null
+          share_id: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          ip?: string | null
+          location?: string | null
+          share_id?: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_quote_share_views_share_id_fkey"
+            columns: ["share_id"]
+            isOneToOne: false
+            referencedRelation: "crm_quote_shares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_quote_shares: {
+        Row: {
+          client_name: string | null
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          last_viewed_at: string | null
+          quote_id: string
+          responded_at: string | null
+          response: Database["public"]["Enums"]["quote_share_response"] | null
+          response_comment: string | null
+          revoked_at: string | null
+          token: string
+          view_count: number
+        }
+        Insert: {
+          client_name?: string | null
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          quote_id: string
+          responded_at?: string | null
+          response?: Database["public"]["Enums"]["quote_share_response"] | null
+          response_comment?: string | null
+          revoked_at?: string | null
+          token: string
+          view_count?: number
+        }
+        Update: {
+          client_name?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          quote_id?: string
+          responded_at?: string | null
+          response?: Database["public"]["Enums"]["quote_share_response"] | null
+          response_comment?: string | null
+          revoked_at?: string | null
+          token?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_quote_shares_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "crm_quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_quotes: {
         Row: {
           amount: number
@@ -2906,6 +2997,7 @@ export type Database = {
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      quote_share_response: "accepted" | "revision_requested"
       route_plan_status:
         | "draft"
         | "planned"
@@ -3108,6 +3200,7 @@ export const Constants = {
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      quote_share_response: ["accepted", "revision_requested"],
       route_plan_status: [
         "draft",
         "planned",
