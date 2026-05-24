@@ -123,7 +123,7 @@ function ReportsOverview() {
       const taskRows = (tasks.data ?? []) as Array<{ completed_at: string | null }>;
       const taskDone = taskRows.filter((t) => t.completed_at).length;
 
-      const attRows = (attendance.data ?? []) as Array<{ total_minutes: number | null }>;
+      const attRows = ((attendance.data ?? []) as unknown) as Array<{ total_minutes: number | null }>;
       const totalMinutes = attRows.reduce((s, r) => s + (r.total_minutes ?? 0), 0);
 
       return {
