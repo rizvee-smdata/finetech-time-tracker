@@ -17,7 +17,7 @@ import { BarChart3, Download, FileSpreadsheet, FileText, TrendingUp, TrendingDow
 import { format, subDays, startOfDay } from "date-fns";
 import { exportToExcel, exportToPDF } from "@/lib/export-utils";
 
-export const Route = createFileRoute("/_authenticated/reports")({
+export const Route = createFileRoute("/_authenticated/reports/visits")({
   component: ReportsPage,
 });
 
