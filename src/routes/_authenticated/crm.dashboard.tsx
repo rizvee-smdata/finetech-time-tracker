@@ -7,9 +7,12 @@ import { fetchLeads } from "@/lib/crm/queries";
 import { STAGES, ACTIVE_STAGES, formatMoney } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
-import { Trophy, TrendingUp, Users, Target, AlertCircle } from "lucide-react";
+import { Trophy, TrendingUp, Users, Target, AlertCircle, Clock, FileCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
-import { format, subMonths, startOfMonth } from "date-fns";
+import { format, subMonths, startOfMonth, differenceInDays } from "date-fns";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const sb = supabase as any;
 
