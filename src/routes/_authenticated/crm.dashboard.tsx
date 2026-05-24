@@ -41,6 +41,24 @@ function DashboardPage() {
     },
   });
 
+  const overdueQ = useQuery({
+    queryKey: ["crm-overdue-tasks", companyId, assignee],
+    enabled: ready && !!companyId,
+    queryFn: async () => {
+      let q = sb.from("tms_tasks")
+        .select("id, title, due_date, lead_id, tms_task_assignees(user_id), tms_task_statuses(is_terminal)")
+        .eq("company_id", companyId)
+        .not("lead_id", "is", null)
+        .is("deleted_at", null)
+        .lt("due_date", new Date().toISOString().slice(0, 10));
+      const { data } = await q;
+      const list = (data ?? []).filter((t: any) => !t.tms_task_statuses?.is_terminal);
+      if (assignee === "all") return list;
+      if (assignee === "unassigned") return list.filter((t: any) => !t.tms_task_assignees?.length);
+      return list.filter((t: any) => (t.tms_task_assignees ?? []).some((a: any) => a.user_id === assignee));
+    },
+  });
+
   const all = leads.data ?? [];
   const won = all.filter((l) => l.stage === "won");
   const lost = all.filter((l) => l.stage === "lost");
@@ -50,6 +68,16 @@ function DashboardPage() {
   const wonValue = won.reduce((s, l) => s + (l.expected_value ?? 0), 0);
   const conversion = all.length ? Math.round((won.length / all.length) * 100) : 0;
   const visitConversion = (visitsCount.data ?? 0) ? Math.round((all.length / (visitsCount.data as number)) * 100) : 0;
+
+  // 6-month trend (created vs won, by month of creation/win)
+  const trend = Array.from({ length: 6 }).map((_, i) => {
+    const monthStart = startOfMonth(subMonths(new Date(), 5 - i));
+    const monthEnd = startOfMonth(subMonths(new Date(), 5 - i - 1));
+    const created = all.filter((l) => new Date(l.created_at) >= monthStart && new Date(l.created_at) < monthEnd).length;
+    const wonM = won.filter((l) => l.won_at && new Date(l.won_at) >= monthStart && new Date(l.won_at) < monthEnd).length;
+    return { month: format(monthStart, "MMM"), Created: created, Won: wonM };
+  });
+
 
   // Leaderboard
   const board = new Map<string, { name: string; won: number; value: number }>();
