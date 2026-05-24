@@ -65,7 +65,7 @@ export function AIAgent() {
           dataSnapshot: buildDataSnapshot(),
         },
       });
-      const actions = (result.actions ?? []) as AgentAction[];
+      const actions = (JSON.parse(result.actionsJson || "[]") as AgentAction[]) ?? [];
       const applied: AppliedAction[] = actions.map((a) => applyAgentAction(a));
       setMessages((m) => [...m, { role: "assistant", content: result.reply, applied }]);
 
