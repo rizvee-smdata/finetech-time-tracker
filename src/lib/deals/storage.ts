@@ -1,13 +1,12 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import type { Deal, Interaction, NextBestAction, AIDealAnalysis } from "./types";
 import { calculateHealthScore } from "./scoring";
-import { seedDeals } from "./seed";
 import { useAuth } from "@/hooks/use-auth";
 
 const BASE_KEY = "deskiq_deals";
-const SEEDED_FLAG = "deskiq_deals::__seeded__";
 const keyFor = (companyId: string | null | undefined) =>
   companyId ? `${BASE_KEY}::${companyId}` : `${BASE_KEY}::__none__`;
+
 
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -25,30 +24,13 @@ function readStore(key: string): Deal[] {
   try {
     const raw = localStorage.getItem(key);
     if (raw) return JSON.parse(raw) as Deal[];
-
-    // Legacy migration: if old un-scoped data exists, adopt it into this company once
-    const legacy = localStorage.getItem(BASE_KEY);
-    if (legacy) {
-      localStorage.setItem(key, legacy);
-      localStorage.removeItem(BASE_KEY);
-      return JSON.parse(legacy) as Deal[];
-    }
-
-    // First time ever: seed once into this company so the app isn't empty on first run.
-    // Other companies start empty so switching visibly changes the data.
-    if (!localStorage.getItem(SEEDED_FLAG)) {
-      const seeded = seedDeals().map(withHealth);
-      localStorage.setItem(key, JSON.stringify(seeded));
-      localStorage.setItem(SEEDED_FLAG, "1");
-      return seeded;
-    }
-
     localStorage.setItem(key, "[]");
     return [];
   } catch {
     return [];
   }
 }
+
 
 function writeStore(key: string, d: Deal[]) {
   if (typeof window === "undefined") return;
@@ -183,8 +165,7 @@ export function useDealsStore() {
   const resetSeed = useCallback(() => {
     if (typeof window === "undefined") return;
     localStorage.removeItem(key);
-    const seeded = seedDeals().map(withHealth);
-    persist(seeded);
+    persist([]);
   }, [persist, key]);
 
   return {
@@ -200,6 +181,7 @@ export function useDealsStore() {
     resetSeed,
   };
 }
+
 
 export function newActionId() {
   return uid();
