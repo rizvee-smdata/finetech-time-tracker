@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { STAGES } from "@/lib/crm/types";
+import { fetchCompanyMembers } from "@/lib/crm/queries";
+import { format, startOfMonth, addMonths, subMonths } from "date-fns";
 
 const sb = supabase as any;
 
