@@ -194,6 +194,7 @@ function LeadDetail() {
           <TabsTrigger value="tasks">Tasks ({tasks.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="quotes">Quotes ({quotes.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="ai">AI</TabsTrigger>
+          <TabsTrigger value="sequences">Sequences</TabsTrigger>
           <TabsTrigger value="visits">Visits ({relatedVisits.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="attachments">Files ({attachments.data?.length ?? 0})</TabsTrigger>
         </TabsList>
