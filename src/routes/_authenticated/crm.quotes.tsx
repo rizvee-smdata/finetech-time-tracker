@@ -104,10 +104,10 @@ function QuotesPage() {
       if (error) throw error;
     },
     onSuccess: (_d, v) => {
-      toast({ title: v.approve ? "Quote approved" : "Quote rejected" });
+      toast.success(v.approve ? "Quote approved" : "Quote rejected");
       qc.invalidateQueries({ queryKey: ["crm-quotes-all"] });
     },
-    onError: (e: any) => toast({ title: "Failed", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast.error("Failed: " + e.message),
   });
 
   const filtered = useMemo(() => {
