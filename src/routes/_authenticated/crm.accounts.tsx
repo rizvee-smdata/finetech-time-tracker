@@ -51,6 +51,39 @@ function AccountsPage() {
     enabled: !!companyId,
   });
 
+  const members = useQuery({
+    queryKey: ["crm-members", companyId],
+    queryFn: async () => {
+      const { data: mem } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
+      const ids = (mem ?? []).map((m: any) => m.user_id);
+      if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
+      const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", ids);
+      return (profs ?? []) as { id: string; full_name: string | null; email: string | null }[];
+    },
+    enabled: !!companyId,
+  });
+
+  const accountStats = useQuery({
+    queryKey: ["crm-account-stats", companyId],
+    queryFn: async () => {
+      const { data } = await sb.from("crm_leads")
+        .select("account_id, expected_value, stage")
+        .eq("company_id", companyId);
+      const map = new Map<string, { count: number; value: number; won: number; open: number }>();
+      for (const l of (data ?? []) as any[]) {
+        if (!l.account_id) continue;
+        const b = map.get(l.account_id) ?? { count: 0, value: 0, won: 0, open: 0 };
+        b.count += 1;
+        b.value += Number(l.expected_value || 0);
+        if (l.stage === "won") b.won += 1;
+        else if (l.stage !== "lost") b.open += 1;
+        map.set(l.account_id, b);
+      }
+      return map;
+    },
+    enabled: !!companyId,
+  });
+
   async function remove(id: string) {
     if (!confirm("Delete this account? Leads will keep their data but unlink.")) return;
     const { error } = await sb.from("crm_accounts").delete().eq("id", id);
