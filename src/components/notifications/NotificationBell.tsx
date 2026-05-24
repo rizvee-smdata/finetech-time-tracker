@@ -13,12 +13,12 @@ import { CATEGORY_META, type Reminder } from "@/lib/notifications/types";
 import { cn } from "@/lib/utils";
 
 export function NotificationBell({ compact = false }: { compact?: boolean }) {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
   const qc = useQueryClient();
 
   const { data: items = [] } = useQuery({
     queryKey: ["notifications", user?.id],
-    enabled: !!user,
+    enabled: ready,
     queryFn: async () => {
       const { data } = await supabase
         .from("reminders")
