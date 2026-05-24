@@ -8,6 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, ClipboardList, Users, Bell, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 
+function formatDateTime(value: string | null | undefined) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "—" : format(date, "MMM d, p");
+}
+
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
@@ -19,6 +25,7 @@ function Dashboard() {
     queryKey: ["dashboard-stats", user?.id, isStaff, companyId],
     enabled: ready,
     queryFn: async () => {
+      if (!user) return { recent: [], todayCount: 0, upcoming: [], openTime: null };
       const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
       const next7 = new Date(); next7.setDate(next7.getDate() + 7);
 
@@ -28,7 +35,7 @@ function Dashboard() {
         .order("meeting_at", { ascending: false })
         .limit(5);
       if (companyId) visitsQ.eq("company_id", companyId);
-      if (!isStaff) visitsQ.eq("user_id", user!.id);
+      if (!isStaff) visitsQ.eq("user_id", user.id);
       const { data: recent } = await visitsQ;
 
       const todayQ = supabase
@@ -36,7 +43,7 @@ function Dashboard() {
         .select("id", { count: "exact", head: true })
         .gte("meeting_at", todayStart.toISOString());
       if (companyId) todayQ.eq("company_id", companyId);
-      if (!isStaff) todayQ.eq("user_id", user!.id);
+      if (!isStaff) todayQ.eq("user_id", user.id);
       const { count: todayCount } = await todayQ;
 
       const upcomingQ = supabase
@@ -47,13 +54,13 @@ function Dashboard() {
         .order("next_meeting_at", { ascending: true })
         .limit(5);
       if (companyId) upcomingQ.eq("company_id", companyId);
-      if (!isStaff) upcomingQ.eq("user_id", user!.id);
+      if (!isStaff) upcomingQ.eq("user_id", user.id);
       const { data: upcoming } = await upcomingQ;
 
       const { data: openTime } = await supabase
         .from("time_entries")
         .select("id, check_in")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .is("check_out", null)
         .maybeSingle();
 
