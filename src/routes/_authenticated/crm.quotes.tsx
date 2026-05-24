@@ -12,6 +12,7 @@ import { formatMoney } from "@/lib/crm/types";
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { Check, X, FileText } from "lucide-react";
+import { ShareQuoteButton } from "@/components/portal/ShareQuoteButton";
 
 const sb = supabase as any;
 
