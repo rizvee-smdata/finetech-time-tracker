@@ -401,72 +401,17 @@ function TaskList({ items }: { items: any[] }) {
 // =========================================================
 // Quotes
 // =========================================================
-function AddQuote({ leadId, companyId, userId, currentVersion }: { leadId: string; companyId: string; userId: string; currentVersion: number }) {
+function QuotesPanel({ leadId, companyId, userId, quotes }: { leadId: string; companyId: string; userId: string; quotes: any[] }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
-  const [validUntil, setValidUntil] = useState("");
-  const [notes, setNotes] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function submit() {
-    if (!title.trim()) return toast.error("Title required");
-    setBusy(true);
-    let file_path: string | null = null;
-    let file_name: string | null = null;
-    if (file) {
-      const path = `${companyId}/${leadId}/quotes/${Date.now()}-${file.name}`;
-      const { error: upErr } = await sb.storage.from("crm-attachments").upload(path, file);
-      if (upErr) { setBusy(false); return toast.error(upErr.message); }
-      file_path = path; file_name = file.name;
-    }
-    const { error } = await sb.from("crm_quotes").insert({
-      lead_id: leadId, company_id: companyId, created_by: userId,
-      version: currentVersion, title: title.trim(), amount: Number(amount) || 0,
-      valid_until: validUntil || null, notes: notes || null, file_path, file_name,
-      status: "draft",
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    setTitle(""); setAmount(""); setValidUntil(""); setNotes(""); setFile(null);
-    qc.invalidateQueries({ queryKey: ["crm-quotes", leadId] });
-    qc.invalidateQueries({ queryKey: ["crm-activities", leadId] });
-    setOpen(false);
-    toast.success(`Quote v${currentVersion} created`);
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button><Plus className="mr-2 h-4 w-4" />Add quote v{currentVersion}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader><DialogTitle>New quote v{currentVersion}</DialogTitle></DialogHeader>
-        <div className="grid gap-3 py-2">
-          <div className="grid gap-2"><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div className="grid gap-2"><Label>Amount ($)</Label><Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
-            <div className="grid gap-2"><Label>Valid until</Label><Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
-          </div>
-          <div className="grid gap-2"><Label>Notes</Label><Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
-          <div className="grid gap-2"><Label>PDF / file (optional)</Label><Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function QuoteList({ items }: { items: any[] }) {
-  const qc = useQueryClient();
-  if (items.length === 0) return <p className="text-sm text-muted-foreground">No quotes yet.</p>;
+  const [editing, setEditing] = useState<any | null>(null);
+  const nextVersion = (quotes[0]?.version ?? 0) + 1;
 
   async function setStatus(q: any, status: string) {
+    if (status === "sent" && q.approval_status === "requested") return toast.error("Pending approval");
+    if (status === "sent" && Number(q.discount_pct) >= 15 && q.approval_status !== "approved") {
+      return toast.error("Discount needs approval first");
+    }
     const { error } = await sb.from("crm_quotes").update({ status }).eq("id", q.id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["crm-quotes", q.lead_id] });
@@ -474,42 +419,95 @@ function QuoteList({ items }: { items: any[] }) {
     qc.invalidateQueries({ queryKey: ["crm-lead", q.lead_id] });
   }
 
-  async function download(q: any) {
-    if (!q.file_path) return;
-    const { data, error } = await sb.storage.from("crm-attachments").createSignedUrl(q.file_path, 60);
+  async function decide(q: any, decision: "approved" | "rejected", comment?: string) {
+    const { error } = await sb.from("crm_quotes").update({
+      approval_status: decision,
+      approval_comment: comment ?? null,
+      approved_by: userId,
+      approved_at: new Date().toISOString(),
+    }).eq("id", q.id);
     if (error) return toast.error(error.message);
-    window.open(data.signedUrl, "_blank");
+    toast.success(`Approval ${decision}`);
+    qc.invalidateQueries({ queryKey: ["crm-quotes", q.lead_id] });
   }
 
   return (
-    <div className="space-y-2">
-      {items.map((q) => (
-        <Card key={q.id} className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="font-medium">v{q.version} · {q.title}</div>
-              <div className="text-sm text-muted-foreground">{formatMoney(q.amount, q.currency)}{q.valid_until && ` · valid until ${format(new Date(q.valid_until), "MMM d")}`}</div>
-              {q.notes && <p className="mt-2 text-sm">{q.notes}</p>}
-            </div>
-            <div className="text-right">
-              <Badge variant={q.status === "accepted" ? "default" : q.status === "rejected" ? "destructive" : "secondary"} className="capitalize">{q.status}</Badge>
-              <div className="mt-2 flex flex-wrap justify-end gap-1">
-                {q.status === "draft" && <Button size="sm" variant="outline" onClick={() => setStatus(q, "sent")}>Mark sent</Button>}
-                {q.status === "sent" && (
-                  <>
-                    <Button size="sm" variant="outline" onClick={() => setStatus(q, "accepted")}>Accept</Button>
-                    <Button size="sm" variant="outline" onClick={() => setStatus(q, "rejected")}>Reject</Button>
-                  </>
-                )}
-                {q.file_path && <Button size="sm" variant="ghost" onClick={() => download(q)}><FileText className="h-4 w-4" /></Button>}
+    <>
+      <div className="flex justify-end">
+        <Button onClick={() => { setEditing(null); setOpen(true); }}>
+          <Plus className="mr-2 h-4 w-4" />New quote v{nextVersion}
+        </Button>
+      </div>
+
+      {quotes.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No quotes yet.</p>
+      ) : (
+        <div className="space-y-2">
+          {quotes.map((q) => (
+            <Card key={q.id} className="p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium">v{q.version} · {q.title}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {formatMoney(q.amount, q.currency)}
+                    {Number(q.discount_pct) > 0 && <> · {q.discount_pct}% discount</>}
+                    {Number(q.tax_pct) > 0 && <> · {q.tax_pct}% tax</>}
+                    {q.valid_until && <> · valid until {format(new Date(q.valid_until), "MMM d")}</>}
+                  </div>
+                  {q.notes && <p className="mt-2 text-sm">{q.notes}</p>}
+                </div>
+                <div className="text-right space-y-1">
+                  <div className="flex flex-wrap justify-end gap-1">
+                    <Badge variant={q.status === "accepted" ? "default" : q.status === "rejected" ? "destructive" : "secondary"} className="capitalize">{q.status}</Badge>
+                    {q.approval_status && q.approval_status !== "not_requested" && (
+                      <Badge variant="outline" className="capitalize">approval: {String(q.approval_status).replace("_", " ")}</Badge>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap justify-end gap-1">
+                    <Button size="sm" variant="outline" onClick={() => { setEditing(q); setOpen(true); }}>Edit</Button>
+                    {q.approval_status === "requested" && (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => decide(q, "approved")}>Approve</Button>
+                        <Button size="sm" variant="outline" onClick={() => {
+                          const c = window.prompt("Reason (optional)") || undefined;
+                          decide(q, "rejected", c);
+                        }}>Reject</Button>
+                      </>
+                    )}
+                    {q.status === "draft" && <Button size="sm" variant="outline" onClick={() => setStatus(q, "sent")}>Mark sent</Button>}
+                    {q.status === "sent" && (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => setStatus(q, "accepted")}>Accept</Button>
+                        <Button size="sm" variant="outline" onClick={() => setStatus(q, "rejected")}>Reject</Button>
+                      </>
+                    )}
+                    {q.file_path && <Button size="sm" variant="ghost" onClick={async () => {
+                      const { data, error } = await sb.storage.from("crm-attachments").createSignedUrl(q.file_path, 60);
+                      if (error) return toast.error(error.message);
+                      window.open(data.signedUrl, "_blank");
+                    }}><FileText className="h-4 w-4" /></Button>}
+                  </div>
+                  {q.approval_comment && <div className="text-xs text-muted-foreground italic max-w-xs">"{q.approval_comment}"</div>}
+                </div>
               </div>
-            </div>
-          </div>
-        </Card>
-      ))}
-    </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <QuoteBuilderDialog
+        open={open}
+        onOpenChange={setOpen}
+        leadId={leadId}
+        companyId={companyId}
+        userId={userId}
+        quote={editing}
+        newVersion={nextVersion}
+      />
+    </>
   );
 }
+
 
 // =========================================================
 // Attachments
