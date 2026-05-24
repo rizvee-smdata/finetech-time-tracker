@@ -11,6 +11,9 @@ export async function fetchLeads(params: {
   stage?: CrmStage | null;
   assignedTo?: string | null; // userId, "unassigned", or null/undefined for all
   search?: string | null;
+  company?: string | null;
+  dateFrom?: string | null; // YYYY-MM-DD (created_at >=)
+  dateTo?: string | null;   // YYYY-MM-DD (created_at <=)
 }): Promise<Lead[]> {
   let q = sb
     .from("crm_leads")
@@ -21,6 +24,9 @@ export async function fetchLeads(params: {
   if (params.assignedTo === "unassigned") q = q.is("assigned_to", null);
   else if (params.assignedTo) q = q.eq("assigned_to", params.assignedTo);
   if (params.search) q = q.ilike("customer_name", `%${params.search}%`);
+  if (params.company) q = q.ilike("company_name", `%${params.company}%`);
+  if (params.dateFrom) q = q.gte("created_at", params.dateFrom);
+  if (params.dateTo) q = q.lte("created_at", params.dateTo + "T23:59:59");
   const { data, error } = await q;
   if (error) throw error;
   const leads = (data ?? []) as Lead[];
@@ -33,6 +39,26 @@ export async function fetchLeads(params: {
     for (const l of leads) l.assignee = (l.assigned_to ? map.get(l.assigned_to) ?? null : null);
   }
   return leads;
+}
+
+export async function fetchRelatedVisits(params: {
+  companyId: string;
+  customerName?: string | null;
+  companyName?: string | null;
+  phone?: string | null;
+  excludeId?: string | null;
+}) {
+  let q = sb.from("customer_visits").select("*").eq("company_id", params.companyId)
+    .order("meeting_at", { ascending: false }).limit(20);
+  const ors: string[] = [];
+  if (params.customerName) ors.push(`customer_name.ilike.%${params.customerName}%`);
+  if (params.companyName) ors.push(`company.ilike.%${params.companyName}%`);
+  if (params.phone) ors.push(`contact_number.eq.${params.phone}`);
+  if (!ors.length) return [];
+  q = q.or(ors.join(","));
+  if (params.excludeId) q = q.neq("id", params.excludeId);
+  const { data } = await q;
+  return data ?? [];
 }
 
 export async function fetchLead(id: string): Promise<Lead | null> {
