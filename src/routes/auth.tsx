@@ -60,8 +60,15 @@ function AuthPage() {
   }, []);
 
   async function routeAfterAuth() {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const currentUser = sessionData.session?.user ?? (await supabase.auth.getUser()).data.user;
+    if (!currentUser) {
+      toast.error("Please sign in again.");
+      return;
+    }
+
     const { data: roles } = await supabase
-      .from("user_roles").select("role").eq("user_id", (await supabase.auth.getUser()).data.user!.id);
+      .from("user_roles").select("role").eq("user_id", currentUser.id);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     const { data: comps } = await supabase.from("companies").select("id, name").order("name");
     const list = comps ?? [];
