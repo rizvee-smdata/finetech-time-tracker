@@ -1424,6 +1424,14 @@ export type Database = {
       }
       customer_visits: {
         Row: {
+          ai_action_items: Json | null
+          ai_analyzed_at: string | null
+          ai_follow_up_email: string | null
+          ai_follow_up_subject: string | null
+          ai_next_steps: Json | null
+          ai_pain_points: Json | null
+          ai_sentiment: string | null
+          ai_summary: string | null
           company: string | null
           company_id: string | null
           contact_number: string | null
@@ -1444,6 +1452,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_action_items?: Json | null
+          ai_analyzed_at?: string | null
+          ai_follow_up_email?: string | null
+          ai_follow_up_subject?: string | null
+          ai_next_steps?: Json | null
+          ai_pain_points?: Json | null
+          ai_sentiment?: string | null
+          ai_summary?: string | null
           company?: string | null
           company_id?: string | null
           contact_number?: string | null
@@ -1464,6 +1480,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_action_items?: Json | null
+          ai_analyzed_at?: string | null
+          ai_follow_up_email?: string | null
+          ai_follow_up_subject?: string | null
+          ai_next_steps?: Json | null
+          ai_pain_points?: Json | null
+          ai_sentiment?: string | null
+          ai_summary?: string | null
           company?: string | null
           company_id?: string | null
           contact_number?: string | null
