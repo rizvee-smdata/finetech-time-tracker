@@ -37,6 +37,7 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
 import { Route as AuthenticatedExpensesApprovalsRouteImport } from './routes/_authenticated/expenses.approvals'
@@ -218,6 +219,12 @@ const AuthenticatedTasksTaskIdRoute =
     id: '/$taskId',
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedExpensesSettingsRoute =
+  AuthenticatedExpensesSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedExpensesRoute,
   } as any)
 const AuthenticatedExpensesReportsRoute =
   AuthenticatedExpensesReportsRouteImport.update({
@@ -465,6 +472,7 @@ export interface FileRoutesByFullPath {
   '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -526,6 +534,7 @@ export interface FileRoutesByTo {
   '/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -592,6 +601,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/approvals': typeof AuthenticatedExpensesApprovalsRoute
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
+  '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -658,6 +668,7 @@ export interface FileRouteTypes {
     | '/expenses/approvals'
     | '/expenses/new'
     | '/expenses/reports'
+    | '/expenses/settings'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -719,6 +730,7 @@ export interface FileRouteTypes {
     | '/expenses/approvals'
     | '/expenses/new'
     | '/expenses/reports'
+    | '/expenses/settings'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -784,6 +796,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/approvals'
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
+    | '/_authenticated/expenses/settings'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -1012,6 +1025,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/$taskId'
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/expenses/settings': {
+      id: '/_authenticated/expenses/settings'
+      path: '/settings'
+      fullPath: '/expenses/settings'
+      preLoaderRoute: typeof AuthenticatedExpensesSettingsRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/expenses/reports': {
       id: '/_authenticated/expenses/reports'
@@ -1327,6 +1347,7 @@ interface AuthenticatedExpensesRouteChildren {
   AuthenticatedExpensesApprovalsRoute: typeof AuthenticatedExpensesApprovalsRoute
   AuthenticatedExpensesNewRoute: typeof AuthenticatedExpensesNewRoute
   AuthenticatedExpensesReportsRoute: typeof AuthenticatedExpensesReportsRoute
+  AuthenticatedExpensesSettingsRoute: typeof AuthenticatedExpensesSettingsRoute
   AuthenticatedExpensesIndexRoute: typeof AuthenticatedExpensesIndexRoute
 }
 
@@ -1335,6 +1356,7 @@ const AuthenticatedExpensesRouteChildren: AuthenticatedExpensesRouteChildren = {
   AuthenticatedExpensesApprovalsRoute: AuthenticatedExpensesApprovalsRoute,
   AuthenticatedExpensesNewRoute: AuthenticatedExpensesNewRoute,
   AuthenticatedExpensesReportsRoute: AuthenticatedExpensesReportsRoute,
+  AuthenticatedExpensesSettingsRoute: AuthenticatedExpensesSettingsRoute,
   AuthenticatedExpensesIndexRoute: AuthenticatedExpensesIndexRoute,
 }
 
