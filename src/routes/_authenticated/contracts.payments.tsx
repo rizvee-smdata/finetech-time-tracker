@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO, addDays, differenceInDays } from "date-fns";
 import {
-  PAYMENT_STATUS_META, formatBDT,
+  PAYMENT_STATUS_META, formatUSD,
   type Milestone, type Contract,
 } from "@/lib/contracts/types";
 
@@ -79,7 +79,7 @@ function PaymentsDashboard() {
                     {days < 0 ? ` · ${Math.abs(days)}d overdue` : ` · in ${days}d`}
                   </div>
                 </div>
-                <div className="text-right font-semibold">{formatBDT(Number(m.amount))}</div>
+                <div className="text-right font-semibold">{formatUSD(Number(m.amount))}</div>
               </div>
             </Card>
           );
@@ -91,10 +91,10 @@ function PaymentsDashboard() {
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-4">
-        <Stat label="Contracted" value={formatBDT(totalContracted)} />
-        <Stat label="Received" value={formatBDT(totalReceived)} tone="emerald" />
-        <Stat label="Overdue" value={formatBDT(totalOverdue)} tone="destructive" />
-        <Stat label="Due in 30 days" value={formatBDT(totalUpcoming)} tone="amber" />
+        <Stat label="Contracted" value={formatUSD(totalContracted)} />
+        <Stat label="Received" value={formatUSD(totalReceived)} tone="emerald" />
+        <Stat label="Overdue" value={formatUSD(totalOverdue)} tone="destructive" />
+        <Stat label="Due in 30 days" value={formatUSD(totalUpcoming)} tone="amber" />
       </div>
 
       <section>

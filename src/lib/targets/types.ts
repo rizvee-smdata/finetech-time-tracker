@@ -51,9 +51,9 @@ export const PERIOD_LABEL: Record<TargetPeriodKind, string> = {
   custom: "Custom",
 };
 
-export function formatTargetValue(metric: TargetMetric, value: number, currency = "BDT") {
+export function formatTargetValue(metric: TargetMetric, value: number, currency = "USD") {
   if (METRIC_UNIT[metric] === "money") {
-    return new Intl.NumberFormat("en-BD", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
       maximumFractionDigits: 0,

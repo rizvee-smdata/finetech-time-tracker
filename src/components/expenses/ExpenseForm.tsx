@@ -114,7 +114,7 @@ export default function ExpenseForm({ initial, onDone }: Props) {
       category_id: categoryId,
       category_name: categoryName,
       amount: amt,
-      currency: "BDT",
+      currency: "USD",
       expense_date: expenseDate,
       description: description || null,
       visit_id: visitId || null,
@@ -144,7 +144,7 @@ export default function ExpenseForm({ initial, onDone }: Props) {
       <Card className="p-4 sm:p-6 space-y-4">
         <div>
           <h2 className="text-lg font-semibold">{initial ? "Edit expense" : "New expense"}</h2>
-          <p className="text-sm text-muted-foreground">Amounts in BDT.</p>
+          <p className="text-sm text-muted-foreground">Amounts in USD.</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -160,7 +160,7 @@ export default function ExpenseForm({ initial, onDone }: Props) {
             </Select>
           </div>
           <div>
-            <Label>Amount (BDT)</Label>
+            <Label>Amount (USD)</Label>
             <Input type="number" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" />
           </div>
           <div>

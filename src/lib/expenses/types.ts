@@ -38,7 +38,7 @@ export const STATUS_COLORS: Record<ExpenseStatus, string> = {
   rejected: "bg-red-500/15 text-red-600 dark:text-red-400",
 };
 
-export function formatBDT(n: number | null | undefined) {
+export function formatUSD(n: number | null | undefined) {
   const v = Number(n ?? 0);
-  return new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT", maximumFractionDigits: 0 }).format(v);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v);
 }

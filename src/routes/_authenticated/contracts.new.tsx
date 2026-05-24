@@ -60,7 +60,7 @@ function NewContract() {
           start_date: startDate,
           end_date: endDate || null,
           total_value: Number(totalValue) || 0,
-          currency: "BDT",
+          currency: "USD",
           payment_terms: paymentTerms || null,
           notes: notes || null,
           lead_id: leadId || null,
@@ -119,7 +119,7 @@ function NewContract() {
           <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
         <div>
-          <Label>Total value (BDT) *</Label>
+          <Label>Total value (USD) *</Label>
           <Input type="number" value={totalValue} onChange={(e) => setTotalValue(e.target.value)} />
         </div>
         <div>

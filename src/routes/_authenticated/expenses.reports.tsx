@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
-import { formatBDT, type Expense } from "@/lib/expenses/types";
+import { formatUSD, type Expense } from "@/lib/expenses/types";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/expenses/reports")({
@@ -70,7 +70,7 @@ function ReportsPage() {
 
   function exportCSV() {
     const rows = expenses ?? [];
-    const header = ["Date", "User", "Category", "Amount BDT", "Status", "Description"];
+    const header = ["Date", "User", "Category", "Amount USD", "Status", "Description"];
     const lines = [header.join(",")];
     for (const e of rows) {
       const userName = profiles?.get(e.user_id)?.full_name ?? e.user_id;
@@ -122,15 +122,15 @@ function ReportsPage() {
       <div className="grid gap-3 sm:grid-cols-4">
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Approved</div>
-          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{formatBDT(stats.approved)}</div>
+          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{formatUSD(stats.approved)}</div>
         </Card>
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Pending</div>
-          <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">{formatBDT(stats.pending)}</div>
+          <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">{formatUSD(stats.pending)}</div>
         </Card>
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Rejected</div>
-          <div className="text-lg font-semibold text-red-600 dark:text-red-400">{formatBDT(stats.rejected)}</div>
+          <div className="text-lg font-semibold text-red-600 dark:text-red-400">{formatUSD(stats.rejected)}</div>
         </Card>
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Items</div>
@@ -152,7 +152,7 @@ function ReportsPage() {
                   <div key={cat}>
                     <div className="flex justify-between text-xs">
                       <span>{cat}</span>
-                      <span className="tabular-nums font-medium">{formatBDT(amt)}</span>
+                      <span className="tabular-nums font-medium">{formatUSD(amt)}</span>
                     </div>
                     <div className="mt-1 h-2 overflow-hidden rounded bg-muted">
                       <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
@@ -179,7 +179,7 @@ function ReportsPage() {
                     <div key={uid}>
                       <div className="flex justify-between text-xs">
                         <span>{name}</span>
-                        <span className="tabular-nums font-medium">{formatBDT(amt)}</span>
+                        <span className="tabular-nums font-medium">{formatUSD(amt)}</span>
                       </div>
                       <div className="mt-1 h-2 overflow-hidden rounded bg-muted">
                         <div className="h-full bg-primary" style={{ width: `${pct}%` }} />

@@ -10,7 +10,7 @@ import { Check, X, Receipt } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
-import { STATUS_COLORS, formatBDT, type Expense } from "@/lib/expenses/types";
+import { STATUS_COLORS, formatUSD, type Expense } from "@/lib/expenses/types";
 
 export const Route = createFileRoute("/_authenticated/expenses/approvals")({
   component: ApprovalsPage,
@@ -63,7 +63,7 @@ function ApprovalsPage() {
       user_id: e.user_id,
       company_id: e.company_id,
       title: `Expense ${status}: ${e.category_name}`,
-      body: `${formatBDT(Number(e.amount))} on ${format(new Date(e.expense_date), "PP")}${comment ? ` — ${comment}` : ""}`,
+      body: `${formatUSD(Number(e.amount))} on ${format(new Date(e.expense_date), "PP")}${comment ? ` — ${comment}` : ""}`,
       remind_at: new Date().toISOString(),
     });
 
@@ -97,7 +97,7 @@ function ApprovalsPage() {
               {e.description && <div className="mt-1 text-sm">{e.description}</div>}
             </div>
             <div className="text-right">
-              <div className="text-lg font-semibold tabular-nums">{formatBDT(Number(e.amount))}</div>
+              <div className="text-lg font-semibold tabular-nums">{formatUSD(Number(e.amount))}</div>
             </div>
           </div>
           <Textarea

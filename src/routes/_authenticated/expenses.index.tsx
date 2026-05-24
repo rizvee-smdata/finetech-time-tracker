@@ -9,7 +9,7 @@ import { Plus, Receipt, Send, Trash2, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
-import { STATUS_COLORS, formatBDT, type Expense, type ExpenseStatus } from "@/lib/expenses/types";
+import { STATUS_COLORS, formatUSD, type Expense, type ExpenseStatus } from "@/lib/expenses/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/expenses/")({
@@ -104,16 +104,16 @@ function MyExpensesPage() {
       <div className="grid gap-3 sm:grid-cols-3">
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Total</div>
-          <div className="text-lg font-semibold">{formatBDT(totals.total)}</div>
+          <div className="text-lg font-semibold">{formatUSD(totals.total)}</div>
           <div className="text-xs text-muted-foreground">{totals.count} item(s)</div>
         </Card>
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Pending approval</div>
-          <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">{formatBDT(totals.pending)}</div>
+          <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">{formatUSD(totals.pending)}</div>
         </Card>
         <Card className="p-4">
           <div className="text-xs text-muted-foreground">Approved</div>
-          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{formatBDT(totals.approved)}</div>
+          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{formatUSD(totals.approved)}</div>
         </Card>
       </div>
 
@@ -146,7 +146,7 @@ function MyExpensesPage() {
               )}
             </div>
             <div className="text-right">
-              <div className="font-semibold tabular-nums">{formatBDT(Number(e.amount))}</div>
+              <div className="font-semibold tabular-nums">{formatUSD(Number(e.amount))}</div>
             </div>
             <div className="flex gap-1">
               {(e.status === "draft" || e.status === "rejected") && (
