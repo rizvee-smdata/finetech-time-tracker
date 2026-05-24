@@ -19,6 +19,7 @@ import {
   Target,
   Receipt,
   MapPin,
+  Route as RouteIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,6 +29,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/visits", label: "Visits", icon: ClipboardList },
+  { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/crm", label: "CRM", icon: Target },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },

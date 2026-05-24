@@ -1479,6 +1479,139 @@ export type Database = {
           },
         ]
       }
+      route_plan_stops: {
+        Row: {
+          actual_visit_id: string | null
+          address: string | null
+          arrived_at: string | null
+          completed_at: string | null
+          created_at: string
+          customer_name: string
+          id: string
+          latitude: number | null
+          lead_id: string | null
+          location_name: string | null
+          longitude: number | null
+          notes: string | null
+          plan_id: string
+          planned_arrival: string | null
+          planned_duration_minutes: number | null
+          sequence: number
+          status: Database["public"]["Enums"]["route_stop_status"]
+        }
+        Insert: {
+          actual_visit_id?: string | null
+          address?: string | null
+          arrived_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_name: string
+          id?: string
+          latitude?: number | null
+          lead_id?: string | null
+          location_name?: string | null
+          longitude?: number | null
+          notes?: string | null
+          plan_id: string
+          planned_arrival?: string | null
+          planned_duration_minutes?: number | null
+          sequence?: number
+          status?: Database["public"]["Enums"]["route_stop_status"]
+        }
+        Update: {
+          actual_visit_id?: string | null
+          address?: string | null
+          arrived_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_name?: string
+          id?: string
+          latitude?: number | null
+          lead_id?: string | null
+          location_name?: string | null
+          longitude?: number | null
+          notes?: string | null
+          plan_id?: string
+          planned_arrival?: string | null
+          planned_duration_minutes?: number | null
+          sequence?: number
+          status?: Database["public"]["Enums"]["route_stop_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_plan_stops_actual_visit_id_fkey"
+            columns: ["actual_visit_id"]
+            isOneToOne: false
+            referencedRelation: "customer_visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_plan_stops_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_plan_stops_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "route_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      route_plans: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          id: string
+          notes: string | null
+          plan_date: string
+          start_latitude: number | null
+          start_location: string | null
+          start_longitude: number | null
+          status: Database["public"]["Enums"]["route_plan_status"]
+          territory: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          notes?: string | null
+          plan_date: string
+          start_latitude?: number | null
+          start_location?: string | null
+          start_longitude?: number | null
+          status?: Database["public"]["Enums"]["route_plan_status"]
+          territory?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          notes?: string | null
+          plan_date?: string
+          start_latitude?: number | null
+          start_location?: string | null
+          start_longitude?: number | null
+          status?: Database["public"]["Enums"]["route_plan_status"]
+          territory?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       targets: {
         Row: {
           company_id: string
@@ -2773,6 +2906,13 @@ export type Database = {
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      route_plan_status:
+        | "draft"
+        | "planned"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+      route_stop_status: "pending" | "arrived" | "completed" | "skipped"
       target_metric:
         | "revenue"
         | "visits"
@@ -2968,6 +3108,14 @@ export const Constants = {
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      route_plan_status: [
+        "draft",
+        "planned",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+      route_stop_status: ["pending", "arrived", "completed", "skipped"],
       target_metric: [
         "revenue",
         "visits",
