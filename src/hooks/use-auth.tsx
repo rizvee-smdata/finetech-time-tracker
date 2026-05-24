@@ -70,10 +70,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setSession(data.session);
+      if (data.session?.user) {
+        void Promise.all([loadRoles(data.session.user.id), loadCompanies()]).finally(() => {
+          if (mounted) setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
+
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      if (!mounted) return;
       setSession(s);
       if (s?.user) {
         setTimeout(() => {
+          if (!mounted) return;
           loadRoles(s.user.id);
           loadCompanies();
         }, 0);
@@ -83,14 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setCompanyId(null);
       }
     });
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      if (data.session?.user) {
-        await Promise.all([loadRoles(data.session.user.id), loadCompanies()]);
-      }
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
