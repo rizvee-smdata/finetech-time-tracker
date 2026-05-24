@@ -186,6 +186,12 @@ export function NextBestActionCard({ action, onToggle, onUpdateDraft, dealLabel 
               <Check className="mr-1 h-3 w-3" />
               {action.completed ? "Mark Open" : "Mark Complete"}
             </Button>
+            {!action.completed && (
+              <Button size="sm" variant="outline" onClick={onStartTimer}>
+                <Play className="mr-1 h-3 w-3" />
+                Start Timer
+              </Button>
+            )}
             {action.completed && action.completedAt && (
               <span className="font-mono text-[11px] text-muted-foreground">
                 ✓ {new Date(action.completedAt).toLocaleString()}
