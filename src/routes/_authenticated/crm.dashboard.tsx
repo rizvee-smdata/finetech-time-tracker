@@ -62,6 +62,20 @@ function DashboardPage() {
     },
   });
 
+  const pendingApprovals = useQuery({
+    queryKey: ["crm-pending-approvals", companyId],
+    enabled: ready && !!companyId,
+    queryFn: async () => {
+      const { data } = await sb
+        .from("crm_quotes")
+        .select("id, title, version, amount, currency, discount_pct, lead_id, approval_requested_at, crm_leads!inner(customer_name, company_id)")
+        .eq("approval_status", "requested")
+        .eq("crm_leads.company_id", companyId)
+        .order("approval_requested_at", { ascending: true });
+      return data ?? [];
+    },
+  });
+
   const all = leads.data ?? [];
   const won = all.filter((l) => l.stage === "won");
   const lost = all.filter((l) => l.stage === "lost");
@@ -71,6 +85,25 @@ function DashboardPage() {
   const wonValue = won.reduce((s, l) => s + (l.expected_value ?? 0), 0);
   const conversion = all.length ? Math.round((won.length / all.length) * 100) : 0;
   const visitConversion = (visitsCount.data ?? 0) ? Math.round((all.length / (visitsCount.data as number)) * 100) : 0;
+
+  // Idle leads — open for >5 days with no activity
+  const now = new Date();
+  const idleLeads = active
+    .map((l) => ({ ...l, idleDays: differenceInDays(now, new Date(l.last_activity_at)) }))
+    .filter((l) => l.idleDays >= 5)
+    .sort((a, b) => b.idleDays - a.idleDays)
+    .slice(0, 8);
+
+  // Conversion funnel
+  const visitsN = visitsCount.data ?? 0;
+  const negotiationPlus = all.filter((l) => ["negotiation", "closure", "won"].includes(l.stage)).length;
+  const funnel = [
+    { label: "Visits", count: visitsN, color: "bg-slate-400" },
+    { label: "Leads", count: all.length, color: "bg-blue-500" },
+    { label: "Negotiation+", count: negotiationPlus, color: "bg-amber-500" },
+    { label: "Won", count: won.length, color: "bg-emerald-500" },
+  ];
+  const funnelMax = Math.max(...funnel.map((f) => f.count), 1);
 
   // 6-month trend (created vs won, by month of creation/win)
   const trend = Array.from({ length: 6 }).map((_, i) => {
