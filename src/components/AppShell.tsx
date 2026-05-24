@@ -18,6 +18,7 @@ import {
   Sparkles,
   Target,
   Receipt,
+  FileText,
   MapPin,
   Route as RouteIcon,
 } from "lucide-react";
@@ -38,6 +39,7 @@ const nav = [
   { to: "/check-in", label: "Time", icon: Clock },
   { to: "/attendance", label: "Attendance", icon: MapPin },
   { to: "/expenses", label: "Expenses", icon: Receipt },
+  { to: "/contracts", label: "Contracts", icon: FileText },
   { to: "/targets", label: "Targets", icon: Target },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];

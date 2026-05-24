@@ -218,6 +218,136 @@ export type Database = {
           },
         ]
       }
+      contract_payments: {
+        Row: {
+          amount: number
+          contract_id: string
+          created_at: string
+          due_date: string
+          id: string
+          invoice_number: string | null
+          name: string
+          notes: string | null
+          received_at: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          contract_id: string
+          created_at?: string
+          due_date: string
+          id?: string
+          invoice_number?: string | null
+          name: string
+          notes?: string | null
+          received_at?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          contract_id?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          invoice_number?: string | null
+          name?: string
+          notes?: string | null
+          received_at?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracts: {
+        Row: {
+          account_id: string | null
+          company_id: string
+          contract_number: string
+          contract_type: Database["public"]["Enums"]["contract_type"]
+          created_at: string
+          created_by: string
+          currency: string
+          end_date: string | null
+          file_name: string | null
+          file_path: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+          payment_terms: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["contract_status"]
+          title: string | null
+          total_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          company_id: string
+          contract_number: string
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          created_at?: string
+          created_by: string
+          currency?: string
+          end_date?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          payment_terms?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["contract_status"]
+          title?: string | null
+          total_value?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          company_id?: string
+          contract_number?: string
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          created_at?: string
+          created_by?: string
+          currency?: string
+          end_date?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          payment_terms?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["contract_status"]
+          title?: string | null
+          total_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_accounts: {
         Row: {
           address: string | null
@@ -2960,6 +3090,8 @@ export type Database = {
     Enums: {
       app_role: "admin" | "manager" | "employee"
       attendance_status: "present" | "late" | "absent" | "half_day" | "leave"
+      contract_status: "active" | "expired" | "cancelled" | "draft"
+      contract_type: "one_time" | "amc" | "retainer"
       crm_activity_type:
         | "note"
         | "call"
@@ -2997,6 +3129,7 @@ export type Database = {
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      payment_status: "pending" | "invoiced" | "received" | "cancelled"
       quote_share_response: "accepted" | "revision_requested"
       route_plan_status:
         | "draft"
@@ -3159,6 +3292,8 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "manager", "employee"],
       attendance_status: ["present", "late", "absent", "half_day", "leave"],
+      contract_status: ["active", "expired", "cancelled", "draft"],
+      contract_type: ["one_time", "amc", "retainer"],
       crm_activity_type: [
         "note",
         "call",
@@ -3200,6 +3335,7 @@ export const Constants = {
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      payment_status: ["pending", "invoiced", "received", "cancelled"],
       quote_share_response: ["accepted", "revision_requested"],
       route_plan_status: [
         "draft",
