@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { MiniTimerWidget } from "@/components/time/MiniTimerWidget";
+
 import { NotificationCenter } from "@/components/global/NotificationCenter";
 import { GlobalSearch } from "@/components/global/GlobalSearch";
 import { AIAgentTrigger } from "@/components/global/AIAgent";
@@ -51,7 +51,7 @@ const nav = [
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
   { to: "/consultants", label: "Consultants", icon: Briefcase },
-  { to: "/time", label: "Time Tracker", icon: Clock },
+  
   { to: "/check-in", label: "Check-in", icon: Clock },
   { to: "/attendance", label: "Attendance", icon: MapPin },
   { to: "/expenses", label: "Expenses", icon: Receipt },
@@ -140,7 +140,7 @@ export function AppShell() {
       <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
         <AIAgentTrigger />
         <GlobalSearch />
-        <MiniTimerWidget />
+        
         <NotificationCenter />
         <NotificationBell compact />
       </div>
@@ -160,7 +160,7 @@ export function AppShell() {
             </div>
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold">Lavisho Group</div>
-              <div className="truncate text-xs text-muted-foreground">{company?.name ?? "Time Tracker"}</div>
+              <div className="truncate text-xs text-muted-foreground">{company?.name ?? "Workspace"}</div>
             </div>
           </div>
           <div className="pt-3">{switcher}</div>

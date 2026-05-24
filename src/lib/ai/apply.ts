@@ -31,7 +31,6 @@ export type AgentAction = {
     | "add_deal_interaction"
     | "create_next_best_action"
     | "draft_email"
-    | "start_timer"
     | "open_route";
   label: string;
   dealId?: string;
@@ -142,20 +141,8 @@ export function applyAgentAction(a: AgentAction): AppliedAction {
       };
     }
 
-    if (a.type === "start_timer" && a.description) {
-      const timer = {
-        isRunning: true,
-        isPaused: false,
-        startTime: new Date().toISOString(),
-        pausedAt: null,
-        accumulatedSec: 0,
-        currentDescription: a.description,
-        category: a.category,
-      };
-      localStorage.setItem("deskiq_timer_state", JSON.stringify(timer));
-      window.dispatchEvent(new CustomEvent("deskiq:time-updated"));
-      return { label: a.label, applied: true, navigateTo: "/time" };
-    }
+
+
 
     if (a.type === "open_route" && a.route) {
       return { label: a.label, applied: true, navigateTo: a.route };

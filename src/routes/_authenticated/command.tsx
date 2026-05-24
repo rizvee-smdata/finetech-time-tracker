@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { differenceInDays, isToday } from "date-fns";
+import { differenceInDays } from "date-fns";
 import {
   TrendingUp,
-  Clock,
   CheckSquare,
   FileText,
   ArrowRight,
@@ -11,10 +10,8 @@ import {
   Trophy,
 } from "lucide-react";
 import { useDealsStore } from "@/lib/deals/storage";
-import { useTimeStore } from "@/lib/time/storage";
 import { useProposalsStore } from "@/lib/proposals/storage";
 import { useNotifications } from "@/lib/app/notifications";
-import { DailyBriefingCard } from "@/components/time/DailyBriefingCard";
 import { useSettings } from "@/lib/app/settings";
 
 export const Route = createFileRoute("/_authenticated/command")({
@@ -23,7 +20,6 @@ export const Route = createFileRoute("/_authenticated/command")({
 
 function CommandCenter() {
   const { deals } = useDealsStore();
-  const { entries } = useTimeStore();
   const { proposals } = useProposalsStore();
   const { items: notifications } = useNotifications();
   const { settings } = useSettings();
@@ -31,12 +27,6 @@ function CommandCenter() {
   const stats = useMemo(() => {
     const open = deals.filter((d) => d.stage !== "Closed Won" && d.stage !== "Closed Lost");
     const pipelineValue = open.reduce((s, d) => s + (d.dealValue ?? 0), 0);
-    const minutesToday = entries
-      .filter((e) => isToday(new Date(e.startTime)))
-      .reduce((s, e) => s + e.duration, 0);
-    const billableMinutesToday = entries
-      .filter((e) => isToday(new Date(e.startTime)) && e.billable)
-      .reduce((s, e) => s + e.duration, 0);
     const todayActions = deals.flatMap((d) =>
       (d.nextBestActions ?? []).filter((a) => !a.completed && a.urgency === "today"),
     );
@@ -49,14 +39,12 @@ function CommandCenter() {
     );
     return {
       pipelineValue,
-      hoursToday: minutesToday / 60,
-      billableToday: billableMinutesToday / 60,
       todayActions,
       openProposals,
       staleDeals,
       wonThisMonth,
     };
-  }, [deals, entries, proposals]);
+  }, [deals, proposals]);
 
   const fmt = (n: number) =>
     settings.company.currency === "BDT"
@@ -68,13 +56,11 @@ function CommandCenter() {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Command Center</h1>
         <p className="text-sm text-muted-foreground">
-          Your unified DeskIQ — meetings, deals, time, and proposals at a glance.
+          Your unified workspace — meetings, deals, and proposals at a glance.
         </p>
       </header>
 
-      <DailyBriefingCard entries={entries} deals={deals} />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Widget
           icon={CheckSquare}
           color="text-blue-300"
@@ -82,14 +68,6 @@ function CommandCenter() {
           value={stats.todayActions.length}
           sub={stats.todayActions.slice(0, 2).map((a) => a.action).join(" · ") || "All clear"}
           to="/deals/actions"
-        />
-        <Widget
-          icon={Clock}
-          color="text-violet-300"
-          label="Hours logged today"
-          value={stats.hoursToday.toFixed(1)}
-          sub={`${stats.billableToday.toFixed(1)}h billable · target ${settings.workingHours.billableTargetHours}h`}
-          to="/time"
         />
         <Widget
           icon={TrendingUp}
