@@ -72,6 +72,14 @@ export function AppShell() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
+        Redirecting…
+      </div>
+    );
+  }
+
   const items = [
     ...nav,
     ...(isStaff ? [{ to: "/team", label: "Team", icon: Users }, ...staffNav] : []),
