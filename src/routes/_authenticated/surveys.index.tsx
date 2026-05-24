@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MessageSquare, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { SurveyResponse } from "@/lib/surveys/types";
 import { SENTIMENT_CLASS, SENTIMENT_LABEL } from "@/lib/surveys/types";
 
@@ -91,9 +92,12 @@ function SurveysListPage() {
                   <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
                 </div>
                 {r.rating != null && (
-                  <div className="flex items-center gap-1 text-amber-500">
+                  <div className="flex items-center gap-0.5 text-amber-400">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn(i < (r.rating ?? 0) ? "fill-current" : "opacity-30")} />
+                      <Star
+                        key={i}
+                        className={cn("h-3.5 w-3.5", i < (r.rating ?? 0) ? "fill-current" : "opacity-30")}
+                      />
                     ))}
                   </div>
                 )}
@@ -117,13 +121,3 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon: 
     </Card>
   );
 }
-
-function Star({ className }: { className?: string }) {
-  return (
-    <svg className={cn("h-3.5 w-3.5", className)} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
-      <path d="M12 2l3 6.9 7.5.6-5.7 4.9 1.8 7.3L12 17.8 5.4 21.7l1.8-7.3L1.5 9.5 9 8.9z" />
-    </svg>
-  );
-}
-
-import { cn } from "@/lib/utils";
