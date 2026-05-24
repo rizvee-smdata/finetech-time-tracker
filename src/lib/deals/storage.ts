@@ -4,8 +4,25 @@ import { calculateHealthScore } from "./scoring";
 import { useAuth } from "@/hooks/use-auth";
 
 const BASE_KEY = "deskiq_deals";
+const PURGE_FLAG = "deskiq_deals::__purged_v1__";
 const keyFor = (companyId: string | null | undefined) =>
   companyId ? `${BASE_KEY}::${companyId}` : `${BASE_KEY}::__none__`;
+
+// One-time purge: wipe any previously stored deal data across all companies.
+if (typeof window !== "undefined" && !localStorage.getItem(PURGE_FLAG)) {
+  try {
+    const toRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k === BASE_KEY || k.startsWith(`${BASE_KEY}::`))) toRemove.push(k);
+    }
+    toRemove.forEach((k) => localStorage.removeItem(k));
+    localStorage.setItem(PURGE_FLAG, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
 
 
 const uid = () =>
