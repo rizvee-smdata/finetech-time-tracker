@@ -24,7 +24,6 @@ import { Route as AuthenticatedProposalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
-import { Route as AuthenticatedMeetingsRouteImport } from './routes/_authenticated/meetings'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDealsRouteImport } from './routes/_authenticated/deals'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -45,7 +44,6 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
-import { Route as AuthenticatedMeetingsIndexRouteImport } from './routes/_authenticated/meetings.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedDealsIndexRouteImport } from './routes/_authenticated/deals.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
@@ -75,8 +73,6 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
-import { Route as AuthenticatedMeetingsHistoryRouteImport } from './routes/_authenticated/meetings.history'
-import { Route as AuthenticatedMeetingsActionsRouteImport } from './routes/_authenticated/meetings.actions'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -199,11 +195,6 @@ const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMeetingsRoute = AuthenticatedMeetingsRouteImport.update({
-  id: '/meetings',
-  path: '/meetings',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
   id: '/expenses',
   path: '/expenses',
@@ -311,12 +302,6 @@ const AuthenticatedPlanningIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
-  } as any)
-const AuthenticatedMeetingsIndexRoute =
-  AuthenticatedMeetingsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedMeetingsRoute,
   } as any)
 const AuthenticatedExpensesIndexRoute =
   AuthenticatedExpensesIndexRouteImport.update({
@@ -483,18 +468,6 @@ const AuthenticatedPlanningPlanIdRoute =
     id: '/$planId',
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
-  } as any)
-const AuthenticatedMeetingsHistoryRoute =
-  AuthenticatedMeetingsHistoryRouteImport.update({
-    id: '/history',
-    path: '/history',
-    getParentRoute: () => AuthenticatedMeetingsRoute,
-  } as any)
-const AuthenticatedMeetingsActionsRoute =
-  AuthenticatedMeetingsActionsRouteImport.update({
-    id: '/actions',
-    path: '/actions',
-    getParentRoute: () => AuthenticatedMeetingsRoute,
   } as any)
 const AuthenticatedExpensesSettingsRoute =
   AuthenticatedExpensesSettingsRouteImport.update({
@@ -779,7 +752,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deals': typeof AuthenticatedDealsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
-  '/meetings': typeof AuthenticatedMeetingsRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -831,8 +803,6 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
-  '/meetings/actions': typeof AuthenticatedMeetingsActionsRoute
-  '/meetings/history': typeof AuthenticatedMeetingsHistoryRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -862,7 +832,6 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/deals/': typeof AuthenticatedDealsIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
-  '/meetings/': typeof AuthenticatedMeetingsIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -933,8 +902,6 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
-  '/meetings/actions': typeof AuthenticatedMeetingsActionsRoute
-  '/meetings/history': typeof AuthenticatedMeetingsHistoryRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -964,7 +931,6 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/deals': typeof AuthenticatedDealsIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
-  '/meetings': typeof AuthenticatedMeetingsIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -998,7 +964,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/deals': typeof AuthenticatedDealsRouteWithChildren
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
-  '/_authenticated/meetings': typeof AuthenticatedMeetingsRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -1050,8 +1015,6 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
-  '/_authenticated/meetings/actions': typeof AuthenticatedMeetingsActionsRoute
-  '/_authenticated/meetings/history': typeof AuthenticatedMeetingsHistoryRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1081,7 +1044,6 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/deals/': typeof AuthenticatedDealsIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
-  '/_authenticated/meetings/': typeof AuthenticatedMeetingsIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1115,7 +1077,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deals'
     | '/expenses'
-    | '/meetings'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -1167,8 +1128,6 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
-    | '/meetings/actions'
-    | '/meetings/history'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1198,7 +1157,6 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/deals/'
     | '/expenses/'
-    | '/meetings/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -1269,8 +1227,6 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
-    | '/meetings/actions'
-    | '/meetings/history'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1300,7 +1256,6 @@ export interface FileRouteTypes {
     | '/crm'
     | '/deals'
     | '/expenses'
-    | '/meetings'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -1333,7 +1288,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/deals'
     | '/_authenticated/expenses'
-    | '/_authenticated/meetings'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -1385,8 +1339,6 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
-    | '/_authenticated/meetings/actions'
-    | '/_authenticated/meetings/history'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -1416,7 +1368,6 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/deals/'
     | '/_authenticated/expenses/'
-    | '/_authenticated/meetings/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -1550,13 +1501,6 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/meetings': {
-      id: '/_authenticated/meetings'
-      path: '/meetings'
-      fullPath: '/meetings'
-      preLoaderRoute: typeof AuthenticatedMeetingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/expenses': {
@@ -1698,13 +1642,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/'
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
-    }
-    '/_authenticated/meetings/': {
-      id: '/_authenticated/meetings/'
-      path: '/'
-      fullPath: '/meetings/'
-      preLoaderRoute: typeof AuthenticatedMeetingsIndexRouteImport
-      parentRoute: typeof AuthenticatedMeetingsRoute
     }
     '/_authenticated/expenses/': {
       id: '/_authenticated/expenses/'
@@ -1908,20 +1845,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/$planId'
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
-    }
-    '/_authenticated/meetings/history': {
-      id: '/_authenticated/meetings/history'
-      path: '/history'
-      fullPath: '/meetings/history'
-      preLoaderRoute: typeof AuthenticatedMeetingsHistoryRouteImport
-      parentRoute: typeof AuthenticatedMeetingsRoute
-    }
-    '/_authenticated/meetings/actions': {
-      id: '/_authenticated/meetings/actions'
-      path: '/actions'
-      fullPath: '/meetings/actions'
-      preLoaderRoute: typeof AuthenticatedMeetingsActionsRouteImport
-      parentRoute: typeof AuthenticatedMeetingsRoute
     }
     '/_authenticated/expenses/settings': {
       id: '/_authenticated/expenses/settings'
@@ -2392,23 +2315,6 @@ const AuthenticatedExpensesRouteWithChildren =
     AuthenticatedExpensesRouteChildren,
   )
 
-interface AuthenticatedMeetingsRouteChildren {
-  AuthenticatedMeetingsActionsRoute: typeof AuthenticatedMeetingsActionsRoute
-  AuthenticatedMeetingsHistoryRoute: typeof AuthenticatedMeetingsHistoryRoute
-  AuthenticatedMeetingsIndexRoute: typeof AuthenticatedMeetingsIndexRoute
-}
-
-const AuthenticatedMeetingsRouteChildren: AuthenticatedMeetingsRouteChildren = {
-  AuthenticatedMeetingsActionsRoute: AuthenticatedMeetingsActionsRoute,
-  AuthenticatedMeetingsHistoryRoute: AuthenticatedMeetingsHistoryRoute,
-  AuthenticatedMeetingsIndexRoute: AuthenticatedMeetingsIndexRoute,
-}
-
-const AuthenticatedMeetingsRouteWithChildren =
-  AuthenticatedMeetingsRoute._addFileChildren(
-    AuthenticatedMeetingsRouteChildren,
-  )
-
 interface AuthenticatedPlanningRouteChildren {
   AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
   AuthenticatedPlanningNewRoute: typeof AuthenticatedPlanningNewRoute
@@ -2585,7 +2491,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDealsRoute: typeof AuthenticatedDealsRouteWithChildren
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
-  AuthenticatedMeetingsRoute: typeof AuthenticatedMeetingsRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -2614,7 +2519,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDealsRoute: AuthenticatedDealsRouteWithChildren,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
-  AuthenticatedMeetingsRoute: AuthenticatedMeetingsRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
@@ -2646,3 +2550,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
