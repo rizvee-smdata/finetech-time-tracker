@@ -35,7 +35,7 @@ function ListPage() {
     }),
   });
 
-  const pg = usePagination(data ?? [], 25);
+  const pg = usePagination(data ?? [], 20);
 
   return (
     <div className="space-y-4">
