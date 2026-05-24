@@ -22,6 +22,7 @@ import {
   MapPin,
   Route as RouteIcon,
   MessageSquare,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -74,7 +75,7 @@ export function AppShell() {
   const items = [
     ...nav,
     ...(isStaff ? [{ to: "/team", label: "Team", icon: Users }, ...staffNav] : []),
-    ...(isAdmin ? [{ to: "/settings", label: "Settings", icon: Settings }] : []),
+    ...(isAdmin ? [{ to: "/audit", label: "Audit log", icon: ScrollText }, { to: "/settings", label: "Settings", icon: Settings }] : []),
   ];
 
   const switcher = companies.length > 0 && (
