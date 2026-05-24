@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
+import { Route as AuthenticatedTimeRouteImport } from './routes/_authenticated/time'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
@@ -35,6 +36,7 @@ import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
+import { Route as AuthenticatedTimeIndexRouteImport } from './routes/_authenticated/time.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
@@ -48,6 +50,9 @@ import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authenticated/contracts.index'
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
+import { Route as AuthenticatedTimeSheetRouteImport } from './routes/_authenticated/time.sheet'
+import { Route as AuthenticatedTimeRevenueRouteImport } from './routes/_authenticated/time.revenue'
+import { Route as AuthenticatedTimeDashboardRouteImport } from './routes/_authenticated/time.dashboard'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
 import { Route as AuthenticatedTasksListRouteImport } from './routes/_authenticated/tasks.list'
@@ -134,6 +139,11 @@ const QTokenRoute = QTokenRouteImport.update({
   id: '/q/$token',
   path: '/q/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTimeRoute = AuthenticatedTimeRouteImport.update({
+  id: '/time',
+  path: '/time',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
@@ -247,6 +257,11 @@ const AuthenticatedVisitsIndexRoute =
     path: '/visits/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTimeIndexRoute = AuthenticatedTimeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedTimeRoute,
+} as any)
 const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -321,6 +336,23 @@ const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   path: '/visits/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTimeSheetRoute = AuthenticatedTimeSheetRouteImport.update({
+  id: '/sheet',
+  path: '/sheet',
+  getParentRoute: () => AuthenticatedTimeRoute,
+} as any)
+const AuthenticatedTimeRevenueRoute =
+  AuthenticatedTimeRevenueRouteImport.update({
+    id: '/revenue',
+    path: '/revenue',
+    getParentRoute: () => AuthenticatedTimeRoute,
+  } as any)
+const AuthenticatedTimeDashboardRoute =
+  AuthenticatedTimeDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedTimeRoute,
+  } as any)
 const AuthenticatedTasksReportsRoute =
   AuthenticatedTasksReportsRouteImport.update({
     id: '/reports',
@@ -734,6 +766,7 @@ export interface FileRoutesByFullPath {
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/time': typeof AuthenticatedTimeRouteWithChildren
   '/q/$token': typeof QTokenRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
@@ -795,6 +828,9 @@ export interface FileRoutesByFullPath {
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/time/dashboard': typeof AuthenticatedTimeDashboardRoute
+  '/time/revenue': typeof AuthenticatedTimeRevenueRoute
+  '/time/sheet': typeof AuthenticatedTimeSheetRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/contracts/': typeof AuthenticatedContractsIndexRoute
@@ -808,6 +844,7 @@ export interface FileRoutesByFullPath {
   '/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/time/': typeof AuthenticatedTimeIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -890,6 +927,9 @@ export interface FileRoutesByTo {
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/time/dashboard': typeof AuthenticatedTimeDashboardRoute
+  '/time/revenue': typeof AuthenticatedTimeRevenueRoute
+  '/time/sheet': typeof AuthenticatedTimeSheetRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
   '/contracts': typeof AuthenticatedContractsIndexRoute
@@ -903,6 +943,7 @@ export interface FileRoutesByTo {
   '/surveys': typeof AuthenticatedSurveysIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/time': typeof AuthenticatedTimeIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -938,6 +979,7 @@ export interface FileRoutesById {
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/time': typeof AuthenticatedTimeRouteWithChildren
   '/q/$token': typeof QTokenRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
@@ -999,6 +1041,9 @@ export interface FileRoutesById {
   '/_authenticated/tasks/list': typeof AuthenticatedTasksListRoute
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/_authenticated/time/dashboard': typeof AuthenticatedTimeDashboardRoute
+  '/_authenticated/time/revenue': typeof AuthenticatedTimeRevenueRoute
+  '/_authenticated/time/sheet': typeof AuthenticatedTimeSheetRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/_authenticated/contracts/': typeof AuthenticatedContractsIndexRoute
@@ -1012,6 +1057,7 @@ export interface FileRoutesById {
   '/_authenticated/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/_authenticated/time/': typeof AuthenticatedTimeIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -1047,6 +1093,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/team'
+    | '/time'
     | '/q/$token'
     | '/attendance/history'
     | '/attendance/reports'
@@ -1108,6 +1155,9 @@ export interface FileRouteTypes {
     | '/tasks/list'
     | '/tasks/projects'
     | '/tasks/reports'
+    | '/time/dashboard'
+    | '/time/revenue'
+    | '/time/sheet'
     | '/visits/new'
     | '/attendance/'
     | '/contracts/'
@@ -1121,6 +1171,7 @@ export interface FileRouteTypes {
     | '/surveys/'
     | '/targets/'
     | '/tasks/'
+    | '/time/'
     | '/visits/'
     | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
@@ -1203,6 +1254,9 @@ export interface FileRouteTypes {
     | '/tasks/list'
     | '/tasks/projects'
     | '/tasks/reports'
+    | '/time/dashboard'
+    | '/time/revenue'
+    | '/time/sheet'
     | '/visits/new'
     | '/attendance'
     | '/contracts'
@@ -1216,6 +1270,7 @@ export interface FileRouteTypes {
     | '/surveys'
     | '/targets'
     | '/tasks'
+    | '/time'
     | '/visits'
     | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
@@ -1250,6 +1305,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/_authenticated/time'
     | '/q/$token'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
@@ -1311,6 +1367,9 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/list'
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
+    | '/_authenticated/time/dashboard'
+    | '/_authenticated/time/revenue'
+    | '/_authenticated/time/sheet'
     | '/_authenticated/visits/new'
     | '/_authenticated/attendance/'
     | '/_authenticated/contracts/'
@@ -1324,6 +1383,7 @@ export interface FileRouteTypes {
     | '/_authenticated/surveys/'
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
+    | '/_authenticated/time/'
     | '/_authenticated/visits/'
     | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/tasks/projects/$projectId'
@@ -1374,6 +1434,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/q/$token'
       preLoaderRoute: typeof QTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/time': {
+      id: '/_authenticated/time'
+      path: '/time'
+      fullPath: '/time'
+      preLoaderRoute: typeof AuthenticatedTimeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team': {
       id: '/_authenticated/team'
@@ -1529,6 +1596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/time/': {
+      id: '/_authenticated/time/'
+      path: '/'
+      fullPath: '/time/'
+      preLoaderRoute: typeof AuthenticatedTimeIndexRouteImport
+      parentRoute: typeof AuthenticatedTimeRoute
+    }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
       path: '/'
@@ -1619,6 +1693,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/visits/new'
       preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/time/sheet': {
+      id: '/_authenticated/time/sheet'
+      path: '/sheet'
+      fullPath: '/time/sheet'
+      preLoaderRoute: typeof AuthenticatedTimeSheetRouteImport
+      parentRoute: typeof AuthenticatedTimeRoute
+    }
+    '/_authenticated/time/revenue': {
+      id: '/_authenticated/time/revenue'
+      path: '/revenue'
+      fullPath: '/time/revenue'
+      preLoaderRoute: typeof AuthenticatedTimeRevenueRouteImport
+      parentRoute: typeof AuthenticatedTimeRoute
+    }
+    '/_authenticated/time/dashboard': {
+      id: '/_authenticated/time/dashboard'
+      path: '/dashboard'
+      fullPath: '/time/dashboard'
+      preLoaderRoute: typeof AuthenticatedTimeDashboardRouteImport
+      parentRoute: typeof AuthenticatedTimeRoute
     }
     '/_authenticated/tasks/reports': {
       id: '/_authenticated/tasks/reports'
@@ -2393,6 +2488,23 @@ const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
 const AuthenticatedTasksRouteWithChildren =
   AuthenticatedTasksRoute._addFileChildren(AuthenticatedTasksRouteChildren)
 
+interface AuthenticatedTimeRouteChildren {
+  AuthenticatedTimeDashboardRoute: typeof AuthenticatedTimeDashboardRoute
+  AuthenticatedTimeRevenueRoute: typeof AuthenticatedTimeRevenueRoute
+  AuthenticatedTimeSheetRoute: typeof AuthenticatedTimeSheetRoute
+  AuthenticatedTimeIndexRoute: typeof AuthenticatedTimeIndexRoute
+}
+
+const AuthenticatedTimeRouteChildren: AuthenticatedTimeRouteChildren = {
+  AuthenticatedTimeDashboardRoute: AuthenticatedTimeDashboardRoute,
+  AuthenticatedTimeRevenueRoute: AuthenticatedTimeRevenueRoute,
+  AuthenticatedTimeSheetRoute: AuthenticatedTimeSheetRoute,
+  AuthenticatedTimeIndexRoute: AuthenticatedTimeIndexRoute,
+}
+
+const AuthenticatedTimeRouteWithChildren =
+  AuthenticatedTimeRoute._addFileChildren(AuthenticatedTimeRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
@@ -2415,6 +2527,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedTimeRoute: typeof AuthenticatedTimeRouteWithChildren
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
 }
@@ -2441,6 +2554,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedTimeRoute: AuthenticatedTimeRouteWithChildren,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
 }
@@ -2461,13 +2575,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
