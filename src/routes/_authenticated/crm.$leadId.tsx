@@ -188,6 +188,7 @@ function LeadDetail() {
       <Tabs defaultValue="timeline">
         <TabsList>
           <TabsTrigger value="timeline">Timeline ({activities.data?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="calls">Calls</TabsTrigger>
           <TabsTrigger value="tasks">Tasks ({tasks.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="quotes">Quotes ({quotes.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="visits">Visits ({relatedVisits.data?.length ?? 0})</TabsTrigger>
@@ -197,6 +198,10 @@ function LeadDetail() {
         <TabsContent value="timeline" className="space-y-4">
           <AddActivity leadId={leadId} userId={user!.id} />
           <Timeline items={activities.data ?? []} />
+        </TabsContent>
+
+        <TabsContent value="calls" className="space-y-4">
+          <CallsPanel leadId={leadId} userId={user!.id} phone={lead.phone} />
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-4">
