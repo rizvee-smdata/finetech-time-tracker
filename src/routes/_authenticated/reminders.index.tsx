@@ -63,7 +63,7 @@ function NotificationsInbox() {
     return items.filter((i) => i.category === filter);
   }, [items, filter]);
 
-  const pg = usePagination(filtered, 25);
+  const pg = usePagination(filtered, 20);
 
   async function markRead(id: string) {
     await supabase.from("reminders").update({ read_at: new Date().toISOString() }).eq("id", id);
