@@ -36,6 +36,7 @@ import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
+import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
@@ -56,6 +57,7 @@ import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
 import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
+import { Route as AuthenticatedRemindersPreferencesRouteImport } from './routes/_authenticated/reminders.preferences'
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
@@ -243,6 +245,12 @@ const AuthenticatedReportsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
+const AuthenticatedRemindersIndexRoute =
+  AuthenticatedRemindersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedRemindersRoute,
+  } as any)
 const AuthenticatedPlanningIndexRoute =
   AuthenticatedPlanningIndexRouteImport.update({
     id: '/',
@@ -355,6 +363,12 @@ const AuthenticatedReportsSalesRoute =
     id: '/sales',
     path: '/sales',
     getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedRemindersPreferencesRoute =
+  AuthenticatedRemindersPreferencesRouteImport.update({
+    id: '/preferences',
+    path: '/preferences',
+    getParentRoute: () => AuthenticatedRemindersRoute,
   } as any)
 const AuthenticatedPlanningUpcomingRoute =
   AuthenticatedPlanningUpcomingRouteImport.update({
@@ -644,7 +658,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
-  '/reminders': typeof AuthenticatedRemindersRoute
+  '/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/surveys': typeof AuthenticatedSurveysRouteWithChildren
@@ -692,6 +706,7 @@ export interface FileRoutesByFullPath {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -712,6 +727,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/reports/': typeof AuthenticatedReportsIndexRoute
   '/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
@@ -734,7 +750,6 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/partners': typeof AuthenticatedPartnersRoute
-  '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
@@ -778,6 +793,7 @@ export interface FileRoutesByTo {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -798,6 +814,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
+  '/reminders': typeof AuthenticatedRemindersIndexRoute
   '/reports': typeof AuthenticatedReportsIndexRoute
   '/surveys': typeof AuthenticatedSurveysIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
@@ -827,7 +844,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
-  '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
+  '/_authenticated/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/surveys': typeof AuthenticatedSurveysRouteWithChildren
@@ -875,6 +892,7 @@ export interface FileRoutesById {
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/_authenticated/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -895,6 +913,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
   '/_authenticated/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
@@ -972,6 +991,7 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/reminders/preferences'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -992,6 +1012,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/expenses/'
     | '/planning/'
+    | '/reminders/'
     | '/reports/'
     | '/surveys/'
     | '/targets/'
@@ -1014,7 +1035,6 @@ export interface FileRouteTypes {
     | '/customers'
     | '/dashboard'
     | '/partners'
-    | '/reminders'
     | '/settings'
     | '/team'
     | '/q/$token'
@@ -1058,6 +1078,7 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/reminders/preferences'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -1078,6 +1099,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/expenses'
     | '/planning'
+    | '/reminders'
     | '/reports'
     | '/surveys'
     | '/targets'
@@ -1154,6 +1176,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
+    | '/_authenticated/reminders/preferences'
     | '/_authenticated/reports/sales'
     | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
@@ -1174,6 +1197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
     | '/_authenticated/planning/'
+    | '/_authenticated/reminders/'
     | '/_authenticated/reports/'
     | '/_authenticated/surveys/'
     | '/_authenticated/targets/'
@@ -1390,6 +1414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsIndexRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
+    '/_authenticated/reminders/': {
+      id: '/_authenticated/reminders/'
+      path: '/'
+      fullPath: '/reminders/'
+      preLoaderRoute: typeof AuthenticatedRemindersIndexRouteImport
+      parentRoute: typeof AuthenticatedRemindersRoute
+    }
     '/_authenticated/planning/': {
       id: '/_authenticated/planning/'
       path: '/'
@@ -1529,6 +1560,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/reports/sales'
       preLoaderRoute: typeof AuthenticatedReportsSalesRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reminders/preferences': {
+      id: '/_authenticated/reminders/preferences'
+      path: '/preferences'
+      fullPath: '/reminders/preferences'
+      preLoaderRoute: typeof AuthenticatedRemindersPreferencesRouteImport
+      parentRoute: typeof AuthenticatedRemindersRoute
     }
     '/_authenticated/planning/upcoming': {
       id: '/_authenticated/planning/upcoming'
@@ -2010,6 +2048,23 @@ const AuthenticatedPlanningRouteWithChildren =
     AuthenticatedPlanningRouteChildren,
   )
 
+interface AuthenticatedRemindersRouteChildren {
+  AuthenticatedRemindersPreferencesRoute: typeof AuthenticatedRemindersPreferencesRoute
+  AuthenticatedRemindersIndexRoute: typeof AuthenticatedRemindersIndexRoute
+}
+
+const AuthenticatedRemindersRouteChildren: AuthenticatedRemindersRouteChildren =
+  {
+    AuthenticatedRemindersPreferencesRoute:
+      AuthenticatedRemindersPreferencesRoute,
+    AuthenticatedRemindersIndexRoute: AuthenticatedRemindersIndexRoute,
+  }
+
+const AuthenticatedRemindersRouteWithChildren =
+  AuthenticatedRemindersRoute._addFileChildren(
+    AuthenticatedRemindersRouteChildren,
+  )
+
 interface AuthenticatedReportsRouteChildren {
   AuthenticatedReportsSalesRoute: typeof AuthenticatedReportsSalesRoute
   AuthenticatedReportsTeamRoute: typeof AuthenticatedReportsTeamRoute
@@ -2124,7 +2179,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
-  AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
+  AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSurveysRoute: typeof AuthenticatedSurveysRouteWithChildren
@@ -2147,7 +2202,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
-  AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
+  AuthenticatedRemindersRoute: AuthenticatedRemindersRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSurveysRoute: AuthenticatedSurveysRouteWithChildren,

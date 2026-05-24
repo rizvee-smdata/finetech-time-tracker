@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -102,8 +103,16 @@ export function AppShell() {
         <div className="truncate font-semibold tracking-tight text-primary">
           {company?.name ?? "Lavisho Tracker"}
         </div>
-        <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
+        <div className="flex items-center gap-1">
+          <NotificationBell compact />
+          <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
+        </div>
       </header>
+
+      {/* Desktop floating bell */}
+      <div className="fixed right-4 top-3 z-30 hidden md:block">
+        <NotificationBell compact />
+      </div>
 
       <div className="flex">
         {/* Sidebar */}
