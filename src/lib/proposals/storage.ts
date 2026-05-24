@@ -1,16 +1,15 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import type { Proposal, ProposalSection, TemplateBlock, WizardDraft } from "./types";
-import { seedProposals } from "./seed";
 import { DEFAULT_BLOCKS } from "./templates";
 import { useAuth } from "@/hooks/use-auth";
 
 const PROP_BASE = "deskiq_proposals";
 const BLOCKS_BASE = "deskiq_proposal_blocks";
 const DRAFT_KEY = "deskiq_proposal_wizard_draft";
-const PROP_SEEDED_FLAG = "deskiq_proposals::__seeded__";
 
 const scoped = (base: string, companyId: string | null | undefined) =>
   companyId ? `${base}::${companyId}` : `${base}::__none__`;
+
 
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
