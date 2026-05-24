@@ -193,6 +193,7 @@ function AccountDialog({
       phone: form.phone || null,
       address: form.address || null,
       territory_id: form.territory_id || null,
+      primary_owner: form.primary_owner || null,
       notes: form.notes || null,
     };
     const op = editing
@@ -203,6 +204,7 @@ function AccountDialog({
     if (error) return toast.error(error.message);
     toast.success(editing ? "Updated" : "Created");
     qc.invalidateQueries({ queryKey: ["crm-accounts", companyId] });
+    qc.invalidateQueries({ queryKey: ["crm-account-stats", companyId] });
     onOpenChange(false);
     setForm({});
   }
