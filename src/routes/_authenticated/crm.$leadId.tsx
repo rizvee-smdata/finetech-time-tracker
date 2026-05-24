@@ -288,21 +288,41 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
   const qc = useQueryClient();
   const [title, setTitle] = useState("");
   const [due, setDue] = useState("");
+  const [assignee, setAssignee] = useState<string>("none");
   const [busy, setBusy] = useState(false);
+
+  const members = useQuery({
+    queryKey: ["crm-company-members", companyId],
+    queryFn: () => fetchCompanyMembers(companyId),
+  });
 
   async function submit() {
     if (!title.trim()) return toast.error("Title required");
     setBusy(true);
-    const { error } = await sb.from("tms_tasks").insert({
+    const { data: task, error } = await sb.from("tms_tasks").insert({
       company_id: companyId,
       created_by: userId,
       title: title.trim(),
       due_date: due || null,
       lead_id: leadId,
-    });
+    }).select("id").single();
+    if (error) { setBusy(false); return toast.error(error.message); }
+
+    if (assignee !== "none" && task?.id) {
+      await sb.from("tms_task_assignees").insert({ task_id: task.id, user_id: assignee, assigned_by: userId });
+      // also create a reminder for the assignee
+      if (due) {
+        await sb.from("reminders").insert({
+          user_id: assignee,
+          company_id: companyId,
+          title: `Follow-up: ${title.trim()}`,
+          body: `Lead task due ${due}`,
+          remind_at: new Date(due).toISOString(),
+        });
+      }
+    }
     setBusy(false);
-    if (error) return toast.error(error.message);
-    setTitle(""); setDue("");
+    setTitle(""); setDue(""); setAssignee("none");
     qc.invalidateQueries({ queryKey: ["crm-tasks", leadId] });
     toast.success("Task added");
   }
@@ -314,11 +334,43 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
         <Input placeholder="What needs doing?" value={title} onChange={(e) => setTitle(e.target.value)} />
       </div>
       <div className="grid gap-1">
+        <Label className="text-xs">Assignee</Label>
+        <Select value={assignee} onValueChange={setAssignee}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">— Me / unassigned —</SelectItem>
+            {(members.data ?? []).map((m) => (
+              <SelectItem key={m.id} value={m.id}>{m.full_name || m.email}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid gap-1">
         <Label className="text-xs">Due</Label>
         <Input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
       </div>
       <Button onClick={submit} disabled={busy}><Plus className="mr-2 h-4 w-4" />Add</Button>
     </Card>
+  );
+}
+
+function RelatedVisits({ items }: { items: any[] }) {
+  if (items.length === 0) return <p className="text-sm text-muted-foreground">No related visits found for this contact/company.</p>;
+  return (
+    <div className="space-y-2">
+      {items.map((v) => (
+        <Card key={v.id} className="p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="font-medium text-sm">{v.customer_name}{v.company && <span className="text-muted-foreground"> · {v.company}</span>}</div>
+              <div className="text-xs text-muted-foreground">{format(new Date(v.meeting_at), "PPp")}{v.location && <> · {v.location}</>}</div>
+              {v.discussion_summary && <p className="mt-1 text-sm whitespace-pre-wrap">{v.discussion_summary}</p>}
+            </div>
+            <Badge variant="outline" className="capitalize shrink-0">{v.status?.replace("_", " ")}</Badge>
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }
 
