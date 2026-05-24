@@ -325,7 +325,7 @@ function AddStopDialog({ planId, nextSeq, onAdded }: { planId: string; nextSeq: 
                 <SelectTrigger><SelectValue placeholder="Pick a lead to prefill" /></SelectTrigger>
                 <SelectContent>
                   {leads.data!.map((l: any) => (
-                    <SelectItem key={l.id} value={l.id}>{l.customer_name}{l.company ? ` — ${l.company}` : ""}</SelectItem>
+                    <SelectItem key={l.id} value={l.id}>{l.customer_name}{l.company_name ? ` — ${l.company_name}` : ""}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
