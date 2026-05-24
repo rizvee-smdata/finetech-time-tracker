@@ -165,8 +165,7 @@ export function useDealsStore() {
   const resetSeed = useCallback(() => {
     if (typeof window === "undefined") return;
     localStorage.removeItem(key);
-    const seeded = seedDeals().map(withHealth);
-    persist(seeded);
+    persist([]);
   }, [persist, key]);
 
   return {
@@ -182,6 +181,7 @@ export function useDealsStore() {
     resetSeed,
   };
 }
+
 
 export function newActionId() {
   return uid();
