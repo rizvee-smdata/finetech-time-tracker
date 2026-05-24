@@ -92,7 +92,7 @@ export const Route = createFileRoute("/api/public/hooks/crm-lead-capture")({
 
         const { data: lead, error: insErr } = await supabaseAdmin
           .from("crm_leads")
-          .insert(insertPayload)
+          .insert(insertPayload as any)
           .select("id")
           .single();
         if (insErr) {

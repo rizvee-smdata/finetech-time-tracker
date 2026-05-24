@@ -54,6 +54,7 @@ import { Route as AuthenticatedCrmForecastRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmDuplicatesRouteImport } from './routes/_authenticated/crm.duplicates'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated/crm.dashboard'
 import { Route as AuthenticatedCrmCatalogRouteImport } from './routes/_authenticated/crm.catalog'
+import { Route as AuthenticatedCrmCaptureRouteImport } from './routes/_authenticated/crm.capture'
 import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenticated/crm.calendar'
 import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
@@ -61,6 +62,7 @@ import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authentica
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
+import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
@@ -307,6 +309,11 @@ const AuthenticatedCrmCatalogRoute = AuthenticatedCrmCatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmCaptureRoute = AuthenticatedCrmCaptureRouteImport.update({
+  id: '/capture',
+  path: '/capture',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmCalendarRoute =
   AuthenticatedCrmCalendarRouteImport.update({
     id: '/calendar',
@@ -348,6 +355,12 @@ const ApiPublicHooksCrmRenewalsRoute =
     path: '/api/public/hooks/crm-renewals',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksCrmLeadCaptureRoute =
+  ApiPublicHooksCrmLeadCaptureRouteImport.update({
+    id: '/api/public/hooks/crm-lead-capture',
+    path: '/api/public/hooks/crm-lead-capture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -386,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
+  '/crm/capture': typeof AuthenticatedCrmCaptureRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
@@ -418,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -440,6 +455,7 @@ export interface FileRoutesByTo {
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/crm/calendar': typeof AuthenticatedCrmCalendarRoute
+  '/crm/capture': typeof AuthenticatedCrmCaptureRoute
   '/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
@@ -472,6 +488,7 @@ export interface FileRoutesByTo {
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -498,6 +515,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
   '/_authenticated/crm/calendar': typeof AuthenticatedCrmCalendarRoute
+  '/_authenticated/crm/capture': typeof AuthenticatedCrmCaptureRoute
   '/_authenticated/crm/catalog': typeof AuthenticatedCrmCatalogRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/duplicates': typeof AuthenticatedCrmDuplicatesRoute
@@ -530,6 +548,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -556,6 +575,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/activity'
     | '/crm/calendar'
+    | '/crm/capture'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/duplicates'
@@ -588,6 +608,7 @@ export interface FileRouteTypes {
     | '/visits/'
     | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -610,6 +631,7 @@ export interface FileRouteTypes {
     | '/crm/accounts'
     | '/crm/activity'
     | '/crm/calendar'
+    | '/crm/capture'
     | '/crm/catalog'
     | '/crm/dashboard'
     | '/crm/duplicates'
@@ -642,6 +664,7 @@ export interface FileRouteTypes {
     | '/visits'
     | '/crm/account/$accountId'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -667,6 +690,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/activity'
     | '/_authenticated/crm/calendar'
+    | '/_authenticated/crm/capture'
     | '/_authenticated/crm/catalog'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/duplicates'
@@ -699,6 +723,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/'
     | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -709,6 +734,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
@@ -1031,6 +1057,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmCatalogRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/capture': {
+      id: '/_authenticated/crm/capture'
+      path: '/capture'
+      fullPath: '/crm/capture'
+      preLoaderRoute: typeof AuthenticatedCrmCaptureRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/calendar': {
       id: '/_authenticated/crm/calendar'
       path: '/calendar'
@@ -1080,6 +1113,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCrmRenewalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/crm-lead-capture': {
+      id: '/api/public/hooks/crm-lead-capture'
+      path: '/api/public/hooks/crm-lead-capture'
+      fullPath: '/api/public/hooks/crm-lead-capture'
+      preLoaderRoute: typeof ApiPublicHooksCrmLeadCaptureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks/projects/$projectId': {
       id: '/_authenticated/tasks/projects/$projectId'
       path: '/$projectId'
@@ -1109,6 +1149,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmAccountsRoute: typeof AuthenticatedCrmAccountsRoute
   AuthenticatedCrmActivityRoute: typeof AuthenticatedCrmActivityRoute
   AuthenticatedCrmCalendarRoute: typeof AuthenticatedCrmCalendarRoute
+  AuthenticatedCrmCaptureRoute: typeof AuthenticatedCrmCaptureRoute
   AuthenticatedCrmCatalogRoute: typeof AuthenticatedCrmCatalogRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmDuplicatesRoute: typeof AuthenticatedCrmDuplicatesRoute
@@ -1137,6 +1178,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmAccountsRoute: AuthenticatedCrmAccountsRoute,
   AuthenticatedCrmActivityRoute: AuthenticatedCrmActivityRoute,
   AuthenticatedCrmCalendarRoute: AuthenticatedCrmCalendarRoute,
+  AuthenticatedCrmCaptureRoute: AuthenticatedCrmCaptureRoute,
   AuthenticatedCrmCatalogRoute: AuthenticatedCrmCatalogRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmDuplicatesRoute: AuthenticatedCrmDuplicatesRoute,
@@ -1259,6 +1301,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
