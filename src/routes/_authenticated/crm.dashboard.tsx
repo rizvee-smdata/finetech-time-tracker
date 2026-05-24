@@ -107,12 +107,30 @@ function DashboardPage() {
       </header>
 
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Kpi icon={Target} label="Active pipeline" value={formatMoney(pipelineValue)} sub={`${active.length} open leads`} />
         <Kpi icon={TrendingUp} label="Weighted forecast" value={formatMoney(weightedValue)} sub="Value × probability" />
         <Kpi icon={Trophy} label="Won this period" value={formatMoney(wonValue)} sub={`${won.length} deals · ${lost.length} lost`} />
         <Kpi icon={Users} label="Conversion" value={`${conversion}%`} sub={`${visitConversion}% from visits`} />
+        <Kpi icon={AlertCircle} label="Overdue tasks" value={String((overdueQ.data ?? []).length)} sub="On open leads" />
       </div>
+
+      <Card className="p-5">
+        <h2 className="mb-3 text-sm font-semibold">6-month trend</h2>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={trend}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="month" className="text-xs" />
+              <YAxis allowDecimals={false} className="text-xs" />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="Created" stroke="hsl(var(--primary))" strokeWidth={2} />
+              <Line type="monotone" dataKey="Won" stroke="#16a34a" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">
