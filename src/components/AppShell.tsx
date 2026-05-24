@@ -42,6 +42,7 @@ const nav = [
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/contracts", label: "Contracts", icon: FileText },
   { to: "/targets", label: "Targets", icon: Target },
+  { to: "/surveys", label: "Feedback", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];
 
