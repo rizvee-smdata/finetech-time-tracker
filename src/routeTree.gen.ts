@@ -37,6 +37,7 @@ import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
 import { Route as AuthenticatedCrmTerritoriesRouteImport } from './routes/_authenticated/crm.territories'
 import { Route as AuthenticatedCrmTemplatesRouteImport } from './routes/_authenticated/crm.templates'
+import { Route as AuthenticatedCrmTargetsRouteImport } from './routes/_authenticated/crm.targets'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
 import { Route as AuthenticatedCrmSequencesRouteImport } from './routes/_authenticated/crm.sequences'
 import { Route as AuthenticatedCrmRenewalsRouteImport } from './routes/_authenticated/crm.renewals'
@@ -205,6 +206,11 @@ const AuthenticatedCrmTemplatesRoute =
     path: '/templates',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmTargetsRoute = AuthenticatedCrmTargetsRouteImport.update({
+  id: '/targets',
+  path: '/targets',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 const AuthenticatedCrmSettingsRoute =
   AuthenticatedCrmSettingsRouteImport.update({
     id: '/settings',
@@ -349,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -396,6 +403,7 @@ export interface FileRoutesByTo {
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -447,6 +455,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
   '/_authenticated/crm/sequences': typeof AuthenticatedCrmSequencesRoute
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/_authenticated/crm/targets': typeof AuthenticatedCrmTargetsRoute
   '/_authenticated/crm/templates': typeof AuthenticatedCrmTemplatesRoute
   '/_authenticated/crm/territories': typeof AuthenticatedCrmTerritoriesRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -498,6 +507,7 @@ export interface FileRouteTypes {
     | '/crm/renewals'
     | '/crm/sequences'
     | '/crm/settings'
+    | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
     | '/tasks/$taskId'
@@ -545,6 +555,7 @@ export interface FileRouteTypes {
     | '/crm/renewals'
     | '/crm/sequences'
     | '/crm/settings'
+    | '/crm/targets'
     | '/crm/templates'
     | '/crm/territories'
     | '/tasks/$taskId'
@@ -595,6 +606,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/renewals'
     | '/_authenticated/crm/sequences'
     | '/_authenticated/crm/settings'
+    | '/_authenticated/crm/targets'
     | '/_authenticated/crm/templates'
     | '/_authenticated/crm/territories'
     | '/_authenticated/tasks/$taskId'
@@ -822,6 +834,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmTemplatesRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/targets': {
+      id: '/_authenticated/crm/targets'
+      path: '/targets'
+      fullPath: '/crm/targets'
+      preLoaderRoute: typeof AuthenticatedCrmTargetsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/settings': {
       id: '/_authenticated/crm/settings'
       path: '/settings'
@@ -981,6 +1000,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmRenewalsRoute: typeof AuthenticatedCrmRenewalsRoute
   AuthenticatedCrmSequencesRoute: typeof AuthenticatedCrmSequencesRoute
   AuthenticatedCrmSettingsRoute: typeof AuthenticatedCrmSettingsRoute
+  AuthenticatedCrmTargetsRoute: typeof AuthenticatedCrmTargetsRoute
   AuthenticatedCrmTemplatesRoute: typeof AuthenticatedCrmTemplatesRoute
   AuthenticatedCrmTerritoriesRoute: typeof AuthenticatedCrmTerritoriesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
@@ -1002,6 +1022,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmRenewalsRoute: AuthenticatedCrmRenewalsRoute,
   AuthenticatedCrmSequencesRoute: AuthenticatedCrmSequencesRoute,
   AuthenticatedCrmSettingsRoute: AuthenticatedCrmSettingsRoute,
+  AuthenticatedCrmTargetsRoute: AuthenticatedCrmTargetsRoute,
   AuthenticatedCrmTemplatesRoute: AuthenticatedCrmTemplatesRoute,
   AuthenticatedCrmTerritoriesRoute: AuthenticatedCrmTerritoriesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
@@ -1113,3 +1134,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
