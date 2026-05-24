@@ -34,6 +34,7 @@ const nav = [
   { to: "/consultants", label: "Consultants", icon: Briefcase },
   { to: "/check-in", label: "Time", icon: Clock },
   { to: "/expenses", label: "Expenses", icon: Receipt },
+  { to: "/targets", label: "Targets", icon: Target },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];
 

@@ -28,6 +28,7 @@ import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
+import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
@@ -38,6 +39,8 @@ import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
+import { Route as AuthenticatedTargetsLeaderboardRouteImport } from './routes/_authenticated/targets.leaderboard'
+import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authenticated/targets.all'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -171,6 +174,12 @@ const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedTasksRoute,
 } as any)
+const AuthenticatedTargetsIndexRoute =
+  AuthenticatedTargetsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedTargetsRoute,
+  } as any)
 const AuthenticatedExpensesIndexRoute =
   AuthenticatedExpensesIndexRouteImport.update({
     id: '/',
@@ -226,6 +235,17 @@ const AuthenticatedTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedTasksRoute,
   } as any)
+const AuthenticatedTargetsLeaderboardRoute =
+  AuthenticatedTargetsLeaderboardRouteImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AuthenticatedTargetsRoute,
+  } as any)
+const AuthenticatedTargetsAllRoute = AuthenticatedTargetsAllRouteImport.update({
+  id: '/all',
+  path: '/all',
+  getParentRoute: () => AuthenticatedTargetsRoute,
+} as any)
 const AuthenticatedExpensesSettingsRoute =
   AuthenticatedExpensesSettingsRouteImport.update({
     id: '/settings',
@@ -448,7 +468,7 @@ export interface FileRoutesByFullPath {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/targets': typeof AuthenticatedTargetsRoute
+  '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
@@ -480,6 +500,8 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -490,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -512,7 +535,6 @@ export interface FileRoutesByTo {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/targets': typeof AuthenticatedTargetsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
@@ -543,6 +565,8 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -553,6 +577,7 @@ export interface FileRoutesByTo {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
+  '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -579,7 +604,7 @@ export interface FileRoutesById {
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/targets': typeof AuthenticatedTargetsRoute
+  '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
@@ -611,6 +636,8 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/_authenticated/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/_authenticated/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
@@ -621,6 +648,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
@@ -679,6 +707,8 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/targets/all'
+    | '/targets/leaderboard'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -689,6 +719,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/crm/'
     | '/expenses/'
+    | '/targets/'
     | '/tasks/'
     | '/visits/'
     | '/crm/account/$accountId'
@@ -711,7 +742,6 @@ export interface FileRouteTypes {
     | '/reminders'
     | '/reports'
     | '/settings'
-    | '/targets'
     | '/team'
     | '/crm/$leadId'
     | '/crm/accounts'
@@ -742,6 +772,8 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/targets/all'
+    | '/targets/leaderboard'
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
@@ -752,6 +784,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/crm'
     | '/expenses'
+    | '/targets'
     | '/tasks'
     | '/visits'
     | '/crm/account/$accountId'
@@ -809,6 +842,8 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
+    | '/_authenticated/targets/all'
+    | '/_authenticated/targets/leaderboard'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
@@ -819,6 +854,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/new'
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
+    | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
     | '/_authenticated/crm/account/$accountId'
@@ -975,6 +1011,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
+    '/_authenticated/targets/': {
+      id: '/_authenticated/targets/'
+      path: '/'
+      fullPath: '/targets/'
+      preLoaderRoute: typeof AuthenticatedTargetsIndexRouteImport
+      parentRoute: typeof AuthenticatedTargetsRoute
+    }
     '/_authenticated/expenses/': {
       id: '/_authenticated/expenses/'
       path: '/'
@@ -1044,6 +1087,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/tasks/$taskId'
       preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/targets/leaderboard': {
+      id: '/_authenticated/targets/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/targets/leaderboard'
+      preLoaderRoute: typeof AuthenticatedTargetsLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedTargetsRoute
+    }
+    '/_authenticated/targets/all': {
+      id: '/_authenticated/targets/all'
+      path: '/all'
+      fullPath: '/targets/all'
+      preLoaderRoute: typeof AuthenticatedTargetsAllRouteImport
+      parentRoute: typeof AuthenticatedTargetsRoute
     }
     '/_authenticated/expenses/settings': {
       id: '/_authenticated/expenses/settings'
@@ -1384,6 +1441,21 @@ const AuthenticatedExpensesRouteWithChildren =
     AuthenticatedExpensesRouteChildren,
   )
 
+interface AuthenticatedTargetsRouteChildren {
+  AuthenticatedTargetsAllRoute: typeof AuthenticatedTargetsAllRoute
+  AuthenticatedTargetsLeaderboardRoute: typeof AuthenticatedTargetsLeaderboardRoute
+  AuthenticatedTargetsIndexRoute: typeof AuthenticatedTargetsIndexRoute
+}
+
+const AuthenticatedTargetsRouteChildren: AuthenticatedTargetsRouteChildren = {
+  AuthenticatedTargetsAllRoute: AuthenticatedTargetsAllRoute,
+  AuthenticatedTargetsLeaderboardRoute: AuthenticatedTargetsLeaderboardRoute,
+  AuthenticatedTargetsIndexRoute: AuthenticatedTargetsIndexRoute,
+}
+
+const AuthenticatedTargetsRouteWithChildren =
+  AuthenticatedTargetsRoute._addFileChildren(AuthenticatedTargetsRouteChildren)
+
 interface AuthenticatedTasksProjectsProjectIdRouteChildren {
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute: typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -1451,7 +1523,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRoute
+  AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
@@ -1470,7 +1542,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTargetsRoute: AuthenticatedTargetsRoute,
+  AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
