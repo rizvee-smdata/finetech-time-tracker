@@ -59,6 +59,19 @@ export function NextBestActionCard({ action, onToggle, onUpdateDraft, dealLabel 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(action.draftContent ?? "");
+  const navigate = useNavigate();
+  const { startTimer } = useTimeStore();
+
+  const onStartTimer = () => {
+    // Infer dealId/client from dealLabel "Title — Company"
+    startTimer(action.action, {
+      category: action.actionType === "call" ? "Call" : action.actionType === "email" ? "Email" : action.actionType === "meeting" ? "Meeting" : "Admin",
+      billable: true,
+    });
+    toast.success("Timer started");
+    navigate({ to: "/time" });
+  };
+
 
   return (
     <div
