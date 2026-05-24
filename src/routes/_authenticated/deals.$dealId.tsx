@@ -184,7 +184,17 @@ function DealDetailPage() {
             {loading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1 h-3.5 w-3.5" />}
             {deal.aiAnalysis ? "Regenerate AI Recommendations" : "Get AI Recommendations"}
           </Button>
+          <Button
+            variant="outline"
+            className="border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10"
+            asChild
+          >
+            <Link to="/proposals/new" search={{ fromDeal: deal.id } as never}>
+              📄 Generate Proposal for This Deal
+            </Link>
+          </Button>
         </div>
+
       </div>
 
       <Tabs defaultValue="analysis">

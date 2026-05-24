@@ -113,7 +113,21 @@ function ProposalEditorPage() {
     setDraft(next);
     updateInPlace(next);
     toast.success(`Marked as ${status}`);
+    // Cross-module sync to deal stage + health
+    if (next.dealId && (status === "sent" || status === "accepted" || status === "rejected")) {
+      import("@/lib/app/integrations").then(({ syncProposalToDeal }) => {
+        syncProposalToDeal(next, status);
+      });
+      if (status === "accepted") {
+        import("@/lib/ui/confetti").then(({ fireConfetti }) => fireConfetti());
+      }
+      if (status === "rejected") {
+        const reason = window.prompt("Quick win/loss note? (why was it rejected?)") ?? "";
+        if (reason) toast.message("Loss note saved", { description: reason });
+      }
+    }
   }
+
 
   async function runImprove(instruction: string) {
     if (!active) return;
