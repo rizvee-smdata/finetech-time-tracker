@@ -23,6 +23,7 @@ import {
   Route as RouteIcon,
   MessageSquare,
   ScrollText,
+  Mic,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,6 +36,7 @@ const nav = [
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/crm", label: "CRM", icon: Target },
+  { to: "/meetings", label: "Meetings", icon: Mic },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
