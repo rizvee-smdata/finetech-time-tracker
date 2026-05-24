@@ -35,6 +35,7 @@ import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
+import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
@@ -233,6 +234,12 @@ const AuthenticatedSurveysIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSurveysRoute,
+  } as any)
+const AuthenticatedReportsIndexRoute =
+  AuthenticatedReportsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
 const AuthenticatedPlanningIndexRoute =
   AuthenticatedPlanningIndexRouteImport.update({
@@ -689,6 +696,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/reports/': typeof AuthenticatedReportsIndexRoute
   '/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -711,7 +719,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/partners': typeof AuthenticatedPartnersRoute
   '/reminders': typeof AuthenticatedRemindersRoute
-  '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
@@ -773,6 +780,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
+  '/reports': typeof AuthenticatedReportsIndexRoute
   '/surveys': typeof AuthenticatedSurveysIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
@@ -867,6 +875,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
   '/_authenticated/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -961,6 +970,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/expenses/'
     | '/planning/'
+    | '/reports/'
     | '/surveys/'
     | '/targets/'
     | '/tasks/'
@@ -983,7 +993,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/partners'
     | '/reminders'
-    | '/reports'
     | '/settings'
     | '/team'
     | '/q/$token'
@@ -1045,6 +1054,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/expenses'
     | '/planning'
+    | '/reports'
     | '/surveys'
     | '/targets'
     | '/tasks'
@@ -1138,6 +1148,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
     | '/_authenticated/planning/'
+    | '/_authenticated/reports/'
     | '/_authenticated/surveys/'
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
@@ -1345,6 +1356,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/surveys/'
       preLoaderRoute: typeof AuthenticatedSurveysIndexRouteImport
       parentRoute: typeof AuthenticatedSurveysRoute
+    }
+    '/_authenticated/reports/': {
+      id: '/_authenticated/reports/'
+      path: '/'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AuthenticatedReportsIndexRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
     }
     '/_authenticated/planning/': {
       id: '/_authenticated/planning/'
@@ -1954,10 +1972,12 @@ const AuthenticatedPlanningRouteWithChildren =
 
 interface AuthenticatedReportsRouteChildren {
   AuthenticatedReportsVisitsRoute: typeof AuthenticatedReportsVisitsRoute
+  AuthenticatedReportsIndexRoute: typeof AuthenticatedReportsIndexRoute
 }
 
 const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
   AuthenticatedReportsVisitsRoute: AuthenticatedReportsVisitsRoute,
+  AuthenticatedReportsIndexRoute: AuthenticatedReportsIndexRoute,
 }
 
 const AuthenticatedReportsRouteWithChildren =
