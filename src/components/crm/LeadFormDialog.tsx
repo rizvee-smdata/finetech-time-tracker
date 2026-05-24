@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { STAGES, type Lead } from "@/lib/crm/types";
+import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 
 const sb = supabase as any;
@@ -39,12 +39,19 @@ export function LeadFormDialog({
       email: lead?.email ?? "",
       location: lead?.location ?? "",
       stage: lead?.stage ?? "new",
+      priority: lead?.priority ?? "medium",
+      lead_source: lead?.lead_source ?? "manual",
       assigned_to: lead?.assigned_to ?? user?.id ?? "",
       expected_value: lead?.expected_value ?? "",
       probability: lead?.probability ?? 10,
       expected_close_date: lead?.expected_close_date ?? "",
       notes: lead?.notes ?? "",
       lost_reason: lead?.lost_reason ?? "",
+      competitor_name: lead?.competitor_name ?? "",
+      competitor_price: lead?.competitor_price ?? "",
+      competitor_notes: lead?.competitor_notes ?? "",
+      renewal_kind: lead?.renewal_kind ?? "one_time",
+      renewal_date: lead?.renewal_date ?? "",
     });
   }, [open, lead, user?.id]);
 
@@ -61,12 +68,19 @@ export function LeadFormDialog({
       email: form.email || null,
       location: form.location || null,
       stage: form.stage,
+      priority: form.priority as CrmPriority,
+      lead_source: form.lead_source as CrmLeadSource,
       assigned_to: form.assigned_to || null,
       expected_value: form.expected_value === "" ? null : Number(form.expected_value),
       probability: Number(form.probability) || 0,
       expected_close_date: form.expected_close_date || null,
       notes: form.notes || null,
       lost_reason: form.stage === "lost" ? form.lost_reason || null : null,
+      competitor_name: form.competitor_name || null,
+      competitor_price: form.competitor_price === "" ? null : Number(form.competitor_price),
+      competitor_notes: form.competitor_notes || null,
+      renewal_kind: form.renewal_kind,
+      renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
     };
     const { error } = lead
       ? await sb.from("crm_leads").update(payload).eq("id", lead.id)
@@ -137,6 +151,57 @@ export function LeadFormDialog({
             <Field label="Expected close date">
               <Input type="date" value={form.expected_close_date || ""} onChange={(e) => setForm({ ...form, expected_close_date: e.target.value })} />
             </Field>
+            <Field label="Priority">
+              <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Lead source">
+              <Select value={form.lead_source} onValueChange={(v) => setForm({ ...form, lead_source: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LEAD_SOURCES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Deal type">
+              <Select value={form.renewal_kind} onValueChange={(v) => setForm({ ...form, renewal_kind: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="one_time">One-Time</SelectItem>
+                  <SelectItem value="amc">AMC</SelectItem>
+                  <SelectItem value="subscription">Subscription</SelectItem>
+                  <SelectItem value="retainer">Retainer</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            {form.renewal_kind !== "one_time" && (
+              <Field label="Renewal date">
+                <Input type="date" value={form.renewal_date || ""} onChange={(e) => setForm({ ...form, renewal_date: e.target.value })} />
+              </Field>
+            )}
+          </div>
+
+          <div className="rounded-md border p-3">
+            <div className="mb-2 text-xs font-semibold text-muted-foreground">Competitor (optional)</div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Competitor name">
+                <Input value={form.competitor_name || ""} onChange={(e) => setForm({ ...form, competitor_name: e.target.value })} />
+              </Field>
+              <Field label="Their price ($)">
+                <Input type="number" value={form.competitor_price ?? ""} onChange={(e) => setForm({ ...form, competitor_price: e.target.value })} />
+              </Field>
+            </div>
+            <div className="mt-2">
+              <Field label="Notes">
+                <Textarea rows={2} value={form.competitor_notes || ""} onChange={(e) => setForm({ ...form, competitor_notes: e.target.value })} />
+              </Field>
+            </div>
           </div>
 
           <Field label="Notes">
