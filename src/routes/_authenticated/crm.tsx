@@ -23,6 +23,7 @@ function CrmLayout() {
     { to: "/crm/renewals", label: "Renewals" },
     { to: "/crm/lost", label: "Lost analysis" },
     { to: "/crm/accounts", label: "Accounts" },
+    { to: "/crm/duplicates", label: "Duplicates" },
     { to: "/crm/catalog", label: "Catalog" },
     { to: "/crm/templates", label: "Templates" },
     { to: "/crm/sequences", label: "Sequences" },
