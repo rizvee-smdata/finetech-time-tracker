@@ -13,6 +13,7 @@ function CrmLayout() {
     { to: "/crm/pipeline", label: "Pipeline" },
     { to: "/crm/list", label: "List" },
     { to: "/crm/dashboard", label: "Dashboard" },
+    { to: "/crm/forecast", label: "Forecast" },
     { to: "/crm/renewals", label: "Renewals" },
     { to: "/crm/lost", label: "Lost analysis" },
     { to: "/crm/accounts", label: "Accounts" },
