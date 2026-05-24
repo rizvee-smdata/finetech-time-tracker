@@ -103,3 +103,51 @@ export const draftFollowup = createServerFn({ method: "POST" })
     });
     return { text: result.text };
   });
+
+export const winLossAnalysis = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({
+      companyId: z.string().uuid(),
+      windowDays: z.number().int().min(7).max(720).default(180),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const sinceIso = new Date(Date.now() - data.windowDays * 86400_000).toISOString();
+    const { data: leads, error } = await context.supabase
+      .from("crm_leads")
+      .select("id, customer_name, company_name, stage, expected_value, currency, lost_reason, competitor_name, competitor_price, notes, won_at, lost_at, created_at")
+      .eq("company_id", data.companyId)
+      .in("stage", ["won", "lost"])
+      .or(`won_at.gte.${sinceIso},lost_at.gte.${sinceIso}`)
+      .order("updated_at", { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    const sample = (leads ?? []).map((l: any) => ({
+      outcome: l.stage,
+      value: l.expected_value,
+      currency: l.currency,
+      lost_reason: l.lost_reason,
+      competitor: l.competitor_name,
+      competitor_price: l.competitor_price,
+      notes: l.notes?.slice(0, 400) ?? null,
+      cycle_days: l.won_at || l.lost_at
+        ? Math.round((new Date(l.won_at || l.lost_at).getTime() - new Date(l.created_at).getTime()) / 86400_000)
+        : null,
+    }));
+    if (sample.length === 0) return { text: "_No closed deals in the selected window. Close some leads to unlock insights._", count: 0 };
+    const m = model();
+    const result = await generateText({
+      model: m,
+      system: `You are a senior sales operations analyst. Given a JSON array of closed deals (won + lost), produce a tight markdown report with these sections only:
+1. **Headline** – one sentence diagnosis.
+2. **Why we win** – up to 4 bullets with patterns from won deals (cite counts/values).
+3. **Why we lose** – up to 4 bullets with patterns from lost deals (group similar lost_reasons, name top competitors).
+4. **Cycle insight** – compare avg cycle of won vs lost in days.
+5. **Three actions for next quarter** – numbered, each <= 18 words, prescriptive.
+Be quantitative. No filler.`,
+      messages: [{ role: "user", content: "Closed deals:\n```json\n" + JSON.stringify(sample, null, 2) + "\n```" }],
+    });
+    return { text: result.text, count: sample.length };
+  });
+
