@@ -25,6 +25,7 @@ import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
+import { Route as AuthenticatedContractsRouteImport } from './routes/_authenticated/contracts'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
@@ -35,6 +36,7 @@ import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
+import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authenticated/contracts.index'
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
@@ -79,6 +81,9 @@ import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
+import { Route as AuthenticatedContractsPaymentsRouteImport } from './routes/_authenticated/contracts.payments'
+import { Route as AuthenticatedContractsNewRouteImport } from './routes/_authenticated/contracts.new'
+import { Route as AuthenticatedContractsContractIdRouteImport } from './routes/_authenticated/contracts.$contractId'
 import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authenticated/attendance.team'
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
@@ -170,6 +175,11 @@ const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedContractsRoute = AuthenticatedContractsRouteImport.update({
+  id: '/contracts',
+  path: '/contracts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedConsultantsRoute =
   AuthenticatedConsultantsRouteImport.update({
     id: '/consultants',
@@ -225,6 +235,12 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedContractsIndexRoute =
+  AuthenticatedContractsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedContractsRoute,
+  } as any)
 const AuthenticatedAttendanceIndexRoute =
   AuthenticatedAttendanceIndexRouteImport.update({
     id: '/',
@@ -475,6 +491,24 @@ const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
   path: '/$leadId',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedContractsPaymentsRoute =
+  AuthenticatedContractsPaymentsRouteImport.update({
+    id: '/payments',
+    path: '/payments',
+    getParentRoute: () => AuthenticatedContractsRoute,
+  } as any)
+const AuthenticatedContractsNewRoute =
+  AuthenticatedContractsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthenticatedContractsRoute,
+  } as any)
+const AuthenticatedContractsContractIdRoute =
+  AuthenticatedContractsContractIdRouteImport.update({
+    id: '/$contractId',
+    path: '/$contractId',
+    getParentRoute: () => AuthenticatedContractsRoute,
+  } as any)
 const AuthenticatedAttendanceTeamRoute =
   AuthenticatedAttendanceTeamRouteImport.update({
     id: '/team',
@@ -549,6 +583,7 @@ export interface FileRoutesByFullPath {
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/check-in': typeof AuthenticatedCheckInRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
+  '/contracts': typeof AuthenticatedContractsRouteWithChildren
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -566,6 +601,9 @@ export interface FileRoutesByFullPath {
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
+  '/contracts/new': typeof AuthenticatedContractsNewRoute
+  '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -610,6 +648,7 @@ export interface FileRoutesByFullPath {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
+  '/contracts/': typeof AuthenticatedContractsIndexRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
@@ -642,6 +681,9 @@ export interface FileRoutesByTo {
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
+  '/contracts/new': typeof AuthenticatedContractsNewRoute
+  '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -686,6 +728,7 @@ export interface FileRoutesByTo {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
+  '/contracts': typeof AuthenticatedContractsIndexRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
@@ -709,6 +752,7 @@ export interface FileRoutesById {
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
+  '/_authenticated/contracts': typeof AuthenticatedContractsRouteWithChildren
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -726,6 +770,9 @@ export interface FileRoutesById {
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/_authenticated/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/_authenticated/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
+  '/_authenticated/contracts/new': typeof AuthenticatedContractsNewRoute
+  '/_authenticated/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -770,6 +817,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
+  '/_authenticated/contracts/': typeof AuthenticatedContractsIndexRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
@@ -793,6 +841,7 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/check-in'
     | '/consultants'
+    | '/contracts'
     | '/crm'
     | '/customers'
     | '/dashboard'
@@ -810,6 +859,9 @@ export interface FileRouteTypes {
     | '/attendance/reports'
     | '/attendance/settings'
     | '/attendance/team'
+    | '/contracts/$contractId'
+    | '/contracts/new'
+    | '/contracts/payments'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -854,6 +906,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/visits/new'
     | '/attendance/'
+    | '/contracts/'
     | '/crm/'
     | '/expenses/'
     | '/planning/'
@@ -886,6 +939,9 @@ export interface FileRouteTypes {
     | '/attendance/reports'
     | '/attendance/settings'
     | '/attendance/team'
+    | '/contracts/$contractId'
+    | '/contracts/new'
+    | '/contracts/payments'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -930,6 +986,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/visits/new'
     | '/attendance'
+    | '/contracts'
     | '/crm'
     | '/expenses'
     | '/planning'
@@ -952,6 +1009,7 @@ export interface FileRouteTypes {
     | '/_authenticated/attendance'
     | '/_authenticated/check-in'
     | '/_authenticated/consultants'
+    | '/_authenticated/contracts'
     | '/_authenticated/crm'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -969,6 +1027,9 @@ export interface FileRouteTypes {
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
     | '/_authenticated/attendance/team'
+    | '/_authenticated/contracts/$contractId'
+    | '/_authenticated/contracts/new'
+    | '/_authenticated/contracts/payments'
     | '/_authenticated/crm/$leadId'
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/activity'
@@ -1013,6 +1074,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
     | '/_authenticated/attendance/'
+    | '/_authenticated/contracts/'
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
     | '/_authenticated/planning/'
@@ -1153,6 +1215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/contracts': {
+      id: '/_authenticated/contracts'
+      path: '/contracts'
+      fullPath: '/contracts'
+      preLoaderRoute: typeof AuthenticatedContractsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/consultants': {
       id: '/_authenticated/consultants'
       path: '/consultants'
@@ -1222,6 +1291,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/crm/'
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/contracts/': {
+      id: '/_authenticated/contracts/'
+      path: '/'
+      fullPath: '/contracts/'
+      preLoaderRoute: typeof AuthenticatedContractsIndexRouteImport
+      parentRoute: typeof AuthenticatedContractsRoute
     }
     '/_authenticated/attendance/': {
       id: '/_authenticated/attendance/'
@@ -1531,6 +1607,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmLeadIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/contracts/payments': {
+      id: '/_authenticated/contracts/payments'
+      path: '/payments'
+      fullPath: '/contracts/payments'
+      preLoaderRoute: typeof AuthenticatedContractsPaymentsRouteImport
+      parentRoute: typeof AuthenticatedContractsRoute
+    }
+    '/_authenticated/contracts/new': {
+      id: '/_authenticated/contracts/new'
+      path: '/new'
+      fullPath: '/contracts/new'
+      preLoaderRoute: typeof AuthenticatedContractsNewRouteImport
+      parentRoute: typeof AuthenticatedContractsRoute
+    }
+    '/_authenticated/contracts/$contractId': {
+      id: '/_authenticated/contracts/$contractId'
+      path: '/$contractId'
+      fullPath: '/contracts/$contractId'
+      preLoaderRoute: typeof AuthenticatedContractsContractIdRouteImport
+      parentRoute: typeof AuthenticatedContractsRoute
+    }
     '/_authenticated/attendance/team': {
       id: '/_authenticated/attendance/team'
       path: '/team'
@@ -1631,6 +1728,27 @@ const AuthenticatedAttendanceRouteChildren: AuthenticatedAttendanceRouteChildren
 const AuthenticatedAttendanceRouteWithChildren =
   AuthenticatedAttendanceRoute._addFileChildren(
     AuthenticatedAttendanceRouteChildren,
+  )
+
+interface AuthenticatedContractsRouteChildren {
+  AuthenticatedContractsContractIdRoute: typeof AuthenticatedContractsContractIdRoute
+  AuthenticatedContractsNewRoute: typeof AuthenticatedContractsNewRoute
+  AuthenticatedContractsPaymentsRoute: typeof AuthenticatedContractsPaymentsRoute
+  AuthenticatedContractsIndexRoute: typeof AuthenticatedContractsIndexRoute
+}
+
+const AuthenticatedContractsRouteChildren: AuthenticatedContractsRouteChildren =
+  {
+    AuthenticatedContractsContractIdRoute:
+      AuthenticatedContractsContractIdRoute,
+    AuthenticatedContractsNewRoute: AuthenticatedContractsNewRoute,
+    AuthenticatedContractsPaymentsRoute: AuthenticatedContractsPaymentsRoute,
+    AuthenticatedContractsIndexRoute: AuthenticatedContractsIndexRoute,
+  }
+
+const AuthenticatedContractsRouteWithChildren =
+  AuthenticatedContractsRoute._addFileChildren(
+    AuthenticatedContractsRouteChildren,
   )
 
 interface AuthenticatedCrmRouteChildren {
@@ -1813,6 +1931,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
+  AuthenticatedContractsRoute: typeof AuthenticatedContractsRouteWithChildren
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -1834,6 +1953,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAttendanceRoute: AuthenticatedAttendanceRouteWithChildren,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
+  AuthenticatedContractsRoute: AuthenticatedContractsRouteWithChildren,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
