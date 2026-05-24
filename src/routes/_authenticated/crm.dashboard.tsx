@@ -7,9 +7,12 @@ import { fetchLeads } from "@/lib/crm/queries";
 import { STAGES, ACTIVE_STAGES, formatMoney } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
-import { Trophy, TrendingUp, Users, Target, AlertCircle } from "lucide-react";
+import { Trophy, TrendingUp, Users, Target, AlertCircle, Clock, FileCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
-import { format, subMonths, startOfMonth } from "date-fns";
+import { format, subMonths, startOfMonth, differenceInDays } from "date-fns";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const sb = supabase as any;
 
@@ -59,6 +62,20 @@ function DashboardPage() {
     },
   });
 
+  const pendingApprovals = useQuery({
+    queryKey: ["crm-pending-approvals", companyId],
+    enabled: ready && !!companyId,
+    queryFn: async () => {
+      const { data } = await sb
+        .from("crm_quotes")
+        .select("id, title, version, amount, currency, discount_pct, lead_id, approval_requested_at, crm_leads!inner(customer_name, company_id)")
+        .eq("approval_status", "requested")
+        .eq("crm_leads.company_id", companyId)
+        .order("approval_requested_at", { ascending: true });
+      return data ?? [];
+    },
+  });
+
   const all = leads.data ?? [];
   const won = all.filter((l) => l.stage === "won");
   const lost = all.filter((l) => l.stage === "lost");
@@ -68,6 +85,25 @@ function DashboardPage() {
   const wonValue = won.reduce((s, l) => s + (l.expected_value ?? 0), 0);
   const conversion = all.length ? Math.round((won.length / all.length) * 100) : 0;
   const visitConversion = (visitsCount.data ?? 0) ? Math.round((all.length / (visitsCount.data as number)) * 100) : 0;
+
+  // Idle leads — open for >5 days with no activity
+  const now = new Date();
+  const idleLeads = active
+    .map((l) => ({ ...l, idleDays: differenceInDays(now, new Date(l.last_activity_at)) }))
+    .filter((l) => l.idleDays >= 5)
+    .sort((a, b) => b.idleDays - a.idleDays)
+    .slice(0, 8);
+
+  // Conversion funnel
+  const visitsN = visitsCount.data ?? 0;
+  const negotiationPlus = all.filter((l) => ["negotiation", "closure", "won"].includes(l.stage)).length;
+  const funnel = [
+    { label: "Visits", count: visitsN, color: "bg-slate-400" },
+    { label: "Leads", count: all.length, color: "bg-blue-500" },
+    { label: "Negotiation+", count: negotiationPlus, color: "bg-amber-500" },
+    { label: "Won", count: won.length, color: "bg-emerald-500" },
+  ];
+  const funnelMax = Math.max(...funnel.map((f) => f.count), 1);
 
   // 6-month trend (created vs won, by month of creation/win)
   const trend = Array.from({ length: 6 }).map((_, i) => {
@@ -170,6 +206,81 @@ function DashboardPage() {
           </div>
         </Card>
       </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <h2 className="mb-3 text-sm font-semibold">Conversion funnel</h2>
+          <div className="space-y-3">
+            {funnel.map((f, i) => {
+              const prev = i > 0 ? funnel[i - 1].count : null;
+              const rate = prev ? Math.round((f.count / prev) * 100) : null;
+              return (
+                <div key={f.label} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">{f.label}</span>
+                    <span className="text-muted-foreground">
+                      {f.count}{rate != null && <> · <span className={rate >= 50 ? "text-emerald-600" : rate >= 20 ? "text-amber-600" : "text-rose-600"}>{rate}%</span></>}
+                    </span>
+                  </div>
+                  <div className="h-3 rounded bg-muted overflow-hidden">
+                    <div className={`${f.color} h-full transition-all`} style={{ width: `${(f.count / funnelMax) * 100}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Card className="p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold flex items-center gap-2"><FileCheck className="h-4 w-4" />Pending approvals</h2>
+            <Badge variant="secondary">{(pendingApprovals.data ?? []).length}</Badge>
+          </div>
+          {(pendingApprovals.data ?? []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">No quotes awaiting approval.</p>
+          ) : (
+            <div className="space-y-2">
+              {(pendingApprovals.data ?? []).slice(0, 6).map((q: any) => (
+                <Link key={q.id} to="/crm/$leadId" params={{ leadId: q.lead_id }} className="block">
+                  <div className="rounded border p-2 text-sm hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium truncate">{q.crm_leads?.customer_name} · v{q.version}</span>
+                      <Badge variant="outline">{q.discount_pct}% off</Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground">{formatMoney(q.amount, q.currency)} · {q.title}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Card className="p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold flex items-center gap-2"><Clock className="h-4 w-4 text-amber-600" />Idle leads (5+ days no activity)</h2>
+          <Badge variant="secondary">{idleLeads.length}</Badge>
+        </div>
+        {idleLeads.length === 0 ? (
+          <p className="text-sm text-muted-foreground">All active leads have recent activity. </p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {idleLeads.map((l) => (
+              <Link key={l.id} to="/crm/$leadId" params={{ leadId: l.id }} className="block">
+                <div className="rounded border p-2 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-sm truncate">{l.customer_name}</span>
+                    <Badge variant={l.idleDays >= 14 ? "destructive" : "outline"} className="shrink-0">{l.idleDays}d</Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {l.stage} · {l.assignee?.full_name || l.assignee?.email || "Unassigned"}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
