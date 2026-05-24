@@ -1833,6 +1833,128 @@ export type Database = {
         }
         Relationships: []
       }
+      survey_responses: {
+        Row: {
+          answers: Json
+          company_id: string
+          contract_id: string | null
+          created_at: string
+          customer_name: string | null
+          follow_up_at: string | null
+          follow_up_required: boolean
+          id: string
+          lead_id: string | null
+          notes: string | null
+          rating: number | null
+          sentiment: Database["public"]["Enums"]["survey_sentiment"] | null
+          submitted_by: string
+          template_id: string | null
+          updated_at: string
+          visit_id: string | null
+        }
+        Insert: {
+          answers?: Json
+          company_id: string
+          contract_id?: string | null
+          created_at?: string
+          customer_name?: string | null
+          follow_up_at?: string | null
+          follow_up_required?: boolean
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          rating?: number | null
+          sentiment?: Database["public"]["Enums"]["survey_sentiment"] | null
+          submitted_by: string
+          template_id?: string | null
+          updated_at?: string
+          visit_id?: string | null
+        }
+        Update: {
+          answers?: Json
+          company_id?: string
+          contract_id?: string | null
+          created_at?: string
+          customer_name?: string | null
+          follow_up_at?: string | null
+          follow_up_required?: boolean
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          rating?: number | null
+          sentiment?: Database["public"]["Enums"]["survey_sentiment"] | null
+          submitted_by?: string
+          template_id?: string | null
+          updated_at?: string
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_responses_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_responses_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "survey_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_responses_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "customer_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_templates: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean
+          questions: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          questions?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          questions?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       targets: {
         Row: {
           company_id: string
@@ -3138,6 +3260,7 @@ export type Database = {
         | "completed"
         | "cancelled"
       route_stop_status: "pending" | "arrived" | "completed" | "skipped"
+      survey_sentiment: "positive" | "neutral" | "negative"
       target_metric:
         | "revenue"
         | "visits"
@@ -3345,6 +3468,7 @@ export const Constants = {
         "cancelled",
       ],
       route_stop_status: ["pending", "arrived", "completed", "skipped"],
+      survey_sentiment: ["positive", "neutral", "negative"],
       target_metric: [
         "revenue",
         "visits",

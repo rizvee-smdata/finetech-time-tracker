@@ -16,6 +16,7 @@ import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
+import { Route as AuthenticatedSurveysRouteImport } from './routes/_authenticated/surveys'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
@@ -33,6 +34,7 @@ import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenticated/visits.index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
+import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
@@ -48,6 +50,8 @@ import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
 import { Route as AuthenticatedTargetsLeaderboardRouteImport } from './routes/_authenticated/targets.leaderboard'
 import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authenticated/targets.all'
+import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
+import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
@@ -128,6 +132,11 @@ const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
 const AuthenticatedTargetsRoute = AuthenticatedTargetsRouteImport.update({
   id: '/targets',
   path: '/targets',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSurveysRoute = AuthenticatedSurveysRouteImport.update({
+  id: '/surveys',
+  path: '/surveys',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -218,6 +227,12 @@ const AuthenticatedTargetsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedTargetsRoute,
   } as any)
+const AuthenticatedSurveysIndexRoute =
+  AuthenticatedSurveysIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSurveysRoute,
+  } as any)
 const AuthenticatedPlanningIndexRoute =
   AuthenticatedPlanningIndexRouteImport.update({
     id: '/',
@@ -301,6 +316,17 @@ const AuthenticatedTargetsAllRoute = AuthenticatedTargetsAllRouteImport.update({
   id: '/all',
   path: '/all',
   getParentRoute: () => AuthenticatedTargetsRoute,
+} as any)
+const AuthenticatedSurveysTemplatesRoute =
+  AuthenticatedSurveysTemplatesRouteImport.update({
+    id: '/templates',
+    path: '/templates',
+    getParentRoute: () => AuthenticatedSurveysRoute,
+  } as any)
+const AuthenticatedSurveysNewRoute = AuthenticatedSurveysNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedSurveysRoute,
 } as any)
 const AuthenticatedPlanningUpcomingRoute =
   AuthenticatedPlanningUpcomingRouteImport.update({
@@ -593,6 +619,7 @@ export interface FileRoutesByFullPath {
   '/reminders': typeof AuthenticatedRemindersRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
@@ -637,6 +664,8 @@ export interface FileRoutesByFullPath {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/surveys/new': typeof AuthenticatedSurveysNewRoute
+  '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
   '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -652,6 +681,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
@@ -717,6 +747,8 @@ export interface FileRoutesByTo {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/surveys/new': typeof AuthenticatedSurveysNewRoute
+  '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
   '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -732,6 +764,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
+  '/surveys': typeof AuthenticatedSurveysIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
@@ -762,6 +795,7 @@ export interface FileRoutesById {
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
@@ -806,6 +840,8 @@ export interface FileRoutesById {
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
+  '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/_authenticated/targets/all': typeof AuthenticatedTargetsAllRoute
   '/_authenticated/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
@@ -821,6 +857,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
+  '/_authenticated/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
@@ -851,6 +888,7 @@ export interface FileRouteTypes {
     | '/reminders'
     | '/reports'
     | '/settings'
+    | '/surveys'
     | '/targets'
     | '/tasks'
     | '/team'
@@ -895,6 +933,8 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/surveys/new'
+    | '/surveys/templates'
     | '/targets/all'
     | '/targets/leaderboard'
     | '/tasks/$taskId'
@@ -910,6 +950,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/expenses/'
     | '/planning/'
+    | '/surveys/'
     | '/targets/'
     | '/tasks/'
     | '/visits/'
@@ -975,6 +1016,8 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/surveys/new'
+    | '/surveys/templates'
     | '/targets/all'
     | '/targets/leaderboard'
     | '/tasks/$taskId'
@@ -990,6 +1033,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/expenses'
     | '/planning'
+    | '/surveys'
     | '/targets'
     | '/tasks'
     | '/visits'
@@ -1019,6 +1063,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reminders'
     | '/_authenticated/reports'
     | '/_authenticated/settings'
+    | '/_authenticated/surveys'
     | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
@@ -1063,6 +1108,8 @@ export interface FileRouteTypes {
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
+    | '/_authenticated/surveys/new'
+    | '/_authenticated/surveys/templates'
     | '/_authenticated/targets/all'
     | '/_authenticated/targets/leaderboard'
     | '/_authenticated/tasks/$taskId'
@@ -1078,6 +1125,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/expenses/'
     | '/_authenticated/planning/'
+    | '/_authenticated/surveys/'
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
@@ -1150,6 +1198,13 @@ declare module '@tanstack/react-router' {
       path: '/targets'
       fullPath: '/targets'
       preLoaderRoute: typeof AuthenticatedTargetsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/surveys': {
+      id: '/_authenticated/surveys'
+      path: '/surveys'
+      fullPath: '/surveys'
+      preLoaderRoute: typeof AuthenticatedSurveysRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -1271,6 +1326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTargetsIndexRouteImport
       parentRoute: typeof AuthenticatedTargetsRoute
     }
+    '/_authenticated/surveys/': {
+      id: '/_authenticated/surveys/'
+      path: '/'
+      fullPath: '/surveys/'
+      preLoaderRoute: typeof AuthenticatedSurveysIndexRouteImport
+      parentRoute: typeof AuthenticatedSurveysRoute
+    }
     '/_authenticated/planning/': {
       id: '/_authenticated/planning/'
       path: '/'
@@ -1375,6 +1437,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/targets/all'
       preLoaderRoute: typeof AuthenticatedTargetsAllRouteImport
       parentRoute: typeof AuthenticatedTargetsRoute
+    }
+    '/_authenticated/surveys/templates': {
+      id: '/_authenticated/surveys/templates'
+      path: '/templates'
+      fullPath: '/surveys/templates'
+      preLoaderRoute: typeof AuthenticatedSurveysTemplatesRouteImport
+      parentRoute: typeof AuthenticatedSurveysRoute
+    }
+    '/_authenticated/surveys/new': {
+      id: '/_authenticated/surveys/new'
+      path: '/new'
+      fullPath: '/surveys/new'
+      preLoaderRoute: typeof AuthenticatedSurveysNewRouteImport
+      parentRoute: typeof AuthenticatedSurveysRoute
     }
     '/_authenticated/planning/upcoming': {
       id: '/_authenticated/planning/upcoming'
@@ -1856,6 +1932,21 @@ const AuthenticatedPlanningRouteWithChildren =
     AuthenticatedPlanningRouteChildren,
   )
 
+interface AuthenticatedSurveysRouteChildren {
+  AuthenticatedSurveysNewRoute: typeof AuthenticatedSurveysNewRoute
+  AuthenticatedSurveysTemplatesRoute: typeof AuthenticatedSurveysTemplatesRoute
+  AuthenticatedSurveysIndexRoute: typeof AuthenticatedSurveysIndexRoute
+}
+
+const AuthenticatedSurveysRouteChildren: AuthenticatedSurveysRouteChildren = {
+  AuthenticatedSurveysNewRoute: AuthenticatedSurveysNewRoute,
+  AuthenticatedSurveysTemplatesRoute: AuthenticatedSurveysTemplatesRoute,
+  AuthenticatedSurveysIndexRoute: AuthenticatedSurveysIndexRoute,
+}
+
+const AuthenticatedSurveysRouteWithChildren =
+  AuthenticatedSurveysRoute._addFileChildren(AuthenticatedSurveysRouteChildren)
+
 interface AuthenticatedTargetsRouteChildren {
   AuthenticatedTargetsAllRoute: typeof AuthenticatedTargetsAllRoute
   AuthenticatedTargetsLeaderboardRoute: typeof AuthenticatedTargetsLeaderboardRoute
@@ -1941,6 +2032,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSurveysRoute: typeof AuthenticatedSurveysRouteWithChildren
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
@@ -1963,6 +2055,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSurveysRoute: AuthenticatedSurveysRouteWithChildren,
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,

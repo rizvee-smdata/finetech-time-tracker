@@ -21,6 +21,7 @@ import {
   FileText,
   MapPin,
   Route as RouteIcon,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -41,6 +42,7 @@ const nav = [
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/contracts", label: "Contracts", icon: FileText },
   { to: "/targets", label: "Targets", icon: Target },
+  { to: "/surveys", label: "Feedback", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
 ];
 
