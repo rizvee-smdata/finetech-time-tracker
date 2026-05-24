@@ -127,6 +127,7 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
+          <AIAgentTrigger />
           <GlobalSearch />
           <NotificationCenter />
           <NotificationBell compact />
