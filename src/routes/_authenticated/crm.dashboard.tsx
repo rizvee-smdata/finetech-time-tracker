@@ -7,7 +7,9 @@ import { fetchLeads } from "@/lib/crm/queries";
 import { STAGES, ACTIVE_STAGES, formatMoney } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
 import { AssigneeFilter } from "@/components/crm/AssigneeFilter";
-import { Trophy, TrendingUp, Users, Target } from "lucide-react";
+import { Trophy, TrendingUp, Users, Target, AlertCircle } from "lucide-react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import { format, subMonths, startOfMonth } from "date-fns";
 
 const sb = supabase as any;
 
