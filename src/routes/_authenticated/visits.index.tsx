@@ -466,11 +466,33 @@ function ViewVisitDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Close</Button>
+          {!isStudy && <ConvertToLeadButton visit={visit} />}
           <Button onClick={() => onEdit(visit)}>
             <Pencil className="mr-2 h-4 w-4" />Edit
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ConvertToLeadButton({ visit }: { visit: any }) {
+  const { user } = useAuth();
+  const nav = useNavigate();
+  const [busy, setBusy] = useState(false);
+  async function go() {
+    if (!user) return;
+    setBusy(true);
+    try {
+      const id = await convertVisitToLead(visit, user.id);
+      toast.success("Lead created");
+      nav({ to: "/crm/$leadId", params: { leadId: id } });
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+  return (
+    <Button variant="secondary" onClick={go} disabled={busy}>
+      <Target className="mr-2 h-4 w-4" />{busy ? "Converting…" : "Mark as Lead"}
+    </Button>
   );
 }
