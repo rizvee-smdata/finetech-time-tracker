@@ -82,10 +82,10 @@ function ReportsOverview() {
         })(),
         scope(
           supabase
-            .from("attendance_logs")
-            .select("id,total_minutes,user_id", { count: "exact" })
-            .gte("check_in_at", fromIso)
-            .lte("check_in_at", toIso),
+            .from("attendance_records")
+            .select("id,total_minutes,user_id")
+            .gte("work_date", from)
+            .lte("work_date", to),
         ),
         (() => {
           const q = supabase
