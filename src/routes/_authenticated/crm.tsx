@@ -1,6 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
 import { Briefcase, BarChart3, FolderKanban, Settings as SettingsIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/crm")({
   component: CrmLayout,
