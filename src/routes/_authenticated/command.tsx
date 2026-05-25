@@ -376,11 +376,7 @@ function CommandCenter() {
                 <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#888" }} />
                 <YAxis
                   tick={{ fontSize: 10, fill: "#888" }}
-                  tickFormatter={(v) =>
-                    settings.company.currency === "BDT"
-                      ? `${(v / 100000).toFixed(0)}L`
-                      : `${(v / 1000).toFixed(0)}k`
-                  }
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: "#0D1117", border: "1px solid #333" }}
