@@ -120,10 +120,7 @@ function CommandCenter() {
     };
   }, [deals, proposals]);
 
-  const fmt = (n: number) =>
-    settings.company.currency === "BDT"
-      ? `৳ ${(n / 100000).toFixed(1)}L`
-      : `$ ${(n / 1000).toFixed(1)}k`;
+  const fmt = (n: number) => `$ ${(n / 1000).toFixed(1)}k`;
 
   const repName = user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
 
@@ -132,7 +129,7 @@ function CommandCenter() {
     try {
       const payload = {
         userName: repName,
-        currency: settings.company.currency,
+        currency: "USD",
         pipelineValue: stats.pipelineValue,
         wonThisMonthValue: stats.wonThisMonth.reduce((s, d) => s + (d.dealValue ?? 0), 0),
         proposalsOpen: stats.openProposals.length,
@@ -143,7 +140,7 @@ function CommandCenter() {
           clientCompany: d.clientCompany,
           stage: d.stage,
           dealValue: d.dealValue ?? 0,
-          currency: d.currency,
+          currency: "USD",
           healthScore: d.healthScore?.score,
           healthStatus: d.healthScore?.status,
           daysSinceContact: differenceInDays(new Date(), new Date(d.lastContactDate)),
@@ -379,11 +376,7 @@ function CommandCenter() {
                 <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#888" }} />
                 <YAxis
                   tick={{ fontSize: 10, fill: "#888" }}
-                  tickFormatter={(v) =>
-                    settings.company.currency === "BDT"
-                      ? `${(v / 100000).toFixed(0)}L`
-                      : `${(v / 1000).toFixed(0)}k`
-                  }
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: "#0D1117", border: "1px solid #333" }}
