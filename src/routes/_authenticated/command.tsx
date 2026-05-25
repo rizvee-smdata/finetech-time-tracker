@@ -140,7 +140,7 @@ function CommandCenter() {
           clientCompany: d.clientCompany,
           stage: d.stage,
           dealValue: d.dealValue ?? 0,
-          currency: d.currency,
+          currency: "USD",
           healthScore: d.healthScore?.score,
           healthStatus: d.healthScore?.status,
           daysSinceContact: differenceInDays(new Date(), new Date(d.lastContactDate)),
