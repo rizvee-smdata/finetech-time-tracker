@@ -120,10 +120,7 @@ function CommandCenter() {
     };
   }, [deals, proposals]);
 
-  const fmt = (n: number) =>
-    settings.company.currency === "BDT"
-      ? `৳ ${(n / 100000).toFixed(1)}L`
-      : `$ ${(n / 1000).toFixed(1)}k`;
+  const fmt = (n: number) => `$ ${(n / 1000).toFixed(1)}k`;
 
   const repName = user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
 
