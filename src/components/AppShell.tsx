@@ -28,13 +28,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
-import { NotificationCenter } from "@/components/global/NotificationCenter";
-import { GlobalSearch } from "@/components/global/GlobalSearch";
-import { AIAgentTrigger } from "@/components/global/AIAgent";
+// Lazy-load heavy popover widgets — they only render content on click
+const NotificationCenter = lazy(() =>
+  import("@/components/global/NotificationCenter").then((m) => ({ default: m.NotificationCenter })),
+);
+const GlobalSearch = lazy(() =>
+  import("@/components/global/GlobalSearch").then((m) => ({ default: m.GlobalSearch })),
+);
+const AIAgentTrigger = lazy(() =>
+  import("@/components/global/AIAgent").then((m) => ({ default: m.AIAgentTrigger })),
+);
+
 
 
 const nav = [
@@ -127,9 +135,11 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
-          <AIAgentTrigger />
-          <GlobalSearch />
-          <NotificationCenter />
+          <Suspense fallback={null}>
+            <AIAgentTrigger />
+            <GlobalSearch />
+            <NotificationCenter />
+          </Suspense>
           <NotificationBell compact />
           <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
         </div>
@@ -138,12 +148,14 @@ export function AppShell() {
 
       {/* Desktop floating bell */}
       <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
-        <AIAgentTrigger />
-        <GlobalSearch />
-        
-        <NotificationCenter />
+        <Suspense fallback={null}>
+          <AIAgentTrigger />
+          <GlobalSearch />
+          <NotificationCenter />
+        </Suspense>
         <NotificationBell compact />
       </div>
+
 
 
       <div className="flex">
