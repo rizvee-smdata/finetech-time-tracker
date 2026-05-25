@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
+import { Briefcase, BarChart3, FolderKanban, Settings as SettingsIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/crm")({
@@ -6,13 +7,16 @@ export const Route = createFileRoute("/_authenticated/crm")({
 });
 
 type Tab = { to: string; label: string; aiLabel?: boolean };
+type Group = { key: string; label: string; icon: React.ComponentType<{ className?: string }>; tabs: Tab[] };
 
-const groups: { label: string; tabs: Tab[] }[] = [
+const groups: Group[] = [
   {
+    key: "work",
     label: "Work",
+    icon: Briefcase,
     tabs: [
-      { to: "/crm/inbox", label: "My day" },
-      { to: "/crm/hot", label: "Hot leads" },
+      { to: "/crm/inbox", label: "My Day" },
+      { to: "/crm/hot", label: "Hot Leads" },
       { to: "/crm/pipeline", label: "Pipeline" },
       { to: "/crm/list", label: "List" },
       { to: "/crm/activity", label: "Activity" },
@@ -20,7 +24,9 @@ const groups: { label: string; tabs: Tab[] }[] = [
     ],
   },
   {
+    key: "analyze",
     label: "Analyze",
+    icon: BarChart3,
     tabs: [
       { to: "/crm/dashboard", label: "Dashboard" },
       { to: "/crm/insights", label: "Insights", aiLabel: true },
@@ -28,11 +34,13 @@ const groups: { label: string; tabs: Tab[] }[] = [
       { to: "/crm/velocity", label: "Velocity" },
       { to: "/crm/leaderboard", label: "Leaderboard" },
       { to: "/crm/targets", label: "Targets" },
-      { to: "/crm/lost", label: "Lost analysis" },
+      { to: "/crm/lost", label: "Lost Analysis" },
     ],
   },
   {
+    key: "manage",
     label: "Manage",
+    icon: FolderKanban,
     tabs: [
       { to: "/crm/accounts", label: "Accounts" },
       { to: "/crm/quotes", label: "Quotes" },
@@ -42,7 +50,9 @@ const groups: { label: string; tabs: Tab[] }[] = [
     ],
   },
   {
+    key: "setup",
     label: "Setup",
+    icon: SettingsIcon,
     tabs: [
       { to: "/crm/templates", label: "Templates" },
       { to: "/crm/sequences", label: "Sequences" },
@@ -60,35 +70,60 @@ function CrmLayout() {
 
   const isDetail = /^\/crm\/[^/]+$/.test(path) && !allTabs.some((t) => path === t.to);
 
+  // Determine active group: matches a child route, or default to Work (covers /crm and /crm/pipeline)
+  const activeGroup =
+    groups.find((g) => g.tabs.some((t) => path === t.to)) ?? groups[0];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {!isDetail && (
-        <div className="flex flex-col gap-1.5 border-b pb-2">
-          {groups.map((group) => (
-            <div key={group.label} className="flex flex-wrap items-center gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 w-16 shrink-0">
-                {group.label}
-              </span>
-              {group.tabs.map((t) => {
-                const active = path === t.to || (t.to === "/crm/pipeline" && path === "/crm");
-                return (
-                  <Link
-                    key={t.to}
-                    to={t.to}
-                    className={cn(
-                      "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    )}
-                  >
-                    {t.label}
-                    {t.aiLabel && <span className="ml-1 text-[9px] opacity-70">AI</span>}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+        <div className="sticky top-0 z-20 -mx-4 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          {/* Primary tabs */}
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+            {groups.map((g) => {
+              const Icon = g.icon;
+              const active = g.key === activeGroup.key;
+              return (
+                <Link
+                  key={g.key}
+                  to={g.tabs[0].to}
+                  className={cn(
+                    "flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{g.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Secondary sub-nav */}
+          <div className="flex items-center gap-1 overflow-x-auto py-1.5 scrollbar-none">
+            {activeGroup.tabs.map((t) => {
+              const active =
+                path === t.to ||
+                (t.to === "/crm/pipeline" && (path === "/crm" || path === "/crm/"));
+              return (
+                <Link
+                  key={t.to}
+                  to={t.to}
+                  className={cn(
+                    "shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {t.label}
+                  {t.aiLabel && <span className="ml-1 text-[9px] opacity-70">AI</span>}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
       <Outlet />
