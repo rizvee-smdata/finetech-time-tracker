@@ -129,7 +129,7 @@ function CommandCenter() {
     try {
       const payload = {
         userName: repName,
-        currency: settings.company.currency,
+        currency: "USD",
         pipelineValue: stats.pipelineValue,
         wonThisMonthValue: stats.wonThisMonth.reduce((s, d) => s + (d.dealValue ?? 0), 0),
         proposalsOpen: stats.openProposals.length,
