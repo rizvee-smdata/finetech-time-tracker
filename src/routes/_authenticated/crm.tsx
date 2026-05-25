@@ -1,6 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
 import { Briefcase, BarChart3, FolderKanban, Settings as SettingsIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/crm")({
   component: CrmLayout,
@@ -70,9 +72,24 @@ function CrmLayout() {
 
   const isDetail = /^\/crm\/[^/]+$/.test(path) && !allTabs.some((t) => path === t.to);
 
-  // Determine active group: matches a child route, or default to Work (covers /crm and /crm/pipeline)
-  const activeGroup =
-    groups.find((g) => g.tabs.some((t) => path === t.to)) ?? groups[0];
+  // Group derived from current URL (when matchable)
+  const urlGroup = groups.find((g) => g.tabs.some((t) => path === t.to));
+
+  // Local state for which primary tab is selected (so clicking Analyze/Manage/Setup
+  // immediately swaps the sub-nav without requiring navigation)
+  const [activeGroupKey, setActiveGroupKey] = useState<string>(
+    (urlGroup ?? groups[0]).key,
+  );
+
+  // Keep selection in sync when URL changes to a route in a different group
+  useEffect(() => {
+    if (urlGroup && urlGroup.key !== activeGroupKey) {
+      setActiveGroupKey(urlGroup.key);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path]);
+
+  const activeGroup = groups.find((g) => g.key === activeGroupKey) ?? groups[0];
 
   return (
     <div className="space-y-3">
@@ -84,9 +101,10 @@ function CrmLayout() {
               const Icon = g.icon;
               const active = g.key === activeGroup.key;
               return (
-                <Link
+                <button
                   key={g.key}
-                  to={g.tabs[0].to}
+                  type="button"
+                  onClick={() => setActiveGroupKey(g.key)}
                   className={cn(
                     "flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
                     active
@@ -96,7 +114,7 @@ function CrmLayout() {
                 >
                   <Icon className="h-3.5 w-3.5" />
                   <span>{g.label}</span>
-                </Link>
+                </button>
               );
             })}
           </div>
@@ -130,3 +148,4 @@ function CrmLayout() {
     </div>
   );
 }
+
