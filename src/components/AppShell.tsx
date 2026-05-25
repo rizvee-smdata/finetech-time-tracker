@@ -135,9 +135,11 @@ export function AppShell() {
           {company?.name ?? "Lavisho Tracker"}
         </div>
         <div className="flex items-center gap-1">
-          <AIAgentTrigger />
-          <GlobalSearch />
-          <NotificationCenter />
+          <Suspense fallback={null}>
+            <AIAgentTrigger />
+            <GlobalSearch />
+            <NotificationCenter />
+          </Suspense>
           <NotificationBell compact />
           <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
         </div>
@@ -146,12 +148,14 @@ export function AppShell() {
 
       {/* Desktop floating bell */}
       <div className="fixed right-4 top-3 z-30 hidden items-center gap-2 md:flex">
-        <AIAgentTrigger />
-        <GlobalSearch />
-        
-        <NotificationCenter />
+        <Suspense fallback={null}>
+          <AIAgentTrigger />
+          <GlobalSearch />
+          <NotificationCenter />
+        </Suspense>
         <NotificationBell compact />
       </div>
+
 
 
       <div className="flex">
