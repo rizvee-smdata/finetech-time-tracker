@@ -89,8 +89,13 @@ export async function runSsoAutofill() {
   setNativeValue(form.user, creds.username);
   setNativeValue(form.pass, creds.password);
 
-  await new Promise((r) => setTimeout(r, 150));
-  await new Promise((r) => requestAnimationFrame(() => r(null)));
+  // Let React flush the controlled-input state updates
+  await new Promise((r) => setTimeout(r, 400));
 
-  form.submit?.click();
+  const formEl = form.pass.form;
+  if (formEl && typeof formEl.requestSubmit === "function") {
+    formEl.requestSubmit();
+  } else {
+    form.submit?.click();
+  }
 }
