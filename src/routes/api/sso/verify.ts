@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { verifySsoToken } from "@/lib/sso.functions";
+import { verifySsoTokenImpl } from "@/lib/sso.server";
 
 export const Route = createFileRoute("/api/sso/verify")({
   server: {
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/sso/verify")({
         try {
           const body = await request.json();
           const sig = typeof body?.sig === "string" ? body.sig : "";
-          const result = await verifySsoToken({ data: { sig } });
+          const result = await verifySsoTokenImpl(sig);
           return Response.json(result);
         } catch (err) {
           const message = err instanceof Error ? err.message : "Verification failed";
