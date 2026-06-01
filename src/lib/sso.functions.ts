@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createHmac, timingSafeEqual } from "crypto";
 
+const APP_ID = "time-tracker";
+
 export const verifySsoToken = createServerFn({ method: "POST" })
   .inputValidator((data: { sig: string }) => {
     if (!data || typeof data.sig !== "string" || data.sig.length < 8 || data.sig.length > 4096) {
@@ -54,6 +56,9 @@ export const verifySsoToken = createServerFn({ method: "POST" })
     }
     if (typeof payload.exp !== "number" || expMs < now) {
       throw new Error("Token expired (exp)");
+    }
+    if (payload.appId && payload.appId !== APP_ID) {
+      throw new Error("Wrong app");
     }
     if (typeof payload.u !== "string" || typeof payload.p !== "string") {
       throw new Error("Invalid credentials in token");
