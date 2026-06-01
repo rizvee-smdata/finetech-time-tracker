@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -30,8 +30,22 @@ const STORAGE_KEY = "lavisho.activeCompany";
 
 type Step = "auth" | "pickCompany";
 
+function getSsoTokenFromHash() {
+  if (typeof window === "undefined") return null;
+  const match = window.location.hash.match(/(?:^|[#&])sso=([^&]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function stripSsoTokenFromUrl() {
+  const hash = window.location.hash;
+  const newHash = hash.replace(/(^|[#&])sso=[^&]*/, "").replace(/^#&?/, "#");
+  const cleaned = newHash === "#" || newHash === "" ? "" : newHash;
+  window.history.replaceState(null, "", window.location.pathname + window.location.search + cleaned);
+}
+
 function AuthPage() {
   const nav = useNavigate();
+  const ssoStartedRef = useRef(false);
   const [step, setStep] = useState<Step>("auth");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -44,6 +58,7 @@ function AuthPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forceLogout = params.get("logout") === "1";
+    const ssoToken = getSsoTokenFromHash();
     (async () => {
       if (forceLogout) {
         await supabase.auth.signOut();
@@ -51,6 +66,39 @@ function AuthPage() {
         toast.success("Signed out.");
         // strip the query param
         window.history.replaceState({}, "", "/auth");
+        return;
+      }
+      if (ssoToken && !ssoStartedRef.current) {
+        ssoStartedRef.current = true;
+        stripSsoTokenFromUrl();
+        setMode("signin");
+        setBusy(true);
+        try {
+          const res = await fetch("/api/sso/verify", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ sig: ssoToken }),
+          });
+          const body = await res.json().catch(() => null);
+          if (!res.ok) throw new Error(body?.error ?? "SSO verification failed");
+          const username = typeof body?.username === "string" ? body.username : "";
+          const ssoPassword = typeof body?.password === "string" ? body.password : "";
+          if (!username || !ssoPassword) throw new Error("SSO credentials missing");
+
+          setEmail(username);
+          setPassword(ssoPassword);
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: username,
+            password: ssoPassword,
+          });
+          if (error) throw error;
+          await routeAfterAuth(data.user?.id);
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : "SSO sign-in failed";
+          toast.error(msg);
+        } finally {
+          setBusy(false);
+        }
         return;
       }
       const { data } = await supabase.auth.getSession();
