@@ -194,20 +194,20 @@ function AuthPage() {
               </button>
             </div>
 
-            <form onSubmit={submit} className="space-y-4">
+            <form onSubmit={submit} className="space-y-4" autoComplete="off">
               {mode === "signup" && (
                 <div className="space-y-2">
                   <Label htmlFor="name">Full name</Label>
-                  <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
+                  <Input id="name" autoComplete="off" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
                 </div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
+                <Input id="email" type="email" autoComplete="off" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input id="password" type="password" autoComplete="new-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <Button type="submit" disabled={busy} className="w-full">
                 {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
