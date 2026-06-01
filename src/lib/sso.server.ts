@@ -7,7 +7,7 @@ export async function verifySsoTokenImpl(sig: string): Promise<{ username: strin
     throw new Error("Invalid token");
   }
 
-  const key = process.env.SSO_SIGNING_KEY;
+  const key = process.env.SSO_SIGNING_KEY?.trim();
   if (!key) throw new Error("SSO not configured");
 
   const dot = sig.lastIndexOf(".");
