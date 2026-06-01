@@ -19,10 +19,21 @@ export const verifySsoToken = createServerFn({ method: "POST" })
     const payloadB64 = token.slice(0, dot);
     const providedSig = token.slice(dot + 1);
 
-    const expectedSig = createHmac("sha256", key).update(payloadB64).digest("hex");
-    const a = Buffer.from(providedSig, "hex");
-    const b = Buffer.from(expectedSig, "hex");
-    if (a.length !== b.length || !timingSafeEqual(a, b)) {
+    const expected = createHmac("sha256", key).update(payloadB64).digest();
+    // Accept base64url, base64, or hex signatures
+    let provided: Buffer;
+    try {
+      if (/^[0-9a-f]+$/i.test(providedSig) && providedSig.length === expected.length * 2) {
+        provided = Buffer.from(providedSig, "hex");
+      } else {
+        const normalized = providedSig.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+        provided = Buffer.from(padded, "base64");
+      }
+    } catch {
+      throw new Error("Invalid signature encoding");
+    }
+    if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
       throw new Error("Invalid signature");
     }
 
