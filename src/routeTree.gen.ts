@@ -49,6 +49,7 @@ import { Route as AuthenticatedDealsIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authenticated/contracts.index'
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
+import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
@@ -331,6 +332,11 @@ const AuthenticatedAttendanceIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const ApiSsoVerifyRoute = ApiSsoVerifyRouteImport.update({
+  id: '/api/sso/verify',
+  path: '/api/sso/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
   path: '/visits/new',
@@ -827,6 +833,7 @@ export interface FileRoutesByFullPath {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/contracts/': typeof AuthenticatedContractsIndexRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -926,6 +933,7 @@ export interface FileRoutesByTo {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
   '/contracts': typeof AuthenticatedContractsIndexRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -1039,6 +1047,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/_authenticated/contracts/': typeof AuthenticatedContractsIndexRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -1152,6 +1161,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/api/sso/verify'
     | '/attendance/'
     | '/contracts/'
     | '/crm/'
@@ -1251,6 +1261,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/visits/new'
+    | '/api/sso/verify'
     | '/attendance'
     | '/contracts'
     | '/crm'
@@ -1363,6 +1374,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
     | '/_authenticated/visits/new'
+    | '/api/sso/verify'
     | '/_authenticated/attendance/'
     | '/_authenticated/contracts/'
     | '/_authenticated/crm/'
@@ -1390,6 +1402,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   QTokenRoute: typeof QTokenRoute
+  ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -1677,6 +1690,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/attendance/'
       preLoaderRoute: typeof AuthenticatedAttendanceIndexRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/api/sso/verify': {
+      id: '/api/sso/verify'
+      path: '/api/sso/verify'
+      fullPath: '/api/sso/verify'
+      preLoaderRoute: typeof ApiSsoVerifyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
@@ -2542,6 +2562,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   QTokenRoute: QTokenRoute,
+  ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
@@ -2550,13 +2571,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
