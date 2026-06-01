@@ -46,7 +46,8 @@ export const verifySsoToken = createServerFn({ method: "POST" })
     }
 
     const now = Date.now();
-    if (typeof payload.iat !== "number" || now - payload.iat > 5 * 60_000) {
+    // iat may be skewed up to ~5 minutes into the future by the launcher
+    if (typeof payload.iat !== "number" || Math.abs(now - payload.iat) > 10 * 60_000) {
       throw new Error("Token expired (iat)");
     }
     if (typeof payload.exp !== "number" || payload.exp < now) {
