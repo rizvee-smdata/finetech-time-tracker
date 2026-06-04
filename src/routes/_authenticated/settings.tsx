@@ -64,6 +64,7 @@ function SettingsPage() {
           <UsersListCard />
         </TabsContent>
         <TabsContent value="holidays" className="space-y-6">
+          <WeekendDaysCard />
           <HolidaysCard />
         </TabsContent>
         <TabsContent value="import" className="space-y-6">
