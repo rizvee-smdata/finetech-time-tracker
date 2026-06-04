@@ -128,6 +128,7 @@ import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authentica
 import { Route as AuthenticatedContractsPaymentsRouteImport } from './routes/_authenticated/contracts.payments'
 import { Route as AuthenticatedContractsNewRouteImport } from './routes/_authenticated/contracts.new'
 import { Route as AuthenticatedContractsContractIdRouteImport } from './routes/_authenticated/contracts.$contractId'
+import { Route as AuthenticatedCoachTeamRouteImport } from './routes/_authenticated/coach.team'
 import { Route as AuthenticatedCoachMeRouteImport } from './routes/_authenticated/coach.me'
 import { Route as AuthenticatedCoachHistoryRouteImport } from './routes/_authenticated/coach.history'
 import { Route as AuthenticatedClientsHealthRouteImport } from './routes/_authenticated/clients.health'
@@ -814,6 +815,11 @@ const AuthenticatedContractsContractIdRoute =
     path: '/$contractId',
     getParentRoute: () => AuthenticatedContractsRoute,
   } as any)
+const AuthenticatedCoachTeamRoute = AuthenticatedCoachTeamRouteImport.update({
+  id: '/coach/team',
+  path: '/coach/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCoachMeRoute = AuthenticatedCoachMeRouteImport.update({
   id: '/coach/me',
   path: '/coach/me',
@@ -1003,6 +1009,7 @@ export interface FileRoutesByFullPath {
   '/clients/health': typeof AuthenticatedClientsHealthRoute
   '/coach/history': typeof AuthenticatedCoachHistoryRoute
   '/coach/me': typeof AuthenticatedCoachMeRoute
+  '/coach/team': typeof AuthenticatedCoachTeamRoute
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1136,6 +1143,7 @@ export interface FileRoutesByTo {
   '/clients/health': typeof AuthenticatedClientsHealthRoute
   '/coach/history': typeof AuthenticatedCoachHistoryRoute
   '/coach/me': typeof AuthenticatedCoachMeRoute
+  '/coach/team': typeof AuthenticatedCoachTeamRoute
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1283,6 +1291,7 @@ export interface FileRoutesById {
   '/_authenticated/clients/health': typeof AuthenticatedClientsHealthRoute
   '/_authenticated/coach/history': typeof AuthenticatedCoachHistoryRoute
   '/_authenticated/coach/me': typeof AuthenticatedCoachMeRoute
+  '/_authenticated/coach/team': typeof AuthenticatedCoachTeamRoute
   '/_authenticated/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/_authenticated/contracts/new': typeof AuthenticatedContractsNewRoute
   '/_authenticated/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1430,6 +1439,7 @@ export interface FileRouteTypes {
     | '/clients/health'
     | '/coach/history'
     | '/coach/me'
+    | '/coach/team'
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
@@ -1563,6 +1573,7 @@ export interface FileRouteTypes {
     | '/clients/health'
     | '/coach/history'
     | '/coach/me'
+    | '/coach/team'
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
@@ -1709,6 +1720,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clients/health'
     | '/_authenticated/coach/history'
     | '/_authenticated/coach/me'
+    | '/_authenticated/coach/team'
     | '/_authenticated/contracts/$contractId'
     | '/_authenticated/contracts/new'
     | '/_authenticated/contracts/payments'
@@ -2664,6 +2676,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContractsContractIdRouteImport
       parentRoute: typeof AuthenticatedContractsRoute
     }
+    '/_authenticated/coach/team': {
+      id: '/_authenticated/coach/team'
+      path: '/coach/team'
+      fullPath: '/coach/team'
+      preLoaderRoute: typeof AuthenticatedCoachTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/coach/me': {
       id: '/_authenticated/coach/me'
       path: '/coach/me'
@@ -3233,6 +3252,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientsHealthRoute: typeof AuthenticatedClientsHealthRoute
   AuthenticatedCoachHistoryRoute: typeof AuthenticatedCoachHistoryRoute
   AuthenticatedCoachMeRoute: typeof AuthenticatedCoachMeRoute
+  AuthenticatedCoachTeamRoute: typeof AuthenticatedCoachTeamRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
@@ -3276,6 +3296,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientsHealthRoute: AuthenticatedClientsHealthRoute,
   AuthenticatedCoachHistoryRoute: AuthenticatedCoachHistoryRoute,
   AuthenticatedCoachMeRoute: AuthenticatedCoachMeRoute,
+  AuthenticatedCoachTeamRoute: AuthenticatedCoachTeamRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
