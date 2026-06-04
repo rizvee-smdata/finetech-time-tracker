@@ -59,7 +59,9 @@ const nav = [
   { to: "/crm", label: "CRM", icon: Target },
   
   { to: "/deals", label: "Deal Health", icon: TrendingUp },
+  { to: "/clients/health", label: "Client Health", icon: HeartPulse },
   { to: "/proposals", label: "Proposals", icon: FileText },
+
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
