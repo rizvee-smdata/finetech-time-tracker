@@ -54,7 +54,7 @@ const nav = [
 
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/planning", label: "Planning", icon: RouteIcon },
-  { to: "/gps/today", label: "Route", icon: Navigation },
+  { to: "/gps/today", label: "Route", icon: NavigationIcon },
   { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
   { to: "/crm", label: "CRM", icon: Target },
   
