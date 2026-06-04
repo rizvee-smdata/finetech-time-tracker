@@ -72,6 +72,39 @@ function NewVisit() {
     },
   });
 
+  // Backdating window: allow today + previous 2 working days (skip Fridays & company holidays)
+  const { data: holidaySet = new Set<string>() } = useQuery({
+    queryKey: ["company-holidays-set", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_holidays")
+        .select("holiday_date")
+        .eq("company_id", companyId!);
+      if (error) throw error;
+      return new Set((data ?? []).map((h: any) => h.holiday_date as string));
+    },
+  });
+
+  const ymd = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+  const isWorkingDay = (d: Date) => d.getDay() !== 5 && !holidaySet.has(ymd(d));
+
+  const today = new Date();
+  const earliest = new Date(today);
+  let counted = 0;
+  while (counted < 2) {
+    earliest.setDate(earliest.getDate() - 1);
+    if (isWorkingDay(earliest)) counted++;
+  }
+  earliest.setHours(0, 0, 0, 0);
+  const minMeeting = `${ymd(earliest)}T00:00`;
+  const maxMeeting = `${ymd(today)}T23:59`;
+
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
