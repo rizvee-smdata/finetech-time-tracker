@@ -57,6 +57,22 @@ function LeaderboardPage() {
     },
   });
 
+  const lostLeads = useQuery({
+    queryKey: ["lb-lost", companyId, period],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await sb
+        .from("crm_leads")
+        .select("assigned_to, lost_at")
+        .eq("company_id", companyId)
+        .eq("stage", "lost")
+        .gte("lost_at", range.start.toISOString())
+        .lte("lost_at", range.end.toISOString());
+      if (error) throw error;
+      return (data ?? []) as { assigned_to: string | null }[];
+    },
+  });
+
   const allLeads = useQuery({
     queryKey: ["lb-leads-ids", companyId],
     enabled: !!companyId,
