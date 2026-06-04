@@ -232,7 +232,13 @@ function LeaderboardPage() {
             const max = top ? (top[metric] as number) || 1 : 1;
             const pct = max > 0 ? Math.min(100, ((value as number) / max) * 100) : 0;
             return (
-              <div key={r.userId} className="p-4">
+              <div
+                key={r.userId}
+                className={cn(
+                  "p-4",
+                  r.userId === currentUserId && "bg-primary/5 ring-1 ring-inset ring-primary/30",
+                )}
+              >
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold",
@@ -244,9 +250,15 @@ function LeaderboardPage() {
                     {i === 0 ? <Trophy className="size-5" /> : i === 1 ? <Medal className="size-5" /> : i === 2 ? <Award className="size-5" /> : `#${i + 1}`}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium">{r.name}</div>
+                    <div className="font-medium">
+                      {r.name}
+                      {r.userId === currentUserId && (
+                        <Badge variant="outline" className="ml-2 h-5 px-1.5 text-[10px]">You</Badge>
+                      )}
+                    </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1"><CheckCircle2 className="size-3" /> {r.deals} won</span>
+                      <span className="inline-flex items-center gap-1"><CheckCircle2 className="size-3" /> {r.deals} won · {r.lost} lost</span>
+                      <span className="inline-flex items-center gap-1">Win {r.winRate}%</span>
                       <span className="inline-flex items-center gap-1"><Phone className="size-3" /> {r.calls}</span>
                       <span className="inline-flex items-center gap-1"><Mail className="size-3" /> {r.emails}</span>
                       <span className="inline-flex items-center gap-1"><MessageSquare className="size-3" /> {r.messages}</span>
@@ -254,7 +266,7 @@ function LeaderboardPage() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold">
-                      {metric === "revenue" ? formatMoney(r.revenue, "USD") : (value as number)}
+                      {metric === "revenue" ? formatBDT(r.revenue) : (value as number)}
                     </div>
                   </div>
                 </div>
