@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -81,8 +81,7 @@ function GoalsPage() {
     revenue: "", deals: "", visits: "", calls: "", demos: "", proposals: "",
   });
 
-  // load when existing changes
-  useMemo(() => {
+  useEffect(() => {
     if (existingQ.data) {
       setValues({
         revenue: String(existingQ.data.revenue ?? ""),
