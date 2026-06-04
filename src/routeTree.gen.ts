@@ -133,6 +133,7 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenticated/ai-visits.new'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -839,6 +840,12 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const AuthenticatedAiVisitsNewRoute =
+  AuthenticatedAiVisitsNewRouteImport.update({
+    id: '/ai-visits/new',
+    path: '/ai-visits/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   id: '/admin/map',
   path: '/admin/map',
@@ -960,6 +967,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1088,6 +1096,7 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1230,6 +1239,7 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
+  '/_authenticated/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1372,6 +1382,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/q/$token'
     | '/admin/map'
+    | '/ai-visits/new'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1500,6 +1511,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/q/$token'
     | '/admin/map'
+    | '/ai-visits/new'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1641,6 +1653,7 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/q/$token'
     | '/_authenticated/admin/map'
+    | '/_authenticated/ai-visits/new'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -2636,6 +2649,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
     }
+    '/_authenticated/ai-visits/new': {
+      id: '/_authenticated/ai-visits/new'
+      path: '/ai-visits/new'
+      fullPath: '/ai-visits/new'
+      preLoaderRoute: typeof AuthenticatedAiVisitsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/map': {
       id: '/_authenticated/admin/map'
       path: '/admin/map'
@@ -3129,6 +3149,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedAiVisitsNewRoute: typeof AuthenticatedAiVisitsNewRoute
   AuthenticatedClientsHealthRoute: typeof AuthenticatedClientsHealthRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
@@ -3167,6 +3188,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedAiVisitsNewRoute: AuthenticatedAiVisitsNewRoute,
   AuthenticatedClientsHealthRoute: AuthenticatedClientsHealthRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
@@ -3199,13 +3221,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
