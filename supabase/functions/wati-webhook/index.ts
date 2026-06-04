@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
   const today = new Date().toISOString().slice(0, 10);
 
   // EXPENSE capture: image + text "expense"
-  if (mediaUrl && upper.includes("EXPENSE") && settings?.expense_capture_enabled !== false) {
+  if (mediaUrl && upper.includes("EXPENSE") && settings?.expense_capture_enabled !== false && companyId) {
     const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
     const amount = amountMatch ? Number(amountMatch[1].replace(",", ".")) : 0;
     let receiptPath: string | null = null;
