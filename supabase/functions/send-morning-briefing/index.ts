@@ -60,14 +60,14 @@ Deno.serve(async (req) => {
       sb.from("customer_visits").select("id").eq("user_id", rep.user_id).eq("company_id", rep.company_id).gte("meeting_at", todayLocal + "T00:00:00").lt("meeting_at", todayLocal + "T23:59:59"),
       sb.from("followups").select("id").eq("user_id", rep.user_id).eq("company_id", rep.company_id).lte("due_at", todayLocal + "T23:59:59").in("status", ["pending", "snoozed"]),
       sb.from("crm_leads").select("expected_value").eq("assigned_to", rep.user_id).eq("company_id", rep.company_id).eq("stage", "won").gte("won_at", monthStart),
-      sb.from("user_targets").select("revenue_target").eq("user_id", rep.user_id).eq("company_id", rep.company_id).eq("period_start", monthStart).maybeSingle(),
+      sb.from("targets").select("target_value").eq("user_id", rep.user_id).eq("company_id", rep.company_id).eq("metric", "revenue").lte("period_start", todayLocal).gte("period_end", todayLocal).maybeSingle(),
     ]);
 
     const taskCount = tasksRes.data?.filter((t: { tms_tasks?: { tms_task_statuses?: { is_terminal?: boolean } } }) => !t.tms_tasks?.tms_task_statuses?.is_terminal).length ?? 0;
     const visitCount = visitsRes.data?.length ?? 0;
     const followupCount = followupsRes.data?.length ?? 0;
     const wonValue = (leadsRes.data ?? []).reduce((s: number, l: { expected_value: number | null }) => s + Number(l.expected_value ?? 0), 0);
-    const targetValue = Number(targetRes.data?.revenue_target ?? 0);
+    const targetValue = Number((targetRes.data as { target_value?: number } | null)?.target_value ?? 0);
     const achievement = targetValue > 0 ? Math.round((wonValue / targetValue) * 100) : 0;
 
     const filled = body
