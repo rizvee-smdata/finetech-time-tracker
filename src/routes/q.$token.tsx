@@ -14,6 +14,19 @@ import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/q/$token")({
+  head: ({ params }) => ({
+    meta: [
+      { title: "Quotation — Lavisho Group" },
+      { name: "description", content: "View and respond to your Lavisho Group quotation." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Quotation — Lavisho Group" },
+      { property: "og:description", content: "View and respond to your Lavisho Group quotation." },
+      { property: "og:url", content: `https://lavisho-log-time.lovable.app/q/${params.token}` },
+    ],
+    links: [
+      { rel: "canonical", href: `https://lavisho-log-time.lovable.app/q/${params.token}` },
+    ],
+  }),
   component: PortalPage,
 });
 
@@ -37,10 +50,10 @@ function PortalPage() {
   const [clientName, setClientName] = useState("");
   const [comment, setComment] = useState("");
 
-  if (q.isLoading) return <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">Loading…</div>;
+  if (q.isLoading) return <main className="grid min-h-screen place-items-center text-sm text-muted-foreground">Loading…</main>;
   if (!q.data?.ok) {
     return (
-      <div className="grid min-h-screen place-items-center bg-background p-6">
+      <main className="grid min-h-screen place-items-center bg-background p-6">
         <Card className="p-8 text-center">
           <FileText className="mx-auto h-10 w-10 text-muted-foreground" />
           <h1 className="mt-3 text-xl font-semibold">Quote unavailable</h1>
@@ -48,7 +61,7 @@ function PortalPage() {
             This link is invalid or has been revoked.
           </p>
         </Card>
-      </div>
+      </main>
     );
   }
 
@@ -59,7 +72,7 @@ function PortalPage() {
   const expired = quote.valid_until && new Date(quote.valid_until) < new Date();
 
   return (
-    <div className="min-h-screen bg-muted/30 py-6">
+    <main className="min-h-screen bg-muted/30 py-6">
       <div className="mx-auto max-w-3xl space-y-4 px-4">
         <Card className="overflow-hidden">
           <div className="bg-primary px-6 py-5 text-primary-foreground">
@@ -86,7 +99,7 @@ function PortalPage() {
         </Card>
 
         <Card className="p-0">
-          <div className="border-b px-6 py-3 text-sm font-semibold">Line items</div>
+          <h2 className="border-b px-6 py-3 text-sm font-semibold">Line items</h2>
           <div className="divide-y">
             {items.length === 0 && <div className="p-6 text-sm text-muted-foreground">No line items</div>}
             {items.map((it: any) => (
@@ -110,14 +123,14 @@ function PortalPage() {
 
         {quote.notes && (
           <Card className="p-6 text-sm">
-            <div className="mb-1 font-semibold">Notes</div>
+            <h2 className="mb-1 font-semibold">Notes</h2>
             <p className="whitespace-pre-wrap text-muted-foreground">{quote.notes}</p>
           </Card>
         )}
 
         {!responded ? (
           <Card className="space-y-3 p-6">
-            <div className="text-sm font-semibold">Your response</div>
+            <h2 className="text-sm font-semibold">Your response</h2>
             <div>
               <Label>Your name</Label>
               <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name for the record" />
@@ -151,7 +164,7 @@ function PortalPage() {
           </Card>
         )}
       </div>
-    </div>
+    </main>
   );
 }
 
