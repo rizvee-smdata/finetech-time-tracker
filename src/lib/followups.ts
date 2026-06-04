@@ -102,7 +102,7 @@ export function priorityClass(score: number) {
 export async function syncMyFollowups(companyId: string, repId: string) {
   // Load company settings
   const { data: settings } = await supabase
-    .from("followup_settings" as never)
+    .from("followup_settings")
     .select("*")
     .eq("company_id", companyId)
     .maybeSingle();
@@ -129,7 +129,7 @@ export async function syncMyFollowups(companyId: string, repId: string) {
   if (error) throw error;
 
   const { data: existing } = await supabase
-    .from("followups" as never)
+    .from("followups")
     .select("lead_id, status")
     .eq("rep_id", repId)
     .in("status", ["open", "snoozed"]);
@@ -167,7 +167,7 @@ export async function syncMyFollowups(companyId: string, repId: string) {
   }
 
   if (!rows.length) return { created: 0 };
-  const { error: insErr } = await supabase.from("followups" as never).insert(rows as never);
+  const { error: insErr } = await supabase.from("followups").insert(rows as never);
   if (insErr) throw insErr;
   return { created: rows.length };
 }

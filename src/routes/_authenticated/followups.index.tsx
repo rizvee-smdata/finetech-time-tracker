@@ -41,7 +41,7 @@ function FollowupsInbox() {
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
-        .from("followups" as never)
+        .from("followups")
         .select("*")
         .eq("rep_id", user!.id)
         .in("status", ["open"])
@@ -76,7 +76,7 @@ function FollowupsInbox() {
   const snooze = useMutation({
     mutationFn: async ({ id, days }: { id: string; days: number }) => {
       const until = new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
-      const { error } = await supabase.from("followups" as never).update({ status: "snoozed", snoozed_until: until }).eq("id", id);
+      const { error } = await supabase.from("followups").update({ status: "snoozed", snoozed_until: until }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Snoozed"); qc.invalidateQueries({ queryKey: ["followups"] }); },
@@ -84,7 +84,7 @@ function FollowupsInbox() {
 
   const dismiss = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("followups" as never).update({ status: "dismissed", dismissed_at: new Date().toISOString() }).eq("id", id);
+      const { error } = await supabase.from("followups").update({ status: "dismissed", dismissed_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Dismissed"); qc.invalidateQueries({ queryKey: ["followups"] }); },
@@ -185,7 +185,7 @@ function FollowupCard({
         days_since_contact: f.days_overdue, last_interaction_type: f.last_interaction_type ?? "discussion",
         deal_context: dealContext, channel: f.suggested_channel,
       });
-      const { error } = await supabase.from("followups" as never).update({
+      const { error } = await supabase.from("followups").update({
         ai_draft: res.message, ai_subject: res.subject ?? null, ai_draft_generated_at: new Date().toISOString(),
       }).eq("id", f.id);
       if (error) throw error;
@@ -303,7 +303,7 @@ function SendModal({
         window.open(whatsappLink(recipient, message), "_blank");
       }
 
-      await supabase.from("followup_sends" as never).insert({
+      await supabase.from("followup_sends").insert({
         company_id: followup.company_id,
         followup_id: followup.id,
         rep_id: followup.rep_id,
@@ -316,7 +316,7 @@ function SendModal({
         message,
       } as never);
 
-      await supabase.from("followups" as never).update({
+      await supabase.from("followups").update({
         status: "sent", sent_at: new Date().toISOString(),
       }).eq("id", followup.id);
 
