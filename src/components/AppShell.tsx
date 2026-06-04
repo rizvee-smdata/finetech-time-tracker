@@ -73,6 +73,7 @@ const nav = [
 
 const staffNav = [
   { to: "/reports", label: "Reports", icon: BarChart3 },
+  { to: "/holidays", label: "Holidays", icon: Calendar },
   { to: "/ai", label: "Ask AI", icon: Sparkles },
 ];
 

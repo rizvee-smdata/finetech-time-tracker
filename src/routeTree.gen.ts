@@ -24,6 +24,7 @@ import { Route as AuthenticatedProposalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
+import { Route as AuthenticatedHolidaysRouteImport } from './routes/_authenticated/holidays'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDealsRouteImport } from './routes/_authenticated/deals'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -195,6 +196,11 @@ const AuthenticatedPlanningRoute = AuthenticatedPlanningRouteImport.update({
 const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHolidaysRoute = AuthenticatedHolidaysRouteImport.update({
+  id: '/holidays',
+  path: '/holidays',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
@@ -765,6 +771,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deals': typeof AuthenticatedDealsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
+  '/holidays': typeof AuthenticatedHolidaysRoute
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -873,6 +880,7 @@ export interface FileRoutesByTo {
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/holidays': typeof AuthenticatedHolidaysRoute
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -981,6 +989,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/deals': typeof AuthenticatedDealsRouteWithChildren
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
+  '/_authenticated/holidays': typeof AuthenticatedHolidaysRoute
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -1096,6 +1105,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deals'
     | '/expenses'
+    | '/holidays'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -1204,6 +1214,7 @@ export interface FileRouteTypes {
     | '/consultants'
     | '/customers'
     | '/dashboard'
+    | '/holidays'
     | '/partners'
     | '/preferences'
     | '/settings'
@@ -1311,6 +1322,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/deals'
     | '/_authenticated/expenses'
+    | '/_authenticated/holidays'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -1528,6 +1540,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/holidays': {
+      id: '/_authenticated/holidays'
+      path: '/holidays'
+      fullPath: '/holidays'
+      preLoaderRoute: typeof AuthenticatedHolidaysRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/expenses': {
@@ -2532,6 +2551,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDealsRoute: typeof AuthenticatedDealsRouteWithChildren
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
+  AuthenticatedHolidaysRoute: typeof AuthenticatedHolidaysRoute
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -2560,6 +2580,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDealsRoute: AuthenticatedDealsRouteWithChildren,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
+  AuthenticatedHolidaysRoute: AuthenticatedHolidaysRoute,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
