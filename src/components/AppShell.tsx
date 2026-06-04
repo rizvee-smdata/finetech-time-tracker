@@ -131,7 +131,11 @@ export function AppShell() {
     <div className="min-h-screen bg-background">
       {/* Top bar (mobile) */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur md:hidden">
-        <button onClick={() => setOpen(!open)} className="rounded-md p-2 hover:bg-accent">
+        <button
+          onClick={() => setOpen(!open)}
+          aria-label="Open menu"
+          className="rounded-md p-2 hover:bg-accent"
+        >
           <Menu className="h-5 w-5" />
         </button>
         <div className="truncate font-semibold tracking-tight text-primary">
@@ -144,7 +148,7 @@ export function AppShell() {
             <NotificationCenter />
           </Suspense>
           <NotificationBell compact />
-          <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label="Sign out" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
         </div>
 
       </header>

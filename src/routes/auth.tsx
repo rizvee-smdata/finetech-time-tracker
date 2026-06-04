@@ -14,7 +14,13 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — Lavisho Time Tracker" },
-      { name: "description", content: "Sign in to the Lavisho Group field activity tracker." },
+      { name: "description", content: "Sign in to the Lavisho Group field activity, customer visit and follow-up tracker." },
+      { property: "og:title", content: "Sign in — Lavisho Time Tracker" },
+      { property: "og:description", content: "Sign in to the Lavisho Group field activity, customer visit and follow-up tracker." },
+      { property: "og:url", content: "https://lavisho-log-time.lovable.app/auth" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://lavisho-log-time.lovable.app/auth" },
     ],
   }),
   component: AuthPage,
@@ -182,7 +188,7 @@ function AuthPage() {
   }
 
   return (
-    <div
+    <main
       className="flex min-h-screen items-center justify-center p-4"
       style={{ background: "var(--gradient-soft)" }}
     >
@@ -195,7 +201,7 @@ function AuthPage() {
             <Clock className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Lavisho Time Tracker</h1>
+            <h1 className="text-xl font-semibold tracking-tight">Lavisho Time Tracker — Field Activity &amp; Reporting</h1>
             <p className="text-sm text-muted-foreground">Field activity & visit reporting</p>
           </div>
         </div>
@@ -268,6 +274,6 @@ function AuthPage() {
           </>
         )}
       </Card>
-    </div>
+    </main>
   );
 }

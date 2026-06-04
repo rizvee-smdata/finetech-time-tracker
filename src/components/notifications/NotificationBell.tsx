@@ -73,7 +73,12 @@ export function NotificationBell({ compact = false }: { compact?: boolean }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size={compact ? "icon" : "sm"} className="relative">
+        <Button
+          variant="ghost"
+          size={compact ? "icon" : "sm"}
+          aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+          className="relative"
+        >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
             <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">

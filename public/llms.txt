@@ -1,0 +1,10 @@
+# Lavisho Time Tracker
+
+> Internal field-activity, customer-visit, and follow-up tracking app for Lavisho Group teams.
+
+This is a private workspace application. Most pages require an authenticated Lavisho Group account.
+
+## Pages
+
+- [Home](/): Entry point — redirects to the dashboard or sign-in.
+- [Sign in](/auth): Sign in to the Lavisho Group workspace.
