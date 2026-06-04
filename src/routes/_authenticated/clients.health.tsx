@@ -49,28 +49,20 @@ function ClientHealthDashboard() {
     queryKey: ["client-health", companyId],
     enabled: !!companyId,
     queryFn: async (): Promise<Row[]> => {
-      const { data, error } = await supabase
+      const { data: rows, error } = await supabase
         .from("client_health_scores")
-        .select("*, account:crm_accounts(name, industry), rep:profiles!client_health_scores_assigned_rep_id_fkey(full_name)" as any)
+        .select("*, account:crm_accounts(name, industry)")
         .eq("company_id", companyId!)
         .order("score", { ascending: true });
-      if (error) {
-        // Fallback if FK alias unsupported — fetch reps separately.
-        const { data: rows, error: e2 } = await supabase
-          .from("client_health_scores")
-          .select("*, account:crm_accounts(name, industry)")
-          .eq("company_id", companyId!)
-          .order("score", { ascending: true });
-        if (e2) throw e2;
-        const repIds = Array.from(new Set((rows ?? []).map((r: any) => r.assigned_rep_id).filter(Boolean)));
-        const reps = repIds.length
-          ? (await supabase.from("profiles").select("id, full_name").in("id", repIds)).data ?? []
-          : [];
-        const byId = new Map(reps.map((r: any) => [r.id, r]));
-        return (rows ?? []).map((r: any) => ({ ...r, rep: byId.get(r.assigned_rep_id) ?? null }));
-      }
-      return (data ?? []) as Row[];
+      if (error) throw error;
+      const repIds = Array.from(new Set((rows ?? []).map((r: any) => r.assigned_rep_id).filter(Boolean)));
+      const reps = repIds.length
+        ? (await supabase.from("profiles").select("id, full_name").in("id", repIds as string[])).data ?? []
+        : [];
+      const byId = new Map(reps.map((r: any) => [r.id, r]));
+      return (rows ?? []).map((r: any) => ({ ...r, rep: byId.get(r.assigned_rep_id) ?? null })) as Row[];
     },
+
   });
 
   const reps = useMemo(() => {
