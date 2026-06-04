@@ -2759,6 +2759,228 @@ export type Database = {
           },
         ]
       }
+      kb_article_versions: {
+        Row: {
+          article_id: string
+          content_html: string
+          created_at: string
+          edited_by: string | null
+          id: string
+          summary: string | null
+          title: string
+          version: number
+        }
+        Insert: {
+          article_id: string
+          content_html: string
+          created_at?: string
+          edited_by?: string | null
+          id?: string
+          summary?: string | null
+          title: string
+          version: number
+        }
+        Update: {
+          article_id?: string
+          content_html?: string
+          created_at?: string
+          edited_by?: string | null
+          id?: string
+          summary?: string | null
+          title?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_article_versions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "kb_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_articles: {
+        Row: {
+          article_type: string
+          attachments: Json
+          company_id: string | null
+          content_html: string
+          content_text: string
+          created_at: string
+          created_by: string | null
+          id: string
+          oem_id: string | null
+          published: boolean
+          search_tsv: unknown
+          slug: string | null
+          summary: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+          view_count: number
+        }
+        Insert: {
+          article_type?: string
+          attachments?: Json
+          company_id?: string | null
+          content_html?: string
+          content_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          oem_id?: string | null
+          published?: boolean
+          search_tsv?: unknown
+          slug?: string | null
+          summary?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+          view_count?: number
+        }
+        Update: {
+          article_type?: string
+          attachments?: Json
+          company_id?: string | null
+          content_html?: string
+          content_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          oem_id?: string | null
+          published?: boolean
+          search_tsv?: unknown
+          slug?: string | null
+          summary?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_articles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kb_articles_oem_id_fkey"
+            columns: ["oem_id"]
+            isOneToOne: false
+            referencedRelation: "kb_oems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_ask_log: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+          source_article_ids: string[]
+          user_id: string | null
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+          source_article_ids?: string[]
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          source_article_ids?: string[]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      kb_bookmarks: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_bookmarks_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "kb_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_oems: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_oems_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string
@@ -4739,6 +4961,20 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      kb_search: {
+        Args: { _limit?: number; _q: string }
+        Returns: {
+          article_type: string
+          id: string
+          oem_id: string
+          oem_name: string
+          oem_slug: string
+          rank: number
+          summary: string
+          title: string
+          updated_at: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -4760,6 +4996,8 @@ export type Database = {
           read_ct: number
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       tms_can_manage_project: {
         Args: { _project: string; _user: string }
         Returns: boolean

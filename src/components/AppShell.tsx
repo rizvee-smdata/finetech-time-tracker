@@ -2,6 +2,7 @@ import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import {
   LayoutDashboard,
+  BookOpen,
   Users,
   ClipboardList,
   Contact,
@@ -78,6 +79,7 @@ const nav = [
   { to: "/targets", label: "Targets", icon: Target },
   { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
   { to: "/coach/me", label: "AI Sales Coach", icon: Sparkles },
+  { to: "/kb", label: "Knowledge Base", icon: BookOpen },
   { to: "/surveys", label: "Feedback", icon: MessageSquare },
   { to: "/chat", label: "Team Chat", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
