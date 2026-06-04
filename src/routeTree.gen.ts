@@ -9,11 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
@@ -49,11 +51,13 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
+import { Route as AuthenticatedFollowupsIndexRouteImport } from './routes/_authenticated/followups.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedDealsIndexRouteImport } from './routes/_authenticated/deals.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authenticated/contracts.index'
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
@@ -93,6 +97,8 @@ import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_aut
 import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
 import { Route as AuthenticatedGpsCheckinRouteImport } from './routes/_authenticated/gps.checkin'
+import { Route as AuthenticatedFollowupsSettingsRouteImport } from './routes/_authenticated/followups.settings'
+import { Route as AuthenticatedFollowupsHistoryRouteImport } from './routes/_authenticated/followups.history'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -140,6 +146,8 @@ import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_authenticated/ai-visits.history'
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -155,6 +163,11 @@ import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_
 import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -177,6 +190,11 @@ const IndexRoute = IndexRouteImport.update({
 const QTokenRoute = QTokenRouteImport.update({
   id: '/q/$token',
   path: '/q/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
@@ -364,6 +382,12 @@ const AuthenticatedPlanningIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedFollowupsIndexRoute =
+  AuthenticatedFollowupsIndexRouteImport.update({
+    id: '/followups/',
+    path: '/followups/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedExpensesIndexRoute =
   AuthenticatedExpensesIndexRouteImport.update({
     id: '/',
@@ -392,6 +416,11 @@ const AuthenticatedAttendanceIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSsoVerifyRoute = ApiSsoVerifyRouteImport.update({
   id: '/api/sso/verify',
   path: '/api/sso/verify',
@@ -614,6 +643,18 @@ const AuthenticatedGpsCheckinRoute = AuthenticatedGpsCheckinRouteImport.update({
   path: '/gps/checkin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFollowupsSettingsRoute =
+  AuthenticatedFollowupsSettingsRouteImport.update({
+    id: '/followups/settings',
+    path: '/followups/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFollowupsHistoryRoute =
+  AuthenticatedFollowupsHistoryRouteImport.update({
+    id: '/followups/history',
+    path: '/followups/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedExpensesSettingsRoute =
   AuthenticatedExpensesSettingsRouteImport.update({
     id: '/settings',
@@ -883,6 +924,18 @@ const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   path: '/admin/map',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -970,6 +1023,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/audit': typeof AuthenticatedAuditRoute
@@ -997,6 +1051,7 @@ export interface FileRoutesByFullPath {
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -1045,6 +1100,8 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1084,11 +1141,13 @@ export interface FileRoutesByFullPath {
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/contracts/': typeof AuthenticatedContractsIndexRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/deals/': typeof AuthenticatedDealsIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1110,12 +1169,15 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
   '/audit': typeof AuthenticatedAuditRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
@@ -1131,6 +1193,7 @@ export interface FileRoutesByTo {
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -1179,6 +1242,8 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1218,11 +1283,13 @@ export interface FileRoutesByTo {
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
   '/contracts': typeof AuthenticatedContractsIndexRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/deals': typeof AuthenticatedDealsIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
+  '/followups': typeof AuthenticatedFollowupsIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -1244,6 +1311,8 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesById {
@@ -1252,6 +1321,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
@@ -1279,6 +1349,7 @@ export interface FileRoutesById {
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -1327,6 +1398,8 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/_authenticated/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/_authenticated/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/_authenticated/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1366,11 +1439,13 @@ export interface FileRoutesById {
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
   '/_authenticated/contracts/': typeof AuthenticatedContractsIndexRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/deals/': typeof AuthenticatedDealsIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1392,6 +1467,8 @@ export interface FileRoutesById {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRouteTypes {
@@ -1400,6 +1477,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/ai'
     | '/attendance'
     | '/audit'
@@ -1427,6 +1505,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/team'
+    | '/email/unsubscribe'
     | '/q/$token'
     | '/admin/map'
     | '/ai-visits/$id'
@@ -1475,6 +1554,8 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/followups/history'
+    | '/followups/settings'
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
@@ -1514,11 +1595,13 @@ export interface FileRouteTypes {
     | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
+    | '/lovable/email/suppression'
     | '/attendance/'
     | '/contracts/'
     | '/crm/'
     | '/deals/'
     | '/expenses/'
+    | '/followups/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -1540,12 +1623,15 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/ai'
     | '/audit'
     | '/change-password'
@@ -1561,6 +1647,7 @@ export interface FileRouteTypes {
     | '/scorecard'
     | '/settings'
     | '/team'
+    | '/email/unsubscribe'
     | '/q/$token'
     | '/admin/map'
     | '/ai-visits/$id'
@@ -1609,6 +1696,8 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/followups/history'
+    | '/followups/settings'
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
@@ -1648,11 +1737,13 @@ export interface FileRouteTypes {
     | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
+    | '/lovable/email/suppression'
     | '/attendance'
     | '/contracts'
     | '/crm'
     | '/deals'
     | '/expenses'
+    | '/followups'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -1674,6 +1765,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
     | '__root__'
@@ -1681,6 +1774,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/_authenticated/ai'
     | '/_authenticated/attendance'
     | '/_authenticated/audit'
@@ -1708,6 +1802,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets'
     | '/_authenticated/tasks'
     | '/_authenticated/team'
+    | '/email/unsubscribe'
     | '/q/$token'
     | '/_authenticated/admin/map'
     | '/_authenticated/ai-visits/$id'
@@ -1756,6 +1851,8 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
+    | '/_authenticated/followups/history'
+    | '/_authenticated/followups/settings'
     | '/_authenticated/gps/checkin'
     | '/_authenticated/gps/history'
     | '/_authenticated/gps/today'
@@ -1795,11 +1892,13 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/new'
     | '/api/sso/verify'
+    | '/lovable/email/suppression'
     | '/_authenticated/attendance/'
     | '/_authenticated/contracts/'
     | '/_authenticated/crm/'
     | '/_authenticated/deals/'
     | '/_authenticated/expenses/'
+    | '/_authenticated/followups/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -1821,6 +1920,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
 }
@@ -1829,8 +1930,11 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -1839,10 +1943,19 @@ export interface RootRouteChildren {
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -1876,6 +1989,13 @@ declare module '@tanstack/react-router' {
       path: '/q/$token'
       fullPath: '/q/$token'
       preLoaderRoute: typeof QTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/team': {
@@ -2123,6 +2243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/followups/': {
+      id: '/_authenticated/followups/'
+      path: '/followups'
+      fullPath: '/followups/'
+      preLoaderRoute: typeof AuthenticatedFollowupsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/expenses/': {
       id: '/_authenticated/expenses/'
       path: '/'
@@ -2157,6 +2284,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/attendance/'
       preLoaderRoute: typeof AuthenticatedAttendanceIndexRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/sso/verify': {
       id: '/api/sso/verify'
@@ -2429,6 +2563,20 @@ declare module '@tanstack/react-router' {
       path: '/gps/checkin'
       fullPath: '/gps/checkin'
       preLoaderRoute: typeof AuthenticatedGpsCheckinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/followups/settings': {
+      id: '/_authenticated/followups/settings'
+      path: '/followups/settings'
+      fullPath: '/followups/settings'
+      preLoaderRoute: typeof AuthenticatedFollowupsSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/followups/history': {
+      id: '/_authenticated/followups/history'
+      path: '/followups/history'
+      fullPath: '/followups/history'
+      preLoaderRoute: typeof AuthenticatedFollowupsHistoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/expenses/settings': {
@@ -2759,6 +2907,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/map'
       preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -3253,10 +3415,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCoachHistoryRoute: typeof AuthenticatedCoachHistoryRoute
   AuthenticatedCoachMeRoute: typeof AuthenticatedCoachMeRoute
   AuthenticatedCoachTeamRoute: typeof AuthenticatedCoachTeamRoute
+  AuthenticatedFollowupsHistoryRoute: typeof AuthenticatedFollowupsHistoryRoute
+  AuthenticatedFollowupsSettingsRoute: typeof AuthenticatedFollowupsSettingsRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
 }
@@ -3297,10 +3462,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCoachHistoryRoute: AuthenticatedCoachHistoryRoute,
   AuthenticatedCoachMeRoute: AuthenticatedCoachMeRoute,
   AuthenticatedCoachTeamRoute: AuthenticatedCoachTeamRoute,
+  AuthenticatedFollowupsHistoryRoute: AuthenticatedFollowupsHistoryRoute,
+  AuthenticatedFollowupsSettingsRoute: AuthenticatedFollowupsSettingsRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedClientsClientIdHealthRoute:
     AuthenticatedClientsClientIdHealthRoute,
@@ -3314,8 +3482,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
@@ -3324,6 +3495,8 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

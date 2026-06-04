@@ -2346,6 +2346,235 @@ export type Database = {
         }
         Relationships: []
       }
+      followup_sends: {
+        Row: {
+          channel: string
+          company_id: string
+          company_name: string | null
+          contact_name: string
+          created_at: string
+          followup_id: string | null
+          id: string
+          lead_id: string | null
+          message: string
+          outcome: string | null
+          outcome_at: string | null
+          recipient: string
+          rep_id: string
+          sent_at: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          channel: string
+          company_id: string
+          company_name?: string | null
+          contact_name: string
+          created_at?: string
+          followup_id?: string | null
+          id?: string
+          lead_id?: string | null
+          message: string
+          outcome?: string | null
+          outcome_at?: string | null
+          recipient: string
+          rep_id: string
+          sent_at?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          company_id?: string
+          company_name?: string | null
+          contact_name?: string
+          created_at?: string
+          followup_id?: string | null
+          id?: string
+          lead_id?: string | null
+          message?: string
+          outcome?: string | null
+          outcome_at?: string | null
+          recipient?: string
+          rep_id?: string
+          sent_at?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followup_sends_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followup_sends_followup_id_fkey"
+            columns: ["followup_id"]
+            isOneToOne: false
+            referencedRelation: "followups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followup_sends_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      followup_settings: {
+        Row: {
+          blackout_dates: string[]
+          company_id: string
+          created_at: string
+          default_channel: string
+          high_value_boost: number
+          high_value_threshold: number
+          inactivity_threshold_days: number
+          industry_templates: Json
+          updated_at: string
+        }
+        Insert: {
+          blackout_dates?: string[]
+          company_id: string
+          created_at?: string
+          default_channel?: string
+          high_value_boost?: number
+          high_value_threshold?: number
+          inactivity_threshold_days?: number
+          industry_templates?: Json
+          updated_at?: string
+        }
+        Update: {
+          blackout_dates?: string[]
+          company_id?: string
+          created_at?: string
+          default_channel?: string
+          high_value_boost?: number
+          high_value_threshold?: number
+          inactivity_threshold_days?: number
+          industry_templates?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followup_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      followups: {
+        Row: {
+          account_id: string | null
+          ai_draft: string | null
+          ai_draft_generated_at: string | null
+          ai_subject: string | null
+          company_id: string
+          company_name: string | null
+          contact_name: string
+          created_at: string
+          currency: string
+          days_overdue: number
+          dismissed_at: string | null
+          email: string | null
+          id: string
+          last_contact_at: string | null
+          last_interaction_type: string | null
+          lead_id: string | null
+          open_deal_value: number | null
+          phone: string | null
+          priority_score: number
+          rep_id: string
+          sent_at: string | null
+          snoozed_until: string | null
+          status: string
+          suggested_channel: string
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          ai_draft?: string | null
+          ai_draft_generated_at?: string | null
+          ai_subject?: string | null
+          company_id: string
+          company_name?: string | null
+          contact_name: string
+          created_at?: string
+          currency?: string
+          days_overdue?: number
+          dismissed_at?: string | null
+          email?: string | null
+          id?: string
+          last_contact_at?: string | null
+          last_interaction_type?: string | null
+          lead_id?: string | null
+          open_deal_value?: number | null
+          phone?: string | null
+          priority_score?: number
+          rep_id: string
+          sent_at?: string | null
+          snoozed_until?: string | null
+          status?: string
+          suggested_channel?: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          ai_draft?: string | null
+          ai_draft_generated_at?: string | null
+          ai_subject?: string | null
+          company_id?: string
+          company_name?: string | null
+          contact_name?: string
+          created_at?: string
+          currency?: string
+          days_overdue?: number
+          dismissed_at?: string | null
+          email?: string | null
+          id?: string
+          last_contact_at?: string | null
+          last_interaction_type?: string | null
+          lead_id?: string | null
+          open_deal_value?: number | null
+          phone?: string | null
+          priority_score?: number
+          rep_id?: string
+          sent_at?: string | null
+          snoozed_until?: string | null
+          status?: string
+          suggested_channel?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followups_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followups_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string
