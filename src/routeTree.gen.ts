@@ -52,6 +52,7 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
+import { Route as AuthenticatedKbIndexRouteImport } from './routes/_authenticated/kb.index'
 import { Route as AuthenticatedFollowupsIndexRouteImport } from './routes/_authenticated/followups.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedDealsIndexRouteImport } from './routes/_authenticated/deals.index'
@@ -95,6 +96,8 @@ import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authe
 import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
 import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
 import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
+import { Route as AuthenticatedKbAskRouteImport } from './routes/_authenticated/kb.ask'
+import { Route as AuthenticatedKbCategoryRouteImport } from './routes/_authenticated/kb.$category'
 import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
 import { Route as AuthenticatedGpsCheckinRouteImport } from './routes/_authenticated/gps.checkin'
@@ -160,6 +163,7 @@ import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/p
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
 import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './routes/_authenticated/manager.approvals.expenses'
+import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
@@ -388,6 +392,11 @@ const AuthenticatedPlanningIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedKbIndexRoute = AuthenticatedKbIndexRouteImport.update({
+  id: '/kb/',
+  path: '/kb/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFollowupsIndexRoute =
   AuthenticatedFollowupsIndexRouteImport.update({
     id: '/followups/',
@@ -634,6 +643,16 @@ const AuthenticatedManagerDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedManagerRoute,
   } as any)
+const AuthenticatedKbAskRoute = AuthenticatedKbAskRouteImport.update({
+  id: '/kb/ask',
+  path: '/kb/ask',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedKbCategoryRoute = AuthenticatedKbCategoryRouteImport.update({
+  id: '/kb/$category',
+  path: '/kb/$category',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGpsTodayRoute = AuthenticatedGpsTodayRouteImport.update({
   id: '/gps/today',
   path: '/gps/today',
@@ -1006,6 +1025,12 @@ const AuthenticatedManagerApprovalsExpensesRoute =
     path: '/approvals/expenses',
     getParentRoute: () => AuthenticatedManagerRoute,
   } as any)
+const AuthenticatedKbArticleIdRoute =
+  AuthenticatedKbArticleIdRouteImport.update({
+    id: '/kb/article/$id',
+    path: '/kb/article/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCrmAccountAccountIdRoute =
   AuthenticatedCrmAccountAccountIdRouteImport.update({
     id: '/account/$accountId',
@@ -1112,6 +1137,8 @@ export interface FileRoutesByFullPath {
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/kb/ask': typeof AuthenticatedKbAskRoute
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
@@ -1155,6 +1182,7 @@ export interface FileRoutesByFullPath {
   '/deals/': typeof AuthenticatedDealsIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/followups/': typeof AuthenticatedFollowupsIndexRoute
+  '/kb/': typeof AuthenticatedKbIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1165,6 +1193,7 @@ export interface FileRoutesByFullPath {
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -1255,6 +1284,8 @@ export interface FileRoutesByTo {
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/kb/ask': typeof AuthenticatedKbAskRoute
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
@@ -1298,6 +1329,7 @@ export interface FileRoutesByTo {
   '/deals': typeof AuthenticatedDealsIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/followups': typeof AuthenticatedFollowupsIndexRoute
+  '/kb': typeof AuthenticatedKbIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -1308,6 +1340,7 @@ export interface FileRoutesByTo {
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -1412,6 +1445,8 @@ export interface FileRoutesById {
   '/_authenticated/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/_authenticated/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/_authenticated/kb/ask': typeof AuthenticatedKbAskRoute
   '/_authenticated/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/_authenticated/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/_authenticated/manager/team': typeof AuthenticatedManagerTeamRoute
@@ -1455,6 +1490,7 @@ export interface FileRoutesById {
   '/_authenticated/deals/': typeof AuthenticatedDealsIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
+  '/_authenticated/kb/': typeof AuthenticatedKbIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1465,6 +1501,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/_authenticated/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/_authenticated/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
@@ -1569,6 +1606,8 @@ export interface FileRouteTypes {
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
+    | '/kb/$category'
+    | '/kb/ask'
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
@@ -1612,6 +1651,7 @@ export interface FileRouteTypes {
     | '/deals/'
     | '/expenses/'
     | '/followups/'
+    | '/kb/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -1622,6 +1662,7 @@ export interface FileRouteTypes {
     | '/visits/'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
+    | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
     | '/tasks/projects/$projectId'
@@ -1712,6 +1753,8 @@ export interface FileRouteTypes {
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
+    | '/kb/$category'
+    | '/kb/ask'
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
@@ -1755,6 +1798,7 @@ export interface FileRouteTypes {
     | '/deals'
     | '/expenses'
     | '/followups'
+    | '/kb'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -1765,6 +1809,7 @@ export interface FileRouteTypes {
     | '/visits'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
+    | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
     | '/tasks/projects/$projectId'
@@ -1868,6 +1913,8 @@ export interface FileRouteTypes {
     | '/_authenticated/gps/checkin'
     | '/_authenticated/gps/history'
     | '/_authenticated/gps/today'
+    | '/_authenticated/kb/$category'
+    | '/_authenticated/kb/ask'
     | '/_authenticated/manager/dashboard'
     | '/_authenticated/manager/reports'
     | '/_authenticated/manager/team'
@@ -1911,6 +1958,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deals/'
     | '/_authenticated/expenses/'
     | '/_authenticated/followups/'
+    | '/_authenticated/kb/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -1921,6 +1969,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/'
     | '/_authenticated/clients/$clientId/health'
     | '/_authenticated/crm/account/$accountId'
+    | '/_authenticated/kb/article/$id'
     | '/_authenticated/manager/approvals/expenses'
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/tasks/projects/$projectId'
@@ -2262,6 +2311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/kb/': {
+      id: '/_authenticated/kb/'
+      path: '/kb'
+      fullPath: '/kb/'
+      preLoaderRoute: typeof AuthenticatedKbIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/followups/': {
       id: '/_authenticated/followups/'
       path: '/followups'
@@ -2562,6 +2618,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/manager/dashboard'
       preLoaderRoute: typeof AuthenticatedManagerDashboardRouteImport
       parentRoute: typeof AuthenticatedManagerRoute
+    }
+    '/_authenticated/kb/ask': {
+      id: '/_authenticated/kb/ask'
+      path: '/kb/ask'
+      fullPath: '/kb/ask'
+      preLoaderRoute: typeof AuthenticatedKbAskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kb/$category': {
+      id: '/_authenticated/kb/$category'
+      path: '/kb/$category'
+      fullPath: '/kb/$category'
+      preLoaderRoute: typeof AuthenticatedKbCategoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/gps/today': {
       id: '/_authenticated/gps/today'
@@ -3018,6 +3088,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManagerApprovalsExpensesRouteImport
       parentRoute: typeof AuthenticatedManagerRoute
     }
+    '/_authenticated/kb/article/$id': {
+      id: '/_authenticated/kb/article/$id'
+      path: '/kb/article/$id'
+      fullPath: '/kb/article/$id'
+      preLoaderRoute: typeof AuthenticatedKbArticleIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/crm/account/$accountId': {
       id: '/_authenticated/crm/account/$accountId'
       path: '/account/$accountId'
@@ -3440,10 +3517,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
+  AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
+  AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
+  AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
+  AuthenticatedKbArticleIdRoute: typeof AuthenticatedKbArticleIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -3488,11 +3569,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
+  AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
+  AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
+  AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedClientsClientIdHealthRoute:
     AuthenticatedClientsClientIdHealthRoute,
+  AuthenticatedKbArticleIdRoute: AuthenticatedKbArticleIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
