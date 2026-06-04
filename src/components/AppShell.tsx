@@ -22,6 +22,7 @@ import {
   MapPin,
   Calendar,
   Route as RouteIcon,
+  Navigation as NavigationIcon,
   MessageSquare,
   ScrollText,
   
@@ -53,6 +54,8 @@ const nav = [
 
   { to: "/visits", label: "Visits", icon: ClipboardList },
   { to: "/planning", label: "Planning", icon: RouteIcon },
+  { to: "/gps/today", label: "Route", icon: NavigationIcon },
+  { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
   { to: "/crm", label: "CRM", icon: Target },
   
   { to: "/deals", label: "Deal Health", icon: TrendingUp },

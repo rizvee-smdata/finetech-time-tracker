@@ -81,6 +81,9 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
+import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
+import { Route as AuthenticatedGpsCheckinRouteImport } from './routes/_authenticated/gps.checkin'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -120,6 +123,7 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -524,6 +528,21 @@ const AuthenticatedPlanningPlanIdRoute =
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedGpsTodayRoute = AuthenticatedGpsTodayRouteImport.update({
+  id: '/gps/today',
+  path: '/gps/today',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGpsHistoryRoute = AuthenticatedGpsHistoryRouteImport.update({
+  id: '/gps/history',
+  path: '/gps/history',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGpsCheckinRoute = AuthenticatedGpsCheckinRouteImport.update({
+  id: '/gps/checkin',
+  path: '/gps/checkin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedExpensesSettingsRoute =
   AuthenticatedExpensesSettingsRouteImport.update({
     id: '/settings',
@@ -749,6 +768,11 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
+  id: '/admin/map',
+  path: '/admin/map',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -844,6 +868,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/admin/map': typeof AuthenticatedAdminMapRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -883,6 +908,9 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
+  '/gps/history': typeof AuthenticatedGpsHistoryRoute
+  '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -955,6 +983,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/admin/map': typeof AuthenticatedAdminMapRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -994,6 +1023,9 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
+  '/gps/history': typeof AuthenticatedGpsHistoryRoute
+  '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1080,6 +1112,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1119,6 +1152,9 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/_authenticated/gps/checkin': typeof AuthenticatedGpsCheckinRoute
+  '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
+  '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1205,6 +1241,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/team'
     | '/q/$token'
+    | '/admin/map'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1244,6 +1281,9 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/gps/checkin'
+    | '/gps/history'
+    | '/gps/today'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1316,6 +1356,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/q/$token'
+    | '/admin/map'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1355,6 +1396,9 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/gps/checkin'
+    | '/gps/history'
+    | '/gps/today'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1440,6 +1484,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/_authenticated/team'
     | '/q/$token'
+    | '/_authenticated/admin/map'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -1479,6 +1524,9 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
+    | '/_authenticated/gps/checkin'
+    | '/_authenticated/gps/history'
+    | '/_authenticated/gps/today'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -2057,6 +2105,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/gps/today': {
+      id: '/_authenticated/gps/today'
+      path: '/gps/today'
+      fullPath: '/gps/today'
+      preLoaderRoute: typeof AuthenticatedGpsTodayRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/gps/history': {
+      id: '/_authenticated/gps/history'
+      path: '/gps/history'
+      fullPath: '/gps/history'
+      preLoaderRoute: typeof AuthenticatedGpsHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/gps/checkin': {
+      id: '/_authenticated/gps/checkin'
+      path: '/gps/checkin'
+      fullPath: '/gps/checkin'
+      preLoaderRoute: typeof AuthenticatedGpsCheckinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/expenses/settings': {
       id: '/_authenticated/expenses/settings'
       path: '/settings'
@@ -2329,6 +2398,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/attendance/history'
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
+    }
+    '/_authenticated/admin/map': {
+      id: '/_authenticated/admin/map'
+      path: '/admin/map'
+      fullPath: '/admin/map'
+      preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -2751,6 +2827,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
+  AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
+  AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
 }
@@ -2781,6 +2861,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
+  AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
+  AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
 }

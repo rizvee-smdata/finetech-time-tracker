@@ -779,6 +779,9 @@ export type Database = {
       crm_leads: {
         Row: {
           account_id: string | null
+          address_lat: number | null
+          address_lng: number | null
+          address_text: string | null
           assigned_to: string | null
           company_id: string
           company_name: string | null
@@ -819,6 +822,9 @@ export type Database = {
         }
         Insert: {
           account_id?: string | null
+          address_lat?: number | null
+          address_lng?: number | null
+          address_text?: string | null
           assigned_to?: string | null
           company_id: string
           company_name?: string | null
@@ -859,6 +865,9 @@ export type Database = {
         }
         Update: {
           account_id?: string | null
+          address_lat?: number | null
+          address_lng?: number | null
+          address_text?: string | null
           assigned_to?: string | null
           company_id?: string
           company_name?: string | null
@@ -1604,6 +1613,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_routes: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          route_date: string
+          total_km: number
+          updated_at: string
+          user_id: string
+          visit_count: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          route_date: string
+          total_km?: number
+          updated_at?: string
+          user_id: string
+          visit_count?: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          route_date?: string
+          total_km?: number
+          updated_at?: string
+          user_id?: string
+          visit_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_routes_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -3501,6 +3551,87 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      visit_checkins: {
+        Row: {
+          checkin_lat: number
+          checkin_lng: number
+          checkin_time: string
+          checkout_lat: number | null
+          checkout_lng: number | null
+          checkout_time: string | null
+          client_name: string | null
+          company_id: string
+          created_at: string
+          distance_from_client_m: number | null
+          id: string
+          is_geofence_valid: boolean
+          lead_id: string | null
+          notes: string | null
+          override_reason: string | null
+          selfie_url: string | null
+          updated_at: string
+          user_id: string
+          voice_url: string | null
+        }
+        Insert: {
+          checkin_lat: number
+          checkin_lng: number
+          checkin_time?: string
+          checkout_lat?: number | null
+          checkout_lng?: number | null
+          checkout_time?: string | null
+          client_name?: string | null
+          company_id: string
+          created_at?: string
+          distance_from_client_m?: number | null
+          id?: string
+          is_geofence_valid?: boolean
+          lead_id?: string | null
+          notes?: string | null
+          override_reason?: string | null
+          selfie_url?: string | null
+          updated_at?: string
+          user_id: string
+          voice_url?: string | null
+        }
+        Update: {
+          checkin_lat?: number
+          checkin_lng?: number
+          checkin_time?: string
+          checkout_lat?: number | null
+          checkout_lng?: number | null
+          checkout_time?: string | null
+          client_name?: string | null
+          company_id?: string
+          created_at?: string
+          distance_from_client_m?: number | null
+          id?: string
+          is_geofence_valid?: boolean
+          lead_id?: string | null
+          notes?: string | null
+          override_reason?: string | null
+          selfie_url?: string | null
+          updated_at?: string
+          user_id?: string
+          voice_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_checkins_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_checkins_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       visit_reminder_log: {
         Row: {
