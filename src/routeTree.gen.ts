@@ -35,6 +35,7 @@ import { Route as AuthenticatedContractsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
+import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
 import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
@@ -258,6 +259,12 @@ const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   path: '/check-in',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangePasswordRoute =
+  AuthenticatedChangePasswordRouteImport.update({
+    id: '/change-password',
+    path: '/change-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -788,6 +795,7 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AuthenticatedAiRoute
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/audit': typeof AuthenticatedAuditRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
@@ -905,6 +913,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai': typeof AuthenticatedAiRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
@@ -1014,6 +1023,7 @@ export interface FileRoutesById {
   '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
@@ -1134,6 +1144,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/attendance'
     | '/audit'
+    | '/change-password'
     | '/check-in'
     | '/command'
     | '/consultants'
@@ -1251,6 +1262,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ai'
     | '/audit'
+    | '/change-password'
     | '/check-in'
     | '/command'
     | '/consultants'
@@ -1359,6 +1371,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai'
     | '/_authenticated/attendance'
     | '/_authenticated/audit'
+    | '/_authenticated/change-password'
     | '/_authenticated/check-in'
     | '/_authenticated/command'
     | '/_authenticated/consultants'
@@ -1670,6 +1683,13 @@ declare module '@tanstack/react-router' {
       path: '/check-in'
       fullPath: '/check-in'
       preLoaderRoute: typeof AuthenticatedCheckInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/change-password': {
+      id: '/_authenticated/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/audit': {
@@ -2623,6 +2643,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
@@ -2652,6 +2673,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAiRoute: AuthenticatedAiRoute,
   AuthenticatedAttendanceRoute: AuthenticatedAttendanceRouteWithChildren,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
