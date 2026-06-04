@@ -310,6 +310,190 @@ export type Database = {
           },
         ]
       }
+      chat_channel_members: {
+        Row: {
+          channel_id: string
+          joined_at: string
+          last_read_at: string
+          muted: boolean
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          joined_at?: string
+          last_read_at?: string
+          muted?: boolean
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          joined_at?: string
+          last_read_at?: string
+          muted?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_channel_members_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "chat_channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_channels: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_announcement: boolean
+          is_system: boolean
+          kind: Database["public"]["Enums"]["chat_channel_kind"]
+          name: string
+          slug: string | null
+          topic: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_announcement?: boolean
+          is_system?: boolean
+          kind?: Database["public"]["Enums"]["chat_channel_kind"]
+          name: string
+          slug?: string | null
+          topic?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_announcement?: boolean
+          is_system?: boolean
+          kind?: Database["public"]["Enums"]["chat_channel_kind"]
+          name?: string
+          slug?: string | null
+          topic?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_channels_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          attachments: Json
+          body: string
+          channel_id: string
+          company_id: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_pinned: boolean
+          is_system: boolean
+          mentions: string[]
+          metadata: Json
+          parent_id: string | null
+          sender_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json
+          body?: string
+          channel_id: string
+          company_id: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_system?: boolean
+          mentions?: string[]
+          metadata?: Json
+          parent_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json
+          body?: string
+          channel_id?: string
+          company_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_system?: boolean
+          mentions?: string[]
+          metadata?: Json
+          parent_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "chat_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_health_history: {
         Row: {
           account_id: string
@@ -4490,6 +4674,18 @@ export type Database = {
       }
     }
     Functions: {
+      chat_can_access_channel: {
+        Args: { _channel: string; _user: string }
+        Returns: boolean
+      }
+      chat_ensure_default_channels: {
+        Args: { _actor: string; _company: string }
+        Returns: undefined
+      }
+      chat_is_channel_member: {
+        Args: { _channel: string; _user: string }
+        Returns: boolean
+      }
       compute_client_health: {
         Args: { _account: string }
         Returns: {
@@ -4580,6 +4776,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "manager" | "employee"
       attendance_status: "present" | "late" | "absent" | "half_day" | "leave"
+      chat_channel_kind: "channel" | "dm" | "system"
       contract_status: "active" | "expired" | "cancelled" | "draft"
       contract_type: "one_time" | "amc" | "retainer"
       crm_activity_type:
@@ -4800,6 +4997,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "manager", "employee"],
       attendance_status: ["present", "late", "absent", "half_day", "leave"],
+      chat_channel_kind: ["channel", "dm", "system"],
       contract_status: ["active", "expired", "cancelled", "draft"],
       contract_type: ["one_time", "amc", "retainer"],
       crm_activity_type: [

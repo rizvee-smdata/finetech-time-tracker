@@ -39,6 +39,7 @@ import { Route as AuthenticatedContractsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
@@ -312,6 +313,11 @@ const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
 const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
   id: '/check-in',
   path: '/check-in',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedChangePasswordRoute =
@@ -1028,6 +1034,7 @@ export interface FileRoutesByFullPath {
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/audit': typeof AuthenticatedAuditRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
@@ -1181,6 +1188,7 @@ export interface FileRoutesByTo {
   '/ai': typeof AuthenticatedAiRoute
   '/audit': typeof AuthenticatedAuditRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
@@ -1326,6 +1334,7 @@ export interface FileRoutesById {
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
   '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
@@ -1482,6 +1491,7 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/audit'
     | '/change-password'
+    | '/chat'
     | '/check-in'
     | '/command'
     | '/consultants'
@@ -1635,6 +1645,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/audit'
     | '/change-password'
+    | '/chat'
     | '/check-in'
     | '/command'
     | '/consultants'
@@ -1779,6 +1790,7 @@ export interface FileRouteTypes {
     | '/_authenticated/attendance'
     | '/_authenticated/audit'
     | '/_authenticated/change-password'
+    | '/_authenticated/chat'
     | '/_authenticated/check-in'
     | '/_authenticated/command'
     | '/_authenticated/consultants'
@@ -2157,6 +2169,13 @@ declare module '@tanstack/react-router' {
       path: '/check-in'
       fullPath: '/check-in'
       preLoaderRoute: typeof AuthenticatedCheckInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/change-password': {
@@ -3384,6 +3403,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
@@ -3431,6 +3451,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAttendanceRoute: AuthenticatedAttendanceRouteWithChildren,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
   AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
