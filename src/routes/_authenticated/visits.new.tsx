@@ -72,6 +72,39 @@ function NewVisit() {
     },
   });
 
+  // Backdating window: allow today + previous 2 working days (skip Fridays & company holidays)
+  const { data: holidaySet = new Set<string>() } = useQuery({
+    queryKey: ["company-holidays-set", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_holidays")
+        .select("holiday_date")
+        .eq("company_id", companyId!);
+      if (error) throw error;
+      return new Set((data ?? []).map((h: any) => h.holiday_date as string));
+    },
+  });
+
+  const ymd = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+  const isWorkingDay = (d: Date) => d.getDay() !== 5 && !holidaySet.has(ymd(d));
+
+  const today = new Date();
+  const earliest = new Date(today);
+  let counted = 0;
+  while (counted < 2) {
+    earliest.setDate(earliest.getDate() - 1);
+    if (isWorkingDay(earliest)) counted++;
+  }
+  earliest.setHours(0, 0, 0, 0);
+  const minMeeting = `${ymd(earliest)}T00:00`;
+  const maxMeeting = `${ymd(today)}T23:59`;
+
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
@@ -97,6 +130,19 @@ function NewVisit() {
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    const meetingDate = new Date(form.meeting_at);
+    if (meetingDate < earliest) {
+      toast.error("Visits can only be backdated up to 2 working days (Fridays & holidays excluded).");
+      return;
+    }
+    if (meetingDate > new Date()) {
+      toast.error("Meeting date cannot be in the future.");
+      return;
+    }
+    if (!isWorkingDay(meetingDate)) {
+      toast.error("Meeting date falls on a Friday or company holiday.");
       return;
     }
     setBusy(true);
@@ -218,7 +264,8 @@ function NewVisit() {
               <Input id="location" value={form.location} onChange={set("location")} placeholder="City / address" />
             </Field>
             <Field label="Meeting date & time *" id="meeting_at">
-              <Input id="meeting_at" type="datetime-local" required value={form.meeting_at} onChange={set("meeting_at")} />
+              <Input id="meeting_at" type="datetime-local" required min={minMeeting} max={maxMeeting} value={form.meeting_at} onChange={set("meeting_at")} />
+              <p className="text-xs text-muted-foreground">Backdating limited to 2 working days (Fridays & company holidays excluded).</p>
             </Field>
             <Field label="Next meeting" id="next_meeting_at">
               <Input id="next_meeting_at" type="datetime-local" value={form.next_meeting_at} onChange={set("next_meeting_at")} />
