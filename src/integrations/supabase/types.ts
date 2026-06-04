@@ -2007,6 +2007,84 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_snapshots: {
+        Row: {
+          calls_actual: number
+          calls_target: number
+          company_id: string
+          computed_at: string
+          created_at: string
+          currency: string
+          deals_actual: number
+          deals_target: number
+          demos_actual: number
+          demos_target: number
+          id: string
+          overall_score: number
+          period_end: string
+          period_label: string
+          period_start: string
+          proposals_actual: number
+          proposals_target: number
+          revenue_actual: number
+          revenue_target: number
+          updated_at: string
+          user_id: string
+          visits_actual: number
+          visits_target: number
+        }
+        Insert: {
+          calls_actual?: number
+          calls_target?: number
+          company_id: string
+          computed_at?: string
+          created_at?: string
+          currency?: string
+          deals_actual?: number
+          deals_target?: number
+          demos_actual?: number
+          demos_target?: number
+          id?: string
+          overall_score?: number
+          period_end: string
+          period_label: string
+          period_start: string
+          proposals_actual?: number
+          proposals_target?: number
+          revenue_actual?: number
+          revenue_target?: number
+          updated_at?: string
+          user_id: string
+          visits_actual?: number
+          visits_target?: number
+        }
+        Update: {
+          calls_actual?: number
+          calls_target?: number
+          company_id?: string
+          computed_at?: string
+          created_at?: string
+          currency?: string
+          deals_actual?: number
+          deals_target?: number
+          demos_actual?: number
+          demos_target?: number
+          id?: string
+          overall_score?: number
+          period_end?: string
+          period_label?: string
+          period_start?: string
+          proposals_actual?: number
+          proposals_target?: number
+          revenue_actual?: number
+          revenue_target?: number
+          updated_at?: string
+          user_id?: string
+          visits_actual?: number
+          visits_target?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -3808,6 +3886,17 @@ export type Database = {
       }
     }
     Functions: {
+      compute_performance_kpis: {
+        Args: { _company: string; _end: string; _start: string; _user: string }
+        Returns: {
+          calls_actual: number
+          deals_actual: number
+          demos_actual: number
+          proposals_actual: number
+          revenue_actual: number
+          visits_actual: number
+        }[]
+      }
       crm_can_view_lead: {
         Args: { _lead: string; _user: string }
         Returns: boolean
