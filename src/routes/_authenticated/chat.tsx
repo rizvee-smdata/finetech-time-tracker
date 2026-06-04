@@ -363,7 +363,7 @@ function ChannelView(props: {
   companyId: string;
   isStaff: boolean;
   allProfiles: ProfileLite[];
-  messagesEndRef: React.RefObject<HTMLDivElement>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { channel, messages, reactions, profiles, typingUsers, currentUserId, companyId, isStaff, allProfiles, messagesEndRef } = props;
 
