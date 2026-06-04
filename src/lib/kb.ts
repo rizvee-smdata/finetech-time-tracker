@@ -90,7 +90,10 @@ export async function getArticle(id: string): Promise<KbArticle | null> {
 export async function searchArticles(q: string, limit = 10): Promise<KbSearchHit[]> {
   const query = q.trim();
   if (!query) return [];
-  const { data, error } = await supabase.rpc("kb_search" as never, { _q: query, _limit: limit });
+  const { data, error } = await (supabase.rpc as unknown as (fn: string, args: unknown) => Promise<{ data: unknown; error: unknown }>)(
+    "kb_search",
+    { _q: query, _limit: limit },
+  );
   if (error) return [];
   return (data as unknown as KbSearchHit[]) ?? [];
 }
