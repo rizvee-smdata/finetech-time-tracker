@@ -70,6 +70,7 @@ const nav = [
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/contracts", label: "Contracts", icon: FileText },
   { to: "/targets", label: "Targets", icon: Target },
+  { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
   { to: "/surveys", label: "Feedback", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
   { to: "/preferences", label: "Preferences", icon: Settings },
