@@ -23,8 +23,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Upload, UserPlus, Users, Building2, Trash2, Pencil } from "lucide-react";
+import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles } from "lucide-react";
+import { format, parseISO } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   beforeLoad: async () => {
@@ -43,17 +45,31 @@ type Role = "admin" | "manager" | "employee";
 
 function SettingsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Admin tools — manage Lavisho Group companies, users, and import customer data.
+          Admin tools — manage Lavisho Group companies, users, holidays, and customer data.
         </p>
       </div>
-      <CompaniesCard />
-      <CreateUserCard />
-      <UsersListCard />
-      <ImportCustomersCard />
+      <Tabs defaultValue="general" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="holidays">Holidays</TabsTrigger>
+          <TabsTrigger value="import">Import</TabsTrigger>
+        </TabsList>
+        <TabsContent value="general" className="space-y-6">
+          <CompaniesCard />
+          <CreateUserCard />
+          <UsersListCard />
+        </TabsContent>
+        <TabsContent value="holidays" className="space-y-6">
+          <HolidaysCard />
+        </TabsContent>
+        <TabsContent value="import" className="space-y-6">
+          <ImportCustomersCard />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -530,5 +546,165 @@ function ImportCustomersCard() {
         </div>
       )}
     </Card>
+  );
+}
+
+// ---------- Holidays ----------
+
+// Bangladesh public holidays 2026. Lunar (Islamic / Hindu / Buddhist) dates are
+// approximate and should be adjusted when the government publishes the official gazette.
+const BD_HOLIDAYS_2026: { date: string; name: string }[] = [
+  { date: "2026-02-21", name: "International Mother Language Day" },
+  { date: "2026-03-17", name: "Sheikh Mujib's Birthday & Children's Day" },
+  { date: "2026-03-26", name: "Independence Day" },
+  { date: "2026-04-03", name: "Shab e-Barat (approx)" },
+  { date: "2026-04-14", name: "Pohela Boishakh (Bengali New Year)" },
+  { date: "2026-04-15", name: "Jumatul Bida (approx)" },
+  { date: "2026-04-17", name: "Shab e-Qadr (approx)" },
+  { date: "2026-04-19", name: "Eid-ul-Fitr (approx)" },
+  { date: "2026-04-20", name: "Eid-ul-Fitr Holiday (approx)" },
+  { date: "2026-04-21", name: "Eid-ul-Fitr Holiday (approx)" },
+  { date: "2026-05-01", name: "May Day" },
+  { date: "2026-05-31", name: "Buddha Purnima (approx)" },
+  { date: "2026-06-26", name: "Eid-ul-Azha (approx)" },
+  { date: "2026-06-27", name: "Eid-ul-Azha Holiday (approx)" },
+  { date: "2026-06-28", name: "Eid-ul-Azha Holiday (approx)" },
+  { date: "2026-07-27", name: "Ashura (approx)" },
+  { date: "2026-08-15", name: "National Mourning Day" },
+  { date: "2026-09-05", name: "Janmashtami (approx)" },
+  { date: "2026-09-25", name: "Eid-e-Miladunnabi (approx)" },
+  { date: "2026-10-20", name: "Durga Puja — Vijaya Dashami (approx)" },
+  { date: "2026-12-16", name: "Victory Day" },
+  { date: "2026-12-25", name: "Christmas Day" },
+];
+
+function HolidaysCard() {
+  const { companyId, company } = useAuth();
+  const qc = useQueryClient();
+  const [date, setDate] = useState("");
+  const [name, setName] = useState("");
+
+  const list = useQuery({
+    queryKey: ["company-holidays", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_holidays")
+        .select("id, holiday_date, name")
+        .eq("company_id", companyId!)
+        .order("holiday_date", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const add = useMutation({
+    mutationFn: async () => {
+      if (!companyId) throw new Error("No company selected");
+      if (!date || !name.trim()) throw new Error("Date and name required");
+      const { error } = await supabase.from("company_holidays").insert({
+        company_id: companyId, holiday_date: date, name: name.trim(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Holiday added");
+      setDate(""); setName("");
+      qc.invalidateQueries({ queryKey: ["company-holidays"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const del = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("company_holidays").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Removed");
+      qc.invalidateQueries({ queryKey: ["company-holidays"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const preload = useMutation({
+    mutationFn: async () => {
+      if (!companyId) throw new Error("No company selected");
+      const existing = new Set((list.data ?? []).map((h: any) => h.holiday_date));
+      const rows = BD_HOLIDAYS_2026
+        .filter((h) => !existing.has(h.date))
+        .map((h) => ({ company_id: companyId, holiday_date: h.date, name: h.name }));
+      if (!rows.length) return 0;
+      const { error } = await supabase.from("company_holidays").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (count) => {
+      if (count === 0) toast.info("All Bangladesh 2026 holidays are already added");
+      else toast.success(`Added ${count} Bangladesh 2026 holidays`);
+      qc.invalidateQueries({ queryKey: ["company-holidays"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <>
+      <Card className="p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold">Company holidays</h2>
+        </div>
+        <p className="mb-4 text-sm text-muted-foreground">
+          {company?.name ? `${company.name} — ` : ""}Visit-entry rules skip Fridays and the dates listed here.
+        </p>
+
+        <div className="mb-5 grid gap-3 sm:grid-cols-[180px_1fr_auto] sm:items-end">
+          <div className="space-y-1.5">
+            <Label>Date</Label>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Name</Label>
+            <Input placeholder="e.g. National Day" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <Button onClick={() => add.mutate()} disabled={add.isPending}>
+            <Plus className="mr-1 h-4 w-4" /> Add
+          </Button>
+        </div>
+
+        <div className="mb-5 flex flex-wrap items-center gap-3 rounded-md border border-dashed border-border bg-muted/30 p-3">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <div className="flex-1 text-sm">
+            <div className="font-medium">Bangladesh national holidays 2026</div>
+            <div className="text-xs text-muted-foreground">
+              Adds {BD_HOLIDAYS_2026.length} dates. Lunar holidays are approximate — adjust after official gazette.
+            </div>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => preload.mutate()} disabled={preload.isPending || !companyId}>
+            {preload.isPending ? "Adding…" : "Preload 2026"}
+          </Button>
+        </div>
+
+        {list.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {!list.isLoading && (list.data?.length ?? 0) === 0 && (
+          <p className="text-sm text-muted-foreground">No holidays defined yet.</p>
+        )}
+        <ul className="divide-y divide-border">
+          {(list.data ?? []).map((h: any) => (
+            <li key={h.id} className="flex items-center justify-between py-2">
+              <div>
+                <div className="font-medium">{h.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {format(parseISO(h.holiday_date), "EEEE, dd MMM yyyy")}
+                </div>
+              </div>
+              <Button size="icon" variant="ghost" onClick={() => del.mutate(h.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </>
   );
 }
