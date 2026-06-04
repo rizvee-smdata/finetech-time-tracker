@@ -213,45 +213,22 @@ function AuthPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6 flex rounded-lg bg-muted p-1">
-              <button
-                type="button"
-                onClick={() => setMode("signin")}
-                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("signup")}
-                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-              >
-                Create account
-              </button>
-            </div>
-
             <form onSubmit={submit} className="space-y-4" autoComplete="off">
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full name</Label>
-                  <Input id="name" autoComplete="off" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
-                </div>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" autoComplete="off" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" autoComplete="new-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input id="password" type="password" autoComplete="current-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <Button type="submit" disabled={busy} className="w-full">
-                {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
+                {busy ? "Please wait..." : "Sign in"}
               </Button>
             </form>
 
             <p className="mt-6 text-center text-xs text-muted-foreground">
-              The first user to register becomes Admin and can create companies & invite the rest of the team.
+              Accounts are created by your administrator. Contact your admin if you need access.
             </p>
           </>
         )}
