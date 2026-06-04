@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      approval_logs: {
+        Row: {
+          action: string
+          actor_id: string
+          comments: string | null
+          company_id: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          comments?: string | null
+          company_id: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          comments?: string | null
+          company_id?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance_records: {
         Row: {
           check_in_address: string | null
@@ -1871,6 +1915,7 @@ export type Database = {
           id: string
           lead_id: string | null
           receipt_path: string | null
+          rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_comment: string | null
@@ -1892,6 +1937,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           receipt_path?: string | null
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_comment?: string | null
@@ -1913,6 +1959,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           receipt_path?: string | null
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_comment?: string | null
@@ -3670,6 +3717,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "visit_reminder_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visit_reports: {
+        Row: {
+          clients_visited: Json
+          company_id: string
+          created_at: string
+          id: string
+          manager_comment: string | null
+          report_date: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string
+          summary_text: string | null
+          tasks_completed: number
+          updated_at: string
+          user_id: string
+          visits_done: number
+        }
+        Insert: {
+          clients_visited?: Json
+          company_id: string
+          created_at?: string
+          id?: string
+          manager_comment?: string | null
+          report_date?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          summary_text?: string | null
+          tasks_completed?: number
+          updated_at?: string
+          user_id: string
+          visits_done?: number
+        }
+        Update: {
+          clients_visited?: Json
+          company_id?: string
+          created_at?: string
+          id?: string
+          manager_comment?: string | null
+          report_date?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          summary_text?: string | null
+          tasks_completed?: number
+          updated_at?: string
+          user_id?: string
+          visits_done?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_reports_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"

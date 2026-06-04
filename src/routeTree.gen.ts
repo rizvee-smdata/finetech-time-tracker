@@ -25,6 +25,7 @@ import { Route as AuthenticatedProposalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
+import { Route as AuthenticatedManagerRouteImport } from './routes/_authenticated/manager'
 import { Route as AuthenticatedHolidaysRouteImport } from './routes/_authenticated/holidays'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDealsRouteImport } from './routes/_authenticated/deals'
@@ -81,6 +82,9 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
+import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
+import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
 import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
 import { Route as AuthenticatedGpsCheckinRouteImport } from './routes/_authenticated/gps.checkin'
@@ -133,6 +137,8 @@ import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
+import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
+import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './routes/_authenticated/manager.approvals.expenses'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
@@ -214,6 +220,11 @@ const AuthenticatedPlanningRoute = AuthenticatedPlanningRouteImport.update({
 const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedManagerRoute = AuthenticatedManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHolidaysRoute = AuthenticatedHolidaysRouteImport.update({
@@ -528,6 +539,24 @@ const AuthenticatedPlanningPlanIdRoute =
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedManagerTeamRoute =
+  AuthenticatedManagerTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => AuthenticatedManagerRoute,
+  } as any)
+const AuthenticatedManagerReportsRoute =
+  AuthenticatedManagerReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedManagerRoute,
+  } as any)
+const AuthenticatedManagerDashboardRoute =
+  AuthenticatedManagerDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedManagerRoute,
+  } as any)
 const AuthenticatedGpsTodayRoute = AuthenticatedGpsTodayRouteImport.update({
   id: '/gps/today',
   path: '/gps/today',
@@ -825,6 +854,18 @@ const AuthenticatedTasksProjectsProjectIdRoute =
     path: '/$projectId',
     getParentRoute: () => AuthenticatedTasksProjectsRoute,
   } as any)
+const AuthenticatedManagerApprovalsVisitsRoute =
+  AuthenticatedManagerApprovalsVisitsRouteImport.update({
+    id: '/approvals/visits',
+    path: '/approvals/visits',
+    getParentRoute: () => AuthenticatedManagerRoute,
+  } as any)
+const AuthenticatedManagerApprovalsExpensesRoute =
+  AuthenticatedManagerApprovalsExpensesRouteImport.update({
+    id: '/approvals/expenses',
+    path: '/approvals/expenses',
+    getParentRoute: () => AuthenticatedManagerRoute,
+  } as any)
 const AuthenticatedCrmAccountAccountIdRoute =
   AuthenticatedCrmAccountAccountIdRouteImport.update({
     id: '/account/$accountId',
@@ -856,6 +897,7 @@ export interface FileRoutesByFullPath {
   '/deals': typeof AuthenticatedDealsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/holidays': typeof AuthenticatedHolidaysRoute
+  '/manager': typeof AuthenticatedManagerRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -911,6 +953,9 @@ export interface FileRoutesByFullPath {
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
+  '/manager/reports': typeof AuthenticatedManagerReportsRoute
+  '/manager/team': typeof AuthenticatedManagerTeamRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -954,6 +999,8 @@ export interface FileRoutesByFullPath {
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
+  '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -978,6 +1025,7 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/holidays': typeof AuthenticatedHolidaysRoute
+  '/manager': typeof AuthenticatedManagerRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -1026,6 +1074,9 @@ export interface FileRoutesByTo {
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
+  '/manager/reports': typeof AuthenticatedManagerReportsRoute
+  '/manager/team': typeof AuthenticatedManagerTeamRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1069,6 +1120,8 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
+  '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -1100,6 +1153,7 @@ export interface FileRoutesById {
   '/_authenticated/deals': typeof AuthenticatedDealsRouteWithChildren
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/holidays': typeof AuthenticatedHolidaysRoute
+  '/_authenticated/manager': typeof AuthenticatedManagerRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -1155,6 +1209,9 @@ export interface FileRoutesById {
   '/_authenticated/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
+  '/_authenticated/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
+  '/_authenticated/manager/reports': typeof AuthenticatedManagerReportsRoute
+  '/_authenticated/manager/team': typeof AuthenticatedManagerTeamRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1198,6 +1255,8 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
+  '/_authenticated/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
+  '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -1229,6 +1288,7 @@ export interface FileRouteTypes {
     | '/deals'
     | '/expenses'
     | '/holidays'
+    | '/manager'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -1284,6 +1344,9 @@ export interface FileRouteTypes {
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
+    | '/manager/dashboard'
+    | '/manager/reports'
+    | '/manager/team'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1327,6 +1390,8 @@ export interface FileRouteTypes {
     | '/tasks/'
     | '/visits/'
     | '/crm/account/$accountId'
+    | '/manager/approvals/expenses'
+    | '/manager/approvals/visits'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -1351,6 +1416,7 @@ export interface FileRouteTypes {
     | '/customers'
     | '/dashboard'
     | '/holidays'
+    | '/manager'
     | '/partners'
     | '/preferences'
     | '/settings'
@@ -1399,6 +1465,9 @@ export interface FileRouteTypes {
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
+    | '/manager/dashboard'
+    | '/manager/reports'
+    | '/manager/team'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1442,6 +1511,8 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/visits'
     | '/crm/account/$accountId'
+    | '/manager/approvals/expenses'
+    | '/manager/approvals/visits'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -1472,6 +1543,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deals'
     | '/_authenticated/expenses'
     | '/_authenticated/holidays'
+    | '/_authenticated/manager'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -1527,6 +1599,9 @@ export interface FileRouteTypes {
     | '/_authenticated/gps/checkin'
     | '/_authenticated/gps/history'
     | '/_authenticated/gps/today'
+    | '/_authenticated/manager/dashboard'
+    | '/_authenticated/manager/reports'
+    | '/_authenticated/manager/team'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -1570,6 +1645,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
     | '/_authenticated/crm/account/$accountId'
+    | '/_authenticated/manager/approvals/expenses'
+    | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -1711,6 +1788,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/manager': {
+      id: '/_authenticated/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof AuthenticatedManagerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/holidays': {
@@ -2105,6 +2189,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/manager/team': {
+      id: '/_authenticated/manager/team'
+      path: '/team'
+      fullPath: '/manager/team'
+      preLoaderRoute: typeof AuthenticatedManagerTeamRouteImport
+      parentRoute: typeof AuthenticatedManagerRoute
+    }
+    '/_authenticated/manager/reports': {
+      id: '/_authenticated/manager/reports'
+      path: '/reports'
+      fullPath: '/manager/reports'
+      preLoaderRoute: typeof AuthenticatedManagerReportsRouteImport
+      parentRoute: typeof AuthenticatedManagerRoute
+    }
+    '/_authenticated/manager/dashboard': {
+      id: '/_authenticated/manager/dashboard'
+      path: '/dashboard'
+      fullPath: '/manager/dashboard'
+      preLoaderRoute: typeof AuthenticatedManagerDashboardRouteImport
+      parentRoute: typeof AuthenticatedManagerRoute
+    }
     '/_authenticated/gps/today': {
       id: '/_authenticated/gps/today'
       path: '/gps/today'
@@ -2469,6 +2574,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedTasksProjectsRoute
     }
+    '/_authenticated/manager/approvals/visits': {
+      id: '/_authenticated/manager/approvals/visits'
+      path: '/approvals/visits'
+      fullPath: '/manager/approvals/visits'
+      preLoaderRoute: typeof AuthenticatedManagerApprovalsVisitsRouteImport
+      parentRoute: typeof AuthenticatedManagerRoute
+    }
+    '/_authenticated/manager/approvals/expenses': {
+      id: '/_authenticated/manager/approvals/expenses'
+      path: '/approvals/expenses'
+      fullPath: '/manager/approvals/expenses'
+      preLoaderRoute: typeof AuthenticatedManagerApprovalsExpensesRouteImport
+      parentRoute: typeof AuthenticatedManagerRoute
+    }
     '/_authenticated/crm/account/$accountId': {
       id: '/_authenticated/crm/account/$accountId'
       path: '/account/$accountId'
@@ -2629,6 +2748,27 @@ const AuthenticatedExpensesRouteWithChildren =
   AuthenticatedExpensesRoute._addFileChildren(
     AuthenticatedExpensesRouteChildren,
   )
+
+interface AuthenticatedManagerRouteChildren {
+  AuthenticatedManagerDashboardRoute: typeof AuthenticatedManagerDashboardRoute
+  AuthenticatedManagerReportsRoute: typeof AuthenticatedManagerReportsRoute
+  AuthenticatedManagerTeamRoute: typeof AuthenticatedManagerTeamRoute
+  AuthenticatedManagerApprovalsExpensesRoute: typeof AuthenticatedManagerApprovalsExpensesRoute
+  AuthenticatedManagerApprovalsVisitsRoute: typeof AuthenticatedManagerApprovalsVisitsRoute
+}
+
+const AuthenticatedManagerRouteChildren: AuthenticatedManagerRouteChildren = {
+  AuthenticatedManagerDashboardRoute: AuthenticatedManagerDashboardRoute,
+  AuthenticatedManagerReportsRoute: AuthenticatedManagerReportsRoute,
+  AuthenticatedManagerTeamRoute: AuthenticatedManagerTeamRoute,
+  AuthenticatedManagerApprovalsExpensesRoute:
+    AuthenticatedManagerApprovalsExpensesRoute,
+  AuthenticatedManagerApprovalsVisitsRoute:
+    AuthenticatedManagerApprovalsVisitsRoute,
+}
+
+const AuthenticatedManagerRouteWithChildren =
+  AuthenticatedManagerRoute._addFileChildren(AuthenticatedManagerRouteChildren)
 
 interface AuthenticatedPlanningRouteChildren {
   AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
@@ -2816,6 +2956,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDealsRoute: typeof AuthenticatedDealsRouteWithChildren
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHolidaysRoute: typeof AuthenticatedHolidaysRoute
+  AuthenticatedManagerRoute: typeof AuthenticatedManagerRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -2850,6 +2991,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDealsRoute: AuthenticatedDealsRouteWithChildren,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHolidaysRoute: AuthenticatedHolidaysRoute,
+  AuthenticatedManagerRoute: AuthenticatedManagerRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
