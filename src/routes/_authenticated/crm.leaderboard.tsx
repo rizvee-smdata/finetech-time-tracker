@@ -195,7 +195,7 @@ function LeaderboardPage() {
           </div>
           <div className="ml-auto text-xs text-muted-foreground">
             Team total: <span className="font-semibold text-foreground">
-              {metric === "revenue" ? formatMoney(total.revenue, "USD") : (metric === "deals" ? total.deals : total.activities)}
+              {metric === "revenue" ? formatBDT(total.revenue) : (metric === "deals" ? total.deals : total.activities)}
             </span>
           </div>
         </div>
