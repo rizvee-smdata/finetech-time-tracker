@@ -128,6 +128,7 @@ import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authentica
 import { Route as AuthenticatedContractsPaymentsRouteImport } from './routes/_authenticated/contracts.payments'
 import { Route as AuthenticatedContractsNewRouteImport } from './routes/_authenticated/contracts.new'
 import { Route as AuthenticatedContractsContractIdRouteImport } from './routes/_authenticated/contracts.$contractId'
+import { Route as AuthenticatedClientsHealthRouteImport } from './routes/_authenticated/clients.health'
 import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authenticated/attendance.team'
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
@@ -145,6 +146,7 @@ import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './route
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
 import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './routes/_authenticated/manager.approvals.expenses'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
+import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -807,6 +809,12 @@ const AuthenticatedContractsContractIdRoute =
     path: '/$contractId',
     getParentRoute: () => AuthenticatedContractsRoute,
   } as any)
+const AuthenticatedClientsHealthRoute =
+  AuthenticatedClientsHealthRouteImport.update({
+    id: '/clients/health',
+    path: '/clients/health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAttendanceTeamRoute =
   AuthenticatedAttendanceTeamRouteImport.update({
     id: '/team',
@@ -906,6 +914,12 @@ const AuthenticatedCrmAccountAccountIdRoute =
     path: '/account/$accountId',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedClientsClientIdHealthRoute =
+  AuthenticatedClientsClientIdHealthRouteImport.update({
+    id: '/clients/$clientId/health',
+    path: '/clients/$clientId/health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport.update({
     id: '/sprints/$sprintId',
@@ -950,6 +964,7 @@ export interface FileRoutesByFullPath {
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/clients/health': typeof AuthenticatedClientsHealthRoute
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1037,6 +1052,7 @@ export interface FileRoutesByFullPath {
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
@@ -1076,6 +1092,7 @@ export interface FileRoutesByTo {
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/clients/health': typeof AuthenticatedClientsHealthRoute
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1163,6 +1180,7 @@ export interface FileRoutesByTo {
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
@@ -1216,6 +1234,7 @@ export interface FileRoutesById {
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
   '/_authenticated/attendance/team': typeof AuthenticatedAttendanceTeamRoute
+  '/_authenticated/clients/health': typeof AuthenticatedClientsHealthRoute
   '/_authenticated/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/_authenticated/contracts/new': typeof AuthenticatedContractsNewRoute
   '/_authenticated/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
@@ -1303,6 +1322,7 @@ export interface FileRoutesById {
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/_authenticated/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
@@ -1356,6 +1376,7 @@ export interface FileRouteTypes {
     | '/attendance/reports'
     | '/attendance/settings'
     | '/attendance/team'
+    | '/clients/health'
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
@@ -1443,6 +1464,7 @@ export interface FileRouteTypes {
     | '/targets/'
     | '/tasks/'
     | '/visits/'
+    | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
@@ -1482,6 +1504,7 @@ export interface FileRouteTypes {
     | '/attendance/reports'
     | '/attendance/settings'
     | '/attendance/team'
+    | '/clients/health'
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
@@ -1569,6 +1592,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/visits'
+    | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
@@ -1621,6 +1645,7 @@ export interface FileRouteTypes {
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
     | '/_authenticated/attendance/team'
+    | '/_authenticated/clients/health'
     | '/_authenticated/contracts/$contractId'
     | '/_authenticated/contracts/new'
     | '/_authenticated/contracts/payments'
@@ -1708,6 +1733,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
+    | '/_authenticated/clients/$clientId/health'
     | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/manager/approvals/expenses'
     | '/_authenticated/manager/approvals/visits'
@@ -2575,6 +2601,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContractsContractIdRouteImport
       parentRoute: typeof AuthenticatedContractsRoute
     }
+    '/_authenticated/clients/health': {
+      id: '/_authenticated/clients/health'
+      path: '/clients/health'
+      fullPath: '/clients/health'
+      preLoaderRoute: typeof AuthenticatedClientsHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/attendance/team': {
       id: '/_authenticated/attendance/team'
       path: '/team'
@@ -2693,6 +2726,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/crm/account/$accountId'
       preLoaderRoute: typeof AuthenticatedCrmAccountAccountIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/clients/$clientId/health': {
+      id: '/_authenticated/clients/$clientId/health'
+      path: '/clients/$clientId/health'
+      fullPath: '/clients/$clientId/health'
+      preLoaderRoute: typeof AuthenticatedClientsClientIdHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': {
       id: '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
@@ -3089,11 +3129,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedClientsHealthRoute: typeof AuthenticatedClientsHealthRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
+  AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -3125,11 +3167,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedClientsHealthRoute: AuthenticatedClientsHealthRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
+  AuthenticatedClientsClientIdHealthRoute:
+    AuthenticatedClientsClientIdHealthRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
