@@ -3884,6 +3884,7 @@ export type Database = {
         | "quote"
         | "attachment"
         | "created"
+        | "demo"
       crm_approval_status: "not_requested" | "pending" | "approved" | "rejected"
       crm_call_outcome:
         | "interested"
@@ -3940,6 +3941,9 @@ export type Database = {
         | "won_leads"
         | "quotes_sent"
         | "meetings"
+        | "calls"
+        | "demos"
+        | "proposals"
       target_period_kind: "monthly" | "quarterly" | "yearly" | "custom"
       target_scope: "user" | "territory" | "company"
       tms_assignee_role: "primary" | "collaborator" | "watcher"
@@ -4100,6 +4104,7 @@ export const Constants = {
         "quote",
         "attachment",
         "created",
+        "demo",
       ],
       crm_approval_status: ["not_requested", "pending", "approved", "rejected"],
       crm_call_outcome: [
@@ -4162,6 +4167,9 @@ export const Constants = {
         "won_leads",
         "quotes_sent",
         "meetings",
+        "calls",
+        "demos",
+        "proposals",
       ],
       target_period_kind: ["monthly", "quarterly", "yearly", "custom"],
       target_scope: ["user", "territory", "company"],
