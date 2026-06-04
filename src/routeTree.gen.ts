@@ -54,10 +54,13 @@ import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
+import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
+import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
 import { Route as AuthenticatedTasksListRouteImport } from './routes/_authenticated/tasks.list'
 import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authenticated/tasks.gantt'
+import { Route as AuthenticatedTasksEodRouteImport } from './routes/_authenticated/tasks.eod'
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
@@ -365,6 +368,17 @@ const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   path: '/visits/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTasksWeeklyRoute =
+  AuthenticatedTasksWeeklyRouteImport.update({
+    id: '/weekly',
+    path: '/weekly',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
+const AuthenticatedTasksTodayRoute = AuthenticatedTasksTodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
 const AuthenticatedTasksReportsRoute =
   AuthenticatedTasksReportsRouteImport.update({
     id: '/reports',
@@ -385,6 +399,11 @@ const AuthenticatedTasksListRoute = AuthenticatedTasksListRouteImport.update({
 const AuthenticatedTasksGanttRoute = AuthenticatedTasksGanttRouteImport.update({
   id: '/gantt',
   path: '/gantt',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedTasksEodRoute = AuthenticatedTasksEodRouteImport.update({
+  id: '/eod',
+  path: '/eod',
   getParentRoute: () => AuthenticatedTasksRoute,
 } as any)
 const AuthenticatedTasksCalendarRoute =
@@ -876,10 +895,13 @@ export interface FileRoutesByFullPath {
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -983,10 +1005,13 @@ export interface FileRoutesByTo {
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
@@ -1104,10 +1129,13 @@ export interface FileRoutesById {
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/_authenticated/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/_authenticated/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/_authenticated/tasks/list': typeof AuthenticatedTasksListRoute
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
+  '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -1225,10 +1253,13 @@ export interface FileRouteTypes {
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
+    | '/tasks/eod'
     | '/tasks/gantt'
     | '/tasks/list'
     | '/tasks/projects'
     | '/tasks/reports'
+    | '/tasks/today'
+    | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
     | '/attendance/'
@@ -1332,10 +1363,13 @@ export interface FileRouteTypes {
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
+    | '/tasks/eod'
     | '/tasks/gantt'
     | '/tasks/list'
     | '/tasks/projects'
     | '/tasks/reports'
+    | '/tasks/today'
+    | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
     | '/attendance'
@@ -1452,10 +1486,13 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
+    | '/_authenticated/tasks/eod'
     | '/_authenticated/tasks/gantt'
     | '/_authenticated/tasks/list'
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
+    | '/_authenticated/tasks/today'
+    | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/new'
     | '/api/sso/verify'
     | '/_authenticated/attendance/'
@@ -1818,6 +1855,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tasks/weekly': {
+      id: '/_authenticated/tasks/weekly'
+      path: '/weekly'
+      fullPath: '/tasks/weekly'
+      preLoaderRoute: typeof AuthenticatedTasksWeeklyRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/today': {
+      id: '/_authenticated/tasks/today'
+      path: '/today'
+      fullPath: '/tasks/today'
+      preLoaderRoute: typeof AuthenticatedTasksTodayRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
     '/_authenticated/tasks/reports': {
       id: '/_authenticated/tasks/reports'
       path: '/reports'
@@ -1844,6 +1895,13 @@ declare module '@tanstack/react-router' {
       path: '/gantt'
       fullPath: '/tasks/gantt'
       preLoaderRoute: typeof AuthenticatedTasksGanttRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/eod': {
+      id: '/_authenticated/tasks/eod'
+      path: '/eod'
+      fullPath: '/tasks/eod'
+      preLoaderRoute: typeof AuthenticatedTasksEodRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
     '/_authenticated/tasks/calendar': {
@@ -2618,10 +2676,13 @@ interface AuthenticatedTasksRouteChildren {
   AuthenticatedTasksTaskIdRoute: typeof AuthenticatedTasksTaskIdRoute
   AuthenticatedTasksBoardRoute: typeof AuthenticatedTasksBoardRoute
   AuthenticatedTasksCalendarRoute: typeof AuthenticatedTasksCalendarRoute
+  AuthenticatedTasksEodRoute: typeof AuthenticatedTasksEodRoute
   AuthenticatedTasksGanttRoute: typeof AuthenticatedTasksGanttRoute
   AuthenticatedTasksListRoute: typeof AuthenticatedTasksListRoute
   AuthenticatedTasksProjectsRoute: typeof AuthenticatedTasksProjectsRouteWithChildren
   AuthenticatedTasksReportsRoute: typeof AuthenticatedTasksReportsRoute
+  AuthenticatedTasksTodayRoute: typeof AuthenticatedTasksTodayRoute
+  AuthenticatedTasksWeeklyRoute: typeof AuthenticatedTasksWeeklyRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
 }
 
@@ -2629,10 +2690,13 @@ const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
   AuthenticatedTasksTaskIdRoute: AuthenticatedTasksTaskIdRoute,
   AuthenticatedTasksBoardRoute: AuthenticatedTasksBoardRoute,
   AuthenticatedTasksCalendarRoute: AuthenticatedTasksCalendarRoute,
+  AuthenticatedTasksEodRoute: AuthenticatedTasksEodRoute,
   AuthenticatedTasksGanttRoute: AuthenticatedTasksGanttRoute,
   AuthenticatedTasksListRoute: AuthenticatedTasksListRoute,
   AuthenticatedTasksProjectsRoute: AuthenticatedTasksProjectsRouteWithChildren,
   AuthenticatedTasksReportsRoute: AuthenticatedTasksReportsRoute,
+  AuthenticatedTasksTodayRoute: AuthenticatedTasksTodayRoute,
+  AuthenticatedTasksWeeklyRoute: AuthenticatedTasksWeeklyRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
 }
 

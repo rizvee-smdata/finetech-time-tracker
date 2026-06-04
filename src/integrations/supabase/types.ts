@@ -1689,6 +1689,59 @@ export type Database = {
         }
         Relationships: []
       }
+      eod_summaries: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          rep_notes: string | null
+          submitted_at: string
+          summary_date: string
+          summary_text: string | null
+          tasks_completed: number
+          tasks_deferred: number
+          updated_at: string
+          user_id: string
+          visits_done: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          rep_notes?: string | null
+          submitted_at?: string
+          summary_date?: string
+          summary_text?: string | null
+          tasks_completed?: number
+          tasks_deferred?: number
+          updated_at?: string
+          user_id: string
+          visits_done?: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          rep_notes?: string | null
+          submitted_at?: string
+          summary_date?: string
+          summary_text?: string | null
+          tasks_completed?: number
+          tasks_deferred?: number
+          updated_at?: string
+          user_id?: string
+          visits_done?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eod_summaries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_approver_assignments: {
         Row: {
           approver_id: string
@@ -3209,6 +3262,7 @@ export type Database = {
       }
       tms_tasks: {
         Row: {
+          category: string | null
           company_id: string
           completed_at: string | null
           created_at: string
@@ -3229,6 +3283,8 @@ export type Database = {
           recurrence_count: number | null
           recurrence_end_date: string | null
           recurrence_rule: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
           sort_order: number
           sprint_id: string | null
           status_id: string | null
@@ -3237,6 +3293,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           company_id: string
           completed_at?: string | null
           created_at?: string
@@ -3257,6 +3314,8 @@ export type Database = {
           recurrence_count?: number | null
           recurrence_end_date?: string | null
           recurrence_rule?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           sort_order?: number
           sprint_id?: string | null
           status_id?: string | null
@@ -3265,6 +3324,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           company_id?: string
           completed_at?: string | null
           created_at?: string
@@ -3285,6 +3345,8 @@ export type Database = {
           recurrence_count?: number | null
           recurrence_end_date?: string | null
           recurrence_rule?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           sort_order?: number
           sprint_id?: string | null
           status_id?: string | null
@@ -3312,6 +3374,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
             referencedColumns: ["id"]
           },
           {
