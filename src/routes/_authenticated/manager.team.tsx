@@ -52,7 +52,7 @@ function TeamOverviewPage() {
           .in("stage", ["new", "initial_contact", "pricing", "negotiation", "closure"]),
         supabase.from("attendance_records")
           .select("user_id, status")
-          .eq("company_id", companyId!).eq("date", today),
+          .eq("company_id", companyId!).eq("work_date", today),
       ]);
 
       const checkinCount = new Map<string, number>();
