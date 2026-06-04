@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User2, MessageCircle, AlertTriangle, Clock } from "lucide-react";
+import { Calendar, MessageCircle, AlertTriangle, Clock } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 
 function waLink(phone: string | null | undefined) {
