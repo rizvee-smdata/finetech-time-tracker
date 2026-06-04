@@ -54,6 +54,7 @@ import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
+import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
@@ -367,6 +368,12 @@ const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   path: '/visits/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTasksWeeklyRoute =
+  AuthenticatedTasksWeeklyRouteImport.update({
+    id: '/weekly',
+    path: '/weekly',
+    getParentRoute: () => AuthenticatedTasksRoute,
+  } as any)
 const AuthenticatedTasksTodayRoute = AuthenticatedTasksTodayRouteImport.update({
   id: '/today',
   path: '/today',
@@ -894,6 +901,7 @@ export interface FileRoutesByFullPath {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -1003,6 +1011,7 @@ export interface FileRoutesByTo {
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
@@ -1126,6 +1135,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
+  '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -1249,6 +1259,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/tasks/today'
+    | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
     | '/attendance/'
@@ -1358,6 +1369,7 @@ export interface FileRouteTypes {
     | '/tasks/projects'
     | '/tasks/reports'
     | '/tasks/today'
+    | '/tasks/weekly'
     | '/visits/new'
     | '/api/sso/verify'
     | '/attendance'
@@ -1480,6 +1492,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/projects'
     | '/_authenticated/tasks/reports'
     | '/_authenticated/tasks/today'
+    | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/new'
     | '/api/sso/verify'
     | '/_authenticated/attendance/'
@@ -1841,6 +1854,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/visits/new'
       preLoaderRoute: typeof AuthenticatedVisitsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/weekly': {
+      id: '/_authenticated/tasks/weekly'
+      path: '/weekly'
+      fullPath: '/tasks/weekly'
+      preLoaderRoute: typeof AuthenticatedTasksWeeklyRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
     }
     '/_authenticated/tasks/today': {
       id: '/_authenticated/tasks/today'
@@ -2662,6 +2682,7 @@ interface AuthenticatedTasksRouteChildren {
   AuthenticatedTasksProjectsRoute: typeof AuthenticatedTasksProjectsRouteWithChildren
   AuthenticatedTasksReportsRoute: typeof AuthenticatedTasksReportsRoute
   AuthenticatedTasksTodayRoute: typeof AuthenticatedTasksTodayRoute
+  AuthenticatedTasksWeeklyRoute: typeof AuthenticatedTasksWeeklyRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
 }
 
@@ -2675,6 +2696,7 @@ const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
   AuthenticatedTasksProjectsRoute: AuthenticatedTasksProjectsRouteWithChildren,
   AuthenticatedTasksReportsRoute: AuthenticatedTasksReportsRoute,
   AuthenticatedTasksTodayRoute: AuthenticatedTasksTodayRoute,
+  AuthenticatedTasksWeeklyRoute: AuthenticatedTasksWeeklyRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
 }
 
