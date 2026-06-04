@@ -229,6 +229,7 @@ export function AppShell() {
               )}
             </div>
           )}
+          <VisitEntryAlertBanner />
           <Outlet />
         </main>
       </div>
