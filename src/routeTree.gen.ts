@@ -113,6 +113,7 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
@@ -700,6 +701,12 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const ApiPublicHooksVisitReminderCheckRoute =
+  ApiPublicHooksVisitReminderCheckRouteImport.update({
+    id: '/api/public/hooks/visit-reminder-check',
+    path: '/api/public/hooks/visit-reminder-check',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -853,6 +860,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesByTo {
@@ -953,6 +961,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesById {
@@ -1067,6 +1076,7 @@ export interface FileRoutesById {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRouteTypes {
@@ -1181,6 +1191,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-reminder-check'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1281,6 +1292,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-reminder-check'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
     | '__root__'
@@ -1394,6 +1406,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-reminder-check'
     | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
 }
@@ -1407,6 +1420,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
+  ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2139,6 +2153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
     }
+    '/api/public/hooks/visit-reminder-check': {
+      id: '/api/public/hooks/visit-reminder-check'
+      path: '/api/public/hooks/visit-reminder-check'
+      fullPath: '/api/public/hooks/visit-reminder-check'
+      preLoaderRoute: typeof ApiPublicHooksVisitReminderCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -2567,6 +2588,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
+  ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
