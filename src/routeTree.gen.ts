@@ -97,6 +97,7 @@ import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_aut
 import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
 import { Route as AuthenticatedGpsCheckinRouteImport } from './routes/_authenticated/gps.checkin'
+import { Route as AuthenticatedFollowupsSettingsRouteImport } from './routes/_authenticated/followups.settings'
 import { Route as AuthenticatedFollowupsHistoryRouteImport } from './routes/_authenticated/followups.history'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
@@ -642,6 +643,12 @@ const AuthenticatedGpsCheckinRoute = AuthenticatedGpsCheckinRouteImport.update({
   path: '/gps/checkin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFollowupsSettingsRoute =
+  AuthenticatedFollowupsSettingsRouteImport.update({
+    id: '/followups/settings',
+    path: '/followups/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFollowupsHistoryRoute =
   AuthenticatedFollowupsHistoryRouteImport.update({
     id: '/followups/history',
@@ -1094,6 +1101,7 @@ export interface FileRoutesByFullPath {
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1235,6 +1243,7 @@ export interface FileRoutesByTo {
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1390,6 +1399,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
   '/_authenticated/followups/history': typeof AuthenticatedFollowupsHistoryRoute
+  '/_authenticated/followups/settings': typeof AuthenticatedFollowupsSettingsRoute
   '/_authenticated/gps/checkin': typeof AuthenticatedGpsCheckinRoute
   '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
@@ -1545,6 +1555,7 @@ export interface FileRouteTypes {
     | '/expenses/reports'
     | '/expenses/settings'
     | '/followups/history'
+    | '/followups/settings'
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
@@ -1686,6 +1697,7 @@ export interface FileRouteTypes {
     | '/expenses/reports'
     | '/expenses/settings'
     | '/followups/history'
+    | '/followups/settings'
     | '/gps/checkin'
     | '/gps/history'
     | '/gps/today'
@@ -1840,6 +1852,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
     | '/_authenticated/followups/history'
+    | '/_authenticated/followups/settings'
     | '/_authenticated/gps/checkin'
     | '/_authenticated/gps/history'
     | '/_authenticated/gps/today'
@@ -2550,6 +2563,13 @@ declare module '@tanstack/react-router' {
       path: '/gps/checkin'
       fullPath: '/gps/checkin'
       preLoaderRoute: typeof AuthenticatedGpsCheckinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/followups/settings': {
+      id: '/_authenticated/followups/settings'
+      path: '/followups/settings'
+      fullPath: '/followups/settings'
+      preLoaderRoute: typeof AuthenticatedFollowupsSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/followups/history': {
@@ -3396,6 +3416,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCoachMeRoute: typeof AuthenticatedCoachMeRoute
   AuthenticatedCoachTeamRoute: typeof AuthenticatedCoachTeamRoute
   AuthenticatedFollowupsHistoryRoute: typeof AuthenticatedFollowupsHistoryRoute
+  AuthenticatedFollowupsSettingsRoute: typeof AuthenticatedFollowupsSettingsRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
@@ -3442,6 +3463,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCoachMeRoute: AuthenticatedCoachMeRoute,
   AuthenticatedCoachTeamRoute: AuthenticatedCoachTeamRoute,
   AuthenticatedFollowupsHistoryRoute: AuthenticatedFollowupsHistoryRoute,
+  AuthenticatedFollowupsSettingsRoute: AuthenticatedFollowupsSettingsRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,

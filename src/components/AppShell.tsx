@@ -66,6 +66,7 @@ const nav = [
   { to: "/proposals", label: "Proposals", icon: FileText },
 
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
+  { to: "/followups", label: "Follow-ups", icon: Bell },
   { to: "/customers", label: "Customers", icon: Contact },
   { to: "/partners", label: "Partners", icon: Handshake },
   { to: "/consultants", label: "Consultants", icon: Briefcase },
