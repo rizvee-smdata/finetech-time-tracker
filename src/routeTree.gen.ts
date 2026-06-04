@@ -59,6 +59,7 @@ import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authent
 import { Route as AuthenticatedTasksProjectsRouteImport } from './routes/_authenticated/tasks.projects'
 import { Route as AuthenticatedTasksListRouteImport } from './routes/_authenticated/tasks.list'
 import { Route as AuthenticatedTasksGanttRouteImport } from './routes/_authenticated/tasks.gantt'
+import { Route as AuthenticatedTasksEodRouteImport } from './routes/_authenticated/tasks.eod'
 import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authenticated/tasks.calendar'
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
@@ -391,6 +392,11 @@ const AuthenticatedTasksListRoute = AuthenticatedTasksListRouteImport.update({
 const AuthenticatedTasksGanttRoute = AuthenticatedTasksGanttRouteImport.update({
   id: '/gantt',
   path: '/gantt',
+  getParentRoute: () => AuthenticatedTasksRoute,
+} as any)
+const AuthenticatedTasksEodRoute = AuthenticatedTasksEodRouteImport.update({
+  id: '/eod',
+  path: '/eod',
   getParentRoute: () => AuthenticatedTasksRoute,
 } as any)
 const AuthenticatedTasksCalendarRoute =
@@ -882,6 +888,7 @@ export interface FileRoutesByFullPath {
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
@@ -990,6 +997,7 @@ export interface FileRoutesByTo {
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/tasks/list': typeof AuthenticatedTasksListRoute
   '/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
@@ -1112,6 +1120,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
   '/_authenticated/tasks/calendar': typeof AuthenticatedTasksCalendarRoute
+  '/_authenticated/tasks/eod': typeof AuthenticatedTasksEodRoute
   '/_authenticated/tasks/gantt': typeof AuthenticatedTasksGanttRoute
   '/_authenticated/tasks/list': typeof AuthenticatedTasksListRoute
   '/_authenticated/tasks/projects': typeof AuthenticatedTasksProjectsRouteWithChildren
@@ -1234,6 +1243,7 @@ export interface FileRouteTypes {
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
+    | '/tasks/eod'
     | '/tasks/gantt'
     | '/tasks/list'
     | '/tasks/projects'
@@ -1342,6 +1352,7 @@ export interface FileRouteTypes {
     | '/tasks/$taskId'
     | '/tasks/board'
     | '/tasks/calendar'
+    | '/tasks/eod'
     | '/tasks/gantt'
     | '/tasks/list'
     | '/tasks/projects'
@@ -1463,6 +1474,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
     | '/_authenticated/tasks/calendar'
+    | '/_authenticated/tasks/eod'
     | '/_authenticated/tasks/gantt'
     | '/_authenticated/tasks/list'
     | '/_authenticated/tasks/projects'
@@ -1863,6 +1875,13 @@ declare module '@tanstack/react-router' {
       path: '/gantt'
       fullPath: '/tasks/gantt'
       preLoaderRoute: typeof AuthenticatedTasksGanttRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
+    }
+    '/_authenticated/tasks/eod': {
+      id: '/_authenticated/tasks/eod'
+      path: '/eod'
+      fullPath: '/tasks/eod'
+      preLoaderRoute: typeof AuthenticatedTasksEodRouteImport
       parentRoute: typeof AuthenticatedTasksRoute
     }
     '/_authenticated/tasks/calendar': {
@@ -2637,6 +2656,7 @@ interface AuthenticatedTasksRouteChildren {
   AuthenticatedTasksTaskIdRoute: typeof AuthenticatedTasksTaskIdRoute
   AuthenticatedTasksBoardRoute: typeof AuthenticatedTasksBoardRoute
   AuthenticatedTasksCalendarRoute: typeof AuthenticatedTasksCalendarRoute
+  AuthenticatedTasksEodRoute: typeof AuthenticatedTasksEodRoute
   AuthenticatedTasksGanttRoute: typeof AuthenticatedTasksGanttRoute
   AuthenticatedTasksListRoute: typeof AuthenticatedTasksListRoute
   AuthenticatedTasksProjectsRoute: typeof AuthenticatedTasksProjectsRouteWithChildren
@@ -2649,6 +2669,7 @@ const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
   AuthenticatedTasksTaskIdRoute: AuthenticatedTasksTaskIdRoute,
   AuthenticatedTasksBoardRoute: AuthenticatedTasksBoardRoute,
   AuthenticatedTasksCalendarRoute: AuthenticatedTasksCalendarRoute,
+  AuthenticatedTasksEodRoute: AuthenticatedTasksEodRoute,
   AuthenticatedTasksGanttRoute: AuthenticatedTasksGanttRoute,
   AuthenticatedTasksListRoute: AuthenticatedTasksListRoute,
   AuthenticatedTasksProjectsRoute: AuthenticatedTasksProjectsRouteWithChildren,
