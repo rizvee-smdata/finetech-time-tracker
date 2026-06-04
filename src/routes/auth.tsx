@@ -274,6 +274,6 @@ function AuthPage() {
           </>
         )}
       </Card>
-    </div>
+    </main>
   );
 }
