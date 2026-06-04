@@ -79,6 +79,7 @@ const nav = [
   { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
   { to: "/coach/me", label: "AI Sales Coach", icon: Sparkles },
   { to: "/surveys", label: "Feedback", icon: MessageSquare },
+  { to: "/chat", label: "Team Chat", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
   { to: "/preferences", label: "Preferences", icon: Settings },
 ];
