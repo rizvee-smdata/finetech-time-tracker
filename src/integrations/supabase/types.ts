@@ -215,6 +215,41 @@ export type Database = {
         }
         Relationships: []
       }
+      company_holidays: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          holiday_date: string
+          id: string
+          name: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          holiday_date: string
+          id?: string
+          name: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          holiday_date?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_holidays_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_members: {
         Row: {
           company_id: string
@@ -3275,6 +3310,50 @@ export type Database = {
         }
         Relationships: []
       }
+      visit_reminder_log: {
+        Row: {
+          channel: string
+          company_id: string | null
+          created_at: string
+          email_sent_at: string | null
+          id: string
+          in_app_sent_at: string | null
+          resolved_at: string | null
+          target_date: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          company_id?: string | null
+          created_at?: string
+          email_sent_at?: string | null
+          id?: string
+          in_app_sent_at?: string | null
+          resolved_at?: string | null
+          target_date: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          company_id?: string | null
+          created_at?: string
+          email_sent_at?: string | null
+          id?: string
+          in_app_sent_at?: string | null
+          resolved_at?: string | null
+          target_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_reminder_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       profiles_public: {
@@ -3315,6 +3394,10 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      previous_working_day: {
+        Args: { _company: string; _from: string }
+        Returns: string
+      }
       tms_can_manage_project: {
         Args: { _project: string; _user: string }
         Returns: boolean
