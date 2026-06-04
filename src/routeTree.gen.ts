@@ -97,6 +97,7 @@ import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenti
 import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
 import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
 import { Route as AuthenticatedKbAskRouteImport } from './routes/_authenticated/kb.ask'
+import { Route as AuthenticatedKbAdminRouteImport } from './routes/_authenticated/kb.admin'
 import { Route as AuthenticatedKbCategoryRouteImport } from './routes/_authenticated/kb.$category'
 import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedGpsHistoryRouteImport } from './routes/_authenticated/gps.history'
@@ -648,6 +649,11 @@ const AuthenticatedKbAskRoute = AuthenticatedKbAskRouteImport.update({
   path: '/kb/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKbAdminRoute = AuthenticatedKbAdminRouteImport.update({
+  id: '/kb/admin',
+  path: '/kb/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedKbCategoryRoute = AuthenticatedKbCategoryRouteImport.update({
   id: '/kb/$category',
   path: '/kb/$category',
@@ -1138,6 +1144,7 @@ export interface FileRoutesByFullPath {
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/kb/admin': typeof AuthenticatedKbAdminRoute
   '/kb/ask': typeof AuthenticatedKbAskRoute
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
@@ -1285,6 +1292,7 @@ export interface FileRoutesByTo {
   '/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/kb/admin': typeof AuthenticatedKbAdminRoute
   '/kb/ask': typeof AuthenticatedKbAskRoute
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
@@ -1446,6 +1454,7 @@ export interface FileRoutesById {
   '/_authenticated/gps/history': typeof AuthenticatedGpsHistoryRoute
   '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
   '/_authenticated/kb/$category': typeof AuthenticatedKbCategoryRoute
+  '/_authenticated/kb/admin': typeof AuthenticatedKbAdminRoute
   '/_authenticated/kb/ask': typeof AuthenticatedKbAskRoute
   '/_authenticated/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/_authenticated/manager/reports': typeof AuthenticatedManagerReportsRoute
@@ -1607,6 +1616,7 @@ export interface FileRouteTypes {
     | '/gps/history'
     | '/gps/today'
     | '/kb/$category'
+    | '/kb/admin'
     | '/kb/ask'
     | '/manager/dashboard'
     | '/manager/reports'
@@ -1754,6 +1764,7 @@ export interface FileRouteTypes {
     | '/gps/history'
     | '/gps/today'
     | '/kb/$category'
+    | '/kb/admin'
     | '/kb/ask'
     | '/manager/dashboard'
     | '/manager/reports'
@@ -1914,6 +1925,7 @@ export interface FileRouteTypes {
     | '/_authenticated/gps/history'
     | '/_authenticated/gps/today'
     | '/_authenticated/kb/$category'
+    | '/_authenticated/kb/admin'
     | '/_authenticated/kb/ask'
     | '/_authenticated/manager/dashboard'
     | '/_authenticated/manager/reports'
@@ -2624,6 +2636,13 @@ declare module '@tanstack/react-router' {
       path: '/kb/ask'
       fullPath: '/kb/ask'
       preLoaderRoute: typeof AuthenticatedKbAskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kb/admin': {
+      id: '/_authenticated/kb/admin'
+      path: '/kb/admin'
+      fullPath: '/kb/admin'
+      preLoaderRoute: typeof AuthenticatedKbAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kb/$category': {
@@ -3518,6 +3537,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
+  AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
@@ -3570,6 +3590,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
+  AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
@@ -3607,13 +3628,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
