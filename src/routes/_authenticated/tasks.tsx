@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Plus, LayoutGrid, List, Calendar, Folder, Inbox, GanttChart, BarChart3 } from "lucide-react";
+import { Plus, LayoutGrid, List, Calendar, Folder, Inbox, GanttChart, BarChart3, Sun, CalendarRange, Moon } from "lucide-react";
 import { TaskFormDialog } from "@/components/tms/TaskFormDialog";
 import { TaskCommandPalette } from "@/components/tms/TaskCommandPalette";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,9 @@ export const Route = createFileRoute("/_authenticated/tasks")({
 
 type Tab = { to: string; label: string; icon: typeof Inbox; exact?: boolean };
 const TABS: Tab[] = [
+  { to: "/tasks/today", label: "Today", icon: Sun },
+  { to: "/tasks/weekly", label: "Weekly", icon: CalendarRange },
+  { to: "/tasks/eod", label: "End of Day", icon: Moon },
   { to: "/tasks", label: "My Tasks", icon: Inbox, exact: true },
   { to: "/tasks/board", label: "Board", icon: LayoutGrid },
   { to: "/tasks/list", label: "List", icon: List },
