@@ -46,6 +46,11 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         .from("company_members")
         .insert(data.company_ids.map((cid) => ({ company_id: cid, user_id: newUserId })));
     }
+    // Force password change on first login
+    await supabaseAdmin
+      .from("profiles")
+      .update({ must_change_password: true })
+      .eq("id", newUserId);
     return { ok: true, id: newUserId };
   });
 
@@ -74,6 +79,10 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       password: data.password,
     });
     if (error) throw new Error(error.message);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ must_change_password: true })
+      .eq("id", data.user_id);
     return { ok: true };
   });
 

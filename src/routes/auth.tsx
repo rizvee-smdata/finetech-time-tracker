@@ -29,7 +29,6 @@ export const Route = createFileRoute("/auth")({
 const schema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(6).max(72),
-  fullName: z.string().trim().max(100).optional(),
 });
 
 const STORAGE_KEY = "lavisho.activeCompany";
@@ -53,10 +52,8 @@ function AuthPage() {
   const nav = useNavigate();
   const ssoStartedRef = useRef(false);
   const [step, setStep] = useState<Step>("auth");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
   const [picked, setPicked] = useState<string>("");
@@ -77,7 +74,7 @@ function AuthPage() {
       if (ssoToken && !ssoStartedRef.current) {
         ssoStartedRef.current = true;
         stripSsoTokenFromUrl();
-        setMode("signin");
+        
         setBusy(true);
         try {
           const res = await fetch("/api/sso/verify", {
@@ -120,6 +117,18 @@ function AuthPage() {
       return;
     }
 
+    // Force password change on first login / after admin reset
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("must_change_password")
+      .eq("id", currentUserId)
+      .maybeSingle();
+    if (prof?.must_change_password) {
+      nav({ to: "/change-password" });
+      return;
+    }
+
+
     const { data: roles } = await supabase
       .from("user_roles").select("role").eq("user_id", currentUserId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
@@ -148,31 +157,16 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password, fullName: fullName || undefined });
+    const parsed = schema.safeParse({ email, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast.success("Account created.");
-      } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        await routeAfterAuth(data.user?.id);
-        return;
-      }
-      await routeAfterAuth();
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      await routeAfterAuth(data.user?.id);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Authentication failed";
       toast.error(msg);
@@ -231,45 +225,22 @@ function AuthPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6 flex rounded-lg bg-muted p-1">
-              <button
-                type="button"
-                onClick={() => setMode("signin")}
-                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("signup")}
-                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-              >
-                Create account
-              </button>
-            </div>
-
             <form onSubmit={submit} className="space-y-4" autoComplete="off">
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full name</Label>
-                  <Input id="name" autoComplete="off" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" />
-                </div>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" autoComplete="off" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lavisho.com" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" autoComplete="new-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input id="password" type="password" autoComplete="current-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <Button type="submit" disabled={busy} className="w-full">
-                {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
+                {busy ? "Please wait..." : "Sign in"}
               </Button>
             </form>
 
             <p className="mt-6 text-center text-xs text-muted-foreground">
-              The first user to register becomes Admin and can create companies & invite the rest of the team.
+              Accounts are created by your administrator. Contact your admin if you need access.
             </p>
           </>
         )}
