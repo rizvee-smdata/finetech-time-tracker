@@ -79,6 +79,10 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       password: data.password,
     });
     if (error) throw new Error(error.message);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ must_change_password: true })
+      .eq("id", data.user_id);
     return { ok: true };
   });
 
