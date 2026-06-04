@@ -19,6 +19,7 @@ import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticated/targets'
 import { Route as AuthenticatedSurveysRouteImport } from './routes/_authenticated/surveys'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedScorecardRouteImport } from './routes/_authenticated/scorecard'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedProposalsRouteImport } from './routes/_authenticated/proposals'
@@ -189,6 +190,11 @@ const AuthenticatedSurveysRoute = AuthenticatedSurveysRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedScorecardRoute = AuthenticatedScorecardRouteImport.update({
+  id: '/scorecard',
+  path: '/scorecard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
@@ -904,6 +910,7 @@ export interface FileRoutesByFullPath {
   '/proposals': typeof AuthenticatedProposalsRouteWithChildren
   '/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/reports': typeof AuthenticatedReportsRouteWithChildren
+  '/scorecard': typeof AuthenticatedScorecardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
@@ -1028,6 +1035,7 @@ export interface FileRoutesByTo {
   '/manager': typeof AuthenticatedManagerRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
+  '/scorecard': typeof AuthenticatedScorecardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
@@ -1160,6 +1168,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals': typeof AuthenticatedProposalsRouteWithChildren
   '/_authenticated/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
+  '/_authenticated/scorecard': typeof AuthenticatedScorecardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
@@ -1295,6 +1304,7 @@ export interface FileRouteTypes {
     | '/proposals'
     | '/reminders'
     | '/reports'
+    | '/scorecard'
     | '/settings'
     | '/surveys'
     | '/targets'
@@ -1419,6 +1429,7 @@ export interface FileRouteTypes {
     | '/manager'
     | '/partners'
     | '/preferences'
+    | '/scorecard'
     | '/settings'
     | '/team'
     | '/q/$token'
@@ -1550,6 +1561,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals'
     | '/_authenticated/reminders'
     | '/_authenticated/reports'
+    | '/_authenticated/scorecard'
     | '/_authenticated/settings'
     | '/_authenticated/surveys'
     | '/_authenticated/targets'
@@ -1746,6 +1758,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/scorecard': {
+      id: '/_authenticated/scorecard'
+      path: '/scorecard'
+      fullPath: '/scorecard'
+      preLoaderRoute: typeof AuthenticatedScorecardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports': {
@@ -2963,6 +2982,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProposalsRoute: typeof AuthenticatedProposalsRouteWithChildren
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
+  AuthenticatedScorecardRoute: typeof AuthenticatedScorecardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSurveysRoute: typeof AuthenticatedSurveysRouteWithChildren
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
@@ -2998,6 +3018,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProposalsRoute: AuthenticatedProposalsRouteWithChildren,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
+  AuthenticatedScorecardRoute: AuthenticatedScorecardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSurveysRoute: AuthenticatedSurveysRouteWithChildren,
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
