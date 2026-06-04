@@ -16,8 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin/map")({
 const PALETTE = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"];
 
 function AdminMapPage() {
-  const { companyId, roles } = useAuth() as any;
-  const isStaff = roles?.includes("admin") || roles?.includes("manager");
+  const { companyId, isStaff } = useAuth();
 
   const { data: rows = [] } = useQuery({
     queryKey: ["admin-map", companyId],
