@@ -142,11 +142,11 @@ Deno.serve(async (req) => {
     const monthStart = today.slice(0, 7) + "-01";
     const [{ data: leads }, { data: target }, { data: visits }] = await Promise.all([
       sb.from("crm_leads").select("expected_value").eq("assigned_to", userId).eq("stage", "won").gte("won_at", monthStart),
-      companyId ? sb.from("user_targets").select("revenue_target").eq("user_id", userId).eq("company_id", companyId).eq("period_start", monthStart).maybeSingle() : Promise.resolve({ data: null }),
+      companyId ? sb.from("targets").select("target_value").eq("user_id", userId).eq("company_id", companyId).eq("metric", "revenue").lte("period_start", today).gte("period_end", today).maybeSingle() : Promise.resolve({ data: null }),
       sb.from("visit_checkins").select("id").eq("user_id", userId).gte("checkin_time", monthStart),
     ]);
     const won = (leads ?? []).reduce((s: number, l: { expected_value: number | null }) => s + Number(l.expected_value ?? 0), 0);
-    const tgt = Number((target as { revenue_target?: number } | null)?.revenue_target ?? 0);
+    const tgt = Number((target as { target_value?: number } | null)?.target_value ?? 0);
     const pct = tgt > 0 ? Math.round((won / tgt) * 100) : 0;
     const body = `📊 *This month*\n💰 Revenue: ৳${new Intl.NumberFormat("en-IN").format(won)}${tgt ? ` / ৳${new Intl.NumberFormat("en-IN").format(tgt)} (${pct}%)` : ""}\n🤝 Deals won: ${leads?.length ?? 0}\n📍 Visits: ${visits?.length ?? 0}`;
     await sendWhatsApp({ phone, body, companyId, userId });
