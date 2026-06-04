@@ -77,6 +77,7 @@ import { Route as AuthenticatedTargetsKpisRouteImport } from './routes/_authenti
 import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authenticated/targets.all'
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
+import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
@@ -162,6 +163,7 @@ import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
+import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
 import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './routes/_authenticated/manager.approvals.expenses'
 import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
@@ -530,6 +532,12 @@ const AuthenticatedSurveysNewRoute = AuthenticatedSurveysNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AuthenticatedSurveysRoute,
 } as any)
+const AuthenticatedSettingsWhatsappRoute =
+  AuthenticatedSettingsWhatsappRouteImport.update({
+    id: '/whatsapp',
+    path: '/whatsapp',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const AuthenticatedScorecardTeamRoute =
   AuthenticatedScorecardTeamRouteImport.update({
     id: '/team',
@@ -1019,6 +1027,12 @@ const AuthenticatedTasksProjectsProjectIdRoute =
     path: '/$projectId',
     getParentRoute: () => AuthenticatedTasksProjectsRoute,
   } as any)
+const AuthenticatedSettingsWhatsappLogsRoute =
+  AuthenticatedSettingsWhatsappLogsRouteImport.update({
+    id: '/logs',
+    path: '/logs',
+    getParentRoute: () => AuthenticatedSettingsWhatsappRoute,
+  } as any)
 const AuthenticatedManagerApprovalsVisitsRoute =
   AuthenticatedManagerApprovalsVisitsRouteImport.update({
     id: '/approvals/visits',
@@ -1084,7 +1098,7 @@ export interface FileRoutesByFullPath {
   '/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
@@ -1165,6 +1179,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
@@ -1203,6 +1218,7 @@ export interface FileRoutesByFullPath {
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -1235,7 +1251,7 @@ export interface FileRoutesByTo {
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
@@ -1313,6 +1329,7 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
@@ -1351,6 +1368,7 @@ export interface FileRoutesByTo {
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -1394,7 +1412,7 @@ export interface FileRoutesById {
   '/_authenticated/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/scorecard': typeof AuthenticatedScorecardRouteWithChildren
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/surveys': typeof AuthenticatedSurveysRouteWithChildren
   '/_authenticated/targets': typeof AuthenticatedTargetsRouteWithChildren
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
@@ -1475,6 +1493,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/_authenticated/targets/all': typeof AuthenticatedTargetsAllRoute
@@ -1513,6 +1532,7 @@ export interface FileRoutesById {
   '/_authenticated/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/_authenticated/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
@@ -1637,6 +1657,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
     | '/targets/all'
@@ -1675,6 +1696,7 @@ export interface FileRouteTypes {
     | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
+    | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -1785,6 +1807,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
     | '/targets/all'
@@ -1823,6 +1846,7 @@ export interface FileRouteTypes {
     | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
+    | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -1946,6 +1970,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
+    | '/_authenticated/settings/whatsapp'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
     | '/_authenticated/targets/all'
@@ -1984,6 +2009,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kb/article/$id'
     | '/_authenticated/manager/approvals/expenses'
     | '/_authenticated/manager/approvals/visits'
+    | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
@@ -2497,6 +2523,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/surveys/new'
       preLoaderRoute: typeof AuthenticatedSurveysNewRouteImport
       parentRoute: typeof AuthenticatedSurveysRoute
+    }
+    '/_authenticated/settings/whatsapp': {
+      id: '/_authenticated/settings/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/settings/whatsapp'
+      preLoaderRoute: typeof AuthenticatedSettingsWhatsappRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/scorecard/team': {
       id: '/_authenticated/scorecard/team'
@@ -3093,6 +3126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedTasksProjectsRoute
     }
+    '/_authenticated/settings/whatsapp/logs': {
+      id: '/_authenticated/settings/whatsapp/logs'
+      path: '/logs'
+      fullPath: '/settings/whatsapp/logs'
+      preLoaderRoute: typeof AuthenticatedSettingsWhatsappLogsRouteImport
+      parentRoute: typeof AuthenticatedSettingsWhatsappRoute
+    }
     '/_authenticated/manager/approvals/visits': {
       id: '/_authenticated/manager/approvals/visits'
       path: '/approvals/visits'
@@ -3401,6 +3441,35 @@ const AuthenticatedScorecardRouteWithChildren =
     AuthenticatedScorecardRouteChildren,
   )
 
+interface AuthenticatedSettingsWhatsappRouteChildren {
+  AuthenticatedSettingsWhatsappLogsRoute: typeof AuthenticatedSettingsWhatsappLogsRoute
+}
+
+const AuthenticatedSettingsWhatsappRouteChildren: AuthenticatedSettingsWhatsappRouteChildren =
+  {
+    AuthenticatedSettingsWhatsappLogsRoute:
+      AuthenticatedSettingsWhatsappLogsRoute,
+  }
+
+const AuthenticatedSettingsWhatsappRouteWithChildren =
+  AuthenticatedSettingsWhatsappRoute._addFileChildren(
+    AuthenticatedSettingsWhatsappRouteChildren,
+  )
+
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
+}
+
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsWhatsappRoute:
+    AuthenticatedSettingsWhatsappRouteWithChildren,
+}
+
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
 interface AuthenticatedSurveysRouteChildren {
   AuthenticatedSurveysNewRoute: typeof AuthenticatedSurveysNewRoute
   AuthenticatedSurveysTemplatesRoute: typeof AuthenticatedSurveysTemplatesRoute
@@ -3518,7 +3587,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedScorecardRoute: typeof AuthenticatedScorecardRouteWithChildren
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedSurveysRoute: typeof AuthenticatedSurveysRouteWithChildren
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
@@ -3571,7 +3640,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRemindersRoute: AuthenticatedRemindersRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedScorecardRoute: AuthenticatedScorecardRouteWithChildren,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedSurveysRoute: AuthenticatedSurveysRouteWithChildren,
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
@@ -3628,13 +3697,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

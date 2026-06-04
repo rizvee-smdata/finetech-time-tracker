@@ -82,6 +82,7 @@ const nav = [
   { to: "/kb", label: "Knowledge Base", icon: BookOpen },
   { to: "/surveys", label: "Feedback", icon: MessageSquare },
   { to: "/chat", label: "Team Chat", icon: MessageSquare },
+  { to: "/settings/whatsapp", label: "WhatsApp Bot", icon: MessageSquare },
   { to: "/reminders", label: "Reminders", icon: Bell },
   { to: "/preferences", label: "Preferences", icon: Settings },
 ];
