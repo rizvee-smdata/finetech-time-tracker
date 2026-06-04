@@ -3377,6 +3377,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tms_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tms_tasks_milestone_id_fkey"
             columns: ["milestone_id"]
             isOneToOne: false
