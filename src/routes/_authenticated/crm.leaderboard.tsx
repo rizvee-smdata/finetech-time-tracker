@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
-import { formatMoney } from "@/lib/crm/types";
+import { formatBDT } from "@/lib/crm/types";
 import { startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, format } from "date-fns";
 import { Trophy, Medal, Award, Phone, Mail, MessageSquare, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
