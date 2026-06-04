@@ -117,6 +117,18 @@ function AuthPage() {
       return;
     }
 
+    // Force password change on first login / after admin reset
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("must_change_password")
+      .eq("id", currentUserId)
+      .maybeSingle();
+    if (prof?.must_change_password) {
+      nav({ to: "/change-password" });
+      return;
+    }
+
+
     const { data: roles } = await supabase
       .from("user_roles").select("role").eq("user_id", currentUserId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
