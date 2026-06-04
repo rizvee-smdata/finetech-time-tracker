@@ -55,6 +55,7 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
 
   { to: "/visits", label: "Visits", icon: ClipboardList },
+  { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
   { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/gps/today", label: "Route", icon: NavigationIcon },
   { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },

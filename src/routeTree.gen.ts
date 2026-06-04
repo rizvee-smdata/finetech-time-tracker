@@ -133,6 +133,9 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenticated/ai-visits.new'
+import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_authenticated/ai-visits.history'
+import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -839,6 +842,23 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const AuthenticatedAiVisitsNewRoute =
+  AuthenticatedAiVisitsNewRouteImport.update({
+    id: '/ai-visits/new',
+    path: '/ai-visits/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAiVisitsHistoryRoute =
+  AuthenticatedAiVisitsHistoryRouteImport.update({
+    id: '/ai-visits/history',
+    path: '/ai-visits/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAiVisitsIdRoute = AuthenticatedAiVisitsIdRouteImport.update({
+  id: '/ai-visits/$id',
+  path: '/ai-visits/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   id: '/admin/map',
   path: '/admin/map',
@@ -960,6 +980,9 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
+  '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
+  '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1088,6 +1111,9 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
+  '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
+  '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1230,6 +1256,9 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
+  '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
+  '/_authenticated/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
+  '/_authenticated/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1372,6 +1401,9 @@ export interface FileRouteTypes {
     | '/team'
     | '/q/$token'
     | '/admin/map'
+    | '/ai-visits/$id'
+    | '/ai-visits/history'
+    | '/ai-visits/new'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1500,6 +1532,9 @@ export interface FileRouteTypes {
     | '/team'
     | '/q/$token'
     | '/admin/map'
+    | '/ai-visits/$id'
+    | '/ai-visits/history'
+    | '/ai-visits/new'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1641,6 +1676,9 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/q/$token'
     | '/_authenticated/admin/map'
+    | '/_authenticated/ai-visits/$id'
+    | '/_authenticated/ai-visits/history'
+    | '/_authenticated/ai-visits/new'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -2636,6 +2674,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
     }
+    '/_authenticated/ai-visits/new': {
+      id: '/_authenticated/ai-visits/new'
+      path: '/ai-visits/new'
+      fullPath: '/ai-visits/new'
+      preLoaderRoute: typeof AuthenticatedAiVisitsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ai-visits/history': {
+      id: '/_authenticated/ai-visits/history'
+      path: '/ai-visits/history'
+      fullPath: '/ai-visits/history'
+      preLoaderRoute: typeof AuthenticatedAiVisitsHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ai-visits/$id': {
+      id: '/_authenticated/ai-visits/$id'
+      path: '/ai-visits/$id'
+      fullPath: '/ai-visits/$id'
+      preLoaderRoute: typeof AuthenticatedAiVisitsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/map': {
       id: '/_authenticated/admin/map'
       path: '/admin/map'
@@ -3129,6 +3188,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
+  AuthenticatedAiVisitsHistoryRoute: typeof AuthenticatedAiVisitsHistoryRoute
+  AuthenticatedAiVisitsNewRoute: typeof AuthenticatedAiVisitsNewRoute
   AuthenticatedClientsHealthRoute: typeof AuthenticatedClientsHealthRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
@@ -3167,6 +3229,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
+  AuthenticatedAiVisitsHistoryRoute: AuthenticatedAiVisitsHistoryRoute,
+  AuthenticatedAiVisitsNewRoute: AuthenticatedAiVisitsNewRoute,
   AuthenticatedClientsHealthRoute: AuthenticatedClientsHealthRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
