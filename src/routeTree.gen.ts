@@ -51,6 +51,7 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
+import { Route as AuthenticatedFollowupsIndexRouteImport } from './routes/_authenticated/followups.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
 import { Route as AuthenticatedDealsIndexRouteImport } from './routes/_authenticated/deals.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
@@ -378,6 +379,12 @@ const AuthenticatedPlanningIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
+  } as any)
+const AuthenticatedFollowupsIndexRoute =
+  AuthenticatedFollowupsIndexRouteImport.update({
+    id: '/followups/',
+    path: '/followups/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedExpensesIndexRoute =
   AuthenticatedExpensesIndexRouteImport.update({
@@ -1124,6 +1131,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/deals/': typeof AuthenticatedDealsIndexRoute
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1263,6 +1271,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/deals': typeof AuthenticatedDealsIndexRoute
   '/expenses': typeof AuthenticatedExpensesIndexRoute
+  '/followups': typeof AuthenticatedFollowupsIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -1416,6 +1425,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/deals/': typeof AuthenticatedDealsIndexRoute
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
+  '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1569,6 +1579,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/deals/'
     | '/expenses/'
+    | '/followups/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -1708,6 +1719,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/deals'
     | '/expenses'
+    | '/followups'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -1860,6 +1872,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/deals/'
     | '/_authenticated/expenses/'
+    | '/_authenticated/followups/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -2203,6 +2216,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/'
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/followups/': {
+      id: '/_authenticated/followups/'
+      path: '/followups'
+      fullPath: '/followups/'
+      preLoaderRoute: typeof AuthenticatedFollowupsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/expenses/': {
       id: '/_authenticated/expenses/'
@@ -3359,6 +3379,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
 }
@@ -3403,6 +3424,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedClientsClientIdHealthRoute:
     AuthenticatedClientsClientIdHealthRoute,
