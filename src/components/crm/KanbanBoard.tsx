@@ -69,13 +69,20 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
               <span className="text-xs font-medium text-foreground">{total ? formatBDT(total) : ""}</span>
             </div>
             <div className="flex flex-col gap-2 p-2 min-h-[120px]">
-              {list.map((l) => (
+              {list.map((l) => {
+                const daysInStage = differenceInDays(new Date(), new Date(l.stage_changed_at ?? l.last_activity_at ?? l.updated_at));
+                const daysIdle = differenceInDays(new Date(), new Date(l.updated_at));
+                const isStale = daysIdle >= 14 && l.stage !== "won" && l.stage !== "lost";
+                return (
                 <Card
                   key={l.id}
                   draggable
                   onDragStart={(e) => e.dataTransfer.setData("text/lead-id", l.id)}
                   onClick={() => nav({ to: "/crm/$leadId", params: { leadId: l.id } })}
-                  className="cursor-grab active:cursor-grabbing p-3 hover:border-primary/50 transition-colors"
+                  className={cn(
+                    "cursor-grab active:cursor-grabbing p-3 hover:border-primary/50 transition-colors",
+                    isStale && "border-orange-400/60",
+                  )}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -84,11 +91,18 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                         <div className="mt-0.5 truncate text-xs text-muted-foreground">{l.company_name}</div>
                       )}
                     </div>
-                    {l.priority && (
-                      <Badge variant="outline" className={cn("h-5 px-1.5 text-[10px] shrink-0", PRIORITY_META[l.priority]?.badge)}>
-                        {PRIORITY_META[l.priority]?.label}
-                      </Badge>
-                    )}
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      {isStale && (
+                        <Badge variant="outline" className="h-5 gap-1 border-orange-400/60 bg-orange-500/10 px-1.5 text-[10px] text-orange-700 dark:text-orange-300" title={`No update in ${daysIdle} days`}>
+                          <AlertTriangle className="h-3 w-3" />Stale
+                        </Badge>
+                      )}
+                      {l.priority && (
+                        <Badge variant="outline" className={cn("h-5 px-1.5 text-[10px]", PRIORITY_META[l.priority]?.badge)}>
+                          {PRIORITY_META[l.priority]?.label}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   {l.expected_value != null && (
                     <div className="mt-2 text-xs font-semibold text-primary">
@@ -97,12 +111,21 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                     </div>
                   )}
                   <div className="mt-2 flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
-                    {l.expected_close_date ? (
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{format(new Date(l.expected_close_date), "MMM d")}</span>
-                    ) : <span />}
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {daysInStage}d in stage
+                    </span>
                     <div className="flex items-center gap-1">
+                      {l.expected_close_date && (
+                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{format(new Date(l.expected_close_date), "MMM d")}</span>
+                      )}
                       {l.assignee && (
-                        <span className="flex items-center gap-1 truncate"><User2 className="h-3 w-3" />{(l.assignee.full_name || l.assignee.email)?.split(" ")[0]}</span>
+                        <span
+                          className="grid h-5 w-5 place-items-center rounded-full bg-primary/15 text-[10px] font-semibold text-primary"
+                          title={l.assignee.full_name || l.assignee.email || ""}
+                        >
+                          {(l.assignee.full_name || l.assignee.email || "?").slice(0, 1).toUpperCase()}
+                        </span>
                       )}
                       {l.phone && (
                         <a
@@ -111,15 +134,15 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                           rel="noreferrer"
                           onClick={(e) => e.stopPropagation()}
                           title={`WhatsApp ${l.phone}`}
-                          className="grid h-6 w-6 place-items-center rounded-full bg-green-500/15 text-green-600 hover:bg-green-500/25"
+                          className="grid h-5 w-5 place-items-center rounded-full bg-green-500/15 text-green-600 hover:bg-green-500/25"
                         >
-                          <MessageCircle className="h-3.5 w-3.5" />
+                          <MessageCircle className="h-3 w-3" />
                         </a>
                       )}
                     </div>
                   </div>
                 </Card>
-              ))}
+              );})}
               {list.length === 0 && (
                 <div className="grid h-16 place-items-center text-xs text-muted-foreground">Drop here</div>
               )}
