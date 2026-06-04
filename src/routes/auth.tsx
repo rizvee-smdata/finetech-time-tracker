@@ -29,7 +29,6 @@ export const Route = createFileRoute("/auth")({
 const schema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(6).max(72),
-  fullName: z.string().trim().max(100).optional(),
 });
 
 const STORAGE_KEY = "lavisho.activeCompany";
@@ -53,10 +52,8 @@ function AuthPage() {
   const nav = useNavigate();
   const ssoStartedRef = useRef(false);
   const [step, setStep] = useState<Step>("auth");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
   const [picked, setPicked] = useState<string>("");
