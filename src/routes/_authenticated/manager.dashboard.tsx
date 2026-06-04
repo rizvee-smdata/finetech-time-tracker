@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatBDT, slaInfo } from "@/lib/manager/helpers";
 import { formatDistanceToNow } from "date-fns";
 import { AlertTriangle, ClipboardCheck, Receipt, UserCheck, Activity } from "lucide-react";
+import { HealthAlertFeed } from "@/components/clients/HealthAlertFeed";
+
 
 export const Route = createFileRoute("/_authenticated/manager/dashboard")({
   component: ManagerDashboard,
