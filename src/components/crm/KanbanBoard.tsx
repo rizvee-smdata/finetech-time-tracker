@@ -66,7 +66,7 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                 <span className="text-sm font-semibold">{s.label}</span>
                 <Badge variant="secondary" className="h-5 px-1.5 text-xs">{list.length}</Badge>
               </div>
-              <span className="text-xs text-muted-foreground">{total ? formatMoney(total) : ""}</span>
+              <span className="text-xs font-medium text-foreground">{total ? formatBDT(total) : ""}</span>
             </div>
             <div className="flex flex-col gap-2 p-2 min-h-[120px]">
               {list.map((l) => (
