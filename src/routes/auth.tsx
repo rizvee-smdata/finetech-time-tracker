@@ -74,7 +74,7 @@ function AuthPage() {
       if (ssoToken && !ssoStartedRef.current) {
         ssoStartedRef.current = true;
         stripSsoTokenFromUrl();
-        setMode("signin");
+        
         setBusy(true);
         try {
           const res = await fetch("/api/sso/verify", {
