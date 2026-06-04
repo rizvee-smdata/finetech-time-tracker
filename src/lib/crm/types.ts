@@ -117,9 +117,23 @@ export type Quote = {
 
 export function formatMoney(value: number | null | undefined, currency = "USD") {
   if (value == null) return "—";
+  if (currency === "BDT") return formatBDT(value);
   try {
     return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
   } catch {
     return `${currency} ${value.toLocaleString()}`;
   }
 }
+
+// Bangladesh lakh/crore notation. ৳1,00,000 = 1L, ৳1,00,00,000 = 1Cr.
+export function formatBDT(value: number | null | undefined) {
+  if (value == null) return "—";
+  const v = Number(value);
+  if (!isFinite(v)) return "—";
+  const abs = Math.abs(v);
+  const sign = v < 0 ? "-" : "";
+  if (abs >= 10000000) return `${sign}৳${(abs / 10000000).toFixed(abs >= 100000000 ? 0 : 2).replace(/\.?0+$/, "")}Cr`;
+  if (abs >= 100000) return `${sign}৳${(abs / 100000).toFixed(abs >= 1000000 ? 0 : 2).replace(/\.?0+$/, "")}L`;
+  return `${sign}৳${Math.round(abs).toLocaleString("en-IN")}`;
+}
+
