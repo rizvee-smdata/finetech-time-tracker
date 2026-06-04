@@ -264,7 +264,8 @@ function NewVisit() {
               <Input id="location" value={form.location} onChange={set("location")} placeholder="City / address" />
             </Field>
             <Field label="Meeting date & time *" id="meeting_at">
-              <Input id="meeting_at" type="datetime-local" required value={form.meeting_at} onChange={set("meeting_at")} />
+              <Input id="meeting_at" type="datetime-local" required min={minMeeting} max={maxMeeting} value={form.meeting_at} onChange={set("meeting_at")} />
+              <p className="text-xs text-muted-foreground">Backdating limited to 2 working days (Fridays & company holidays excluded).</p>
             </Field>
             <Field label="Next meeting" id="next_meeting_at">
               <Input id="next_meeting_at" type="datetime-local" value={form.next_meeting_at} onChange={set("next_meeting_at")} />
