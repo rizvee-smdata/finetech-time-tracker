@@ -132,6 +132,19 @@ function NewVisit() {
       toast.error(parsed.error.issues[0].message);
       return;
     }
+    const meetingDate = new Date(form.meeting_at);
+    if (meetingDate < earliest) {
+      toast.error("Visits can only be backdated up to 2 working days (Fridays & holidays excluded).");
+      return;
+    }
+    if (meetingDate > new Date()) {
+      toast.error("Meeting date cannot be in the future.");
+      return;
+    }
+    if (!isWorkingDay(meetingDate)) {
+      toast.error("Meeting date falls on a Friday or company holiday.");
+      return;
+    }
     setBusy(true);
     const payload = {
       user_id: user!.id,
