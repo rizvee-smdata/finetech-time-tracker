@@ -110,7 +110,7 @@ export async function toggleBookmark(userId: string, articleId: string, bookmark
   if (bookmarked) {
     await supabase.from("kb_bookmarks" as never).delete().eq("user_id", userId).eq("article_id", articleId);
   } else {
-    await supabase.from("kb_bookmarks" as never).insert({ user_id: userId, article_id: articleId });
+    await supabase.from("kb_bookmarks" as never).insert({ user_id: userId, article_id: articleId } as never);
   }
 }
 
