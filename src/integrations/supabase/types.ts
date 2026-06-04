@@ -3105,6 +3105,7 @@ export type Database = {
           must_change_password: boolean
           phone: string | null
           updated_at: string
+          whatsapp_number: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -3115,6 +3116,7 @@ export type Database = {
           must_change_password?: boolean
           phone?: string | null
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -3125,6 +3127,7 @@ export type Database = {
           must_change_password?: boolean
           phone?: string | null
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
@@ -4867,6 +4870,153 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "visit_reports_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_message_log: {
+        Row: {
+          body: string | null
+          company_id: string | null
+          created_at: string
+          direction: string
+          error: string | null
+          id: string
+          media_url: string | null
+          message_type: string
+          metadata: Json | null
+          phone: string
+          status: string
+          template_key: string | null
+          user_id: string | null
+          wati_message_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          company_id?: string | null
+          created_at?: string
+          direction: string
+          error?: string | null
+          id?: string
+          media_url?: string | null
+          message_type?: string
+          metadata?: Json | null
+          phone: string
+          status?: string
+          template_key?: string | null
+          user_id?: string | null
+          wati_message_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          company_id?: string | null
+          created_at?: string
+          direction?: string
+          error?: string | null
+          id?: string
+          media_url?: string | null
+          message_type?: string
+          metadata?: Json | null
+          phone?: string
+          status?: string
+          template_key?: string | null
+          user_id?: string | null
+          wati_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_message_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_settings: {
+        Row: {
+          company_id: string
+          created_at: string
+          deal_won_manager_enabled: boolean
+          deal_won_rep_enabled: boolean
+          expense_capture_enabled: boolean
+          followup_threshold_days: number
+          id: string
+          inbound_commands_enabled: boolean
+          morning_briefing_enabled: boolean
+          morning_briefing_time: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          deal_won_manager_enabled?: boolean
+          deal_won_rep_enabled?: boolean
+          expense_capture_enabled?: boolean
+          followup_threshold_days?: number
+          id?: string
+          inbound_commands_enabled?: boolean
+          morning_briefing_enabled?: boolean
+          morning_briefing_time?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          deal_won_manager_enabled?: boolean
+          deal_won_rep_enabled?: boolean
+          expense_capture_enabled?: boolean
+          followup_threshold_days?: number
+          id?: string
+          inbound_commands_enabled?: boolean
+          morning_briefing_enabled?: boolean
+          morning_briefing_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_templates: {
+        Row: {
+          body: string
+          company_id: string
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          company_id: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          company_id?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_templates_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
