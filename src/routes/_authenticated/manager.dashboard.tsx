@@ -259,6 +259,9 @@ function ManagerDashboard() {
           )}
         </Card>
       </div>
+
+      <HealthAlertFeed />
     </div>
   );
 }
+
