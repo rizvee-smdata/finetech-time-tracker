@@ -72,7 +72,7 @@ function NewVisit() {
     },
   });
 
-  // Backdating window: allow today + previous 2 working days (skip Fridays & company holidays)
+  // Backdating window: allow today + previous 2 working days (skip company weekend days & holidays)
   const { data: holidaySet = new Set<string>() } = useQuery({
     queryKey: ["company-holidays-set", companyId],
     enabled: !!companyId,
@@ -86,13 +86,27 @@ function NewVisit() {
     },
   });
 
+  const { data: weekendDays = [5] } = useQuery({
+    queryKey: ["company-weekend", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("companies")
+        .select("weekend_days")
+        .eq("id", companyId!)
+        .single();
+      if (error) throw error;
+      return (data?.weekend_days ?? [5]) as number[];
+    },
+  });
+
   const ymd = (d: Date) => {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`;
   };
-  const isWorkingDay = (d: Date) => d.getDay() !== 5 && !holidaySet.has(ymd(d));
+  const isWorkingDay = (d: Date) => !weekendDays.includes(d.getDay()) && !holidaySet.has(ymd(d));
 
   const today = new Date();
   const earliest = new Date(today);

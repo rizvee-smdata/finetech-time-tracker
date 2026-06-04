@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +64,7 @@ function SettingsPage() {
           <UsersListCard />
         </TabsContent>
         <TabsContent value="holidays" className="space-y-6">
+          <WeekendDaysCard />
           <HolidaysCard />
         </TabsContent>
         <TabsContent value="import" className="space-y-6">
@@ -708,3 +709,84 @@ function HolidaysCard() {
     </>
   );
 }
+
+const DOW_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function WeekendDaysCard() {
+  const { companyId, company } = useAuth();
+  const qc = useQueryClient();
+
+  const q = useQuery({
+    queryKey: ["company-weekend", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("companies")
+        .select("weekend_days")
+        .eq("id", companyId!)
+        .single();
+      if (error) throw error;
+      return (data?.weekend_days ?? [5]) as number[];
+    },
+  });
+
+  const [selected, setSelected] = useState<number[]>([]);
+  useEffect(() => {
+    if (q.data) setSelected(q.data);
+  }, [q.data]);
+
+  const toggle = (d: number) => {
+    setSelected((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
+  };
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!companyId) throw new Error("No company selected");
+      const { error } = await supabase
+        .from("companies")
+        .update({ weekend_days: selected })
+        .eq("id", companyId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Weekend days updated");
+      qc.invalidateQueries({ queryKey: ["company-weekend"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-2 flex items-center gap-2">
+        <Calendar className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Weekly holidays</h2>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        {company?.name ? `${company.name} — ` : ""}Pick the days of the week that count as weekend. Visit rules and working-day calculations will skip these.
+      </p>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {DOW_LABELS.map((label, i) => {
+          const active = selected.includes(i);
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => toggle(i)}
+              className={`rounded-md border px-3 py-1.5 text-sm transition ${
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-background hover:bg-muted"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      <Button onClick={() => save.mutate()} disabled={save.isPending || q.isLoading}>
+        {save.isPending ? "Saving…" : "Save weekend days"}
+      </Button>
+    </Card>
+  );
+}
+

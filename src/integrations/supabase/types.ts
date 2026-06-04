@@ -198,6 +198,7 @@ export type Database = {
           name: string
           slug: string
           updated_at: string
+          weekend_days: number[]
         }
         Insert: {
           created_at?: string
@@ -205,6 +206,7 @@ export type Database = {
           name: string
           slug: string
           updated_at?: string
+          weekend_days?: number[]
         }
         Update: {
           created_at?: string
@@ -212,6 +214,7 @@ export type Database = {
           name?: string
           slug?: string
           updated_at?: string
+          weekend_days?: number[]
         }
         Relationships: []
       }
