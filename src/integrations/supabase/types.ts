@@ -235,6 +235,177 @@ export type Database = {
           },
         ]
       }
+      client_health_history: {
+        Row: {
+          account_id: string
+          calculated_on: string
+          company_id: string
+          created_at: string
+          id: string
+          rag_status: string
+          score: number
+        }
+        Insert: {
+          account_id: string
+          calculated_on?: string
+          company_id: string
+          created_at?: string
+          id?: string
+          rag_status: string
+          score: number
+        }
+        Update: {
+          account_id?: string
+          calculated_on?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          rag_status?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_health_history_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_health_history_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_health_rag_alerts: {
+        Row: {
+          account_id: string
+          account_name: string
+          acknowledged_at: string | null
+          assigned_rep_id: string | null
+          company_id: string
+          created_at: string
+          from_rag: string | null
+          id: string
+          last_visit_days: number | null
+          score: number
+          to_rag: string
+        }
+        Insert: {
+          account_id: string
+          account_name: string
+          acknowledged_at?: string | null
+          assigned_rep_id?: string | null
+          company_id: string
+          created_at?: string
+          from_rag?: string | null
+          id?: string
+          last_visit_days?: number | null
+          score: number
+          to_rag: string
+        }
+        Update: {
+          account_id?: string
+          account_name?: string
+          acknowledged_at?: string | null
+          assigned_rep_id?: string | null
+          company_id?: string
+          created_at?: string
+          from_rag?: string | null
+          id?: string
+          last_visit_days?: number | null
+          score?: number
+          to_rag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_health_rag_alerts_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_health_rag_alerts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_health_scores: {
+        Row: {
+          account_id: string
+          assigned_rep_id: string | null
+          calculated_at: string
+          company_id: string
+          created_at: string
+          id: string
+          last_visit_date: string | null
+          last_visit_days: number | null
+          open_deals_count: number
+          open_deals_value: number
+          pending_followups: number
+          rag_status: string
+          score: number
+          score_breakdown: Json
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          assigned_rep_id?: string | null
+          calculated_at?: string
+          company_id: string
+          created_at?: string
+          id?: string
+          last_visit_date?: string | null
+          last_visit_days?: number | null
+          open_deals_count?: number
+          open_deals_value?: number
+          pending_followups?: number
+          rag_status?: string
+          score?: number
+          score_breakdown?: Json
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          assigned_rep_id?: string | null
+          calculated_at?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          last_visit_date?: string | null
+          last_visit_days?: number | null
+          open_deals_count?: number
+          open_deals_value?: number
+          pending_followups?: number
+          rag_status?: string
+          score?: number
+          score_breakdown?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_health_scores_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: true
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_health_scores_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           created_at: string
@@ -3886,6 +4057,22 @@ export type Database = {
       }
     }
     Functions: {
+      compute_client_health: {
+        Args: { _account: string }
+        Returns: {
+          account_id: string
+          assigned_rep_id: string
+          company_id: string
+          last_visit_date: string
+          last_visit_days: number
+          open_deals_count: number
+          open_deals_value: number
+          pending_followups: number
+          rag_status: string
+          score: number
+          score_breakdown: Json
+        }[]
+      }
       compute_performance_kpis: {
         Args: { _company: string; _end: string; _start: string; _user: string }
         Returns: {
