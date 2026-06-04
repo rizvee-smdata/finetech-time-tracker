@@ -65,6 +65,7 @@ import { Route as AuthenticatedTasksCalendarRouteImport } from './routes/_authen
 import { Route as AuthenticatedTasksBoardRouteImport } from './routes/_authenticated/tasks.board'
 import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks.$taskId'
 import { Route as AuthenticatedTargetsLeaderboardRouteImport } from './routes/_authenticated/targets.leaderboard'
+import { Route as AuthenticatedTargetsKpisRouteImport } from './routes/_authenticated/targets.kpis'
 import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authenticated/targets.all'
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
@@ -427,6 +428,12 @@ const AuthenticatedTargetsLeaderboardRoute =
   AuthenticatedTargetsLeaderboardRouteImport.update({
     id: '/leaderboard',
     path: '/leaderboard',
+    getParentRoute: () => AuthenticatedTargetsRoute,
+  } as any)
+const AuthenticatedTargetsKpisRoute =
+  AuthenticatedTargetsKpisRouteImport.update({
+    id: '/kpis',
+    path: '/kpis',
     getParentRoute: () => AuthenticatedTargetsRoute,
   } as any)
 const AuthenticatedTargetsAllRoute = AuthenticatedTargetsAllRouteImport.update({
@@ -891,6 +898,7 @@ export interface FileRoutesByFullPath {
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/targets/kpis': typeof AuthenticatedTargetsKpisRoute
   '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
@@ -1001,6 +1009,7 @@ export interface FileRoutesByTo {
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/targets/kpis': typeof AuthenticatedTargetsKpisRoute
   '/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/tasks/board': typeof AuthenticatedTasksBoardRoute
@@ -1125,6 +1134,7 @@ export interface FileRoutesById {
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
   '/_authenticated/targets/all': typeof AuthenticatedTargetsAllRoute
+  '/_authenticated/targets/kpis': typeof AuthenticatedTargetsKpisRoute
   '/_authenticated/targets/leaderboard': typeof AuthenticatedTargetsLeaderboardRoute
   '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
   '/_authenticated/tasks/board': typeof AuthenticatedTasksBoardRoute
@@ -1249,6 +1259,7 @@ export interface FileRouteTypes {
     | '/surveys/new'
     | '/surveys/templates'
     | '/targets/all'
+    | '/targets/kpis'
     | '/targets/leaderboard'
     | '/tasks/$taskId'
     | '/tasks/board'
@@ -1359,6 +1370,7 @@ export interface FileRouteTypes {
     | '/surveys/new'
     | '/surveys/templates'
     | '/targets/all'
+    | '/targets/kpis'
     | '/targets/leaderboard'
     | '/tasks/$taskId'
     | '/tasks/board'
@@ -1482,6 +1494,7 @@ export interface FileRouteTypes {
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
     | '/_authenticated/targets/all'
+    | '/_authenticated/targets/kpis'
     | '/_authenticated/targets/leaderboard'
     | '/_authenticated/tasks/$taskId'
     | '/_authenticated/tasks/board'
@@ -1930,6 +1943,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/targets/leaderboard'
       preLoaderRoute: typeof AuthenticatedTargetsLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedTargetsRoute
+    }
+    '/_authenticated/targets/kpis': {
+      id: '/_authenticated/targets/kpis'
+      path: '/kpis'
+      fullPath: '/targets/kpis'
+      preLoaderRoute: typeof AuthenticatedTargetsKpisRouteImport
       parentRoute: typeof AuthenticatedTargetsRoute
     }
     '/_authenticated/targets/all': {
@@ -2629,12 +2649,14 @@ const AuthenticatedSurveysRouteWithChildren =
 
 interface AuthenticatedTargetsRouteChildren {
   AuthenticatedTargetsAllRoute: typeof AuthenticatedTargetsAllRoute
+  AuthenticatedTargetsKpisRoute: typeof AuthenticatedTargetsKpisRoute
   AuthenticatedTargetsLeaderboardRoute: typeof AuthenticatedTargetsLeaderboardRoute
   AuthenticatedTargetsIndexRoute: typeof AuthenticatedTargetsIndexRoute
 }
 
 const AuthenticatedTargetsRouteChildren: AuthenticatedTargetsRouteChildren = {
   AuthenticatedTargetsAllRoute: AuthenticatedTargetsAllRoute,
+  AuthenticatedTargetsKpisRoute: AuthenticatedTargetsKpisRoute,
   AuthenticatedTargetsLeaderboardRoute: AuthenticatedTargetsLeaderboardRoute,
   AuthenticatedTargetsIndexRoute: AuthenticatedTargetsIndexRoute,
 }

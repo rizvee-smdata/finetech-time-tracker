@@ -9,6 +9,7 @@ function TargetsLayout() {
   const router = useRouter();
   const path = router.state.location.pathname;
   const tabs = [
+    { to: "/targets/kpis", label: "My KPIs" },
     { to: "/targets", label: "Active" },
     { to: "/targets/all", label: "All targets" },
     { to: "/targets/leaderboard", label: "Leaderboard" },
