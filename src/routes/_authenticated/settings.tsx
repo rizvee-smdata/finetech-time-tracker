@@ -45,17 +45,31 @@ type Role = "admin" | "manager" | "employee";
 
 function SettingsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Admin tools — manage Lavisho Group companies, users, and import customer data.
+          Admin tools — manage Lavisho Group companies, users, holidays, and customer data.
         </p>
       </div>
-      <CompaniesCard />
-      <CreateUserCard />
-      <UsersListCard />
-      <ImportCustomersCard />
+      <Tabs defaultValue="general" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="holidays">Holidays</TabsTrigger>
+          <TabsTrigger value="import">Import</TabsTrigger>
+        </TabsList>
+        <TabsContent value="general" className="space-y-6">
+          <CompaniesCard />
+          <CreateUserCard />
+          <UsersListCard />
+        </TabsContent>
+        <TabsContent value="holidays" className="space-y-6">
+          <HolidaysCard />
+        </TabsContent>
+        <TabsContent value="import" className="space-y-6">
+          <ImportCustomersCard />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
