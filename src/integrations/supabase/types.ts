@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_visit_reports: {
+        Row: {
+          account_id: string | null
+          ai_generated: boolean
+          client_name: string
+          company_id: string
+          created_at: string
+          generated_at: string | null
+          id: string
+          language: string
+          location: string | null
+          model: string | null
+          raw_notes: string
+          report: Json
+          tasks_created_count: number
+          tone: string
+          updated_at: string
+          user_id: string
+          visit_date: string
+        }
+        Insert: {
+          account_id?: string | null
+          ai_generated?: boolean
+          client_name: string
+          company_id: string
+          created_at?: string
+          generated_at?: string | null
+          id?: string
+          language?: string
+          location?: string | null
+          model?: string | null
+          raw_notes: string
+          report?: Json
+          tasks_created_count?: number
+          tone?: string
+          updated_at?: string
+          user_id: string
+          visit_date?: string
+        }
+        Update: {
+          account_id?: string | null
+          ai_generated?: boolean
+          client_name?: string
+          company_id?: string
+          created_at?: string
+          generated_at?: string | null
+          id?: string
+          language?: string
+          location?: string | null
+          model?: string | null
+          raw_notes?: string
+          report?: Json
+          tasks_created_count?: number
+          tone?: string
+          updated_at?: string
+          user_id?: string
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_visit_reports_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_visit_reports_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approval_logs: {
         Row: {
           action: string
