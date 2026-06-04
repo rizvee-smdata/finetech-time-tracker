@@ -1403,33 +1403,39 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
+          deals_target: number
           id: string
           period_month: string
           target_value: number
           updated_at: string
           user_id: string
+          visits_target: number
         }
         Insert: {
           company_id: string
           created_at?: string
           created_by?: string | null
           currency?: string
+          deals_target?: number
           id?: string
           period_month: string
           target_value?: number
           updated_at?: string
           user_id: string
+          visits_target?: number
         }
         Update: {
           company_id?: string
           created_at?: string
           created_by?: string | null
           currency?: string
+          deals_target?: number
           id?: string
           period_month?: string
           target_value?: number
           updated_at?: string
           user_id?: string
+          visits_target?: number
         }
         Relationships: []
       }
