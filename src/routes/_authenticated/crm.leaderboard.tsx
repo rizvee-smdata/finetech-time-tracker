@@ -23,7 +23,8 @@ type Period = "month" | "quarter" | "year";
 type Metric = "revenue" | "deals" | "activities" | "calls";
 
 function LeaderboardPage() {
-  const { companyId } = useAuth();
+  const { companyId, user } = useAuth();
+  const currentUserId = user?.id ?? null;
   const [period, setPeriod] = useState<Period>("month");
   const [metric, setMetric] = useState<Metric>("revenue");
 
