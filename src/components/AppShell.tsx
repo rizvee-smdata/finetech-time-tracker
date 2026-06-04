@@ -20,6 +20,7 @@ import {
   Receipt,
   FileText,
   MapPin,
+  Calendar,
   Route as RouteIcon,
   MessageSquare,
   ScrollText,
