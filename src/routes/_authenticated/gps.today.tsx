@@ -95,9 +95,11 @@ function RouteToday() {
 
   function reorderByProximity() {
     if (!stops.length) return;
-    const startFrom = start ?? stops[0];
-    const rest = stops.filter((s) => s !== startFrom);
-    const ord = [startFrom, ...nearestNeighborOrder(startFrom, rest)];
+    const startFrom: Stop = start
+      ? { ...stops[0], lat: start.lat, lng: start.lng }
+      : stops[0];
+    const rest = start ? stops : stops.slice(1);
+    const ord = nearestNeighborOrder(startFrom, rest);
     setOrder(ord.map((s) => s.task_id));
     toast.success("Route optimized by proximity");
   }

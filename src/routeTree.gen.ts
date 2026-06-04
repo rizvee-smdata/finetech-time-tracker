@@ -81,6 +81,7 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedGpsTodayRouteImport } from './routes/_authenticated/gps.today'
 import { Route as AuthenticatedExpensesSettingsRouteImport } from './routes/_authenticated/expenses.settings'
 import { Route as AuthenticatedExpensesReportsRouteImport } from './routes/_authenticated/expenses.reports'
 import { Route as AuthenticatedExpensesNewRouteImport } from './routes/_authenticated/expenses.new'
@@ -524,6 +525,11 @@ const AuthenticatedPlanningPlanIdRoute =
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedGpsTodayRoute = AuthenticatedGpsTodayRouteImport.update({
+  id: '/gps/today',
+  path: '/gps/today',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedExpensesSettingsRoute =
   AuthenticatedExpensesSettingsRouteImport.update({
     id: '/settings',
@@ -883,6 +889,7 @@ export interface FileRoutesByFullPath {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -994,6 +1001,7 @@ export interface FileRoutesByTo {
   '/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/gps/today': typeof AuthenticatedGpsTodayRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1119,6 +1127,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/new': typeof AuthenticatedExpensesNewRoute
   '/_authenticated/expenses/reports': typeof AuthenticatedExpensesReportsRoute
   '/_authenticated/expenses/settings': typeof AuthenticatedExpensesSettingsRoute
+  '/_authenticated/gps/today': typeof AuthenticatedGpsTodayRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1244,6 +1253,7 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/gps/today'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1355,6 +1365,7 @@ export interface FileRouteTypes {
     | '/expenses/new'
     | '/expenses/reports'
     | '/expenses/settings'
+    | '/gps/today'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1479,6 +1490,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/new'
     | '/_authenticated/expenses/reports'
     | '/_authenticated/expenses/settings'
+    | '/_authenticated/gps/today'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -2056,6 +2068,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/$planId'
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/gps/today': {
+      id: '/_authenticated/gps/today'
+      path: '/gps/today'
+      fullPath: '/gps/today'
+      preLoaderRoute: typeof AuthenticatedGpsTodayRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/expenses/settings': {
       id: '/_authenticated/expenses/settings'
@@ -2751,6 +2770,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
 }
@@ -2781,6 +2801,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
 }
