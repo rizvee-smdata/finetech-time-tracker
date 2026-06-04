@@ -123,6 +123,7 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -767,6 +768,11 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
+  id: '/admin/map',
+  path: '/admin/map',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -862,6 +868,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/admin/map': typeof AuthenticatedAdminMapRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -976,6 +983,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/admin/map': typeof AuthenticatedAdminMapRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1104,6 +1112,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/q/$token': typeof QTokenRoute
+  '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1232,6 +1241,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/team'
     | '/q/$token'
+    | '/admin/map'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1346,6 +1356,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/q/$token'
+    | '/admin/map'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -1473,6 +1484,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/_authenticated/team'
     | '/q/$token'
+    | '/_authenticated/admin/map'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -2387,6 +2399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
     }
+    '/_authenticated/admin/map': {
+      id: '/_authenticated/admin/map'
+      path: '/admin/map'
+      fullPath: '/admin/map'
+      preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -2808,6 +2827,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedGpsCheckinRoute: typeof AuthenticatedGpsCheckinRoute
   AuthenticatedGpsHistoryRoute: typeof AuthenticatedGpsHistoryRoute
   AuthenticatedGpsTodayRoute: typeof AuthenticatedGpsTodayRoute
@@ -2841,6 +2861,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedGpsCheckinRoute: AuthenticatedGpsCheckinRoute,
   AuthenticatedGpsHistoryRoute: AuthenticatedGpsHistoryRoute,
   AuthenticatedGpsTodayRoute: AuthenticatedGpsTodayRoute,
