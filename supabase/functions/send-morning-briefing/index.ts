@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
     const [tasksRes, visitsRes, followupsRes, leadsRes, targetRes] = await Promise.all([
       sb.from("tms_task_assignees").select("task_id, tms_tasks!inner(id, due_date, status_id, company_id, tms_task_statuses!inner(is_terminal))").eq("user_id", rep.user_id).eq("tms_tasks.due_date", todayLocal).eq("tms_tasks.company_id", rep.company_id),
       sb.from("customer_visits").select("id").eq("user_id", rep.user_id).eq("company_id", rep.company_id).gte("meeting_at", todayLocal + "T00:00:00").lt("meeting_at", todayLocal + "T23:59:59"),
-      sb.from("followups").select("id").eq("user_id", rep.user_id).eq("company_id", rep.company_id).lte("due_at", todayLocal + "T23:59:59").in("status", ["pending", "snoozed"]),
+      sb.from("followups").select("id").eq("rep_id", rep.user_id).eq("company_id", rep.company_id).in("status", ["pending", "snoozed"]),
       sb.from("crm_leads").select("expected_value").eq("assigned_to", rep.user_id).eq("company_id", rep.company_id).eq("stage", "won").gte("won_at", monthStart),
       sb.from("targets").select("target_value").eq("user_id", rep.user_id).eq("company_id", rep.company_id).eq("metric", "revenue").lte("period_start", todayLocal).gte("period_end", todayLocal).maybeSingle(),
     ]);
