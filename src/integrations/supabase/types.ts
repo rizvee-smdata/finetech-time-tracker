@@ -481,6 +481,135 @@ export type Database = {
           },
         ]
       }
+      coaching_flags: {
+        Row: {
+          company_id: string
+          created_at: string
+          flagged_by: string
+          id: string
+          insight_id: string | null
+          reason: string | null
+          rep_id: string
+          scheduled_at: string | null
+          status: string
+          task_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          flagged_by: string
+          id?: string
+          insight_id?: string | null
+          reason?: string | null
+          rep_id: string
+          scheduled_at?: string | null
+          status?: string
+          task_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          flagged_by?: string
+          id?: string
+          insight_id?: string | null
+          reason?: string | null
+          rep_id?: string
+          scheduled_at?: string | null
+          status?: string
+          task_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_flags_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaching_flags_insight_id_fkey"
+            columns: ["insight_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_insights"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaching_flags_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_insights: {
+        Row: {
+          actions: Json
+          company_id: string
+          created_at: string
+          data_snapshot: Json
+          engagement_score: number | null
+          evidence: Json
+          focus_area: string | null
+          generated_at: string
+          id: string
+          model: string | null
+          motivational_message: string | null
+          strength: string | null
+          updated_at: string
+          user_id: string
+          week_start: string
+          win_pattern: string | null
+        }
+        Insert: {
+          actions?: Json
+          company_id: string
+          created_at?: string
+          data_snapshot?: Json
+          engagement_score?: number | null
+          evidence?: Json
+          focus_area?: string | null
+          generated_at?: string
+          id?: string
+          model?: string | null
+          motivational_message?: string | null
+          strength?: string | null
+          updated_at?: string
+          user_id: string
+          week_start: string
+          win_pattern?: string | null
+        }
+        Update: {
+          actions?: Json
+          company_id?: string
+          created_at?: string
+          data_snapshot?: Json
+          engagement_score?: number | null
+          evidence?: Json
+          focus_area?: string | null
+          generated_at?: string
+          id?: string
+          model?: string | null
+          motivational_message?: string | null
+          strength?: string | null
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+          win_pattern?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_insights_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           created_at: string
