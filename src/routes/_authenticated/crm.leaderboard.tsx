@@ -211,7 +211,7 @@ function LeaderboardPage() {
               <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">Top performer</div>
               <div className="text-2xl font-bold">{top.name}</div>
               <div className="text-sm text-muted-foreground">
-                {metric === "revenue" && `${formatMoney(top.revenue, "USD")} closed-won`}
+                {metric === "revenue" && `${formatBDT(top.revenue)} closed-won`}
                 {metric === "deals" && `${top.deals} deals won`}
                 {metric === "activities" && `${top.activities} activities logged`}
                 {metric === "calls" && `${top.calls} calls made`}
