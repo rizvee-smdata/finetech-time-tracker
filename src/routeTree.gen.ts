@@ -115,6 +115,8 @@ import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_a
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
@@ -714,6 +716,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksVisitReminderCheckRoute =
   ApiPublicHooksVisitReminderCheckRouteImport.update({
     id: '/api/public/hooks/visit-reminder-check',
@@ -875,6 +887,8 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -978,6 +992,8 @@ export interface FileRoutesByTo {
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -1095,6 +1111,8 @@ export interface FileRoutesById {
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -1212,6 +1230,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
@@ -1315,6 +1335,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
@@ -1431,6 +1453,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
@@ -1446,6 +1470,8 @@ export interface RootRouteChildren {
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -2193,6 +2219,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/visit-reminder-check': {
       id: '/api/public/hooks/visit-reminder-check'
       path: '/api/public/hooks/visit-reminder-check'
@@ -2631,18 +2671,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
