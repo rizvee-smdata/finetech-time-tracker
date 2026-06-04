@@ -104,45 +104,51 @@ function LeaderboardPage() {
       name: string;
       revenue: number;
       deals: number;
+      lost: number;
+      winRate: number;
       activities: number;
       calls: number;
       emails: number;
       messages: number;
     };
+    const blank = (id: string, name: string): Row => ({
+      userId: id, name, revenue: 0, deals: 0, lost: 0, winRate: 0,
+      activities: 0, calls: 0, emails: 0, messages: 0,
+    });
     const map = new Map<string, Row>();
     for (const m of members.data ?? []) {
-      map.set(m.id, {
-        userId: m.id,
-        name: m.full_name ?? m.email ?? m.id,
-        revenue: 0, deals: 0, activities: 0, calls: 0, emails: 0, messages: 0,
-      });
+      map.set(m.id, blank(m.id, m.full_name ?? m.email ?? m.id));
     }
     for (const w of wonLeads.data ?? []) {
       if (!w.assigned_to) continue;
       let r = map.get(w.assigned_to);
-      if (!r) {
-        r = { userId: w.assigned_to, name: "Unknown", revenue: 0, deals: 0, activities: 0, calls: 0, emails: 0, messages: 0 };
-        map.set(w.assigned_to, r);
-      }
+      if (!r) { r = blank(w.assigned_to, "Unknown"); map.set(w.assigned_to, r); }
       r.revenue += Number(w.expected_value) || 0;
       r.deals += 1;
+    }
+    for (const l of lostLeads.data ?? []) {
+      if (!l.assigned_to) continue;
+      let r = map.get(l.assigned_to);
+      if (!r) { r = blank(l.assigned_to, "Unknown"); map.set(l.assigned_to, r); }
+      r.lost += 1;
     }
     for (const a of activities.data ?? []) {
       if (!a.user_id) continue;
       let r = map.get(a.user_id);
-      if (!r) {
-        r = { userId: a.user_id, name: "Unknown", revenue: 0, deals: 0, activities: 0, calls: 0, emails: 0, messages: 0 };
-        map.set(a.user_id, r);
-      }
+      if (!r) { r = blank(a.user_id, "Unknown"); map.set(a.user_id, r); }
       r.activities += 1;
       if (a.activity_type === "call") r.calls += 1;
       else if (a.activity_type === "email") r.emails += 1;
       else if (a.activity_type === "whatsapp" || a.activity_type === "sms") r.messages += 1;
     }
     const arr = Array.from(map.values());
+    for (const r of arr) {
+      const denom = r.deals + r.lost;
+      r.winRate = denom > 0 ? Math.round((r.deals / denom) * 100) : 0;
+    }
     arr.sort((a, b) => (b[metric] as number) - (a[metric] as number));
     return arr;
-  }, [members.data, wonLeads.data, activities.data, metric]);
+  }, [members.data, wonLeads.data, lostLeads.data, activities.data, metric]);
 
   const top = rows[0];
   const total = useMemo(() => {
