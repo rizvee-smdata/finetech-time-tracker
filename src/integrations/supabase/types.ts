@@ -3369,68 +3369,124 @@ export type Database = {
       }
       route_plan_stops: {
         Row: {
+          account_id: string | null
           actual_visit_id: string | null
           address: string | null
+          area: string | null
           arrived_at: string | null
+          checked_in: boolean
+          checked_in_at: string | null
+          checkin_id: string | null
           completed_at: string | null
           created_at: string
           customer_name: string
+          days_since_last_visit: number | null
+          distance_from_prev_km: number | null
+          estimated_arrival_time: string | null
           id: string
           latitude: number | null
           lead_id: string | null
           location_name: string | null
           longitude: number | null
           notes: string | null
+          open_deal_value: number | null
           plan_id: string
           planned_arrival: string | null
           planned_duration_minutes: number | null
+          priority: string
+          rationale: string | null
           sequence: number
           status: Database["public"]["Enums"]["route_stop_status"]
+          task_id: string | null
+          travel_time_from_prev_min: number
+          visit_type: string
         }
         Insert: {
+          account_id?: string | null
           actual_visit_id?: string | null
           address?: string | null
+          area?: string | null
           arrived_at?: string | null
+          checked_in?: boolean
+          checked_in_at?: string | null
+          checkin_id?: string | null
           completed_at?: string | null
           created_at?: string
           customer_name: string
+          days_since_last_visit?: number | null
+          distance_from_prev_km?: number | null
+          estimated_arrival_time?: string | null
           id?: string
           latitude?: number | null
           lead_id?: string | null
           location_name?: string | null
           longitude?: number | null
           notes?: string | null
+          open_deal_value?: number | null
           plan_id: string
           planned_arrival?: string | null
           planned_duration_minutes?: number | null
+          priority?: string
+          rationale?: string | null
           sequence?: number
           status?: Database["public"]["Enums"]["route_stop_status"]
+          task_id?: string | null
+          travel_time_from_prev_min?: number
+          visit_type?: string
         }
         Update: {
+          account_id?: string | null
           actual_visit_id?: string | null
           address?: string | null
+          area?: string | null
           arrived_at?: string | null
+          checked_in?: boolean
+          checked_in_at?: string | null
+          checkin_id?: string | null
           completed_at?: string | null
           created_at?: string
           customer_name?: string
+          days_since_last_visit?: number | null
+          distance_from_prev_km?: number | null
+          estimated_arrival_time?: string | null
           id?: string
           latitude?: number | null
           lead_id?: string | null
           location_name?: string | null
           longitude?: number | null
           notes?: string | null
+          open_deal_value?: number | null
           plan_id?: string
           planned_arrival?: string | null
           planned_duration_minutes?: number | null
+          priority?: string
+          rationale?: string | null
           sequence?: number
           status?: Database["public"]["Enums"]["route_stop_status"]
+          task_id?: string | null
+          travel_time_from_prev_min?: number
+          visit_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "route_plan_stops_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "route_plan_stops_actual_visit_id_fkey"
             columns: ["actual_visit_id"]
             isOneToOne: false
             referencedRelation: "customer_visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_plan_stops_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: false
+            referencedRelation: "visit_checkins"
             referencedColumns: ["id"]
           },
           {
@@ -3447,15 +3503,29 @@ export type Database = {
             referencedRelation: "route_plans"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "route_plan_stops_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
         ]
       }
       route_plans: {
         Row: {
+          actual_distance_km: number | null
+          ai_model: string | null
           company_id: string
+          completed_at: string | null
+          confirmed_at: string | null
           created_at: string
           created_by: string
+          estimated_return_time: string | null
           id: string
+          mileage_expense_id: string | null
           notes: string | null
+          optimized_at: string | null
           plan_date: string
           start_latitude: number | null
           start_location: string | null
@@ -3463,15 +3533,25 @@ export type Database = {
           status: Database["public"]["Enums"]["route_plan_status"]
           territory: string | null
           title: string | null
+          total_distance_km: number | null
+          total_minutes: number | null
+          traffic_warnings: string[]
           updated_at: string
           user_id: string
         }
         Insert: {
+          actual_distance_km?: number | null
+          ai_model?: string | null
           company_id: string
+          completed_at?: string | null
+          confirmed_at?: string | null
           created_at?: string
           created_by: string
+          estimated_return_time?: string | null
           id?: string
+          mileage_expense_id?: string | null
           notes?: string | null
+          optimized_at?: string | null
           plan_date: string
           start_latitude?: number | null
           start_location?: string | null
@@ -3479,15 +3559,25 @@ export type Database = {
           status?: Database["public"]["Enums"]["route_plan_status"]
           territory?: string | null
           title?: string | null
+          total_distance_km?: number | null
+          total_minutes?: number | null
+          traffic_warnings?: string[]
           updated_at?: string
           user_id: string
         }
         Update: {
+          actual_distance_km?: number | null
+          ai_model?: string | null
           company_id?: string
+          completed_at?: string | null
+          confirmed_at?: string | null
           created_at?: string
           created_by?: string
+          estimated_return_time?: string | null
           id?: string
+          mileage_expense_id?: string | null
           notes?: string | null
+          optimized_at?: string | null
           plan_date?: string
           start_latitude?: number | null
           start_location?: string | null
@@ -3495,10 +3585,21 @@ export type Database = {
           status?: Database["public"]["Enums"]["route_plan_status"]
           territory?: string | null
           title?: string | null
+          total_distance_km?: number | null
+          total_minutes?: number | null
+          traffic_warnings?: string[]
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "route_plans_mileage_expense_id_fkey"
+            columns: ["mileage_expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppressed_emails: {
         Row: {
