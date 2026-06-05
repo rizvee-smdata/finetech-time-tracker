@@ -459,3 +459,125 @@ function ProposalEditorPage() {
     </div>
   );
 }
+
+function ReviewPanel({
+  proposal,
+  sectionId,
+  onAdd,
+  onToggleResolved,
+}: {
+  proposal: Proposal;
+  sectionId?: string;
+  onAdd: (msg: string, sectionId?: string) => void;
+  onToggleResolved: (id: string) => void;
+}) {
+  const [text, setText] = useState("");
+  const [scope, setScope] = useState<"section" | "general">("section");
+  const comments = (proposal.comments ?? []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const open = comments.filter((c) => !c.resolved).length;
+
+  return (
+    <Card className="border-border/60 bg-card/40 backdrop-blur">
+      <CardContent className="space-y-2 p-3">
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <MessageSquare className="h-4 w-4 text-emerald-400" />
+          Review &amp; Comments
+          {open > 0 && (
+            <Badge variant="outline" className="border-amber-500/40 text-[10px] text-amber-300">
+              {open} open
+            </Badge>
+          )}
+          {proposal.approvedAt && (
+            <Badge variant="outline" className="border-emerald-500/40 text-[10px] text-emerald-300">
+              Approved by {proposal.approvedBy ?? "manager"}
+            </Badge>
+          )}
+        </div>
+        <div className="flex gap-1 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setScope("section")}
+            disabled={!sectionId}
+            className={cn(
+              "rounded-full px-2 py-0.5 border",
+              scope === "section"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-border/60 text-muted-foreground",
+            )}
+          >
+            On this section
+          </button>
+          <button
+            type="button"
+            onClick={() => setScope("general")}
+            className={cn(
+              "rounded-full px-2 py-0.5 border",
+              scope === "general"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-border/60 text-muted-foreground",
+            )}
+          >
+            General
+          </button>
+        </div>
+        <Textarea
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Leave feedback for the rep or manager…"
+        />
+        <Button
+          size="sm"
+          className="w-full bg-emerald-500 hover:bg-emerald-600"
+          disabled={!text.trim()}
+          onClick={() => {
+            onAdd(text, scope === "section" ? sectionId : undefined);
+            setText("");
+          }}
+        >
+          Add comment
+        </Button>
+        <div className="max-h-[260px] space-y-1.5 overflow-auto pt-1">
+          {comments.length === 0 && (
+            <div className="rounded border border-dashed border-border/40 p-3 text-center text-[11px] text-muted-foreground">
+              No comments yet.
+            </div>
+          )}
+          {comments.map((c) => (
+            <div
+              key={c.id}
+              className={cn(
+                "rounded border p-2 text-xs",
+                c.resolved ? "border-border/30 opacity-60" : "border-border/60 bg-background/40",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-medium">
+                  {c.author}{" "}
+                  <Badge variant="outline" className="ml-1 text-[9px]">
+                    {c.authorRole}
+                  </Badge>
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {format(new Date(c.createdAt), "dd MMM HH:mm")}
+                </span>
+              </div>
+              <div className="mt-1 whitespace-pre-wrap text-[12px]">{c.message}</div>
+              <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
+                <span>{c.sectionId ? "On section" : "General"}</span>
+                <button
+                  type="button"
+                  className="text-emerald-400 hover:underline"
+                  onClick={() => onToggleResolved(c.id)}
+                >
+                  {c.resolved ? "Reopen" : "Resolve"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
