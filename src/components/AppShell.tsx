@@ -21,6 +21,7 @@ import {
   Receipt,
   FileText,
   MapPin,
+  Camera,
   Calendar,
   Route as RouteIcon,
   Navigation as NavigationIcon,
@@ -65,6 +66,7 @@ const nav = [
   { to: "/route/live", label: "Live Route", icon: NavigationIcon },
   { to: "/gps/today", label: "Route", icon: NavigationIcon },
   { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
+  { to: "/scan", label: "Scan Card", icon: Camera },
   { to: "/crm", label: "CRM", icon: Target },
   
   { to: "/deals", label: "Deal Health", icon: TrendingUp },
