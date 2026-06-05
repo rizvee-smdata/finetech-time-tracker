@@ -252,26 +252,54 @@ function KbAdmin() {
             <Label htmlFor="pub">Published</Label>
           </div>
 
-          {draft.id && (
-            <div className="space-y-2">
-              <Label>Attachments</Label>
-              <div className="flex flex-wrap gap-2">
-                {draft.attachments.map((a) => (
-                  <Badge key={a.path} variant="outline">{a.name}</Badge>
-                ))}
-              </div>
-              <label className="inline-flex">
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }}
-                />
-                <Button type="button" variant="outline" size="sm" asChild>
-                  <span><Upload className="h-4 w-4 mr-1" /> Upload PDF/file</span>
-                </Button>
-              </label>
+          <div className="space-y-2">
+            <Label>Attachments (PDF, PPTX, DOCX, etc.)</Label>
+            <div className="flex flex-wrap gap-2">
+              {draft.attachments.length === 0 && (
+                <span className="text-xs text-muted-foreground">No files yet — uploads are saved with the article.</span>
+              )}
+              {draft.attachments.map((a) => (
+                <Badge key={a.path} variant="outline" className="gap-2 pr-1">
+                  <button
+                    type="button"
+                    className="hover:underline"
+                    onClick={async () => {
+                      const url = await attachmentUrl(a.path);
+                      if (url) window.open(url, "_blank");
+                    }}
+                  >
+                    {a.name}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${a.name}`}
+                    className="ml-1 rounded hover:bg-destructive/10 hover:text-destructive p-0.5"
+                    onClick={async () => {
+                      const newList = draft.attachments.filter((x) => x.path !== a.path);
+                      setDraft({ ...draft, attachments: newList });
+                      await supabase.storage.from("kb-attachments").remove([a.path]);
+                      if (draft.id) {
+                        await supabase.from("kb_articles" as never).update({ attachments: newList } as never).eq("id", draft.id);
+                      }
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
             </div>
-          )}
+            <label className="inline-flex">
+              <input
+                type="file"
+                className="hidden"
+                accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip,.png,.jpg,.jpeg"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }}
+              />
+              <Button type="button" variant="outline" size="sm" asChild>
+                <span><Upload className="h-4 w-4 mr-1" /> Upload file</span>
+              </Button>
+            </label>
+          </div>
 
           <div className="flex justify-between gap-2 pt-2 border-t">
             {draft.id ? (
