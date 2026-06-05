@@ -28,6 +28,7 @@ import { Route as AuthenticatedProposalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
+import { Route as AuthenticatedNarrativesRouteImport } from './routes/_authenticated/narratives'
 import { Route as AuthenticatedManagerRouteImport } from './routes/_authenticated/manager'
 import { Route as AuthenticatedHolidaysRouteImport } from './routes/_authenticated/holidays'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
@@ -102,6 +103,8 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedNarrativesSettingsRouteImport } from './routes/_authenticated/narratives.settings'
+import { Route as AuthenticatedNarrativesIdRouteImport } from './routes/_authenticated/narratives.$id'
 import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
 import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
 import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
@@ -173,6 +176,7 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
+import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
@@ -279,6 +283,11 @@ const AuthenticatedPlanningRoute = AuthenticatedPlanningRouteImport.update({
 const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNarrativesRoute = AuthenticatedNarrativesRouteImport.update({
+  id: '/narratives',
+  path: '/narratives',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedManagerRoute = AuthenticatedManagerRouteImport.update({
@@ -695,6 +704,18 @@ const AuthenticatedPlanningPlanIdRoute =
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedNarrativesSettingsRoute =
+  AuthenticatedNarrativesSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedNarrativesRoute,
+  } as any)
+const AuthenticatedNarrativesIdRoute =
+  AuthenticatedNarrativesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedNarrativesRoute,
+  } as any)
 const AuthenticatedManagerTeamRoute =
   AuthenticatedManagerTeamRouteImport.update({
     id: '/team',
@@ -1098,6 +1119,12 @@ const ApiPublicHooksProcessRemindersRoute =
     path: '/api/public/hooks/process-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksNarrativesWeeklyCronRoute =
+  ApiPublicHooksNarrativesWeeklyCronRouteImport.update({
+    id: '/api/public/hooks/narratives-weekly-cron',
+    path: '/api/public/hooks/narratives-weekly-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksCrmRenewalsRoute =
   ApiPublicHooksCrmRenewalsRouteImport.update({
     id: '/api/public/hooks/crm-renewals',
@@ -1193,6 +1220,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -1270,6 +1298,8 @@ export interface FileRoutesByFullPath {
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1338,6 +1368,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -1365,6 +1396,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
@@ -1435,6 +1467,8 @@ export interface FileRoutesByTo {
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1503,6 +1537,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -1537,6 +1572,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/holidays': typeof AuthenticatedHolidaysRoute
   '/_authenticated/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/_authenticated/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -1614,6 +1650,8 @@ export interface FileRoutesById {
   '/_authenticated/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/_authenticated/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/_authenticated/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/_authenticated/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/_authenticated/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1682,6 +1720,7 @@ export interface FileRoutesById {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -1716,6 +1755,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/holidays'
     | '/manager'
+    | '/narratives'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -1793,6 +1833,8 @@ export interface FileRouteTypes {
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
+    | '/narratives/$id'
+    | '/narratives/settings'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1861,6 +1903,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
@@ -1888,6 +1931,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/holidays'
     | '/manager'
+    | '/narratives'
     | '/partners'
     | '/preferences'
     | '/scorecard'
@@ -1958,6 +2002,8 @@ export interface FileRouteTypes {
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
+    | '/narratives/$id'
+    | '/narratives/settings'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -2026,6 +2072,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
@@ -2059,6 +2106,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/holidays'
     | '/_authenticated/manager'
+    | '/_authenticated/narratives'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -2136,6 +2184,8 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/dashboard'
     | '/_authenticated/manager/reports'
     | '/_authenticated/manager/team'
+    | '/_authenticated/narratives/$id'
+    | '/_authenticated/narratives/settings'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -2204,6 +2254,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-reminder-check'
@@ -2229,6 +2280,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
+  ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
@@ -2372,6 +2424,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/narratives': {
+      id: '/_authenticated/narratives'
+      path: '/narratives'
+      fullPath: '/narratives'
+      preLoaderRoute: typeof AuthenticatedNarrativesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/manager': {
@@ -2892,6 +2951,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/narratives/settings': {
+      id: '/_authenticated/narratives/settings'
+      path: '/settings'
+      fullPath: '/narratives/settings'
+      preLoaderRoute: typeof AuthenticatedNarrativesSettingsRouteImport
+      parentRoute: typeof AuthenticatedNarrativesRoute
+    }
+    '/_authenticated/narratives/$id': {
+      id: '/_authenticated/narratives/$id'
+      path: '/$id'
+      fullPath: '/narratives/$id'
+      preLoaderRoute: typeof AuthenticatedNarrativesIdRouteImport
+      parentRoute: typeof AuthenticatedNarrativesRoute
+    }
     '/_authenticated/manager/team': {
       id: '/_authenticated/manager/team'
       path: '/team'
@@ -3389,6 +3462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/narratives-weekly-cron': {
+      id: '/api/public/hooks/narratives-weekly-cron'
+      path: '/api/public/hooks/narratives-weekly-cron'
+      fullPath: '/api/public/hooks/narratives-weekly-cron'
+      preLoaderRoute: typeof ApiPublicHooksNarrativesWeeklyCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/crm-renewals': {
       id: '/api/public/hooks/crm-renewals'
       path: '/api/public/hooks/crm-renewals'
@@ -3654,6 +3734,22 @@ const AuthenticatedManagerRouteChildren: AuthenticatedManagerRouteChildren = {
 const AuthenticatedManagerRouteWithChildren =
   AuthenticatedManagerRoute._addFileChildren(AuthenticatedManagerRouteChildren)
 
+interface AuthenticatedNarrativesRouteChildren {
+  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
+  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
+}
+
+const AuthenticatedNarrativesRouteChildren: AuthenticatedNarrativesRouteChildren =
+  {
+    AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
+    AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
+  }
+
+const AuthenticatedNarrativesRouteWithChildren =
+  AuthenticatedNarrativesRoute._addFileChildren(
+    AuthenticatedNarrativesRouteChildren,
+  )
+
 interface AuthenticatedPlanningRouteChildren {
   AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
   AuthenticatedPlanningNewRoute: typeof AuthenticatedPlanningNewRoute
@@ -3894,6 +3990,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHolidaysRoute: typeof AuthenticatedHolidaysRoute
   AuthenticatedManagerRoute: typeof AuthenticatedManagerRouteWithChildren
+  AuthenticatedNarrativesRoute: typeof AuthenticatedNarrativesRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -3957,6 +4054,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHolidaysRoute: AuthenticatedHolidaysRoute,
   AuthenticatedManagerRoute: AuthenticatedManagerRouteWithChildren,
+  AuthenticatedNarrativesRoute: AuthenticatedNarrativesRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
@@ -4022,6 +4120,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksCopilotScheduledCronRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
+  ApiPublicHooksNarrativesWeeklyCronRoute:
+    ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
