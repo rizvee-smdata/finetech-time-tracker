@@ -2981,6 +2981,92 @@ export type Database = {
           },
         ]
       }
+      meeting_prep_briefs: {
+        Row: {
+          account_id: string | null
+          aggregated_data: Json | null
+          alerted_rep_at: string | null
+          brief: Json | null
+          company_id: string
+          created_at: string
+          error: string | null
+          generated_at: string | null
+          id: string
+          lead_id: string | null
+          prepared_at: string | null
+          rep_id: string
+          scheduled_at: string | null
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          aggregated_data?: Json | null
+          alerted_rep_at?: string | null
+          brief?: Json | null
+          company_id: string
+          created_at?: string
+          error?: string | null
+          generated_at?: string | null
+          id?: string
+          lead_id?: string | null
+          prepared_at?: string | null
+          rep_id: string
+          scheduled_at?: string | null
+          status?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          aggregated_data?: Json | null
+          alerted_rep_at?: string | null
+          brief?: Json | null
+          company_id?: string
+          created_at?: string
+          error?: string | null
+          generated_at?: string | null
+          id?: string
+          lead_id?: string | null
+          prepared_at?: string | null
+          rep_id?: string
+          scheduled_at?: string | null
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_prep_briefs_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_prep_briefs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_prep_briefs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_prep_briefs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tms_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string

@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User2, Play, Check, CalendarClock, Link2 } from "lucide-react";
+import { Clock, User2, Play, Check, CalendarClock, Link2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { categoryMeta } from "@/lib/tms/categories";
@@ -31,6 +32,21 @@ export function DailyTaskCard({ task, onChanged }: { task: DailyTask; onChanged?
   const qc = useQueryClient();
   const cat = categoryMeta(task.category);
   const isDone = !!task.tms_task_statuses?.is_terminal;
+  const isVisit = task.category === "visit" || task.category === "Client Visit";
+
+  const prepBrief = useQuery({
+    queryKey: ["prep-brief-badge", task.id],
+    enabled: isVisit,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("meeting_prep_briefs")
+        .select("id, status")
+        .eq("task_id", task.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
 
   const statuses = useQuery({
     queryKey: ["tms-statuses-default", companyId],
@@ -94,6 +110,20 @@ export function DailyTaskCard({ task, onChanged }: { task: DailyTask; onChanged?
               <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
                 <Clock className="size-3" />{task.scheduled_time.slice(0, 5)}
               </span>
+            )}
+            {isVisit && prepBrief.data?.status === "ready" && (
+              <Link to="/prep/$taskId" params={{ taskId: task.id }}>
+                <Badge className="bg-primary/15 text-primary hover:bg-primary/20 cursor-pointer">
+                  <Sparkles className="size-3 mr-1" /> Prep Ready
+                </Badge>
+              </Link>
+            )}
+            {isVisit && !prepBrief.data && (
+              <Link to="/prep/$taskId" params={{ taskId: task.id }}>
+                <Badge variant="outline" className="cursor-pointer">
+                  <Sparkles className="size-3 mr-1" /> Generate Prep
+                </Badge>
+              </Link>
             )}
           </div>
           <div className={cn("font-medium text-sm", isDone && "line-through")}>{task.title}</div>

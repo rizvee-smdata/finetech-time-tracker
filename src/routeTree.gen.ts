@@ -91,6 +91,8 @@ import { Route as AuthenticatedProposalsTemplatesRouteImport } from './routes/_a
 import { Route as AuthenticatedProposalsNewRouteImport } from './routes/_authenticated/proposals.new'
 import { Route as AuthenticatedProposalsAnalyticsRouteImport } from './routes/_authenticated/proposals.analytics'
 import { Route as AuthenticatedProposalsProposalIdRouteImport } from './routes/_authenticated/proposals.$proposalId'
+import { Route as AuthenticatedPrepHistoryRouteImport } from './routes/_authenticated/prep.history'
+import { Route as AuthenticatedPrepTaskIdRouteImport } from './routes/_authenticated/prep.$taskId'
 import { Route as AuthenticatedPredictorTeamRouteImport } from './routes/_authenticated/predictor.team'
 import { Route as AuthenticatedPredictorMeRouteImport } from './routes/_authenticated/predictor.me'
 import { Route as AuthenticatedPredictorHistoryRouteImport } from './routes/_authenticated/predictor.history'
@@ -620,6 +622,17 @@ const AuthenticatedProposalsProposalIdRoute =
     path: '/$proposalId',
     getParentRoute: () => AuthenticatedProposalsRoute,
   } as any)
+const AuthenticatedPrepHistoryRoute =
+  AuthenticatedPrepHistoryRouteImport.update({
+    id: '/prep/history',
+    path: '/prep/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPrepTaskIdRoute = AuthenticatedPrepTaskIdRouteImport.update({
+  id: '/prep/$taskId',
+  path: '/prep/$taskId',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPredictorTeamRoute =
   AuthenticatedPredictorTeamRouteImport.update({
     id: '/predictor/team',
@@ -1198,6 +1211,8 @@ export interface FileRoutesByFullPath {
   '/predictor/history': typeof AuthenticatedPredictorHistoryRoute
   '/predictor/me': typeof AuthenticatedPredictorMeRoute
   '/predictor/team': typeof AuthenticatedPredictorTeamRoute
+  '/prep/$taskId': typeof AuthenticatedPrepTaskIdRoute
+  '/prep/history': typeof AuthenticatedPrepHistoryRoute
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1352,6 +1367,8 @@ export interface FileRoutesByTo {
   '/predictor/history': typeof AuthenticatedPredictorHistoryRoute
   '/predictor/me': typeof AuthenticatedPredictorMeRoute
   '/predictor/team': typeof AuthenticatedPredictorTeamRoute
+  '/prep/$taskId': typeof AuthenticatedPrepTaskIdRoute
+  '/prep/history': typeof AuthenticatedPrepHistoryRoute
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1520,6 +1537,8 @@ export interface FileRoutesById {
   '/_authenticated/predictor/history': typeof AuthenticatedPredictorHistoryRoute
   '/_authenticated/predictor/me': typeof AuthenticatedPredictorMeRoute
   '/_authenticated/predictor/team': typeof AuthenticatedPredictorTeamRoute
+  '/_authenticated/prep/$taskId': typeof AuthenticatedPrepTaskIdRoute
+  '/_authenticated/prep/history': typeof AuthenticatedPrepHistoryRoute
   '/_authenticated/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/_authenticated/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/_authenticated/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1688,6 +1707,8 @@ export interface FileRouteTypes {
     | '/predictor/history'
     | '/predictor/me'
     | '/predictor/team'
+    | '/prep/$taskId'
+    | '/prep/history'
     | '/proposals/$proposalId'
     | '/proposals/analytics'
     | '/proposals/new'
@@ -1842,6 +1863,8 @@ export interface FileRouteTypes {
     | '/predictor/history'
     | '/predictor/me'
     | '/predictor/team'
+    | '/prep/$taskId'
+    | '/prep/history'
     | '/proposals/$proposalId'
     | '/proposals/analytics'
     | '/proposals/new'
@@ -2009,6 +2032,8 @@ export interface FileRouteTypes {
     | '/_authenticated/predictor/history'
     | '/_authenticated/predictor/me'
     | '/_authenticated/predictor/team'
+    | '/_authenticated/prep/$taskId'
+    | '/_authenticated/prep/history'
     | '/_authenticated/proposals/$proposalId'
     | '/_authenticated/proposals/analytics'
     | '/_authenticated/proposals/new'
@@ -2673,6 +2698,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/proposals/$proposalId'
       preLoaderRoute: typeof AuthenticatedProposalsProposalIdRouteImport
       parentRoute: typeof AuthenticatedProposalsRoute
+    }
+    '/_authenticated/prep/history': {
+      id: '/_authenticated/prep/history'
+      path: '/prep/history'
+      fullPath: '/prep/history'
+      preLoaderRoute: typeof AuthenticatedPrepHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/prep/$taskId': {
+      id: '/_authenticated/prep/$taskId'
+      path: '/prep/$taskId'
+      fullPath: '/prep/$taskId'
+      preLoaderRoute: typeof AuthenticatedPrepTaskIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/predictor/team': {
       id: '/_authenticated/predictor/team'
@@ -3691,6 +3730,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
   AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
   AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
+  AuthenticatedPrepTaskIdRoute: typeof AuthenticatedPrepTaskIdRoute
+  AuthenticatedPrepHistoryRoute: typeof AuthenticatedPrepHistoryRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
@@ -3748,6 +3789,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
   AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
   AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
+  AuthenticatedPrepTaskIdRoute: AuthenticatedPrepTaskIdRoute,
+  AuthenticatedPrepHistoryRoute: AuthenticatedPrepHistoryRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
