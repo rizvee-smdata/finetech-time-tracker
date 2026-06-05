@@ -801,6 +801,7 @@ export type Database = {
           name: string
           slug: string
           updated_at: string
+          visit_backdate_days: number
           weekend_days: number[]
         }
         Insert: {
@@ -809,6 +810,7 @@ export type Database = {
           name: string
           slug: string
           updated_at?: string
+          visit_backdate_days?: number
           weekend_days?: number[]
         }
         Update: {
@@ -817,6 +819,7 @@ export type Database = {
           name?: string
           slug?: string
           updated_at?: string
+          visit_backdate_days?: number
           weekend_days?: number[]
         }
         Relationships: []

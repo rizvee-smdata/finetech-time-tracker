@@ -86,19 +86,24 @@ function NewVisit() {
     },
   });
 
-  const { data: weekendDays = [5] } = useQuery({
-    queryKey: ["company-weekend", companyId],
+  const { data: companyRules } = useQuery({
+    queryKey: ["company-visit-rules", companyId],
     enabled: !!companyId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("companies")
-        .select("weekend_days")
+        .select("weekend_days, visit_backdate_days")
         .eq("id", companyId!)
         .single();
       if (error) throw error;
-      return (data?.weekend_days ?? [5]) as number[];
+      return {
+        weekend_days: (data?.weekend_days ?? [5]) as number[],
+        visit_backdate_days: (data?.visit_backdate_days ?? 2) as number,
+      };
     },
   });
+  const weekendDays = companyRules?.weekend_days ?? [5];
+  const backdateDays = companyRules?.visit_backdate_days ?? 2;
 
   const ymd = (d: Date) => {
     const y = d.getFullYear();
@@ -111,7 +116,7 @@ function NewVisit() {
   const today = new Date();
   const earliest = new Date(today);
   let counted = 0;
-  while (counted < 2) {
+  while (counted < backdateDays) {
     earliest.setDate(earliest.getDate() - 1);
     if (isWorkingDay(earliest)) counted++;
   }
@@ -148,7 +153,7 @@ function NewVisit() {
     }
     const meetingDate = new Date(form.meeting_at);
     if (meetingDate < earliest) {
-      toast.error("Visits can only be backdated up to 2 working days (Fridays & holidays excluded).");
+      toast.error(`Visits can only be backdated up to ${backdateDays} working day${backdateDays === 1 ? "" : "s"} (weekends & holidays excluded).`);
       return;
     }
     if (meetingDate > new Date()) {
