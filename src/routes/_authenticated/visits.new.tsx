@@ -153,7 +153,7 @@ function NewVisit() {
     }
     const meetingDate = new Date(form.meeting_at);
     if (meetingDate < earliest) {
-      toast.error("Visits can only be backdated up to 2 working days (Fridays & holidays excluded).");
+      toast.error(`Visits can only be backdated up to ${backdateDays} working day${backdateDays === 1 ? "" : "s"} (weekends & holidays excluded).`);
       return;
     }
     if (meetingDate > new Date()) {
