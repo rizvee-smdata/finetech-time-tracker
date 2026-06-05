@@ -80,6 +80,7 @@ const nav = [
   { to: "/contracts", label: "Contracts", icon: FileText },
   { to: "/targets", label: "Targets", icon: Target },
   { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
+  { to: "/predictor/me", label: "AI Predictor", icon: Sparkles },
   { to: "/coach/me", label: "AI Sales Coach", icon: Sparkles },
   { to: "/kb", label: "Knowledge Base", icon: BookOpen },
   { to: "/surveys", label: "Feedback", icon: MessageSquare },
@@ -91,6 +92,7 @@ const nav = [
 
 const staffNav = [
   { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
+  { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
   { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/ai", label: "Ask AI", icon: Sparkles },
