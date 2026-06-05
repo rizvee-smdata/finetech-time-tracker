@@ -254,8 +254,46 @@ function ProposalEditorPage() {
           >
             <CopyIcon className="mr-1 h-4 w-4" /> Copy HTML
           </Button>
-          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={() => window.print()}>
-            <Printer className="mr-1 h-4 w-4" /> Print / PDF
+          {draft.status === "draft" || draft.status === "changes_requested" ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-amber-500/40 text-amber-300"
+              onClick={() => setStatus("in_review")}
+            >
+              <Send className="mr-1 h-4 w-4" /> Submit for Review
+            </Button>
+          ) : null}
+          {isStaff && draft.status === "in_review" ? (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-orange-500/40 text-orange-300"
+                onClick={() => {
+                  const msg = window.prompt("What changes are needed?");
+                  if (msg) {
+                    addComment(msg);
+                    setStatus("changes_requested");
+                  }
+                }}
+              >
+                Request Changes
+              </Button>
+              <Button
+                size="sm"
+                className="bg-emerald-500 hover:bg-emerald-600"
+                onClick={() => setStatus("approved")}
+              >
+                <ThumbsUp className="mr-1 h-4 w-4" /> Approve
+              </Button>
+            </>
+          ) : null}
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-1 h-4 w-4" /> Print
+          </Button>
+          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={downloadPdf}>
+            <FileDown className="mr-1 h-4 w-4" /> Download PDF
           </Button>
         </div>
       </div>
