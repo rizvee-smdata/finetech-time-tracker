@@ -51,23 +51,11 @@ function makeEmptyDraft(): Draft {
   };
 }
 
-const empty: Draft = {
-  oem_id: null,
-  title: "",
-  article_type: "product_spec",
-  summary: "",
-  content_html: "",
-  tags: "",
-  published: false,
-  attachments: [],
-  version: 1,
-};
-
 function KbAdmin() {
   const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [draft, setDraft] = useState<Draft>(empty);
+  const [draft, setDraft] = useState<Draft>(() => makeEmptyDraft());
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -82,10 +70,11 @@ function KbAdmin() {
 
   const oemMap = useMemo(() => new Map(oems.map((o) => [o.id, o.name])), [oems]);
 
-  function startNew() { setDraft(empty); }
+  function startNew() { setDraft(makeEmptyDraft()); }
   function loadArticle(a: KbArticle) {
     setDraft({
       id: a.id,
+      draftId: a.id,
       oem_id: a.oem_id,
       title: a.title,
       article_type: a.article_type,
