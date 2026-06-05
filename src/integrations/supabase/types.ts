@@ -1036,6 +1036,164 @@ export type Database = {
           },
         ]
       }
+      copilot_anomalies: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string
+          detected_for_date: string
+          dismissed_at: string | null
+          dismissed_by: string | null
+          id: string
+          kind: string
+          metadata: Json | null
+          severity: string
+          suggested_action: string | null
+          target_lead_id: string | null
+          target_user_id: string | null
+          title: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description: string
+          detected_for_date?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          id?: string
+          kind: string
+          metadata?: Json | null
+          severity?: string
+          suggested_action?: string | null
+          target_lead_id?: string | null
+          target_user_id?: string | null
+          title: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string
+          detected_for_date?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          id?: string
+          kind?: string
+          metadata?: Json | null
+          severity?: string
+          suggested_action?: string | null
+          target_lead_id?: string | null
+          target_user_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      copilot_conversations: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      copilot_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          data: Json | null
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copilot_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "copilot_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copilot_scheduled_reports: {
+        Row: {
+          active: boolean
+          company_id: string
+          created_at: string
+          delivery_method: string
+          frequency: string
+          id: string
+          last_result: Json | null
+          last_run_at: string | null
+          next_run_at: string | null
+          question: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          company_id: string
+          created_at?: string
+          delivery_method: string
+          frequency: string
+          id?: string
+          last_result?: Json | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          question: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          company_id?: string
+          created_at?: string
+          delivery_method?: string
+          frequency?: string
+          id?: string
+          last_result?: Json | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          question?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       crm_accounts: {
         Row: {
           address: string | null
