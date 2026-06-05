@@ -11,10 +11,13 @@ import {
   FileDown,
   History,
   Loader2,
+  MessageSquare,
   Printer,
   RefreshCcw,
   Save,
+  Send,
   Sparkles,
+  ThumbsUp,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,9 +30,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useProposalsStore } from "@/lib/proposals/storage";
 import { DocumentPreview } from "@/components/proposals/DocumentPreview";
 import { SECTION_LABELS } from "@/lib/proposals/templates";
-import type { Proposal, ProposalSection, ProposalStatus } from "@/lib/proposals/types";
+import type { Proposal, ProposalComment, ProposalSection, ProposalStatus } from "@/lib/proposals/types";
 import { improveSection } from "@/lib/proposals/improve.functions";
 import { statusColor } from "@/lib/proposals/utils";
+import { exportProposalPdf } from "@/lib/proposals/pdfExport";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/proposals/$proposalId")({
