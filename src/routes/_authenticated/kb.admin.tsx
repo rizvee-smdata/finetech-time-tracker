@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { listOems, listArticles, ARTICLE_TYPES, uploadAttachment, articleTypeLabel, stripHtml, type KbArticle } from "@/lib/kb";
+import { listOems, listArticles, ARTICLE_TYPES, uploadAttachment, attachmentUrl, articleTypeLabel, stripHtml, type KbArticle } from "@/lib/kb";
 import "react-quill-new/dist/quill.snow.css";
 
 const ReactQuill = lazy(() => import("react-quill-new"));
