@@ -152,17 +152,18 @@ function KbAdmin() {
     const { error } = await supabase.from("kb_articles" as never).delete().eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Deleted");
-    if (draft.id === id) setDraft(empty);
+    if (draft.id === id) setDraft(makeEmptyDraft());
     qc.invalidateQueries({ queryKey: ["kb-admin-articles"] });
   }
 
   async function handleUpload(file: File) {
-    if (!draft.id) { toast.error("Save the article first to upload attachments"); return; }
     try {
-      const att = await uploadAttachment(file, draft.id);
+      const att = await uploadAttachment(file, draft.draftId);
       const newList = [...draft.attachments, att];
       setDraft({ ...draft, attachments: newList });
-      await supabase.from("kb_articles" as never).update({ attachments: newList } as never).eq("id", draft.id);
+      if (draft.id) {
+        await supabase.from("kb_articles" as never).update({ attachments: newList } as never).eq("id", draft.id);
+      }
       toast.success("Attached");
     } catch (e) {
       toast.error((e as Error).message);
