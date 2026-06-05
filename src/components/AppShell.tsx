@@ -99,6 +99,7 @@ const staffNav = [
   { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
   { to: "/copilot", label: "AI Copilot", icon: Sparkles },
   { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
+  { to: "/narratives", label: "Exec Narratives", icon: ScrollText },
   { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
   { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
   { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
