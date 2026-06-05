@@ -791,3 +791,76 @@ function WeekendDaysCard() {
   );
 }
 
+function BackdateDaysCard() {
+  const { companyId, company } = useAuth();
+  const qc = useQueryClient();
+
+  const q = useQuery({
+    queryKey: ["company-backdate-days", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("companies")
+        .select("visit_backdate_days")
+        .eq("id", companyId!)
+        .single();
+      if (error) throw error;
+      return (data?.visit_backdate_days ?? 2) as number;
+    },
+  });
+
+  const [value, setValue] = useState<number>(2);
+  useEffect(() => {
+    if (typeof q.data === "number") setValue(q.data);
+  }, [q.data]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!companyId) throw new Error("No company selected");
+      if (!Number.isInteger(value) || value < 0 || value > 30) {
+        throw new Error("Enter a whole number between 0 and 30");
+      }
+      const { error } = await (supabase as any)
+        .from("companies")
+        .update({ visit_backdate_days: value })
+        .eq("id", companyId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Backdate window updated");
+      qc.invalidateQueries({ queryKey: ["company-backdate-days"] });
+      qc.invalidateQueries({ queryKey: ["company-visit-rules"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-2 flex items-center gap-2">
+        <Calendar className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Visit backdating window</h2>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        {company?.name ? `${company.name} — ` : ""}How many working days back a rep may log a visit. Weekends and holidays are not counted. Set to <strong>0</strong> to only allow today.
+      </p>
+      <div className="mb-4 flex items-end gap-3">
+        <div className="space-y-1.5">
+          <Label>Working days</Label>
+          <Input
+            type="number"
+            min={0}
+            max={30}
+            className="w-32"
+            value={value}
+            onChange={(e) => setValue(Number(e.target.value))}
+          />
+        </div>
+        <Button onClick={() => save.mutate()} disabled={save.isPending || q.isLoading}>
+          {save.isPending ? "Saving…" : "Save"}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+
