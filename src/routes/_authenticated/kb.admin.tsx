@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/kb/admin")({
 
 type Draft = {
   id?: string;
+  draftId: string;
   oem_id: string | null;
   title: string;
   article_type: string;
@@ -34,6 +35,21 @@ type Draft = {
   attachments: KbArticle["attachments"];
   version: number;
 };
+
+function makeEmptyDraft(): Draft {
+  return {
+    draftId: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : `draft-${Date.now()}`,
+    oem_id: null,
+    title: "",
+    article_type: "product_spec",
+    summary: "",
+    content_html: "",
+    tags: "",
+    published: false,
+    attachments: [],
+    version: 1,
+  };
+}
 
 const empty: Draft = {
   oem_id: null,
