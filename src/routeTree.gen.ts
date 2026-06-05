@@ -35,6 +35,7 @@ import { Route as AuthenticatedDealsRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
+import { Route as AuthenticatedCopilotRouteImport } from './routes/_authenticated/copilot'
 import { Route as AuthenticatedContractsRouteImport } from './routes/_authenticated/contracts'
 import { Route as AuthenticatedConsultantsRouteImport } from './routes/_authenticated/consultants'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
@@ -144,6 +145,8 @@ import { Route as AuthenticatedCrmCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmActivityRouteImport } from './routes/_authenticated/crm.activity'
 import { Route as AuthenticatedCrmAccountsRouteImport } from './routes/_authenticated/crm.accounts'
 import { Route as AuthenticatedCrmLeadIdRouteImport } from './routes/_authenticated/crm.$leadId'
+import { Route as AuthenticatedCopilotScheduledRouteImport } from './routes/_authenticated/copilot.scheduled'
+import { Route as AuthenticatedCopilotAnomaliesRouteImport } from './routes/_authenticated/copilot.anomalies'
 import { Route as AuthenticatedContractsPaymentsRouteImport } from './routes/_authenticated/contracts.payments'
 import { Route as AuthenticatedContractsNewRouteImport } from './routes/_authenticated/contracts.new'
 import { Route as AuthenticatedContractsContractIdRouteImport } from './routes/_authenticated/contracts.$contractId'
@@ -172,6 +175,8 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
+import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
+import { Route as ApiPublicHooksCopilotAnomaliesCronRouteImport } from './routes/api/public/hooks/copilot-anomalies-cron'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
@@ -309,6 +314,11 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
 const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   id: '/crm',
   path: '/crm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCopilotRoute = AuthenticatedCopilotRouteImport.update({
+  id: '/copilot',
+  path: '/copilot',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedContractsRoute = AuthenticatedContractsRouteImport.update({
@@ -928,6 +938,18 @@ const AuthenticatedCrmLeadIdRoute = AuthenticatedCrmLeadIdRouteImport.update({
   path: '/$leadId',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCopilotScheduledRoute =
+  AuthenticatedCopilotScheduledRouteImport.update({
+    id: '/scheduled',
+    path: '/scheduled',
+    getParentRoute: () => AuthenticatedCopilotRoute,
+  } as any)
+const AuthenticatedCopilotAnomaliesRoute =
+  AuthenticatedCopilotAnomaliesRouteImport.update({
+    id: '/anomalies',
+    path: '/anomalies',
+    getParentRoute: () => AuthenticatedCopilotRoute,
+  } as any)
 const AuthenticatedContractsPaymentsRoute =
   AuthenticatedContractsPaymentsRouteImport.update({
     id: '/payments',
@@ -1088,6 +1110,18 @@ const ApiPublicHooksCrmLeadCaptureRoute =
     path: '/api/public/hooks/crm-lead-capture',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksCopilotScheduledCronRoute =
+  ApiPublicHooksCopilotScheduledCronRouteImport.update({
+    id: '/api/public/hooks/copilot-scheduled-cron',
+    path: '/api/public/hooks/copilot-scheduled-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksCopilotAnomaliesCronRoute =
+  ApiPublicHooksCopilotAnomaliesCronRouteImport.update({
+    id: '/api/public/hooks/copilot-anomalies-cron',
+    path: '/api/public/hooks/copilot-anomalies-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -1151,6 +1185,7 @@ export interface FileRoutesByFullPath {
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
   '/contracts': typeof AuthenticatedContractsRouteWithChildren
+  '/copilot': typeof AuthenticatedCopilotRouteWithChildren
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -1190,6 +1225,8 @@ export interface FileRoutesByFullPath {
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
+  '/copilot/anomalies': typeof AuthenticatedCopilotAnomaliesRoute
+  '/copilot/scheduled': typeof AuthenticatedCopilotScheduledRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -1297,6 +1334,8 @@ export interface FileRoutesByFullPath {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1321,6 +1360,7 @@ export interface FileRoutesByTo {
   '/check-in': typeof AuthenticatedCheckInRoute
   '/command': typeof AuthenticatedCommandRoute
   '/consultants': typeof AuthenticatedConsultantsRoute
+  '/copilot': typeof AuthenticatedCopilotRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/holidays': typeof AuthenticatedHolidaysRoute
@@ -1350,6 +1390,8 @@ export interface FileRoutesByTo {
   '/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/contracts/new': typeof AuthenticatedContractsNewRoute
   '/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
+  '/copilot/anomalies': typeof AuthenticatedCopilotAnomaliesRoute
+  '/copilot/scheduled': typeof AuthenticatedCopilotScheduledRoute
   '/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -1457,6 +1499,8 @@ export interface FileRoutesByTo {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1485,6 +1529,7 @@ export interface FileRoutesById {
   '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/consultants': typeof AuthenticatedConsultantsRoute
   '/_authenticated/contracts': typeof AuthenticatedContractsRouteWithChildren
+  '/_authenticated/copilot': typeof AuthenticatedCopilotRouteWithChildren
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -1524,6 +1569,8 @@ export interface FileRoutesById {
   '/_authenticated/contracts/$contractId': typeof AuthenticatedContractsContractIdRoute
   '/_authenticated/contracts/new': typeof AuthenticatedContractsNewRoute
   '/_authenticated/contracts/payments': typeof AuthenticatedContractsPaymentsRoute
+  '/_authenticated/copilot/anomalies': typeof AuthenticatedCopilotAnomaliesRoute
+  '/_authenticated/copilot/scheduled': typeof AuthenticatedCopilotScheduledRoute
   '/_authenticated/crm/$leadId': typeof AuthenticatedCrmLeadIdRoute
   '/_authenticated/crm/accounts': typeof AuthenticatedCrmAccountsRoute
   '/_authenticated/crm/activity': typeof AuthenticatedCrmActivityRoute
@@ -1631,6 +1678,8 @@ export interface FileRoutesById {
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1659,6 +1708,7 @@ export interface FileRouteTypes {
     | '/command'
     | '/consultants'
     | '/contracts'
+    | '/copilot'
     | '/crm'
     | '/customers'
     | '/dashboard'
@@ -1698,6 +1748,8 @@ export interface FileRouteTypes {
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
+    | '/copilot/anomalies'
+    | '/copilot/scheduled'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -1805,6 +1857,8 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -1829,6 +1883,7 @@ export interface FileRouteTypes {
     | '/check-in'
     | '/command'
     | '/consultants'
+    | '/copilot'
     | '/customers'
     | '/dashboard'
     | '/holidays'
@@ -1858,6 +1913,8 @@ export interface FileRouteTypes {
     | '/contracts/$contractId'
     | '/contracts/new'
     | '/contracts/payments'
+    | '/copilot/anomalies'
+    | '/copilot/scheduled'
     | '/crm/$leadId'
     | '/crm/accounts'
     | '/crm/activity'
@@ -1965,6 +2022,8 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -1992,6 +2051,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command'
     | '/_authenticated/consultants'
     | '/_authenticated/contracts'
+    | '/_authenticated/copilot'
     | '/_authenticated/crm'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -2031,6 +2091,8 @@ export interface FileRouteTypes {
     | '/_authenticated/contracts/$contractId'
     | '/_authenticated/contracts/new'
     | '/_authenticated/contracts/payments'
+    | '/_authenticated/copilot/anomalies'
+    | '/_authenticated/copilot/scheduled'
     | '/_authenticated/crm/$leadId'
     | '/_authenticated/crm/accounts'
     | '/_authenticated/crm/activity'
@@ -2138,6 +2200,8 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -2161,6 +2225,8 @@ export interface RootRouteChildren {
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksCopilotAnomaliesCronRoute: typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -2355,6 +2421,13 @@ declare module '@tanstack/react-router' {
       path: '/crm'
       fullPath: '/crm'
       preLoaderRoute: typeof AuthenticatedCrmRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/copilot': {
+      id: '/_authenticated/copilot'
+      path: '/copilot'
+      fullPath: '/copilot'
+      preLoaderRoute: typeof AuthenticatedCopilotRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/contracts': {
@@ -3120,6 +3193,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmLeadIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/copilot/scheduled': {
+      id: '/_authenticated/copilot/scheduled'
+      path: '/scheduled'
+      fullPath: '/copilot/scheduled'
+      preLoaderRoute: typeof AuthenticatedCopilotScheduledRouteImport
+      parentRoute: typeof AuthenticatedCopilotRoute
+    }
+    '/_authenticated/copilot/anomalies': {
+      id: '/_authenticated/copilot/anomalies'
+      path: '/anomalies'
+      fullPath: '/copilot/anomalies'
+      preLoaderRoute: typeof AuthenticatedCopilotAnomaliesRouteImport
+      parentRoute: typeof AuthenticatedCopilotRoute
+    }
     '/_authenticated/contracts/payments': {
       id: '/_authenticated/contracts/payments'
       path: '/payments'
@@ -3316,6 +3403,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCrmLeadCaptureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/copilot-scheduled-cron': {
+      id: '/api/public/hooks/copilot-scheduled-cron'
+      path: '/api/public/hooks/copilot-scheduled-cron'
+      fullPath: '/api/public/hooks/copilot-scheduled-cron'
+      preLoaderRoute: typeof ApiPublicHooksCopilotScheduledCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/copilot-anomalies-cron': {
+      id: '/api/public/hooks/copilot-anomalies-cron'
+      path: '/api/public/hooks/copilot-anomalies-cron'
+      fullPath: '/api/public/hooks/copilot-anomalies-cron'
+      preLoaderRoute: typeof ApiPublicHooksCopilotAnomaliesCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks/projects/$projectId': {
       id: '/_authenticated/tasks/projects/$projectId'
       path: '/$projectId'
@@ -3417,6 +3518,19 @@ const AuthenticatedContractsRouteWithChildren =
   AuthenticatedContractsRoute._addFileChildren(
     AuthenticatedContractsRouteChildren,
   )
+
+interface AuthenticatedCopilotRouteChildren {
+  AuthenticatedCopilotAnomaliesRoute: typeof AuthenticatedCopilotAnomaliesRoute
+  AuthenticatedCopilotScheduledRoute: typeof AuthenticatedCopilotScheduledRoute
+}
+
+const AuthenticatedCopilotRouteChildren: AuthenticatedCopilotRouteChildren = {
+  AuthenticatedCopilotAnomaliesRoute: AuthenticatedCopilotAnomaliesRoute,
+  AuthenticatedCopilotScheduledRoute: AuthenticatedCopilotScheduledRoute,
+}
+
+const AuthenticatedCopilotRouteWithChildren =
+  AuthenticatedCopilotRoute._addFileChildren(AuthenticatedCopilotRouteChildren)
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmLeadIdRoute: typeof AuthenticatedCrmLeadIdRoute
@@ -3772,6 +3886,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedConsultantsRoute: typeof AuthenticatedConsultantsRoute
   AuthenticatedContractsRoute: typeof AuthenticatedContractsRouteWithChildren
+  AuthenticatedCopilotRoute: typeof AuthenticatedCopilotRouteWithChildren
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -3834,6 +3949,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedConsultantsRoute: AuthenticatedConsultantsRoute,
   AuthenticatedContractsRoute: AuthenticatedContractsRouteWithChildren,
+  AuthenticatedCopilotRoute: AuthenticatedCopilotRouteWithChildren,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
@@ -3900,6 +4016,10 @@ const rootRouteChildren: RootRouteChildren = {
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksCopilotAnomaliesCronRoute:
+    ApiPublicHooksCopilotAnomaliesCronRoute,
+  ApiPublicHooksCopilotScheduledCronRoute:
+    ApiPublicHooksCopilotScheduledCronRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
@@ -3914,13 +4034,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

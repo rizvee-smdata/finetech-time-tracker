@@ -26,6 +26,7 @@ import {
   Navigation as NavigationIcon,
   MessageSquare,
   ScrollText,
+  AlertTriangle,
   
   TrendingUp,
   HeartPulse,
@@ -96,6 +97,8 @@ const nav = [
 
 const staffNav = [
   { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
+  { to: "/copilot", label: "AI Copilot", icon: Sparkles },
+  { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
   { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
   { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
   { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
