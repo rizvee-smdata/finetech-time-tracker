@@ -60,6 +60,8 @@ const nav = [
   { to: "/voice/history", label: "Voice Notes", icon: Sparkles },
   { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
   { to: "/planning", label: "Planning", icon: RouteIcon },
+  { to: "/route/plan", label: "AI Route Planner", icon: Sparkles },
+  { to: "/route/live", label: "Live Route", icon: NavigationIcon },
   { to: "/gps/today", label: "Route", icon: NavigationIcon },
   { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
   { to: "/crm", label: "CRM", icon: Target },
@@ -95,6 +97,7 @@ const nav = [
 const staffNav = [
   { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
   { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
+  { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
   { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/ai", label: "Ask AI", icon: Sparkles },

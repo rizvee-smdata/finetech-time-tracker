@@ -158,7 +158,10 @@ import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_au
 import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenticated/ai-visits.new'
 import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_authenticated/ai-visits.history'
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
+import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
+import { Route as AuthenticatedRoutePlanRouteImport } from './routes/_authenticated/route.plan'
+import { Route as AuthenticatedRouteLiveRouteImport } from './routes/_authenticated/route.live'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -1006,9 +1009,25 @@ const AuthenticatedAiVisitsIdRoute = AuthenticatedAiVisitsIdRouteImport.update({
   path: '/ai-visits/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoutesRoute =
+  AuthenticatedAdminRoutesRouteImport.update({
+    id: '/admin/routes',
+    path: '/admin/routes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   id: '/admin/map',
   path: '/admin/map',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRoutePlanRoute = AuthenticatedRoutePlanRouteImport.update({
+  id: '/route/plan',
+  path: '/route/plan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRouteLiveRoute = AuthenticatedRouteLiveRouteImport.update({
+  id: '/route/live',
+  path: '/route/live',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const LovableEmailTransactionalSendRoute =
@@ -1153,7 +1172,10 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/route/live': typeof AuthenticatedRouteLiveRoute
+  '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -1310,7 +1332,10 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/route/live': typeof AuthenticatedRouteLiveRoute
+  '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -1481,7 +1506,10 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/_authenticated/route/live': typeof AuthenticatedRouteLiveRoute
+  '/_authenticated/route/plan': typeof AuthenticatedRoutePlanRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
+  '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/_authenticated/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/_authenticated/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -1652,7 +1680,10 @@ export interface FileRouteTypes {
     | '/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/route/live'
+    | '/route/plan'
     | '/admin/map'
+    | '/admin/routes'
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
@@ -1809,7 +1840,10 @@ export interface FileRouteTypes {
     | '/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/route/live'
+    | '/route/plan'
     | '/admin/map'
+    | '/admin/routes'
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
@@ -1979,7 +2013,10 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/_authenticated/route/live'
+    | '/_authenticated/route/plan'
     | '/_authenticated/admin/map'
+    | '/_authenticated/admin/routes'
     | '/_authenticated/ai-visits/$id'
     | '/_authenticated/ai-visits/history'
     | '/_authenticated/ai-visits/new'
@@ -3181,11 +3218,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiVisitsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/routes': {
+      id: '/_authenticated/admin/routes'
+      path: '/admin/routes'
+      fullPath: '/admin/routes'
+      preLoaderRoute: typeof AuthenticatedAdminRoutesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/map': {
       id: '/_authenticated/admin/map'
       path: '/admin/map'
       fullPath: '/admin/map'
       preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/route/plan': {
+      id: '/_authenticated/route/plan'
+      path: '/route/plan'
+      fullPath: '/route/plan'
+      preLoaderRoute: typeof AuthenticatedRoutePlanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/route/live': {
+      id: '/_authenticated/route/live'
+      path: '/route/live'
+      fullPath: '/route/live'
+      preLoaderRoute: typeof AuthenticatedRouteLiveRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/transactional/send': {
@@ -3733,7 +3791,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTargetsRoute: typeof AuthenticatedTargetsRouteWithChildren
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedRouteLiveRoute: typeof AuthenticatedRouteLiveRoute
+  AuthenticatedRoutePlanRoute: typeof AuthenticatedRoutePlanRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
   AuthenticatedAiVisitsHistoryRoute: typeof AuthenticatedAiVisitsHistoryRoute
   AuthenticatedAiVisitsNewRoute: typeof AuthenticatedAiVisitsNewRoute
@@ -3792,7 +3853,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTargetsRoute: AuthenticatedTargetsRouteWithChildren,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedRouteLiveRoute: AuthenticatedRouteLiveRoute,
+  AuthenticatedRoutePlanRoute: AuthenticatedRoutePlanRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
   AuthenticatedAiVisitsHistoryRoute: AuthenticatedAiVisitsHistoryRoute,
   AuthenticatedAiVisitsNewRoute: AuthenticatedAiVisitsNewRoute,
