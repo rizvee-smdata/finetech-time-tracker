@@ -37,6 +37,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { VisitEntryAlertBanner } from "@/components/visits/VisitEntryAlertBanner";
+import { FloatingVoiceButton } from "@/components/voice/FloatingVoiceButton";
 
 // Lazy-load heavy popover widgets — they only render content on click
 const NotificationCenter = lazy(() =>

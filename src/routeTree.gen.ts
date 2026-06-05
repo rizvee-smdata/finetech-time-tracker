@@ -61,6 +61,7 @@ import { Route as AuthenticatedContractsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
+import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
@@ -444,6 +445,12 @@ const ApiSsoVerifyRoute = ApiSsoVerifyRouteImport.update({
   path: '/api/sso/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedVoiceHistoryRoute =
+  AuthenticatedVoiceHistoryRouteImport.update({
+    id: '/voice/history',
+    path: '/voice/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
   path: '/visits/new',
@@ -1196,6 +1203,7 @@ export interface FileRoutesByFullPath {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -1346,6 +1354,7 @@ export interface FileRoutesByTo {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/attendance': typeof AuthenticatedAttendanceIndexRoute
@@ -1510,6 +1519,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
@@ -1674,6 +1684,7 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/new'
+    | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
     | '/attendance/'
@@ -1824,6 +1835,7 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/new'
+    | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
     | '/attendance'
@@ -1987,6 +1999,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/today'
     | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/new'
+    | '/_authenticated/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
     | '/_authenticated/attendance/'
@@ -2411,6 +2424,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/sso/verify'
       preLoaderRoute: typeof ApiSsoVerifyRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/voice/history': {
+      id: '/_authenticated/voice/history'
+      path: '/voice/history'
+      fullPath: '/voice/history'
+      preLoaderRoute: typeof AuthenticatedVoiceHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
@@ -3609,6 +3629,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
@@ -3662,6 +3683,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
