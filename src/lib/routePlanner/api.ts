@@ -111,6 +111,10 @@ export async function confirmPlanAndMaterializeTasks(
   // Find Client Visit category label not strictly required; create tms_tasks with task_type='task'
   for (const s of stops) {
     if (s.task_id) continue;
+    const arrival = s.estimated_arrival_time ? new Date(s.estimated_arrival_time) : null;
+    const scheduledTime = arrival
+      ? `${String(arrival.getHours()).padStart(2, "0")}:${String(arrival.getMinutes()).padStart(2, "0")}:00`
+      : null;
     const { data: task, error } = await sb
       .from("tms_tasks")
       .insert({
@@ -120,7 +124,8 @@ export async function confirmPlanAndMaterializeTasks(
         task_type: "task",
         priority: s.priority === "high" ? "high" : s.priority === "low" ? "low" : "medium",
         due_date: plan.plan_date,
-        scheduled_time: s.estimated_arrival_time,
+        scheduled_date: plan.plan_date,
+        scheduled_time: scheduledTime,
         category: "Client Visit",
         created_by: plan.user_id,
         lead_id: s.lead_id,
