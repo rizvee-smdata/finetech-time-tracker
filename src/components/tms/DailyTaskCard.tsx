@@ -111,6 +111,20 @@ export function DailyTaskCard({ task, onChanged }: { task: DailyTask; onChanged?
                 <Clock className="size-3" />{task.scheduled_time.slice(0, 5)}
               </span>
             )}
+            {isVisit && prepBrief.data?.status === "ready" && (
+              <Link to="/prep/$taskId" params={{ taskId: task.id }}>
+                <Badge className="bg-primary/15 text-primary hover:bg-primary/20 cursor-pointer">
+                  <Sparkles className="size-3 mr-1" /> Prep Ready
+                </Badge>
+              </Link>
+            )}
+            {isVisit && !prepBrief.data && (
+              <Link to="/prep/$taskId" params={{ taskId: task.id }}>
+                <Badge variant="outline" className="cursor-pointer">
+                  <Sparkles className="size-3 mr-1" /> Generate Prep
+                </Badge>
+              </Link>
+            )}
           </div>
           <div className={cn("font-medium text-sm", isDone && "line-through")}>{task.title}</div>
           {task.crm_leads && (
