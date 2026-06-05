@@ -224,6 +224,9 @@ function ProposalEditorPage() {
           <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="in_review">In Review</SelectItem>
+            <SelectItem value="changes_requested">Changes Requested</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
             <SelectItem value="ready">Ready</SelectItem>
             <SelectItem value="sent">Sent</SelectItem>
             <SelectItem value="accepted">Accepted</SelectItem>
