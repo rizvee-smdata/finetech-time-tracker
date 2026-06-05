@@ -1,6 +1,24 @@
 export type Currency = "BDT" | "USD";
 
-export type ProposalStatus = "draft" | "ready" | "sent" | "accepted" | "rejected";
+export type ProposalStatus =
+  | "draft"
+  | "in_review"
+  | "approved"
+  | "changes_requested"
+  | "ready"
+  | "sent"
+  | "accepted"
+  | "rejected";
+
+export type ProposalComment = {
+  id: string;
+  author: string;
+  authorRole: "rep" | "manager";
+  sectionId?: string;
+  message: string;
+  createdAt: string;
+  resolved: boolean;
+};
 
 export type ProposalTone = "formal" | "consultative" | "technical" | "executive";
 
