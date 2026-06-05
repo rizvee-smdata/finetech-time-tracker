@@ -26,6 +26,7 @@ import {
   Navigation as NavigationIcon,
   MessageSquare,
   ScrollText,
+  AlertTriangle,
   
   TrendingUp,
   HeartPulse,
