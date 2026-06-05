@@ -107,6 +107,9 @@ function ProposalEditorPage() {
     toast.success("Saved");
   }
 
+  const { user, isStaff } = useAuth();
+  const me = user?.email ?? "rep";
+
   function setStatus(status: ProposalStatus) {
     const now = new Date().toISOString();
     const next: Proposal = {
@@ -114,10 +117,13 @@ function ProposalEditorPage() {
       status,
       sentAt: status === "sent" ? now : draft.sentAt,
       decidedAt: status === "accepted" || status === "rejected" ? now : draft.decidedAt,
+      submittedForReviewAt: status === "in_review" ? now : draft.submittedForReviewAt,
+      approvedAt: status === "approved" ? now : draft.approvedAt,
+      approvedBy: status === "approved" ? me : draft.approvedBy,
     };
     setDraft(next);
     updateInPlace(next);
-    toast.success(`Marked as ${status}`);
+    toast.success(`Marked as ${status.replace(/_/g, " ")}`);
     // Cross-module sync to deal stage + health
     if (next.dealId && (status === "sent" || status === "accepted" || status === "rejected")) {
       import("@/lib/app/integrations").then(({ syncProposalToDeal }) => {
@@ -132,6 +138,43 @@ function ProposalEditorPage() {
       }
     }
   }
+
+  function addComment(message: string, sectionId?: string) {
+    if (!message.trim()) return;
+    const c: ProposalComment = {
+      id: crypto.randomUUID(),
+      author: me,
+      authorRole: isStaff ? "manager" : "rep",
+      sectionId,
+      message: message.trim(),
+      createdAt: new Date().toISOString(),
+      resolved: false,
+    };
+    const next: Proposal = { ...draft, comments: [...(draft.comments ?? []), c] };
+    setDraft(next);
+    updateInPlace(next);
+    toast.success("Comment added");
+  }
+
+  function toggleResolved(id: string) {
+    const next: Proposal = {
+      ...draft,
+      comments: (draft.comments ?? []).map((c) => (c.id === id ? { ...c, resolved: !c.resolved } : c)),
+    };
+    setDraft(next);
+    updateInPlace(next);
+  }
+
+  async function downloadPdf() {
+    try {
+      toast.message("Generating PDF…");
+      await exportProposalPdf(draft);
+      toast.success("PDF downloaded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "PDF export failed");
+    }
+  }
+
 
 
   async function runImprove(instruction: string) {
