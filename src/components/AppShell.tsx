@@ -282,6 +282,8 @@ export function AppShell() {
           );
         })}
       </nav>
+
+      <FloatingVoiceButton />
     </div>
   );
 }
