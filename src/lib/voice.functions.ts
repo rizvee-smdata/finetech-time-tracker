@@ -104,9 +104,11 @@ export const processVoiceInput = createServerFn({ method: "POST" })
     }
 
     // Insert initial row
+    if (!userId) throw new Error("Not authenticated.");
     const { data: row, error: insErr } = await supabase
       .from("voice_inputs")
       .insert({
+        user_id: userId,
         audio_path: data.audioPath,
         duration_seconds: data.durationSeconds ?? null,
         processing_status: "processing",
