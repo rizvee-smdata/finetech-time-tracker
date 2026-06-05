@@ -22,6 +22,7 @@ import { Route as AuthenticatedTargetsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSurveysRouteImport } from './routes/_authenticated/surveys'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedScorecardRouteImport } from './routes/_authenticated/scorecard'
+import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedProposalsRouteImport } from './routes/_authenticated/proposals'
@@ -85,6 +86,7 @@ import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authen
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
 import { Route as AuthenticatedScorecardGoalsRouteImport } from './routes/_authenticated/scorecard.goals'
+import { Route as AuthenticatedScanHistoryRouteImport } from './routes/_authenticated/scan.history'
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
 import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
@@ -252,6 +254,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
 const AuthenticatedScorecardRoute = AuthenticatedScorecardRouteImport.update({
   id: '/scorecard',
   path: '/scorecard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
@@ -596,6 +603,12 @@ const AuthenticatedScorecardGoalsRoute =
     id: '/goals',
     path: '/goals',
     getParentRoute: () => AuthenticatedScorecardRoute,
+  } as any)
+const AuthenticatedScanHistoryRoute =
+  AuthenticatedScanHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedScanRoute,
   } as any)
 const AuthenticatedReportsVisitsRoute =
   AuthenticatedReportsVisitsRouteImport.update({
@@ -1227,6 +1240,7 @@ export interface FileRoutesByFullPath {
   '/proposals': typeof AuthenticatedProposalsRouteWithChildren
   '/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/reports': typeof AuthenticatedReportsRouteWithChildren
+  '/scan': typeof AuthenticatedScanRouteWithChildren
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/surveys': typeof AuthenticatedSurveysRouteWithChildren
@@ -1318,6 +1332,7 @@ export interface FileRoutesByFullPath {
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
+  '/scan/history': typeof AuthenticatedScanHistoryRoute
   '/scorecard/goals': typeof AuthenticatedScorecardGoalsRoute
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
@@ -1399,6 +1414,7 @@ export interface FileRoutesByTo {
   '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
+  '/scan': typeof AuthenticatedScanRouteWithChildren
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
@@ -1487,6 +1503,7 @@ export interface FileRoutesByTo {
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
+  '/scan/history': typeof AuthenticatedScanHistoryRoute
   '/scorecard/goals': typeof AuthenticatedScorecardGoalsRoute
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
@@ -1579,6 +1596,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals': typeof AuthenticatedProposalsRouteWithChildren
   '/_authenticated/reminders': typeof AuthenticatedRemindersRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
+  '/_authenticated/scan': typeof AuthenticatedScanRouteWithChildren
   '/_authenticated/scorecard': typeof AuthenticatedScorecardRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/surveys': typeof AuthenticatedSurveysRouteWithChildren
@@ -1670,6 +1688,7 @@ export interface FileRoutesById {
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
+  '/_authenticated/scan/history': typeof AuthenticatedScanHistoryRoute
   '/_authenticated/scorecard/goals': typeof AuthenticatedScorecardGoalsRoute
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
@@ -1762,6 +1781,7 @@ export interface FileRouteTypes {
     | '/proposals'
     | '/reminders'
     | '/reports'
+    | '/scan'
     | '/scorecard'
     | '/settings'
     | '/surveys'
@@ -1853,6 +1873,7 @@ export interface FileRouteTypes {
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
+    | '/scan/history'
     | '/scorecard/goals'
     | '/scorecard/history'
     | '/scorecard/me'
@@ -1934,6 +1955,7 @@ export interface FileRouteTypes {
     | '/narratives'
     | '/partners'
     | '/preferences'
+    | '/scan'
     | '/scorecard'
     | '/settings'
     | '/team'
@@ -2022,6 +2044,7 @@ export interface FileRouteTypes {
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
+    | '/scan/history'
     | '/scorecard/goals'
     | '/scorecard/history'
     | '/scorecard/me'
@@ -2113,6 +2136,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals'
     | '/_authenticated/reminders'
     | '/_authenticated/reports'
+    | '/_authenticated/scan'
     | '/_authenticated/scorecard'
     | '/_authenticated/settings'
     | '/_authenticated/surveys'
@@ -2204,6 +2228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reports/sales'
     | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
+    | '/_authenticated/scan/history'
     | '/_authenticated/scorecard/goals'
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
@@ -2382,6 +2407,13 @@ declare module '@tanstack/react-router' {
       path: '/scorecard'
       fullPath: '/scorecard'
       preLoaderRoute: typeof AuthenticatedScorecardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/scan': {
+      id: '/_authenticated/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof AuthenticatedScanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports': {
@@ -2824,6 +2856,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/scorecard/goals'
       preLoaderRoute: typeof AuthenticatedScorecardGoalsRouteImport
       parentRoute: typeof AuthenticatedScorecardRoute
+    }
+    '/_authenticated/scan/history': {
+      id: '/_authenticated/scan/history'
+      path: '/history'
+      fullPath: '/scan/history'
+      preLoaderRoute: typeof AuthenticatedScanHistoryRouteImport
+      parentRoute: typeof AuthenticatedScanRoute
     }
     '/_authenticated/reports/visits': {
       id: '/_authenticated/reports/visits'
@@ -3830,6 +3869,17 @@ const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
 const AuthenticatedReportsRouteWithChildren =
   AuthenticatedReportsRoute._addFileChildren(AuthenticatedReportsRouteChildren)
 
+interface AuthenticatedScanRouteChildren {
+  AuthenticatedScanHistoryRoute: typeof AuthenticatedScanHistoryRoute
+}
+
+const AuthenticatedScanRouteChildren: AuthenticatedScanRouteChildren = {
+  AuthenticatedScanHistoryRoute: AuthenticatedScanHistoryRoute,
+}
+
+const AuthenticatedScanRouteWithChildren =
+  AuthenticatedScanRoute._addFileChildren(AuthenticatedScanRouteChildren)
+
 interface AuthenticatedScorecardRouteChildren {
   AuthenticatedScorecardGoalsRoute: typeof AuthenticatedScorecardGoalsRoute
   AuthenticatedScorecardHistoryRoute: typeof AuthenticatedScorecardHistoryRoute
@@ -3997,6 +4047,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProposalsRoute: typeof AuthenticatedProposalsRouteWithChildren
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
+  AuthenticatedScanRoute: typeof AuthenticatedScanRouteWithChildren
   AuthenticatedScorecardRoute: typeof AuthenticatedScorecardRouteWithChildren
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedSurveysRoute: typeof AuthenticatedSurveysRouteWithChildren
@@ -4061,6 +4112,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProposalsRoute: AuthenticatedProposalsRouteWithChildren,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
+  AuthenticatedScanRoute: AuthenticatedScanRouteWithChildren,
   AuthenticatedScorecardRoute: AuthenticatedScorecardRouteWithChildren,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedSurveysRoute: AuthenticatedSurveysRouteWithChildren,
