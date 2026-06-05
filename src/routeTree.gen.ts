@@ -172,6 +172,8 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
+import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
+import { Route as ApiPublicHooksCopilotAnomaliesCronRouteImport } from './routes/api/public/hooks/copilot-anomalies-cron'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
@@ -1088,6 +1090,18 @@ const ApiPublicHooksCrmLeadCaptureRoute =
     path: '/api/public/hooks/crm-lead-capture',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksCopilotScheduledCronRoute =
+  ApiPublicHooksCopilotScheduledCronRouteImport.update({
+    id: '/api/public/hooks/copilot-scheduled-cron',
+    path: '/api/public/hooks/copilot-scheduled-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksCopilotAnomaliesCronRoute =
+  ApiPublicHooksCopilotAnomaliesCronRouteImport.update({
+    id: '/api/public/hooks/copilot-anomalies-cron',
+    path: '/api/public/hooks/copilot-anomalies-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -1297,6 +1311,8 @@ export interface FileRoutesByFullPath {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1457,6 +1473,8 @@ export interface FileRoutesByTo {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1631,6 +1649,8 @@ export interface FileRoutesById {
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1805,6 +1825,8 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -1965,6 +1987,8 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -2138,6 +2162,8 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/hooks/copilot-anomalies-cron'
+    | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/process-reminders'
@@ -2161,6 +2187,8 @@ export interface RootRouteChildren {
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksCopilotAnomaliesCronRoute: typeof ApiPublicHooksCopilotAnomaliesCronRoute
+  ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -3316,6 +3344,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCrmLeadCaptureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/copilot-scheduled-cron': {
+      id: '/api/public/hooks/copilot-scheduled-cron'
+      path: '/api/public/hooks/copilot-scheduled-cron'
+      fullPath: '/api/public/hooks/copilot-scheduled-cron'
+      preLoaderRoute: typeof ApiPublicHooksCopilotScheduledCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/copilot-anomalies-cron': {
+      id: '/api/public/hooks/copilot-anomalies-cron'
+      path: '/api/public/hooks/copilot-anomalies-cron'
+      fullPath: '/api/public/hooks/copilot-anomalies-cron'
+      preLoaderRoute: typeof ApiPublicHooksCopilotAnomaliesCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks/projects/$projectId': {
       id: '/_authenticated/tasks/projects/$projectId'
       path: '/$projectId'
@@ -3900,6 +3942,10 @@ const rootRouteChildren: RootRouteChildren = {
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksCopilotAnomaliesCronRoute:
+    ApiPublicHooksCopilotAnomaliesCronRoute,
+  ApiPublicHooksCopilotScheduledCronRoute:
+    ApiPublicHooksCopilotScheduledCronRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
