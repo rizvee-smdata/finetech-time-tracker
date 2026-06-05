@@ -65,6 +65,7 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="holidays" className="space-y-6">
           <WeekendDaysCard />
+          <BackdateDaysCard />
           <HolidaysCard />
         </TabsContent>
         <TabsContent value="import" className="space-y-6">
