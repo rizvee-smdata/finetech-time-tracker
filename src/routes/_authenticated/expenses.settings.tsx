@@ -75,7 +75,7 @@ function SettingsPage() {
 
   async function setApprover(repId: string, approverId: string) {
     if (!companyId) return;
-    if (!approverId) {
+    if (!approverId || approverId === "__none__") {
       await supabase.from("expense_approver_assignments").delete().eq("company_id", companyId).eq("rep_id", repId);
     } else {
       const existing = assignments?.find((a) => a.rep_id === repId);
