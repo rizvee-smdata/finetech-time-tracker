@@ -16,7 +16,7 @@ import { generateNarrative } from "@/lib/narratives/generate.functions";
 import { previousWeekRange } from "@/lib/narratives/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/narratives/")({
+export const Route = createFileRoute("/_authenticated/narratives")({
   component: NarrativesIndex,
 });
 
