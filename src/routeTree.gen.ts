@@ -91,6 +91,9 @@ import { Route as AuthenticatedProposalsTemplatesRouteImport } from './routes/_a
 import { Route as AuthenticatedProposalsNewRouteImport } from './routes/_authenticated/proposals.new'
 import { Route as AuthenticatedProposalsAnalyticsRouteImport } from './routes/_authenticated/proposals.analytics'
 import { Route as AuthenticatedProposalsProposalIdRouteImport } from './routes/_authenticated/proposals.$proposalId'
+import { Route as AuthenticatedPredictorTeamRouteImport } from './routes/_authenticated/predictor.team'
+import { Route as AuthenticatedPredictorMeRouteImport } from './routes/_authenticated/predictor.me'
+import { Route as AuthenticatedPredictorHistoryRouteImport } from './routes/_authenticated/predictor.history'
 import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_authenticated/planning.upcoming'
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
@@ -616,6 +619,24 @@ const AuthenticatedProposalsProposalIdRoute =
     id: '/$proposalId',
     path: '/$proposalId',
     getParentRoute: () => AuthenticatedProposalsRoute,
+  } as any)
+const AuthenticatedPredictorTeamRoute =
+  AuthenticatedPredictorTeamRouteImport.update({
+    id: '/predictor/team',
+    path: '/predictor/team',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPredictorMeRoute =
+  AuthenticatedPredictorMeRouteImport.update({
+    id: '/predictor/me',
+    path: '/predictor/me',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPredictorHistoryRoute =
+  AuthenticatedPredictorHistoryRouteImport.update({
+    id: '/predictor/history',
+    path: '/predictor/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPlanningUpcomingRoute =
   AuthenticatedPlanningUpcomingRouteImport.update({
@@ -1174,6 +1195,9 @@ export interface FileRoutesByFullPath {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/predictor/history': typeof AuthenticatedPredictorHistoryRoute
+  '/predictor/me': typeof AuthenticatedPredictorMeRoute
+  '/predictor/team': typeof AuthenticatedPredictorTeamRoute
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1325,6 +1349,9 @@ export interface FileRoutesByTo {
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/predictor/history': typeof AuthenticatedPredictorHistoryRoute
+  '/predictor/me': typeof AuthenticatedPredictorMeRoute
+  '/predictor/team': typeof AuthenticatedPredictorTeamRoute
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1490,6 +1517,9 @@ export interface FileRoutesById {
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
   '/_authenticated/planning/upcoming': typeof AuthenticatedPlanningUpcomingRoute
+  '/_authenticated/predictor/history': typeof AuthenticatedPredictorHistoryRoute
+  '/_authenticated/predictor/me': typeof AuthenticatedPredictorMeRoute
+  '/_authenticated/predictor/team': typeof AuthenticatedPredictorTeamRoute
   '/_authenticated/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/_authenticated/proposals/analytics': typeof AuthenticatedProposalsAnalyticsRoute
   '/_authenticated/proposals/new': typeof AuthenticatedProposalsNewRoute
@@ -1655,6 +1685,9 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/predictor/history'
+    | '/predictor/me'
+    | '/predictor/team'
     | '/proposals/$proposalId'
     | '/proposals/analytics'
     | '/proposals/new'
@@ -1806,6 +1839,9 @@ export interface FileRouteTypes {
     | '/planning/new'
     | '/planning/team'
     | '/planning/upcoming'
+    | '/predictor/history'
+    | '/predictor/me'
+    | '/predictor/team'
     | '/proposals/$proposalId'
     | '/proposals/analytics'
     | '/proposals/new'
@@ -1970,6 +2006,9 @@ export interface FileRouteTypes {
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
     | '/_authenticated/planning/upcoming'
+    | '/_authenticated/predictor/history'
+    | '/_authenticated/predictor/me'
+    | '/_authenticated/predictor/team'
     | '/_authenticated/proposals/$proposalId'
     | '/_authenticated/proposals/analytics'
     | '/_authenticated/proposals/new'
@@ -2634,6 +2673,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/proposals/$proposalId'
       preLoaderRoute: typeof AuthenticatedProposalsProposalIdRouteImport
       parentRoute: typeof AuthenticatedProposalsRoute
+    }
+    '/_authenticated/predictor/team': {
+      id: '/_authenticated/predictor/team'
+      path: '/predictor/team'
+      fullPath: '/predictor/team'
+      preLoaderRoute: typeof AuthenticatedPredictorTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/predictor/me': {
+      id: '/_authenticated/predictor/me'
+      path: '/predictor/me'
+      fullPath: '/predictor/me'
+      preLoaderRoute: typeof AuthenticatedPredictorMeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/predictor/history': {
+      id: '/_authenticated/predictor/history'
+      path: '/predictor/history'
+      fullPath: '/predictor/history'
+      preLoaderRoute: typeof AuthenticatedPredictorHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/planning/upcoming': {
       id: '/_authenticated/planning/upcoming'
@@ -3628,6 +3688,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
+  AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
+  AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
+  AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
@@ -3682,6 +3745,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
+  AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
+  AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
+  AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,

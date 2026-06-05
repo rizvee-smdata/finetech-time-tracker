@@ -3095,6 +3095,93 @@ export type Database = {
         }
         Relationships: []
       }
+      prediction_runs: {
+        Row: {
+          achieved_value: number
+          achievement_pct: number
+          alerted_manager_at: string | null
+          alerted_rep_at: string | null
+          best_case: number
+          company_id: string
+          confidence: number
+          created_at: string
+          gap_to_target: number
+          generated_at: string
+          id: string
+          inputs: Json
+          key_driver: string | null
+          model: string | null
+          period_end: string
+          period_start: string
+          predicted_revenue: number
+          recommendation: string | null
+          required_additional_proposals: number
+          required_additional_visits: number
+          risk_factor: string | null
+          run_date: string
+          target_value: number
+          updated_at: string
+          user_id: string
+          worst_case: number
+        }
+        Insert: {
+          achieved_value?: number
+          achievement_pct?: number
+          alerted_manager_at?: string | null
+          alerted_rep_at?: string | null
+          best_case?: number
+          company_id: string
+          confidence?: number
+          created_at?: string
+          gap_to_target?: number
+          generated_at?: string
+          id?: string
+          inputs?: Json
+          key_driver?: string | null
+          model?: string | null
+          period_end: string
+          period_start: string
+          predicted_revenue?: number
+          recommendation?: string | null
+          required_additional_proposals?: number
+          required_additional_visits?: number
+          risk_factor?: string | null
+          run_date?: string
+          target_value?: number
+          updated_at?: string
+          user_id: string
+          worst_case?: number
+        }
+        Update: {
+          achieved_value?: number
+          achievement_pct?: number
+          alerted_manager_at?: string | null
+          alerted_rep_at?: string | null
+          best_case?: number
+          company_id?: string
+          confidence?: number
+          created_at?: string
+          gap_to_target?: number
+          generated_at?: string
+          id?: string
+          inputs?: Json
+          key_driver?: string | null
+          model?: string | null
+          period_end?: string
+          period_start?: string
+          predicted_revenue?: number
+          recommendation?: string | null
+          required_additional_proposals?: number
+          required_additional_visits?: number
+          risk_factor?: string | null
+          run_date?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+          worst_case?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
