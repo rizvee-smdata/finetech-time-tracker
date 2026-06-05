@@ -3225,6 +3225,124 @@ export type Database = {
           },
         ]
       }
+      narrative_reports: {
+        Row: {
+          body_md: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          delivered_channels: string[]
+          id: string
+          language: string
+          metrics: Json
+          pdf_url: string | null
+          role: string
+          summary: string | null
+          title: string
+          updated_at: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          body_md: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          delivered_channels?: string[]
+          id?: string
+          language?: string
+          metrics?: Json
+          pdf_url?: string | null
+          role: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          body_md?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          delivered_channels?: string[]
+          id?: string
+          language?: string
+          metrics?: Json
+          pdf_url?: string | null
+          role?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "narrative_reports_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      narrative_settings: {
+        Row: {
+          channels: string[]
+          company_id: string
+          created_at: string
+          custom_kpis: string[]
+          delivery_time: string
+          email_recipients: string[]
+          enabled: boolean
+          id: string
+          language: string
+          role: string
+          role_description: string
+          updated_at: string
+          whatsapp_recipients: string[]
+        }
+        Insert: {
+          channels?: string[]
+          company_id: string
+          created_at?: string
+          custom_kpis?: string[]
+          delivery_time?: string
+          email_recipients?: string[]
+          enabled?: boolean
+          id?: string
+          language?: string
+          role: string
+          role_description?: string
+          updated_at?: string
+          whatsapp_recipients?: string[]
+        }
+        Update: {
+          channels?: string[]
+          company_id?: string
+          created_at?: string
+          custom_kpis?: string[]
+          delivery_time?: string
+          email_recipients?: string[]
+          enabled?: boolean
+          id?: string
+          language?: string
+          role?: string
+          role_description?: string
+          updated_at?: string
+          whatsapp_recipients?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "narrative_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string
