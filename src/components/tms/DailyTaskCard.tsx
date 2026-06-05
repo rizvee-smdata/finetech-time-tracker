@@ -32,6 +32,21 @@ export function DailyTaskCard({ task, onChanged }: { task: DailyTask; onChanged?
   const qc = useQueryClient();
   const cat = categoryMeta(task.category);
   const isDone = !!task.tms_task_statuses?.is_terminal;
+  const isVisit = task.category === "visit" || task.category === "Client Visit";
+
+  const prepBrief = useQuery({
+    queryKey: ["prep-brief-badge", task.id],
+    enabled: isVisit,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("meeting_prep_briefs")
+        .select("id, status")
+        .eq("task_id", task.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
 
   const statuses = useQuery({
     queryKey: ["tms-statuses-default", companyId],
