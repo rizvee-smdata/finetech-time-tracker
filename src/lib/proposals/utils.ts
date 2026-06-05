@@ -29,6 +29,12 @@ export function statusColor(status: string): string {
   switch (status) {
     case "draft":
       return "bg-slate-500/15 text-slate-300 border-slate-500/30";
+    case "in_review":
+      return "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    case "changes_requested":
+      return "bg-orange-500/15 text-orange-300 border-orange-500/30";
+    case "approved":
+      return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
     case "ready":
       return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "sent":
@@ -41,3 +47,15 @@ export function statusColor(status: string): string {
       return "bg-slate-500/15 text-slate-300 border-slate-500/30";
   }
 }
+
+// Bangladeshi grouping: 1,23,45,678 (last 3, then groups of 2)
+export function fmtBDT(amount: number): string {
+  const n = Math.round(amount);
+  const s = String(Math.abs(n));
+  if (s.length <= 3) return `৳${n < 0 ? "-" : ""}${s}`;
+  const last3 = s.slice(-3);
+  const rest = s.slice(0, -3);
+  const grouped = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  return `৳${n < 0 ? "-" : ""}${grouped},${last3}`;
+}
+
