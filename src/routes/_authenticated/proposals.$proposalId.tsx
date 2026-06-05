@@ -11,10 +11,13 @@ import {
   FileDown,
   History,
   Loader2,
+  MessageSquare,
   Printer,
   RefreshCcw,
   Save,
+  Send,
   Sparkles,
+  ThumbsUp,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,9 +30,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useProposalsStore } from "@/lib/proposals/storage";
 import { DocumentPreview } from "@/components/proposals/DocumentPreview";
 import { SECTION_LABELS } from "@/lib/proposals/templates";
-import type { Proposal, ProposalSection, ProposalStatus } from "@/lib/proposals/types";
+import type { Proposal, ProposalComment, ProposalSection, ProposalStatus } from "@/lib/proposals/types";
 import { improveSection } from "@/lib/proposals/improve.functions";
 import { statusColor } from "@/lib/proposals/utils";
+import { exportProposalPdf } from "@/lib/proposals/pdfExport";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/proposals/$proposalId")({
@@ -102,6 +107,9 @@ function ProposalEditorPage() {
     toast.success("Saved");
   }
 
+  const { user, isStaff } = useAuth();
+  const me = user?.email ?? "rep";
+
   function setStatus(status: ProposalStatus) {
     const now = new Date().toISOString();
     const next: Proposal = {
@@ -109,10 +117,13 @@ function ProposalEditorPage() {
       status,
       sentAt: status === "sent" ? now : draft.sentAt,
       decidedAt: status === "accepted" || status === "rejected" ? now : draft.decidedAt,
+      submittedForReviewAt: status === "in_review" ? now : draft.submittedForReviewAt,
+      approvedAt: status === "approved" ? now : draft.approvedAt,
+      approvedBy: status === "approved" ? me : draft.approvedBy,
     };
     setDraft(next);
     updateInPlace(next);
-    toast.success(`Marked as ${status}`);
+    toast.success(`Marked as ${status.replace(/_/g, " ")}`);
     // Cross-module sync to deal stage + health
     if (next.dealId && (status === "sent" || status === "accepted" || status === "rejected")) {
       import("@/lib/app/integrations").then(({ syncProposalToDeal }) => {
@@ -127,6 +138,43 @@ function ProposalEditorPage() {
       }
     }
   }
+
+  function addComment(message: string, sectionId?: string) {
+    if (!message.trim()) return;
+    const c: ProposalComment = {
+      id: crypto.randomUUID(),
+      author: me,
+      authorRole: isStaff ? "manager" : "rep",
+      sectionId,
+      message: message.trim(),
+      createdAt: new Date().toISOString(),
+      resolved: false,
+    };
+    const next: Proposal = { ...draft, comments: [...(draft.comments ?? []), c] };
+    setDraft(next);
+    updateInPlace(next);
+    toast.success("Comment added");
+  }
+
+  function toggleResolved(id: string) {
+    const next: Proposal = {
+      ...draft,
+      comments: (draft.comments ?? []).map((c) => (c.id === id ? { ...c, resolved: !c.resolved } : c)),
+    };
+    setDraft(next);
+    updateInPlace(next);
+  }
+
+  async function downloadPdf() {
+    try {
+      toast.message("Generating PDF…");
+      await exportProposalPdf(draft);
+      toast.success("PDF downloaded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "PDF export failed");
+    }
+  }
+
 
 
   async function runImprove(instruction: string) {
@@ -176,6 +224,9 @@ function ProposalEditorPage() {
           <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="in_review">In Review</SelectItem>
+            <SelectItem value="changes_requested">Changes Requested</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
             <SelectItem value="ready">Ready</SelectItem>
             <SelectItem value="sent">Sent</SelectItem>
             <SelectItem value="accepted">Accepted</SelectItem>
@@ -203,8 +254,46 @@ function ProposalEditorPage() {
           >
             <CopyIcon className="mr-1 h-4 w-4" /> Copy HTML
           </Button>
-          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={() => window.print()}>
-            <Printer className="mr-1 h-4 w-4" /> Print / PDF
+          {draft.status === "draft" || draft.status === "changes_requested" ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-amber-500/40 text-amber-300"
+              onClick={() => setStatus("in_review")}
+            >
+              <Send className="mr-1 h-4 w-4" /> Submit for Review
+            </Button>
+          ) : null}
+          {isStaff && draft.status === "in_review" ? (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-orange-500/40 text-orange-300"
+                onClick={() => {
+                  const msg = window.prompt("What changes are needed?");
+                  if (msg) {
+                    addComment(msg);
+                    setStatus("changes_requested");
+                  }
+                }}
+              >
+                Request Changes
+              </Button>
+              <Button
+                size="sm"
+                className="bg-emerald-500 hover:bg-emerald-600"
+                onClick={() => setStatus("approved")}
+              >
+                <ThumbsUp className="mr-1 h-4 w-4" /> Approve
+              </Button>
+            </>
+          ) : null}
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-1 h-4 w-4" /> Print
+          </Button>
+          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={downloadPdf}>
+            <FileDown className="mr-1 h-4 w-4" /> Download PDF
           </Button>
         </div>
       </div>
@@ -318,6 +407,14 @@ function ProposalEditorPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Review / Comments panel */}
+          <ReviewPanel
+            proposal={draft}
+            sectionId={active?.id}
+            onAdd={addComment}
+            onToggleResolved={toggleResolved}
+          />
         </div>
 
         {/* Right: preview */}
@@ -362,3 +459,125 @@ function ProposalEditorPage() {
     </div>
   );
 }
+
+function ReviewPanel({
+  proposal,
+  sectionId,
+  onAdd,
+  onToggleResolved,
+}: {
+  proposal: Proposal;
+  sectionId?: string;
+  onAdd: (msg: string, sectionId?: string) => void;
+  onToggleResolved: (id: string) => void;
+}) {
+  const [text, setText] = useState("");
+  const [scope, setScope] = useState<"section" | "general">("section");
+  const comments = (proposal.comments ?? []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const open = comments.filter((c) => !c.resolved).length;
+
+  return (
+    <Card className="border-border/60 bg-card/40 backdrop-blur">
+      <CardContent className="space-y-2 p-3">
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <MessageSquare className="h-4 w-4 text-emerald-400" />
+          Review &amp; Comments
+          {open > 0 && (
+            <Badge variant="outline" className="border-amber-500/40 text-[10px] text-amber-300">
+              {open} open
+            </Badge>
+          )}
+          {proposal.approvedAt && (
+            <Badge variant="outline" className="border-emerald-500/40 text-[10px] text-emerald-300">
+              Approved by {proposal.approvedBy ?? "manager"}
+            </Badge>
+          )}
+        </div>
+        <div className="flex gap-1 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setScope("section")}
+            disabled={!sectionId}
+            className={cn(
+              "rounded-full px-2 py-0.5 border",
+              scope === "section"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-border/60 text-muted-foreground",
+            )}
+          >
+            On this section
+          </button>
+          <button
+            type="button"
+            onClick={() => setScope("general")}
+            className={cn(
+              "rounded-full px-2 py-0.5 border",
+              scope === "general"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-border/60 text-muted-foreground",
+            )}
+          >
+            General
+          </button>
+        </div>
+        <Textarea
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Leave feedback for the rep or manager…"
+        />
+        <Button
+          size="sm"
+          className="w-full bg-emerald-500 hover:bg-emerald-600"
+          disabled={!text.trim()}
+          onClick={() => {
+            onAdd(text, scope === "section" ? sectionId : undefined);
+            setText("");
+          }}
+        >
+          Add comment
+        </Button>
+        <div className="max-h-[260px] space-y-1.5 overflow-auto pt-1">
+          {comments.length === 0 && (
+            <div className="rounded border border-dashed border-border/40 p-3 text-center text-[11px] text-muted-foreground">
+              No comments yet.
+            </div>
+          )}
+          {comments.map((c) => (
+            <div
+              key={c.id}
+              className={cn(
+                "rounded border p-2 text-xs",
+                c.resolved ? "border-border/30 opacity-60" : "border-border/60 bg-background/40",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-medium">
+                  {c.author}{" "}
+                  <Badge variant="outline" className="ml-1 text-[9px]">
+                    {c.authorRole}
+                  </Badge>
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {format(new Date(c.createdAt), "dd MMM HH:mm")}
+                </span>
+              </div>
+              <div className="mt-1 whitespace-pre-wrap text-[12px]">{c.message}</div>
+              <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
+                <span>{c.sectionId ? "On section" : "General"}</span>
+                <button
+                  type="button"
+                  className="text-emerald-400 hover:underline"
+                  onClick={() => onToggleResolved(c.id)}
+                >
+                  {c.resolved ? "Reopen" : "Resolve"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+

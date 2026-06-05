@@ -98,7 +98,12 @@ export const generateProposal = createServerFn({ method: "POST" })
     const userPrompt = `You are a senior business development writer for SmartData Limited, a Bangladesh-based ICT solutions and services company. Write a professional ${data.tone} proposal for the following client.
 
 COMPANY CONTEXT:
-SmartData Limited is an ICT solutions company serving enterprise and government clients in Bangladesh. Partners include Rubrik, HivePro, Gambit Cyber, LinkShadow, Gurucul, Adaptiva, and DEEPX. The company also operates under the Toovus brand.
+SmartData Limited is a premier cybersecurity and ICT solutions distributor serving enterprise, BFSI and government clients in Bangladesh. OEM partners: Fortinet (network security, NGFW, SD-WAN, FortiSIEM, FortiAnalyzer), Rubrik (backup, immutable data protection, cyber recovery), HivePro (threat exposure management), Gambit Cyber (MSSP / SOC), Gurucul (UEBA, next-gen SIEM), LinkShadow (NDR, network detection and response), Adaptiva (endpoint configuration & patch management), DEEPX (edge AI accelerators), Gopher Security (application & API security). The company also operates under the Toovus brand.
+
+CURRENCY & NUMBER FORMATTING (CRITICAL):
+- All prices are in Bangladeshi Taka. Use the symbol "৳" or prefix "BDT".
+- Use the Bangladeshi lakh/crore notation in narrative text, e.g. "৳25,00,000 (25 lakh)" or "৳3,50,00,000 (3.5 crore)". In pricing tables, show full digits with grouped commas in the South-Asian style.
+- Reference SmartData's local strengths: Dhaka-based delivery team, 24x7 NOC/SOC presence, Bangla-speaking engineers, compliance with Bangladesh Bank ICT Security Guideline and DPA 2023 where relevant.
 
 CLIENT INFORMATION:
 - Company: ${data.clientCompany}

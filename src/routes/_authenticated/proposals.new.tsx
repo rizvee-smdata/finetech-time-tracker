@@ -145,6 +145,71 @@ function ProposalWizardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromDeal, deals.length]);
 
+  // Prefill from Quick Brief seed (sessionStorage)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = sessionStorage.getItem("deskiq_proposal_brief_seed");
+    if (!raw) return;
+    try {
+      const seed = JSON.parse(raw) as {
+        brief: string;
+        extraction: {
+          clientCompany: string;
+          clientIndustry: string;
+          decisionMakerTitle?: string;
+          painPoints: string[];
+          competitors: string[];
+          recommendedTemplate: ProposalTemplate;
+          suggestedProducts: Array<{
+            name: string;
+            description: string;
+            quantity: number;
+            unitPriceBDT: number;
+            implementationDays: number;
+            oemPartner: string;
+          }>;
+          executiveOneLiner: string;
+        };
+        at: number;
+      };
+      sessionStorage.removeItem("deskiq_proposal_brief_seed");
+      const ex = seed.extraction;
+      setState((s) => ({
+        ...s,
+        clientCompany: ex.clientCompany || s.clientCompany,
+        clientName: s.clientName || ex.clientCompany,
+        clientIndustry: ex.clientIndustry || s.clientIndustry,
+        decisionMakerTitle: ex.decisionMakerTitle || s.decisionMakerTitle,
+        painPoints: ex.painPoints?.length ? ex.painPoints : s.painPoints,
+        competitors: ex.competitors?.length ? ex.competitors : s.competitors,
+        template: ex.recommendedTemplate || s.template,
+        selectedSections: TEMPLATE_META[ex.recommendedTemplate]?.sections ?? s.selectedSections,
+        additionalInstructions: [
+          s.additionalInstructions,
+          `Original brief: ${seed.brief}`,
+          `Headline: ${ex.executiveOneLiner}`,
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+        products: ex.suggestedProducts.map((p) => ({
+          id: proposalUid(),
+          name: `${p.oemPartner} — ${p.name}`,
+          description: p.description,
+          quantity: p.quantity,
+          unitPrice: p.unitPriceBDT,
+          currency: "BDT" as const,
+          discount: 0,
+          totalPrice: p.quantity * p.unitPriceBDT,
+          implementationDays: p.implementationDays,
+        })),
+      }));
+      toast.success("Brief loaded — review and refine before generating");
+    } catch {
+      // ignore malformed seed
+    }
+  }, []);
+
+
 
 
   // persist draft
