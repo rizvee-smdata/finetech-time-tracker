@@ -53,6 +53,7 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
+import { Route as AuthenticatedNarrativesIndexRouteImport } from './routes/_authenticated/narratives.index'
 import { Route as AuthenticatedKbIndexRouteImport } from './routes/_authenticated/kb.index'
 import { Route as AuthenticatedFollowupsIndexRouteImport } from './routes/_authenticated/followups.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
@@ -102,6 +103,8 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedNarrativesSettingsRouteImport } from './routes/_authenticated/narratives.settings'
+import { Route as AuthenticatedNarrativesIdRouteImport } from './routes/_authenticated/narratives.$id'
 import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
 import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
 import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
@@ -416,6 +419,12 @@ const AuthenticatedPlanningIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
   } as any)
+const AuthenticatedNarrativesIndexRoute =
+  AuthenticatedNarrativesIndexRouteImport.update({
+    id: '/narratives/',
+    path: '/narratives/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedKbIndexRoute = AuthenticatedKbIndexRouteImport.update({
   id: '/kb/',
   path: '/kb/',
@@ -695,6 +704,18 @@ const AuthenticatedPlanningPlanIdRoute =
     id: '/$planId',
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
+  } as any)
+const AuthenticatedNarrativesSettingsRoute =
+  AuthenticatedNarrativesSettingsRouteImport.update({
+    id: '/narratives/settings',
+    path: '/narratives/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNarrativesIdRoute =
+  AuthenticatedNarrativesIdRouteImport.update({
+    id: '/narratives/$id',
+    path: '/narratives/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedManagerTeamRoute =
   AuthenticatedManagerTeamRouteImport.update({
@@ -1277,6 +1298,8 @@ export interface FileRoutesByFullPath {
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1326,6 +1349,7 @@ export interface FileRoutesByFullPath {
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/kb/': typeof AuthenticatedKbIndexRoute
+  '/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1443,6 +1467,8 @@ export interface FileRoutesByTo {
   '/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1492,6 +1518,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/followups': typeof AuthenticatedFollowupsIndexRoute
   '/kb': typeof AuthenticatedKbIndexRoute
+  '/narratives': typeof AuthenticatedNarrativesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -1623,6 +1650,8 @@ export interface FileRoutesById {
   '/_authenticated/manager/dashboard': typeof AuthenticatedManagerDashboardRoute
   '/_authenticated/manager/reports': typeof AuthenticatedManagerReportsRoute
   '/_authenticated/manager/team': typeof AuthenticatedManagerTeamRoute
+  '/_authenticated/narratives/$id': typeof AuthenticatedNarrativesIdRoute
+  '/_authenticated/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1672,6 +1701,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/_authenticated/kb/': typeof AuthenticatedKbIndexRoute
+  '/_authenticated/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1803,6 +1833,8 @@ export interface FileRouteTypes {
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
+    | '/narratives/$id'
+    | '/narratives/settings'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -1852,6 +1884,7 @@ export interface FileRouteTypes {
     | '/expenses/'
     | '/followups/'
     | '/kb/'
+    | '/narratives/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -1969,6 +2002,8 @@ export interface FileRouteTypes {
     | '/manager/dashboard'
     | '/manager/reports'
     | '/manager/team'
+    | '/narratives/$id'
+    | '/narratives/settings'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -2018,6 +2053,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/followups'
     | '/kb'
+    | '/narratives'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -2148,6 +2184,8 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/dashboard'
     | '/_authenticated/manager/reports'
     | '/_authenticated/manager/team'
+    | '/_authenticated/narratives/$id'
+    | '/_authenticated/narratives/settings'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -2197,6 +2235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/'
     | '/_authenticated/followups/'
     | '/_authenticated/kb/'
+    | '/_authenticated/narratives/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -2563,6 +2602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
     }
+    '/_authenticated/narratives/': {
+      id: '/_authenticated/narratives/'
+      path: '/narratives'
+      fullPath: '/narratives/'
+      preLoaderRoute: typeof AuthenticatedNarrativesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/kb/': {
       id: '/_authenticated/kb/'
       path: '/kb'
@@ -2905,6 +2951,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/$planId'
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/narratives/settings': {
+      id: '/_authenticated/narratives/settings'
+      path: '/narratives/settings'
+      fullPath: '/narratives/settings'
+      preLoaderRoute: typeof AuthenticatedNarrativesSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/narratives/$id': {
+      id: '/_authenticated/narratives/$id'
+      path: '/narratives/$id'
+      fullPath: '/narratives/$id'
+      preLoaderRoute: typeof AuthenticatedNarrativesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/manager/team': {
       id: '/_authenticated/manager/team'
@@ -3946,6 +4006,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
+  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
+  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
   AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
   AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
   AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
@@ -3955,6 +4017,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
+  AuthenticatedNarrativesIndexRoute: typeof AuthenticatedNarrativesIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
   AuthenticatedKbArticleIdRoute: typeof AuthenticatedKbArticleIdRoute
@@ -4009,6 +4072,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
+  AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
+  AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
   AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
   AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
   AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
@@ -4018,6 +4083,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
+  AuthenticatedNarrativesIndexRoute: AuthenticatedNarrativesIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedClientsClientIdHealthRoute:
     AuthenticatedClientsClientIdHealthRoute,
