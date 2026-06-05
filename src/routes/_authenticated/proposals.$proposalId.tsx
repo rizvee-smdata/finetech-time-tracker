@@ -407,6 +407,14 @@ function ProposalEditorPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Review / Comments panel */}
+          <ReviewPanel
+            proposal={draft}
+            sectionId={active?.id}
+            onAdd={addComment}
+            onToggleResolved={toggleResolved}
+          />
         </div>
 
         {/* Right: preview */}
