@@ -46,7 +46,7 @@ serve(async (req) => {
       .from("tms_tasks")
       .select("id, company_id, title, lead_id, created_by, scheduled_date, scheduled_time, category")
       .in("scheduled_date", dates)
-      .eq("category", "Client Visit")
+      .in("category", ["visit", "Client Visit"])
       .is("completed_at", null)
       .is("deleted_at", null)
       .not("scheduled_time", "is", null);
