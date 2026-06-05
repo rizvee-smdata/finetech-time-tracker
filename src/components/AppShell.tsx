@@ -67,6 +67,7 @@ const nav = [
   { to: "/deals", label: "Deal Health", icon: TrendingUp },
   { to: "/clients/health", label: "Client Health", icon: HeartPulse },
   { to: "/proposals", label: "Proposals", icon: FileText },
+  { to: "/proposals/brief", label: "AI Proposal Brief", icon: Sparkles },
 
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/followups", label: "Follow-ups", icon: Bell },
