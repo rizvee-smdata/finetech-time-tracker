@@ -134,10 +134,10 @@ function SettingsPage() {
             return (
               <div key={m.id} className="flex items-center gap-2">
                 <div className="flex-1 truncate text-sm">{m.full_name ?? m.email}</div>
-                <Select value={assigned?.approver_id ?? ""} onValueChange={(v) => setApprover(m.id, v)}>
+                <Select value={assigned?.approver_id ?? "__none__"} onValueChange={(v) => setApprover(m.id, v)}>
                   <SelectTrigger className="h-8 w-48"><SelectValue placeholder="No approver" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No approver</SelectItem>
+                    <SelectItem value="__none__">No approver</SelectItem>
                     {(members ?? []).filter((u) => u.id !== m.id).map((u) => (
                       <SelectItem key={u.id} value={u.id}>{u.full_name ?? u.email}</SelectItem>
                     ))}
