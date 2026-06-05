@@ -4877,6 +4877,66 @@ export type Database = {
           },
         ]
       }
+      voice_inputs: {
+        Row: {
+          audio_path: string | null
+          company_id: string | null
+          confidence_scores: Json
+          created_at: string
+          detected_language: string | null
+          duration_seconds: number | null
+          error_message: string | null
+          extracted_data: Json
+          id: string
+          linked_contact_id: string | null
+          linked_task_ids: string[] | null
+          linked_visit_id: string | null
+          processing_status: string
+          transcript_bn: string | null
+          transcript_en: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_path?: string | null
+          company_id?: string | null
+          confidence_scores?: Json
+          created_at?: string
+          detected_language?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          extracted_data?: Json
+          id?: string
+          linked_contact_id?: string | null
+          linked_task_ids?: string[] | null
+          linked_visit_id?: string | null
+          processing_status?: string
+          transcript_bn?: string | null
+          transcript_en?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_path?: string | null
+          company_id?: string | null
+          confidence_scores?: Json
+          created_at?: string
+          detected_language?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          extracted_data?: Json
+          id?: string
+          linked_contact_id?: string | null
+          linked_task_ids?: string[] | null
+          linked_visit_id?: string | null
+          processing_status?: string
+          transcript_bn?: string | null
+          transcript_en?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       whatsapp_message_log: {
         Row: {
           body: string | null

@@ -37,6 +37,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { VisitEntryAlertBanner } from "@/components/visits/VisitEntryAlertBanner";
+import { FloatingVoiceButton } from "@/components/voice/FloatingVoiceButton";
 
 // Lazy-load heavy popover widgets — they only render content on click
 const NotificationCenter = lazy(() =>
@@ -56,6 +57,7 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
 
   { to: "/visits", label: "Visits", icon: ClipboardList },
+  { to: "/voice/history", label: "Voice Notes", icon: Sparkles },
   { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
   { to: "/planning", label: "Planning", icon: RouteIcon },
   { to: "/gps/today", label: "Route", icon: NavigationIcon },
@@ -281,6 +283,8 @@ export function AppShell() {
           );
         })}
       </nav>
+
+      <FloatingVoiceButton />
     </div>
   );
 }
