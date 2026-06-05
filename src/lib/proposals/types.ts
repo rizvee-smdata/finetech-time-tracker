@@ -117,6 +117,10 @@ export type Proposal = {
   executiveOneLiner?: string;
   sentAt?: string;
   decidedAt?: string;
+  comments?: ProposalComment[];
+  submittedForReviewAt?: string;
+  approvedAt?: string;
+  approvedBy?: string;
 };
 
 export type TemplateBlock = {
