@@ -14,8 +14,7 @@ export function totalImplementationDays(products: ProposedProduct[]): number {
 }
 
 export function fmtMoney(amount: number, currency: Currency = "BDT"): string {
-  const symbol = currency === "BDT" ? "BDT" : "USD";
-  return `${symbol} ${Math.round(amount).toLocaleString()}`;
+  return `${currency} ${Math.round(amount).toLocaleString()}`;
 }
 
 export function fmtMoneyShort(amount: number, currency: Currency = "BDT"): string {
