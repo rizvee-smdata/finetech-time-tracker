@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { ExtractedFields, Confidence, DuplicateMatch } from "./types";
 
 const InputSchema = z.object({
@@ -265,13 +266,75 @@ export const saveCardScanToCrm = createServerFn({ method: "POST" })
       leadId = ins.id;
     }
 
+    // Also upsert into customers directory (independent of CRM lead RLS)
+    // Verify the user belongs to the company before writing.
+    const { data: membership } = await supabase
+      .from("company_members")
+      .select("user_id")
+      .eq("company_id", data.company_id)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    let customerId: string | null = null;
+    if (membership) {
+      const phoneNorm = (f.phone ?? "").replace(/\D/g, "");
+      const emailNorm = (f.email ?? "").toLowerCase().trim();
+      let existing: { id: string } | null = null;
+      if (emailNorm) {
+        const { data: byEmail } = await supabaseAdmin
+          .from("customers")
+          .select("id")
+          .eq("company_id", data.company_id)
+          .ilike("email", emailNorm)
+          .maybeSingle();
+        existing = byEmail ?? null;
+      }
+      if (!existing && phoneNorm.length >= 7) {
+        const { data: byPhone } = await supabaseAdmin
+          .from("customers")
+          .select("id, phone")
+          .eq("company_id", data.company_id)
+          .ilike("phone", `%${phoneNorm.slice(-8)}%`)
+          .limit(1);
+        existing = byPhone?.[0] ?? null;
+      }
+      if (existing) {
+        await supabaseAdmin
+          .from("customers")
+          .update({
+            customer_name: f.company_name || f.full_name,
+            contact_person: f.full_name,
+            designation: f.job_title,
+            email: f.email,
+            phone: f.phone,
+          })
+          .eq("id", existing.id);
+        customerId = existing.id;
+      } else {
+        const { data: ins } = await supabaseAdmin
+          .from("customers")
+          .insert({
+            company_id: data.company_id,
+            created_by: context.userId,
+            customer_name: f.company_name || f.full_name,
+            contact_person: f.full_name,
+            designation: f.job_title,
+            email: f.email,
+            phone: f.phone,
+            kind: "customer",
+          })
+          .select("id")
+          .single();
+        customerId = ins?.id ?? null;
+      }
+    }
+
     await supabase
       .from("card_scans")
       .update({ status: "saved", linked_lead_id: leadId })
       .eq("id", data.scan_id)
       .eq("company_id", data.company_id);
 
-    return { lead_id: leadId };
+    return { lead_id: leadId, customer_id: customerId };
   });
 
 const StatusSchema = z.object({
