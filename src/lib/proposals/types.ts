@@ -1,4 +1,4 @@
-export type Currency = "BDT" | "USD";
+export type Currency = "BDT" | "USD" | "EUR";
 
 export type ProposalStatus =
   | "draft"

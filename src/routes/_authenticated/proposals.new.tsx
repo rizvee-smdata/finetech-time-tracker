@@ -623,11 +623,12 @@ function Step2Products({
               <Label className="mb-1 block text-xs">Unit Price ({form.currency})</Label>
               <div className="flex gap-2">
                 <Input type="number" value={form.unitPrice} onChange={(e) => setForm({ ...form, unitPrice: Number(e.target.value) })} />
-                <Select value={form.currency} onValueChange={(v) => setForm({ ...form, currency: v as "BDT" | "USD" })}>
-                  <SelectTrigger className="w-[90px]"><SelectValue /></SelectTrigger>
+                <Select value={form.currency} onValueChange={(v) => setForm({ ...form, currency: v as "BDT" | "USD" | "EUR" })}>
+                  <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="BDT">BDT</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="BDT">BDT ৳</SelectItem>
+                    <SelectItem value="USD">USD $</SelectItem>
+                    <SelectItem value="EUR">EUR €</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
