@@ -51,7 +51,13 @@ export function GlobalSearch() {
       proposal: [],
       action: [],
     };
-    const match = (s: string) => !term || s.toLowerCase().includes(term);
+    const words = term.split(/\s+/).filter(Boolean);
+    const match = (s: string) => {
+      if (words.length === 0) return true;
+      const haystack = s.toLowerCase();
+      // Word-based: every search word must match a whole word in the haystack.
+      return words.every((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i").test(haystack));
+    };
 
     deals.forEach((d) => {
       if (match(`${d.title} ${d.clientName} ${d.clientCompany}`)) {
