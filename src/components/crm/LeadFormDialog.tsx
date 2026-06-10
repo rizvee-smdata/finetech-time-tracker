@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource } from "@/lib/crm/types";
+import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource, type VendorQuote } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 
 const sb = supabase as any;
