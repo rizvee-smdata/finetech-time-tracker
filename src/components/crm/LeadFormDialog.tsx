@@ -52,6 +52,8 @@ export function LeadFormDialog({
       competitor_notes: lead?.competitor_notes ?? "",
       renewal_kind: lead?.renewal_kind ?? "one_time",
       renewal_date: lead?.renewal_date ?? "",
+      product_name: lead?.product_name ?? "",
+      vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
     });
   }, [open, lead, user?.id]);
 
