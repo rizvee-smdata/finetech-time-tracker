@@ -26,19 +26,29 @@ export const Route = createFileRoute("/_authenticated/team")({
 });
 
 function TeamPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, companyId } = useAuth();
 
   const [selected, setSelected] = useState<{ id: string; name: string; scope: "today" | "all" } | null>(null);
 
   const { data: members, refetch } = useQuery({
-    queryKey: ["team-members"],
+    queryKey: ["team-members", companyId],
+    enabled: !!companyId,
     queryFn: async () => {
-      const { data: profiles } = await supabase.from("profiles").select("*").order("full_name");
-      const { data: roles } = await supabase.from("user_roles").select("user_id, role");
+      const { data: cm } = await supabase
+        .from("company_members")
+        .select("user_id")
+        .eq("company_id", companyId!);
+      const memberIds = (cm ?? []).map((r) => r.user_id);
+      if (memberIds.length === 0) return [];
+      const { data: profiles } = await supabase
+        .from("profiles").select("*").in("id", memberIds).order("full_name");
+      const { data: roles } = await supabase
+        .from("user_roles").select("user_id, role").in("user_id", memberIds);
       const { data: visits } = await supabase
-        .from("customer_visits").select("user_id, id, meeting_at");
+        .from("customer_visits").select("user_id, id, meeting_at")
+        .eq("company_id", companyId!).in("user_id", memberIds);
       const { data: time } = await supabase
-        .from("time_entries").select("user_id, check_in, check_out");
+        .from("time_entries").select("user_id, check_in, check_out").in("user_id", memberIds);
       return (profiles ?? []).map((p) => {
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
         const userVisits = (visits ?? []).filter((v) => v.user_id === p.id);
