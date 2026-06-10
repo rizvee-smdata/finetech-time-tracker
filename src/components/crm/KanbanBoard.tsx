@@ -96,6 +96,9 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                       {l.company_name && (
                         <div className="mt-0.5 truncate text-xs text-muted-foreground">{l.company_name}</div>
                       )}
+                      {l.product_name && (
+                        <div className="mt-0.5 truncate text-[11px] font-medium text-primary/90" title={l.product_name}>📦 {l.product_name}</div>
+                      )}
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
                       {isStale && (
