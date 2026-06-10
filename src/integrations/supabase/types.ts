@@ -1574,6 +1574,7 @@ export type Database = {
           phone: string | null
           priority: Database["public"]["Enums"]["crm_priority"]
           probability: number
+          product_name: string | null
           renewal_date: string | null
           renewal_kind: Database["public"]["Enums"]["crm_renewal_kind"]
           source: Database["public"]["Enums"]["crm_lead_source"]
@@ -1582,6 +1583,7 @@ export type Database = {
           stage_changed_at: string
           territory_id: string | null
           updated_at: string
+          vendor_quotes: Json
           won_at: string | null
         }
         Insert: {
@@ -1617,6 +1619,7 @@ export type Database = {
           phone?: string | null
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
           source?: Database["public"]["Enums"]["crm_lead_source"]
@@ -1625,6 +1628,7 @@ export type Database = {
           stage_changed_at?: string
           territory_id?: string | null
           updated_at?: string
+          vendor_quotes?: Json
           won_at?: string | null
         }
         Update: {
@@ -1660,6 +1664,7 @@ export type Database = {
           phone?: string | null
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
           source?: Database["public"]["Enums"]["crm_lead_source"]
@@ -1668,6 +1673,7 @@ export type Database = {
           stage_changed_at?: string
           territory_id?: string | null
           updated_at?: string
+          vendor_quotes?: Json
           won_at?: string | null
         }
         Relationships: [
