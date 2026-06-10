@@ -66,10 +66,13 @@ function TeamPage() {
   });
 
   const { data: visitDetails, isLoading: loadingDetails } = useQuery({
-    queryKey: ["team-visit-details", selected?.id, selected?.scope],
-    enabled: !!selected,
+    queryKey: ["team-visit-details", selected?.id, selected?.scope, companyId],
+    enabled: !!selected && !!companyId,
     queryFn: async () => {
-      let q = supabase.from("customer_visits").select("*").eq("user_id", selected!.id).order("meeting_at", { ascending: false });
+      let q = supabase.from("customer_visits").select("*")
+        .eq("user_id", selected!.id)
+        .eq("company_id", companyId!)
+        .order("meeting_at", { ascending: false });
       if (selected!.scope === "today") {
         const start = new Date(); start.setHours(0, 0, 0, 0);
         q = q.gte("meeting_at", start.toISOString());
