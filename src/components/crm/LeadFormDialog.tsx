@@ -120,6 +120,9 @@ export function LeadFormDialog({
             <Field label="Company">
               <Input value={form.company_name || ""} onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
             </Field>
+            <Field label="Product / Service">
+              <Input placeholder="e.g. ERP License, AC Unit, Cloud Hosting" value={form.product_name || ""} onChange={(e) => setForm({ ...form, product_name: e.target.value })} />
+            </Field>
             <Field label="Contact person">
               <Input value={form.contact_person || ""} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} />
             </Field>
