@@ -42,6 +42,13 @@ export const LEAD_SOURCES: { id: CrmLeadSource; label: string }[] = [
   { id: "other", label: "Other" },
 ];
 
+export type VendorQuote = {
+  vendor: string;
+  price: number | null;
+  currency?: string | null;
+  notes?: string | null;
+};
+
 export type Lead = {
   id: string;
   company_id: string;
