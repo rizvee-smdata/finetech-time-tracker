@@ -42,6 +42,13 @@ export const LEAD_SOURCES: { id: CrmLeadSource; label: string }[] = [
   { id: "other", label: "Other" },
 ];
 
+export type VendorQuote = {
+  vendor: string;
+  price: number | null;
+  currency?: string | null;
+  notes?: string | null;
+};
+
 export type Lead = {
   id: string;
   company_id: string;
@@ -62,6 +69,8 @@ export type Lead = {
   competitor_name: string | null;
   competitor_price: number | null;
   competitor_notes: string | null;
+  product_name: string | null;
+  vendor_quotes: VendorQuote[] | null;
   renewal_kind: CrmRenewalKind;
   renewal_date: string | null;
   is_renewal: boolean;

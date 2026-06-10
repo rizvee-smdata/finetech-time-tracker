@@ -61,12 +61,18 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
             )}
           >
             <div className="flex items-center justify-between border-b px-3 py-2">
-              <div className="flex items-center gap-2">
-                <span className={cn("h-2 w-2 rounded-full", s.color)} />
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={cn("h-2 w-2 rounded-full shrink-0", s.color)} />
                 <span className="text-sm font-semibold">{s.label}</span>
                 <Badge variant="secondary" className="h-5 px-1.5 text-xs">{list.length}</Badge>
+                {(() => {
+                  const products = Array.from(new Set(list.map((l) => l.product_name).filter(Boolean) as string[]));
+                  if (!products.length) return null;
+                  const label = products.slice(0, 2).join(", ") + (products.length > 2 ? ` +${products.length - 2}` : "");
+                  return <span className="truncate text-[11px] text-muted-foreground" title={products.join(", ")}>· {label}</span>;
+                })()}
               </div>
-              <span className="text-xs font-medium text-foreground">{total ? formatBDT(total) : ""}</span>
+              <span className="text-xs font-medium text-foreground shrink-0">{total ? formatBDT(total) : ""}</span>
             </div>
             <div className="flex flex-col gap-2 p-2 min-h-[120px]">
               {list.map((l) => {
@@ -90,6 +96,9 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                       {l.company_name && (
                         <div className="mt-0.5 truncate text-xs text-muted-foreground">{l.company_name}</div>
                       )}
+                      {l.product_name && (
+                        <div className="mt-0.5 truncate text-[11px] font-medium text-primary/90" title={l.product_name}>📦 {l.product_name}</div>
+                      )}
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
                       {isStale && (
@@ -110,6 +119,23 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                       <span className="ml-1 font-normal text-muted-foreground">· {l.probability}%</span>
                     </div>
                   )}
+                  {(() => {
+                    const vq = (l.vendor_quotes ?? []).filter((v) => typeof v?.price === "number");
+                    if (!vq.length) return null;
+                    const lowest = Math.min(...vq.map((v) => v.price as number));
+                    const ours = l.expected_value ?? null;
+                    const diff = ours != null ? Math.round(((ours - lowest) / lowest) * 100) : null;
+                    return (
+                      <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground" title={vq.map((v) => `${v.vendor}: ${v.currency ?? ""} ${v.price}`).join("\n")}>
+                        <span>vs {vq.length} vendor{vq.length > 1 ? "s" : ""}: low {lowest.toLocaleString()}</span>
+                        {diff != null && (
+                          <Badge variant="outline" className={cn("h-4 px-1 text-[10px]", diff > 0 ? "border-orange-400/60 text-orange-700 dark:text-orange-300" : "border-emerald-400/60 text-emerald-700 dark:text-emerald-300")}>
+                            {diff > 0 ? `+${diff}%` : `${diff}%`}
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="mt-2 flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />

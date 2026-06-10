@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource } from "@/lib/crm/types";
+import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource, type VendorQuote } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 
 const sb = supabase as any;
@@ -52,6 +52,8 @@ export function LeadFormDialog({
       competitor_notes: lead?.competitor_notes ?? "",
       renewal_kind: lead?.renewal_kind ?? "one_time",
       renewal_date: lead?.renewal_date ?? "",
+      product_name: lead?.product_name ?? "",
+      vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
     });
   }, [open, lead, user?.id]);
 
@@ -81,6 +83,15 @@ export function LeadFormDialog({
       competitor_notes: form.competitor_notes || null,
       renewal_kind: form.renewal_kind,
       renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
+      product_name: form.product_name?.trim() || null,
+      vendor_quotes: (form.vendor_quotes ?? [])
+        .filter((v: VendorQuote) => v.vendor?.trim())
+        .map((v: VendorQuote) => ({
+          vendor: v.vendor.trim(),
+          price: v.price === null || v.price === undefined || (v.price as any) === "" ? null : Number(v.price),
+          currency: v.currency || form.currency || "BDT",
+          notes: v.notes || null,
+        })),
     };
     const { error } = lead
       ? await sb.from("crm_leads").update(payload).eq("id", lead.id)
@@ -108,6 +119,9 @@ export function LeadFormDialog({
             </Field>
             <Field label="Company">
               <Input value={form.company_name || ""} onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+            </Field>
+            <Field label="Product / Service">
+              <Input placeholder="e.g. ERP License, AC Unit, Cloud Hosting" value={form.product_name || ""} onChange={(e) => setForm({ ...form, product_name: e.target.value })} />
             </Field>
             <Field label="Contact person">
               <Input value={form.contact_person || ""} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} />
@@ -203,6 +217,58 @@ export function LeadFormDialog({
               </Field>
             </div>
           </div>
+
+          <div className="rounded-md border p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <div>
+                <div className="text-xs font-semibold text-muted-foreground">Vendor budget comparison</div>
+                <div className="text-[11px] text-muted-foreground">List other vendors quoting for the same {form.product_name?.trim() ? `"${form.product_name}"` : "product / service"}.</div>
+              </div>
+              <Button type="button" size="sm" variant="outline" onClick={() => setForm({ ...form, vendor_quotes: [...(form.vendor_quotes ?? []), { vendor: "", price: null, currency: "BDT", notes: "" }] })}>
+                + Add vendor
+              </Button>
+            </div>
+            {(form.vendor_quotes ?? []).length === 0 && (
+              <div className="text-xs text-muted-foreground">No competing vendor quotes yet.</div>
+            )}
+            <div className="space-y-2">
+              {(form.vendor_quotes ?? []).map((v: VendorQuote, i: number) => (
+                <div key={i} className="grid gap-2 sm:grid-cols-[1.2fr_0.8fr_0.6fr_1.4fr_auto] items-start">
+                  <Input placeholder="Vendor name" value={v.vendor} onChange={(e) => {
+                    const arr = [...form.vendor_quotes]; arr[i] = { ...v, vendor: e.target.value }; setForm({ ...form, vendor_quotes: arr });
+                  }} />
+                  <Input type="number" placeholder="Quoted price" value={v.price ?? ""} onChange={(e) => {
+                    const arr = [...form.vendor_quotes]; arr[i] = { ...v, price: e.target.value === "" ? null : Number(e.target.value) }; setForm({ ...form, vendor_quotes: arr });
+                  }} />
+                  <Select value={v.currency ?? "BDT"} onValueChange={(val) => {
+                    const arr = [...form.vendor_quotes]; arr[i] = { ...v, currency: val }; setForm({ ...form, vendor_quotes: arr });
+                  }}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BDT">BDT</SelectItem>
+                      <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="EUR">EUR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input placeholder="Notes (terms, validity, scope)" value={v.notes ?? ""} onChange={(e) => {
+                    const arr = [...form.vendor_quotes]; arr[i] = { ...v, notes: e.target.value }; setForm({ ...form, vendor_quotes: arr });
+                  }} />
+                  <Button type="button" size="sm" variant="ghost" onClick={() => {
+                    const arr = [...form.vendor_quotes]; arr.splice(i, 1); setForm({ ...form, vendor_quotes: arr });
+                  }}>✕</Button>
+                </div>
+              ))}
+            </div>
+            {(form.vendor_quotes ?? []).filter((v: VendorQuote) => typeof v.price === "number").length >= 1 && form.expected_value && (
+              <div className="mt-2 text-[11px] text-muted-foreground">
+                Your price: <span className="font-medium text-foreground">{Number(form.expected_value).toLocaleString()}</span>
+                {" · "}Lowest vendor: <span className="font-medium text-foreground">
+                  {Math.min(...form.vendor_quotes.filter((v: VendorQuote) => typeof v.price === "number").map((v: VendorQuote) => v.price as number)).toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+
 
           <Field label="Notes">
             <Textarea rows={3} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
