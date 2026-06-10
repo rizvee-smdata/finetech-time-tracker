@@ -61,12 +61,18 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
             )}
           >
             <div className="flex items-center justify-between border-b px-3 py-2">
-              <div className="flex items-center gap-2">
-                <span className={cn("h-2 w-2 rounded-full", s.color)} />
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={cn("h-2 w-2 rounded-full shrink-0", s.color)} />
                 <span className="text-sm font-semibold">{s.label}</span>
                 <Badge variant="secondary" className="h-5 px-1.5 text-xs">{list.length}</Badge>
+                {(() => {
+                  const products = Array.from(new Set(list.map((l) => l.product_name).filter(Boolean) as string[]));
+                  if (!products.length) return null;
+                  const label = products.slice(0, 2).join(", ") + (products.length > 2 ? ` +${products.length - 2}` : "");
+                  return <span className="truncate text-[11px] text-muted-foreground" title={products.join(", ")}>· {label}</span>;
+                })()}
               </div>
-              <span className="text-xs font-medium text-foreground">{total ? formatBDT(total) : ""}</span>
+              <span className="text-xs font-medium text-foreground shrink-0">{total ? formatBDT(total) : ""}</span>
             </div>
             <div className="flex flex-col gap-2 p-2 min-h-[120px]">
               {list.map((l) => {
