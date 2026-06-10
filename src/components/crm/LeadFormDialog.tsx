@@ -83,6 +83,15 @@ export function LeadFormDialog({
       competitor_notes: form.competitor_notes || null,
       renewal_kind: form.renewal_kind,
       renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
+      product_name: form.product_name?.trim() || null,
+      vendor_quotes: (form.vendor_quotes ?? [])
+        .filter((v: VendorQuote) => v.vendor?.trim())
+        .map((v: VendorQuote) => ({
+          vendor: v.vendor.trim(),
+          price: v.price === null || v.price === undefined || (v.price as any) === "" ? null : Number(v.price),
+          currency: v.currency || form.currency || "BDT",
+          notes: v.notes || null,
+        })),
     };
     const { error } = lead
       ? await sb.from("crm_leads").update(payload).eq("id", lead.id)
