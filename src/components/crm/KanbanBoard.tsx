@@ -119,6 +119,23 @@ export function KanbanBoard({ leads }: { leads: Lead[] }) {
                       <span className="ml-1 font-normal text-muted-foreground">· {l.probability}%</span>
                     </div>
                   )}
+                  {(() => {
+                    const vq = (l.vendor_quotes ?? []).filter((v) => typeof v?.price === "number");
+                    if (!vq.length) return null;
+                    const lowest = Math.min(...vq.map((v) => v.price as number));
+                    const ours = l.expected_value ?? null;
+                    const diff = ours != null ? Math.round(((ours - lowest) / lowest) * 100) : null;
+                    return (
+                      <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground" title={vq.map((v) => `${v.vendor}: ${v.currency ?? ""} ${v.price}`).join("\n")}>
+                        <span>vs {vq.length} vendor{vq.length > 1 ? "s" : ""}: low {lowest.toLocaleString()}</span>
+                        {diff != null && (
+                          <Badge variant="outline" className={cn("h-4 px-1 text-[10px]", diff > 0 ? "border-orange-400/60 text-orange-700 dark:text-orange-300" : "border-emerald-400/60 text-emerald-700 dark:text-emerald-300")}>
+                            {diff > 0 ? `+${diff}%` : `${diff}%`}
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="mt-2 flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
