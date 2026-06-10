@@ -164,7 +164,9 @@ function CopilotPage() {
   };
 
   const send = async (question: string) => {
-    if (!user || !companyId || !question.trim() || pending) return;
+    if (!question.trim() || pending) return;
+    if (!user) { toast.error("Please sign in again"); return; }
+    if (!companyId) { toast.error("No active company selected. Pick a company in the header first."); return; }
     let convId = activeId;
     if (!convId) {
       const conv = await createConversation(companyId, user.id, question.slice(0, 60));
