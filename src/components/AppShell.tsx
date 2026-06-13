@@ -251,7 +251,7 @@ export function AppShell() {
           />
         )}
 
-        <main className="flex-1 p-4 pb-20 md:p-8 md:pb-8">
+        <main className="flex-1 p-4 pb-28 md:p-8 md:pb-20">
           {!companyId && companies.length === 0 && !path.startsWith("/settings") && (
             <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-warning/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
               {isAdmin ? (
