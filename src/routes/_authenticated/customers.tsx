@@ -17,7 +17,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
