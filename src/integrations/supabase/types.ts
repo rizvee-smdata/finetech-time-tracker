@@ -5787,6 +5787,10 @@ export type Database = {
           read_ct: number
         }[]
       }
+      restore_deleted_entity: {
+        Args: { _entity_id: string; _entity_type: string }
+        Returns: Json
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       tms_can_manage_project: {
