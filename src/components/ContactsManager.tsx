@@ -19,9 +19,13 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Pencil, Trash2, Plus, Upload, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, Users, Pencil, Trash2, Plus, Upload, ArrowUpDown, ArrowUp, ArrowDown, Download } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
+import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type ContactKind = "customer" | "partner" | "consultant";
 
