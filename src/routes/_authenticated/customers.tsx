@@ -17,13 +17,17 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash, ArrowUp, ArrowDown, ArrowUpDown, Download } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
 import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
 import { ImportDialog } from "@/components/ContactsManager";
+import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type DuplicateHit = {
   id: string;
@@ -158,6 +162,32 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
+  function doExport(fmt: "xlsx" | "csv" | "pdf") {
+    if (!sorted.length) return;
+    const header = ["Customer", "Contact person", "Designation", "Email", "Phone"];
+    const rows: ExportRow[] = sorted.map((c) => [
+      c.customer_name ?? "",
+      c.contact_person ?? "",
+      c.designation ?? "",
+      c.email ?? "",
+      c.phone ?? "",
+    ]);
+    if (fmt === "xlsx") exportToExcel("customers", "Customers", header, rows);
+    else if (fmt === "pdf") exportToPDF("customers", "Customers", header, rows);
+    else {
+      const esc = (v: any) => {
+        const s = String(v ?? "");
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "customers.csv"; a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
   const pg = usePagination(sorted, 20);
 
   return (
@@ -170,6 +200,20 @@ function CustomersPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {isStaff && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={!sorted.length}>
+                  <Download className="mr-2 h-4 w-4" />Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => doExport("xlsx")}>Excel (.xlsx)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("csv")}>CSV (.csv)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {isStaff && (
             <Button onClick={() => setCreating(true)}>
               <Plus className="mr-2 h-4 w-4" />Add customer
