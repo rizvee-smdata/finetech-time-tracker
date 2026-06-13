@@ -412,7 +412,7 @@ function mapKey(row: Record<string, string>, keys: string[]) {
   return "";
 }
 
-function ImportDialog({
+export function ImportDialog({
   open, kind, singular, plural, companyId, onClose, onSaved,
 }: {
   open: boolean;
