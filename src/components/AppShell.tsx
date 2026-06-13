@@ -282,27 +282,36 @@ export function AppShell() {
             </div>
           </div>
           <div className="pt-3">{switcher}</div>
-          <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto p-3 [scrollbar-width:thin]">
-            {items.map((it) => {
-              const active = path.startsWith(it.to);
-              const Icon = it.icon;
-              return (
-                <Link
-                  key={it.to}
-                  to={it.to}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  {it.label}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 min-h-0 overflow-y-auto p-3 [scrollbar-width:thin]">
+            {sections.map((section) => (
+              <div key={section.key} className="mb-4">
+                <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {section.label}
+                </div>
+                <div className="space-y-1">
+                  {section.items.map((it) => {
+                    const active = path === it.to || path.startsWith(it.to + "/");
+                    const Icon = it.icon;
+                    return (
+                      <Link
+                        key={it.to}
+                        to={it.to}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          active
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {it.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
           <div className="border-t border-border p-3">
             <div className="mb-2 truncate px-3 text-xs text-muted-foreground">{user?.email}</div>
