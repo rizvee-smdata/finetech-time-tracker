@@ -117,7 +117,7 @@ async function dumpTables(tables: readonly string[]) {
       const rows: any[] = [];
       // safety cap
       for (let page = 0; page < 200; page++) {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await (supabaseAdmin as any)
           .from(t)
           .select("*")
           .range(from, from + pageSize - 1);
