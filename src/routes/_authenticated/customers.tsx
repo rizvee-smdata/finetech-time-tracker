@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
 import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
+import { ImportDialog } from "@/components/ContactsManager";
 
 type DuplicateHit = {
   id: string;
