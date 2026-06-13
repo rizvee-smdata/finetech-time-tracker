@@ -54,60 +54,128 @@ const AIAgentTrigger = lazy(() =>
 
 
 
-const nav = [
-  { to: "/command", label: "Command Center", icon: Sparkles },
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
+type NavSection = { key: string; label: string; items: NavItem[] };
 
-  { to: "/visits", label: "Visits", icon: ClipboardList },
-  { to: "/voice/history", label: "Voice Notes", icon: Sparkles },
-  { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
-  { to: "/planning", label: "Planning", icon: RouteIcon },
-  { to: "/route/plan", label: "AI Route Planner", icon: Sparkles },
-  { to: "/route/live", label: "Live Route", icon: NavigationIcon },
-  { to: "/gps/today", label: "Route", icon: NavigationIcon },
-  { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
-  { to: "/scan", label: "Scan Card", icon: Camera },
-  { to: "/crm", label: "CRM", icon: Target },
-  
-  { to: "/deals", label: "Deal Health", icon: TrendingUp },
-  { to: "/clients/health", label: "Client Health", icon: HeartPulse },
-  { to: "/proposals", label: "Proposals", icon: FileText },
-  { to: "/proposals/brief", label: "AI Proposal Brief", icon: Sparkles },
-
-  { to: "/tasks", label: "Tasks", icon: CheckSquare },
-  { to: "/followups", label: "Follow-ups", icon: Bell },
-  { to: "/customers", label: "Customers", icon: Contact },
-  { to: "/partners", label: "Partners", icon: Handshake },
-  { to: "/consultants", label: "Consultants", icon: Briefcase },
-  
-  { to: "/check-in", label: "Check-in", icon: Clock },
-  { to: "/attendance", label: "Attendance", icon: MapPin },
-  { to: "/expenses", label: "Expenses", icon: Receipt },
-  { to: "/contracts", label: "Contracts", icon: FileText },
-  { to: "/targets", label: "Targets", icon: Target },
-  { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
-  { to: "/predictor/me", label: "AI Predictor", icon: Sparkles },
-  { to: "/coach/me", label: "AI Sales Coach", icon: Sparkles },
-  { to: "/prep/history", label: "AI Meeting Prep", icon: Sparkles },
-  { to: "/kb", label: "Knowledge Base", icon: BookOpen },
-  { to: "/surveys", label: "Feedback", icon: MessageSquare },
-  { to: "/chat", label: "Team Chat", icon: MessageSquare },
-  { to: "/settings/whatsapp", label: "WhatsApp Bot", icon: MessageSquare },
-  { to: "/reminders", label: "Reminders", icon: Bell },
-  { to: "/preferences", label: "Preferences", icon: Settings },
+// Logical groupings — Overview → Sales → Field Ops → People → Performance → Knowledge → Comms → Personal
+const navSections: NavSection[] = [
+  {
+    key: "overview",
+    label: "Overview",
+    items: [
+      { to: "/command", label: "Command Center", icon: Sparkles },
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    key: "sales",
+    label: "Sales & Pipeline",
+    items: [
+      { to: "/crm", label: "CRM", icon: Target },
+      { to: "/deals", label: "Deal Health", icon: TrendingUp },
+      { to: "/proposals", label: "Proposals", icon: FileText },
+      { to: "/proposals/brief", label: "AI Proposal Brief", icon: Sparkles },
+      { to: "/contracts", label: "Contracts", icon: FileText },
+      { to: "/followups", label: "Follow-ups", icon: Bell },
+    ],
+  },
+  {
+    key: "field",
+    label: "Field Operations",
+    items: [
+      { to: "/visits", label: "Visits", icon: ClipboardList },
+      { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
+      { to: "/voice/history", label: "Voice Notes", icon: Sparkles },
+      { to: "/planning", label: "Planning", icon: RouteIcon },
+      { to: "/route/plan", label: "AI Route Planner", icon: Sparkles },
+      { to: "/route/live", label: "Live Route", icon: NavigationIcon },
+      { to: "/gps/today", label: "Route", icon: NavigationIcon },
+      { to: "/gps/checkin", label: "GPS Check-in", icon: MapPin },
+      { to: "/scan", label: "Scan Card", icon: Camera },
+    ],
+  },
+  {
+    key: "people",
+    label: "People & Accounts",
+    items: [
+      { to: "/customers", label: "Customers", icon: Contact },
+      { to: "/clients/health", label: "Client Health", icon: HeartPulse },
+      { to: "/partners", label: "Partners", icon: Handshake },
+      { to: "/consultants", label: "Consultants", icon: Briefcase },
+    ],
+  },
+  {
+    key: "work",
+    label: "Work & Time",
+    items: [
+      { to: "/tasks", label: "Tasks", icon: CheckSquare },
+      { to: "/check-in", label: "Check-in", icon: Clock },
+      { to: "/attendance", label: "Attendance", icon: MapPin },
+      { to: "/expenses", label: "Expenses", icon: Receipt },
+    ],
+  },
+  {
+    key: "performance",
+    label: "Performance",
+    items: [
+      { to: "/targets", label: "Targets", icon: Target },
+      { to: "/scorecard/me", label: "Scorecard", icon: TrendingUp },
+      { to: "/predictor/me", label: "AI Predictor", icon: Sparkles },
+      { to: "/coach/me", label: "AI Sales Coach", icon: Sparkles },
+      { to: "/prep/history", label: "AI Meeting Prep", icon: Sparkles },
+    ],
+  },
+  {
+    key: "knowledge",
+    label: "Knowledge & Feedback",
+    items: [
+      { to: "/kb", label: "Knowledge Base", icon: BookOpen },
+      { to: "/surveys", label: "Feedback", icon: MessageSquare },
+    ],
+  },
+  {
+    key: "comms",
+    label: "Communication",
+    items: [
+      { to: "/chat", label: "Team Chat", icon: MessageSquare },
+      { to: "/settings/whatsapp", label: "WhatsApp Bot", icon: MessageSquare },
+      { to: "/reminders", label: "Reminders", icon: Bell },
+    ],
+  },
+  {
+    key: "personal",
+    label: "Personal",
+    items: [
+      { to: "/preferences", label: "Preferences", icon: Settings },
+    ],
+  },
 ];
 
-const staffNav = [
-  { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
-  { to: "/copilot", label: "AI Copilot", icon: Sparkles },
-  { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
-  { to: "/narratives", label: "Exec Narratives", icon: ScrollText },
-  { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
-  { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
-  { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
-  { to: "/ai", label: "Ask AI", icon: Sparkles },
-];
+const staffSection: NavSection = {
+  key: "management",
+  label: "Management & Insights",
+  items: [
+    { to: "/team", label: "Team", icon: Users },
+    { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
+    { to: "/reports", label: "Reports", icon: BarChart3 },
+    { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
+    { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
+    { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
+    { to: "/copilot", label: "AI Copilot", icon: Sparkles },
+    { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
+    { to: "/narratives", label: "Exec Narratives", icon: ScrollText },
+    { to: "/ai", label: "Ask AI", icon: Sparkles },
+  ],
+};
+
+const adminSection: NavSection = {
+  key: "admin",
+  label: "Administration",
+  items: [
+    { to: "/audit", label: "Audit log", icon: ScrollText },
+    { to: "/settings", label: "Settings", icon: Settings },
+  ],
+};
 
 
 export function AppShell() {
