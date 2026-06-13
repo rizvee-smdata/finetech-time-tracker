@@ -83,7 +83,9 @@ function CustomersPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
-          <p className="text-sm text-muted-foreground">All customers imported for this company.</p>
+          <p className="text-sm text-muted-foreground">
+            {company ? <>Showing customers for <span className="font-medium text-foreground">{company.name}</span>. Switch the company in the header to see others.</> : "All customers imported for this company."}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {isStaff && (
