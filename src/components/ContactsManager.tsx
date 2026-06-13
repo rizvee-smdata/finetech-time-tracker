@@ -19,7 +19,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Pencil, Trash2, Plus, Upload } from "lucide-react";
+import { Search, Users, Pencil, Trash2, Plus, Upload, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
@@ -55,6 +55,19 @@ export function ContactsManager({
   const [deleting, setDeleting] = useState<Contact | null>(null);
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
+  type SortKey = "customer_name" | "contact_person" | "designation" | "email" | "phone";
+  const [sortKey, setSortKey] = useState<SortKey>("customer_name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("asc"); }
+  }
+  function SortIcon({ k }: { k: SortKey }) {
+    if (sortKey !== k) return <ArrowUpDown className="ml-1 inline h-3 w-3 opacity-50" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="ml-1 inline h-3 w-3" />
+      : <ArrowDown className="ml-1 inline h-3 w-3" />;
+  }
 
   const queryKey = [`contacts-${kind}`, companyId];
 
@@ -84,6 +97,14 @@ export function ContactsManager({
     );
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    const av = (a[sortKey] ?? "").toString().toLowerCase();
+    const bv = (b[sortKey] ?? "").toString().toLowerCase();
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
   async function confirmDelete() {
     if (!deleting) return;
     const { error } = await supabase.from("customers").delete().eq("id", deleting.id);
@@ -93,7 +114,7 @@ export function ContactsManager({
     qc.invalidateQueries({ queryKey });
   }
 
-  const pg = usePagination(filtered, 20);
+  const pg = usePagination(sorted, 20);
 
   return (
     <div className="space-y-6">
@@ -135,11 +156,11 @@ export function ContactsManager({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{singular}</TableHead>
-                <TableHead>Contact person</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("customer_name")} className="inline-flex items-center hover:text-foreground">{singular}<SortIcon k="customer_name" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("contact_person")} className="inline-flex items-center hover:text-foreground">Contact person<SortIcon k="contact_person" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("designation")} className="inline-flex items-center hover:text-foreground">Designation<SortIcon k="designation" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("email")} className="inline-flex items-center hover:text-foreground">Email<SortIcon k="email" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("phone")} className="inline-flex items-center hover:text-foreground">Phone<SortIcon k="phone" /></button></TableHead>
                 {isStaff && <TableHead className="w-[120px] text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
