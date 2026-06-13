@@ -195,6 +195,15 @@ function CustomersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                {isStaff && (
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={pg.paged.length > 0 && pg.paged.every((c) => selectedIds.has(c.id))}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all on page"
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Customer</TableHead>
                 <TableHead>Contact person</TableHead>
                 <TableHead>Designation</TableHead>
@@ -206,6 +215,15 @@ function CustomersPage() {
             <TableBody>
               {pg.paged.map((c) => (
                 <TableRow key={c.id}>
+                  {isStaff && (
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(c.id)}
+                        onCheckedChange={() => toggleSelect(c.id)}
+                        aria-label={`Select ${c.customer_name}`}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell className="font-medium">{c.customer_name}</TableCell>
                   <TableCell>{c.contact_person || "—"}</TableCell>
                   <TableCell>{c.designation || "—"}</TableCell>
