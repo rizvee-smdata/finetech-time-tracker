@@ -201,6 +201,20 @@ function CustomersPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {isStaff && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={!sorted.length}>
+                  <Download className="mr-2 h-4 w-4" />Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => doExport("xlsx")}>Excel (.xlsx)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("csv")}>CSV (.csv)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {isStaff && (
             <Button onClick={() => setCreating(true)}>
               <Plus className="mr-2 h-4 w-4" />Add customer
             </Button>
