@@ -35,7 +35,7 @@ type Customer = {
 };
 
 function CustomersPage() {
-  const { companyId, isStaff, isAdmin, user } = useAuth();
+  const { companyId, company, isStaff, isAdmin, user } = useAuth();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Customer | null>(null);
