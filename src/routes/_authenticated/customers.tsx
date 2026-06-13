@@ -17,7 +17,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
@@ -55,6 +55,19 @@ function CustomersPage() {
   const [deleting, setDeleting] = useState<Customer | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  type SortKey = "customer_name" | "contact_person" | "designation" | "email" | "phone";
+  const [sortKey, setSortKey] = useState<SortKey>("customer_name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("asc"); }
+  }
+  function SortIcon({ k }: { k: SortKey }) {
+    if (sortKey !== k) return <ArrowUpDown className="ml-1 inline h-3 w-3 opacity-50" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="ml-1 inline h-3 w-3" />
+      : <ArrowDown className="ml-1 inline h-3 w-3" />;
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["customers", companyId],
@@ -89,6 +102,14 @@ function CustomersPage() {
       c.email?.toLowerCase().includes(s) ||
       c.phone?.toLowerCase().includes(s)
     );
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
+    const av = (a[sortKey] ?? "").toString().toLowerCase();
+    const bv = (b[sortKey] ?? "").toString().toLowerCase();
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
   });
 
   async function confirmDelete() {
@@ -134,7 +155,7 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
-  const pg = usePagination(filtered, 20);
+  const pg = usePagination(sorted, 20);
 
   return (
     <div className="space-y-6">
@@ -204,11 +225,11 @@ function CustomersPage() {
                     />
                   </TableHead>
                 )}
-                <TableHead>Customer</TableHead>
-                <TableHead>Contact person</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("customer_name")} className="inline-flex items-center hover:text-foreground">Customer<SortIcon k="customer_name" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("contact_person")} className="inline-flex items-center hover:text-foreground">Contact person<SortIcon k="contact_person" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("designation")} className="inline-flex items-center hover:text-foreground">Designation<SortIcon k="designation" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("email")} className="inline-flex items-center hover:text-foreground">Email<SortIcon k="email" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("phone")} className="inline-flex items-center hover:text-foreground">Phone<SortIcon k="phone" /></button></TableHead>
                 {isStaff && <TableHead className="w-[120px] text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
