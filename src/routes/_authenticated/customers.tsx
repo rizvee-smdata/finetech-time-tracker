@@ -46,13 +46,23 @@ function CustomersPage() {
     queryKey: ["customers", companyId],
     enabled: !!companyId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("customers")
-        .select("*")
-        .eq("company_id", companyId!)
-        .order("customer_name");
-      if (error) throw error;
-      return (data ?? []) as Customer[];
+      const pageSize = 1000;
+      const rows: Customer[] = [];
+
+      for (let from = 0; ; from += pageSize) {
+        const { data, error } = await supabase
+          .from("customers")
+          .select("id, customer_name, contact_person, designation, email, phone")
+          .eq("company_id", companyId!)
+          .order("created_at", { ascending: false })
+          .range(from, from + pageSize - 1);
+
+        if (error) throw error;
+        rows.push(...((data ?? []) as Customer[]));
+        if (!data || data.length < pageSize) break;
+      }
+
+      return rows;
     },
   });
 
