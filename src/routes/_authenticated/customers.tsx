@@ -229,39 +229,55 @@ function CustomerFormDialog({
   async function save() {
     if (!form) return;
     if (!form.customer_name?.trim()) return toast.error("Customer name is required");
+    if (isCreate && !companyId) {
+      return toast.error("No active company selected. Pick a company in the header first.");
+    }
+    if (isCreate && !userId) {
+      return toast.error("You're not signed in. Please sign in again.");
+    }
     setBusy(true);
-    if (isCreate) {
-      const { error } = await supabase.from("customers").insert({
-        company_id: companyId,
-        created_by: userId,
-        customer_name: form.customer_name.trim(),
-        contact_person: form.contact_person?.trim() || null,
-        designation: form.designation?.trim() || null,
-        email: form.email?.trim() || null,
-        phone: form.phone?.trim() || null,
-        kind: "customer",
-      });
-      setBusy(false);
-      if (error) return toast.error(error.message);
-      toast.success("Customer created");
-    } else {
-      const { error } = await supabase
-        .from("customers")
-        .update({
+    try {
+      if (isCreate) {
+        const { error } = await supabase.from("customers").insert({
+          company_id: companyId,
+          created_by: userId,
           customer_name: form.customer_name.trim(),
           contact_person: form.contact_person?.trim() || null,
           designation: form.designation?.trim() || null,
           email: form.email?.trim() || null,
           phone: form.phone?.trim() || null,
-        })
-        .eq("id", form.id);
+          kind: "customer",
+        });
+        if (error) {
+          console.error("Customer insert failed", error);
+          toast.error(error.message || "Could not save customer");
+          return;
+        }
+        toast.success("Customer created");
+      } else {
+        const { error } = await supabase
+          .from("customers")
+          .update({
+            customer_name: form.customer_name.trim(),
+            contact_person: form.contact_person?.trim() || null,
+            designation: form.designation?.trim() || null,
+            email: form.email?.trim() || null,
+            phone: form.phone?.trim() || null,
+          })
+          .eq("id", form.id);
+        if (error) {
+          console.error("Customer update failed", error);
+          toast.error(error.message || "Could not update customer");
+          return;
+        }
+        toast.success("Customer updated");
+      }
+      onSaved();
+      onClose();
+      if (isCreate) setForm(emptyForm);
+    } finally {
       setBusy(false);
-      if (error) return toast.error(error.message);
-      toast.success("Customer updated");
     }
-    onSaved();
-    onClose();
-    if (isCreate) setForm(emptyForm);
   }
 
   const set = (k: keyof Customer) => (e: React.ChangeEvent<HTMLInputElement>) =>
