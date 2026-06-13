@@ -129,6 +129,18 @@ export function ContactsManager({
         </div>
         {isStaff && (
           <div className="flex flex-wrap gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={!sorted.length}>
+                  <Download className="mr-2 h-4 w-4" />Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => doExport("xlsx")}>Excel (.xlsx)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("csv")}>CSV (.csv)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isAdmin && (
               <Button variant="outline" onClick={() => setImporting(true)}>
                 <Upload className="mr-2 h-4 w-4" />Import CSV
