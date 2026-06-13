@@ -121,7 +121,7 @@ export function FloatingVoiceButton() {
         }}
         disabled={processing}
         className={cn(
-          "fixed right-4 bottom-20 md:bottom-6 z-50",
+          "fixed left-4 bottom-20 md:bottom-6 z-50",
           "h-16 w-16 rounded-full grid place-items-center",
           "shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] transition-transform select-none",
           "bg-[var(--gradient-primary,linear-gradient(135deg,hsl(var(--primary)),hsl(var(--primary))))] text-primary-foreground",
