@@ -17,7 +17,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
@@ -85,10 +85,15 @@ function CustomersPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
           <p className="text-sm text-muted-foreground">All customers imported for this company.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isStaff && (
             <Button onClick={() => setCreating(true)}>
               <Plus className="mr-2 h-4 w-4" />Add customer
+            </Button>
+          )}
+          {isStaff && (
+            <Button asChild variant="secondary">
+              <Link to="/scan"><Camera className="mr-2 h-4 w-4" />Scan card</Link>
             </Button>
           )}
           {isAdmin && (
