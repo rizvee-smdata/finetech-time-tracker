@@ -169,6 +169,18 @@ function CustomersPage() {
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, contact, email, phone..." className="pl-9" />
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-md border bg-muted/40 px-4 py-2">
+          <span className="text-sm font-medium">{selectedIds.size} selected</span>
+          <Button variant="destructive" size="sm" onClick={() => setBulkDeleting(true)}>
+            <Trash className="mr-2 h-4 w-4" />Delete selected
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+            Clear selection
+          </Button>
+        </div>
+      )}
+
       <Card className="p-0 overflow-hidden">
         {!companyId ? (
           <div className="p-10 text-center text-sm text-muted-foreground">Select a company first.</div>
