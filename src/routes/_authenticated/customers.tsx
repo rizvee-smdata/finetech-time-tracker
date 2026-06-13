@@ -153,9 +153,21 @@ function CustomersPage() {
 
       <PaginationBar {...pg} label="customers" />
 
-      <EditCustomerDialog
+      <CustomerFormDialog
         customer={editing}
+        companyId={companyId}
+        userId={user?.id}
+        open={!!editing}
         onClose={() => setEditing(null)}
+        onSaved={() => qc.invalidateQueries({ queryKey: ["customers", companyId] })}
+      />
+
+      <CustomerFormDialog
+        customer={null}
+        companyId={companyId}
+        userId={user?.id}
+        open={creating}
+        onClose={() => setCreating(false)}
         onSaved={() => qc.invalidateQueries({ queryKey: ["customers", companyId] })}
       />
 
