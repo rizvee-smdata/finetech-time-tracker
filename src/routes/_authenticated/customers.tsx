@@ -17,9 +17,20 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
+import { useServerFn } from "@tanstack/react-start";
+import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
+
+type DuplicateHit = {
+  id: string;
+  customer_name: string;
+  contact_person: string | null;
+  email: string | null;
+  phone: string | null;
+  reason: string;
+};
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
@@ -232,21 +243,17 @@ function CustomerFormDialog({
   };
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState<Customer | null>(isCreate ? emptyForm : customer);
+  const [dupes, setDupes] = useState<DuplicateHit[] | null>(null);
+  const [checking, setChecking] = useState(false);
+  const checkDuplicates = useServerFn(findCustomerDuplicates);
 
   // sync form when customer changes
   if (!isCreate && customer && (!form || form.id !== customer.id)) {
     setForm(customer);
   }
 
-  async function save() {
+  async function doInsertOrUpdate() {
     if (!form) return;
-    if (!form.customer_name?.trim()) return toast.error("Customer name is required");
-    if (isCreate && !companyId) {
-      return toast.error("No active company selected. Pick a company in the header first.");
-    }
-    if (isCreate && !userId) {
-      return toast.error("You're not signed in. Please sign in again.");
-    }
     setBusy(true);
     try {
       if (isCreate) {
@@ -287,9 +294,44 @@ function CustomerFormDialog({
       onSaved();
       onClose();
       if (isCreate) setForm(emptyForm);
+      setDupes(null);
     } finally {
       setBusy(false);
     }
+  }
+
+  async function save() {
+    if (!form) return;
+    if (!form.customer_name?.trim()) return toast.error("Customer name is required");
+    if (isCreate && !companyId) {
+      return toast.error("No active company selected. Pick a company in the header first.");
+    }
+    if (isCreate && !userId) {
+      return toast.error("You're not signed in. Please sign in again.");
+    }
+    if (isCreate) {
+      setChecking(true);
+      try {
+        const res = await checkDuplicates({
+          data: {
+            companyId: companyId!,
+            customer_name: form.customer_name.trim(),
+            contact_person: form.contact_person?.trim() || null,
+            email: form.email?.trim() || null,
+            phone: form.phone?.trim() || null,
+          },
+        });
+        if (res.duplicates && res.duplicates.length > 0) {
+          setDupes(res.duplicates as DuplicateHit[]);
+          return;
+        }
+      } catch (e) {
+        console.error("Duplicate check failed", e);
+      } finally {
+        setChecking(false);
+      }
+    }
+    await doInsertOrUpdate();
   }
 
   const set = (k: keyof Customer) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -332,9 +374,44 @@ function CustomerFormDialog({
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : (isCreate ? "Create" : "Save")}</Button>
+          <Button onClick={save} disabled={busy || checking}>
+            {checking ? "Checking for duplicates..." : busy ? "Saving..." : (isCreate ? "Create" : "Save")}
+          </Button>
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={!!dupes} onOpenChange={(o) => !o && setDupes(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Possible duplicate{(dupes?.length ?? 0) > 1 ? "s" : ""} found
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The following customer{(dupes?.length ?? 0) > 1 ? "s" : ""} already exist in your database and look like a match. Please review before creating a new record.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-72 overflow-y-auto space-y-2 rounded-md border p-2 bg-muted/30">
+            {dupes?.map((d) => (
+              <div key={d.id} className="rounded-md bg-background p-2 text-sm border">
+                <div className="font-medium">{d.customer_name}</div>
+                <div className="text-muted-foreground text-xs">
+                  {[d.contact_person, d.email, d.phone].filter(Boolean).join(" · ") || "—"}
+                </div>
+                <div className="mt-1 text-xs italic text-amber-700 dark:text-amber-400">
+                  {d.reason}
+                </div>
+              </div>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDupes(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => { setDupes(null); await doInsertOrUpdate(); }}>
+              Save anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
