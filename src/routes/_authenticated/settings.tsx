@@ -16,6 +16,7 @@ import {
   adminListCompanies,
   adminSetUserCompanies,
 } from "@/lib/admin.functions";
+import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles } from "lucide-react";
+import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles, Download, DatabaseBackup, Settings as SettingsIcon, RotateCcw } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -57,6 +58,7 @@ function SettingsPage() {
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="holidays">Holidays</TabsTrigger>
           <TabsTrigger value="import">Import</TabsTrigger>
+          <TabsTrigger value="backup">Backup &amp; Restore</TabsTrigger>
         </TabsList>
         <TabsContent value="general" className="space-y-6">
           <CompaniesCard />
@@ -71,8 +73,190 @@ function SettingsPage() {
         <TabsContent value="import" className="space-y-6">
           <ImportCustomersCard />
         </TabsContent>
+        <TabsContent value="backup" className="space-y-6">
+          <BackupCard />
+          <RestoreCard />
+        </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+// ---------- Backup & Restore ----------
+
+function downloadJson(filename: string, payload: unknown) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function BackupCard() {
+  const cfgFn = useServerFn(backupConfig);
+  const dataFn = useServerFn(backupData);
+
+  const cfgM = useMutation({
+    mutationFn: async () => cfgFn(),
+    onSuccess: (res: any) => {
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      downloadJson(`lavisho-config-backup-${stamp}.json`, res);
+      const errCount = Object.keys(res?.errors ?? {}).length;
+      toast.success(`Configuration backup ready${errCount ? ` (${errCount} tables skipped)` : ""}`);
+    },
+    onError: (e: any) => toast.error(e.message ?? "Backup failed"),
+  });
+
+  const dataM = useMutation({
+    mutationFn: async () => dataFn(),
+    onSuccess: (res: any) => {
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      downloadJson(`lavisho-data-backup-${stamp}.json`, res);
+      const errCount = Object.keys(res?.errors ?? {}).length;
+      toast.success(`Data backup ready${errCount ? ` (${errCount} tables skipped)` : ""}`);
+    },
+    onError: (e: any) => toast.error(e.message ?? "Backup failed"),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center gap-2">
+        <DatabaseBackup className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Download backup</h2>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Download a full JSON snapshot. Store it somewhere safe — you can restore from these files
+        if anything goes wrong.
+      </p>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-md border border-border p-4">
+          <div className="mb-1 flex items-center gap-2 font-medium">
+            <SettingsIcon className="h-4 w-4" /> Configuration backup
+          </div>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Companies, users &amp; roles, holidays, products, templates, statuses, settings, WhatsApp config, etc.
+          </p>
+          <Button onClick={() => cfgM.mutate()} disabled={cfgM.isPending}>
+            <Download className="mr-2 h-4 w-4" />
+            {cfgM.isPending ? "Preparing…" : "Download configuration"}
+          </Button>
+        </div>
+        <div className="rounded-md border border-border p-4">
+          <div className="mb-1 flex items-center gap-2 font-medium">
+            <DatabaseBackup className="h-4 w-4" /> Data backup
+          </div>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Customers, leads, quotes, visits, attendance, expenses, tasks, chat, reports, audit logs.
+          </p>
+          <Button onClick={() => dataM.mutate()} disabled={dataM.isPending}>
+            <Download className="mr-2 h-4 w-4" />
+            {dataM.isPending ? "Preparing…" : "Download data"}
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function RestoreCard() {
+  const fn = useServerFn(restoreBackup);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [parsed, setParsed] = useState<any | null>(null);
+  const [mode, setMode] = useState<"upsert" | "skip-existing">("upsert");
+
+  const m = useMutation({
+    mutationFn: async () =>
+      fn({ data: { kind: parsed.kind, tables: parsed.tables, mode } }),
+    onSuccess: (res: any) => {
+      const errs = Object.entries(res.summary ?? {}).filter(([, v]: any) => v.error);
+      if (errs.length) toast.warning(`Restored with ${errs.length} table errors — check console`);
+      else toast.success("Restore complete");
+      // eslint-disable-next-line no-console
+      console.log("Restore summary", res.summary);
+    },
+    onError: (e: any) => toast.error(e.message ?? "Restore failed"),
+  });
+
+  async function onFile(f: File) {
+    setFile(f);
+    setParsed(null);
+    try {
+      const text = await f.text();
+      const json = JSON.parse(text);
+      if (!json?.kind || !json?.tables) throw new Error("Not a valid backup file");
+      setParsed(json);
+    } catch (e: any) {
+      toast.error(e.message ?? "Invalid file");
+    }
+  }
+
+  const tableCount = parsed ? Object.keys(parsed.tables).length : 0;
+  const rowCount = parsed
+    ? Object.values(parsed.tables).reduce((n: number, rows: any) => n + (Array.isArray(rows) ? rows.length : 0), 0)
+    : 0;
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center gap-2">
+        <RotateCcw className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Restore from backup</h2>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Upload a previously downloaded backup file. Existing rows with the same ID will be{" "}
+        <strong>overwritten</strong> in upsert mode. Always download a fresh backup before restoring.
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onFile(f);
+          }}
+        />
+        <Button variant="outline" onClick={() => inputRef.current?.click()}>
+          <Upload className="mr-2 h-4 w-4" /> Choose backup file
+        </Button>
+        {file && (
+          <span className="text-sm text-muted-foreground">
+            {file.name} · {(file.size / 1024).toFixed(1)} KB
+          </span>
+        )}
+      </div>
+      {parsed && (
+        <div className="mt-4 space-y-3 rounded-md border border-border p-4">
+          <div className="text-sm">
+            <Badge variant="secondary" className="mr-2">{parsed.kind}</Badge>
+            {tableCount} tables · {rowCount} rows · generated {parsed.generated_at ?? "—"}
+          </div>
+          <div className="flex items-center gap-3">
+            <Label className="text-xs">Mode</Label>
+            <Select value={mode} onValueChange={(v) => setMode(v as any)}>
+              <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="upsert">Upsert (overwrite by ID)</SelectItem>
+                <SelectItem value="skip-existing">Skip existing IDs</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            variant="destructive"
+            disabled={m.isPending}
+            onClick={() => {
+              if (!confirm(`Restore ${rowCount} rows across ${tableCount} tables? This may overwrite existing records.`)) return;
+              m.mutate();
+            }}
+          >
+            {m.isPending ? "Restoring…" : "Restore now"}
+          </Button>
+        </div>
+      )}
+    </Card>
   );
 }
 
