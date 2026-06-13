@@ -319,6 +319,16 @@ function CustomersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ImportDialog
+        open={importing}
+        kind="customer"
+        singular="Customer"
+        plural="Customers"
+        companyId={companyId}
+        onClose={() => setImporting(false)}
+        onSaved={() => qc.invalidateQueries({ queryKey: ["customers", companyId] })}
+      />
     </div>
   );
 }
