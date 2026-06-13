@@ -16,6 +16,7 @@ import {
   adminListCompanies,
   adminSetUserCompanies,
 } from "@/lib/admin.functions";
+import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles } from "lucide-react";
+import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles, Download, DatabaseBackup, Settings as SettingsIcon, RotateCcw } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/settings")({
