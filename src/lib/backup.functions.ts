@@ -192,7 +192,7 @@ export const restoreBackup = createServerFn({ method: "POST" })
         let inserted = 0;
         for (let i = 0; i < rows.length; i += chunkSize) {
           const chunk = rows.slice(i, i + chunkSize);
-          const q = supabaseAdmin.from(t).upsert(chunk, {
+          const q = (supabaseAdmin as any).from(t).upsert(chunk, {
             onConflict: "id",
             ignoreDuplicates: data.mode === "skip-existing",
           });
