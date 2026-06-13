@@ -81,6 +81,7 @@ function CustomersPage() {
           .from("customers")
           .select("id, customer_name, contact_person, designation, email, phone")
           .eq("company_id", companyId!)
+          .eq("kind", "customer")
           .order("created_at", { ascending: false })
           .range(from, from + pageSize - 1);
 
