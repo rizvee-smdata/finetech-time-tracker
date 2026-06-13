@@ -181,8 +181,8 @@ function CustomersPage() {
             </Button>
           )}
           {isAdmin && (
-            <Button asChild variant="outline">
-              <Link to="/settings"><Upload className="mr-2 h-4 w-4" />Import customers</Link>
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <Upload className="mr-2 h-4 w-4" />Import customers
             </Button>
           )}
         </div>
