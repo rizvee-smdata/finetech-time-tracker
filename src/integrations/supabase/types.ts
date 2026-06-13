@@ -798,6 +798,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          maintenance_mode: boolean
           name: string
           slug: string
           updated_at: string
@@ -807,6 +808,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          maintenance_mode?: boolean
           name: string
           slug: string
           updated_at?: string
@@ -816,6 +818,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          maintenance_mode?: boolean
           name?: string
           slug?: string
           updated_at?: string
@@ -1558,6 +1561,8 @@ export type Database = {
           currency: string
           customer_id: string | null
           customer_name: string
+          deleted_at: string | null
+          deleted_by: string | null
           designation: string | null
           email: string | null
           expected_close_date: string | null
@@ -1603,6 +1608,8 @@ export type Database = {
           currency?: string
           customer_id?: string | null
           customer_name: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           designation?: string | null
           email?: string | null
           expected_close_date?: string | null
@@ -1648,6 +1655,8 @@ export type Database = {
           currency?: string
           customer_id?: string | null
           customer_name?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           designation?: string | null
           email?: string | null
           expected_close_date?: string | null
@@ -1937,6 +1946,8 @@ export type Database = {
           created_by: string | null
           currency: string
           decided_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           discount_pct: number
           file_name: string | null
           file_path: string | null
@@ -1965,6 +1976,8 @@ export type Database = {
           created_by?: string | null
           currency?: string
           decided_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           discount_pct?: number
           file_name?: string | null
           file_path?: string | null
@@ -1993,6 +2006,8 @@ export type Database = {
           created_by?: string | null
           currency?: string
           decided_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           discount_pct?: number
           file_name?: string | null
           file_path?: string | null
@@ -2347,6 +2362,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           customer_name: string
+          deleted_at: string | null
+          deleted_by: string | null
           designation: string | null
           email: string | null
           id: string
@@ -2360,6 +2377,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           customer_name: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           designation?: string | null
           email?: string | null
           id?: string
@@ -2373,6 +2392,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           customer_name?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           designation?: string | null
           email?: string | null
           id?: string
@@ -5757,6 +5778,7 @@ export type Database = {
         Args: { _company: string; _from: string }
         Returns: string
       }
+      purge_old_soft_deletes: { Args: never; Returns: undefined }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
