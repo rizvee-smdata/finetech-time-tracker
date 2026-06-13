@@ -155,7 +155,7 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
-  const pg = usePagination(filtered, 20);
+  const pg = usePagination(sorted, 20);
 
   return (
     <div className="space-y-6">
