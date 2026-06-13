@@ -234,8 +234,19 @@ function ContactDialog({
   if (contact && form.id !== contact.id) setForm(contact);
   if (!contact && open && form.id) setForm({});
 
+  function validateEmail(val: string | null) {
+    if (!val || !val.trim()) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+  }
+  function validatePhone(val: string | null) {
+    if (!val || !val.trim()) return true;
+    return /^[+\d\s\-().]{7,}$/.test(val.trim());
+  }
+
   async function save() {
     if (!form.customer_name?.trim()) return toast.error(`${singular} name is required`);
+    if (form.email && !validateEmail(form.email)) return toast.error("Invalid email format");
+    if (form.phone && !validatePhone(form.phone)) return toast.error("Invalid phone number");
     setBusy(true);
     const payload = {
       customer_name: form.customer_name.trim(),
