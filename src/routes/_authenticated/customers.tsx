@@ -24,6 +24,10 @@ import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
 import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
 import { ImportDialog } from "@/components/ContactsManager";
+import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type DuplicateHit = {
   id: string;
