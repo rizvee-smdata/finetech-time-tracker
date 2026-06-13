@@ -17,9 +17,20 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
+import { useServerFn } from "@tanstack/react-start";
+import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
+
+type DuplicateHit = {
+  id: string;
+  customer_name: string;
+  contact_person: string | null;
+  email: string | null;
+  phone: string | null;
+  reason: string;
+};
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
