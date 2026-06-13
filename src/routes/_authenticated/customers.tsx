@@ -300,9 +300,20 @@ function CustomerFormDialog({
     }
   }
 
+  function validateEmail(val: string | null) {
+    if (!val || !val.trim()) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+  }
+  function validatePhone(val: string | null) {
+    if (!val || !val.trim()) return true;
+    return /^[+\d\s\-().]{7,}$/.test(val.trim());
+  }
+
   async function save() {
     if (!form) return;
     if (!form.customer_name?.trim()) return toast.error("Customer name is required");
+    if (form.email && !validateEmail(form.email)) return toast.error("Invalid email format");
+    if (form.phone && !validatePhone(form.phone)) return toast.error("Invalid phone number");
     if (isCreate && !companyId) {
       return toast.error("No active company selected. Pick a company in the header first.");
     }
