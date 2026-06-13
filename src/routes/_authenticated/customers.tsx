@@ -17,7 +17,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle } from "lucide-react";
+import { Search, Users, Upload, Plus, Pencil, Trash2, Camera, AlertTriangle, Trash } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
@@ -52,6 +53,8 @@ function CustomersPage() {
   const [editing, setEditing] = useState<Customer | null>(null);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<Customer | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["customers", companyId],
@@ -97,6 +100,40 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    const pageIds = new Set(pg.paged.map((c) => c.id));
+    const allSelected = pg.paged.every((c) => selectedIds.has(c.id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        pageIds.forEach((id) => next.delete(id));
+      } else {
+        pageIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  }
+
+  async function confirmBulkDelete() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    const { error } = await supabase.from("customers").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    toast.success(`${ids.length} customer${ids.length > 1 ? "s" : ""} deleted`);
+    setSelectedIds(new Set());
+    setBulkDeleting(false);
+    qc.invalidateQueries({ queryKey: ["customers", companyId] });
+  }
+
   const pg = usePagination(filtered, 20);
 
   return (
@@ -132,6 +169,18 @@ function CustomersPage() {
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, contact, email, phone..." className="pl-9" />
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-md border bg-muted/40 px-4 py-2">
+          <span className="text-sm font-medium">{selectedIds.size} selected</span>
+          <Button variant="destructive" size="sm" onClick={() => setBulkDeleting(true)}>
+            <Trash className="mr-2 h-4 w-4" />Delete selected
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+            Clear selection
+          </Button>
+        </div>
+      )}
+
       <Card className="p-0 overflow-hidden">
         {!companyId ? (
           <div className="p-10 text-center text-sm text-muted-foreground">Select a company first.</div>
@@ -146,6 +195,15 @@ function CustomersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                {isStaff && (
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={pg.paged.length > 0 && pg.paged.every((c) => selectedIds.has(c.id))}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all on page"
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Customer</TableHead>
                 <TableHead>Contact person</TableHead>
                 <TableHead>Designation</TableHead>
@@ -157,6 +215,15 @@ function CustomersPage() {
             <TableBody>
               {pg.paged.map((c) => (
                 <TableRow key={c.id}>
+                  {isStaff && (
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(c.id)}
+                        onCheckedChange={() => toggleSelect(c.id)}
+                        aria-label={`Select ${c.customer_name}`}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell className="font-medium">{c.customer_name}</TableCell>
                   <TableCell>{c.contact_person || "—"}</TableCell>
                   <TableCell>{c.designation || "—"}</TableCell>
@@ -210,6 +277,21 @@ function CustomersPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={bulkDeleting} onOpenChange={(o) => !o && setBulkDeleting(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selectedIds.size} customer{selectedIds.size > 1 ? "s" : ""}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              These records will be removed permanently. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setBulkDeleting(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmBulkDelete}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
