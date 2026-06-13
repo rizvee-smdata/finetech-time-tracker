@@ -156,11 +156,11 @@ export function ContactsManager({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{singular}</TableHead>
-                <TableHead>Contact person</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("customer_name")} className="inline-flex items-center hover:text-foreground">{singular}<SortIcon k="customer_name" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("contact_person")} className="inline-flex items-center hover:text-foreground">Contact person<SortIcon k="contact_person" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("designation")} className="inline-flex items-center hover:text-foreground">Designation<SortIcon k="designation" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("email")} className="inline-flex items-center hover:text-foreground">Email<SortIcon k="email" /></button></TableHead>
+                <TableHead><button type="button" onClick={() => toggleSort("phone")} className="inline-flex items-center hover:text-foreground">Phone<SortIcon k="phone" /></button></TableHead>
                 {isStaff && <TableHead className="w-[120px] text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
