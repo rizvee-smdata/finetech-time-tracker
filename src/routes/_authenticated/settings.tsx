@@ -17,6 +17,16 @@ import {
   adminSetUserCompanies,
 } from "@/lib/admin.functions";
 import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
+import {
+  listRecycleBin,
+  restoreDeleted,
+  listAuditLog,
+  listCompaniesMaintenance,
+  setMaintenanceMode,
+  snapshotToStorage,
+  listSnapshots,
+  getSnapshotUrl,
+} from "@/lib/safety.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,11 +64,14 @@ function SettingsPage() {
         </p>
       </div>
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="holidays">Holidays</TabsTrigger>
           <TabsTrigger value="import">Import</TabsTrigger>
           <TabsTrigger value="backup">Backup &amp; Restore</TabsTrigger>
+          <TabsTrigger value="recycle">Recycle Bin</TabsTrigger>
+          <TabsTrigger value="audit">Audit Log</TabsTrigger>
+          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
         <TabsContent value="general" className="space-y-6">
           <CompaniesCard />
@@ -75,7 +88,17 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="backup" className="space-y-6">
           <BackupCard />
+          <SnapshotsCard />
           <RestoreCard />
+        </TabsContent>
+        <TabsContent value="recycle" className="space-y-6">
+          <RecycleBinCard />
+        </TabsContent>
+        <TabsContent value="audit" className="space-y-6">
+          <AuditLogCard />
+        </TabsContent>
+        <TabsContent value="maintenance" className="space-y-6">
+          <MaintenanceModeCard />
         </TabsContent>
       </Tabs>
     </div>
