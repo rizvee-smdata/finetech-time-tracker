@@ -104,6 +104,14 @@ function CustomersPage() {
     );
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    const av = (a[sortKey] ?? "").toString().toLowerCase();
+    const bv = (b[sortKey] ?? "").toString().toLowerCase();
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
   async function confirmDelete() {
     if (!deleting) return;
     const { error } = await supabase.from("customers").delete().eq("id", deleting.id);
