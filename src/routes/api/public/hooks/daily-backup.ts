@@ -6,8 +6,10 @@ export const Route = createFileRoute("/api/public/hooks/daily-backup")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = request.headers.get("x-cron-secret");
-        if (!secret || secret !== process.env.CRON_SECRET) {
+        // Authenticated via the project's anon apikey header (per pg_cron convention)
+        const apikey = request.headers.get("apikey");
+        const expected = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+        if (!apikey || !expected || apikey !== expected) {
           return new Response("Unauthorized", { status: 401 });
         }
         try {
