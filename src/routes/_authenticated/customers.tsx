@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { useServerFn } from "@tanstack/react-start";
 import { findCustomerDuplicates } from "@/lib/customer-dedupe.functions";
+import { ImportDialog } from "@/components/ContactsManager";
 
 type DuplicateHit = {
   id: string;
@@ -52,6 +53,7 @@ function CustomersPage() {
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Customer | null>(null);
   const [creating, setCreating] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [deleting, setDeleting] = useState<Customer | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
@@ -179,8 +181,8 @@ function CustomersPage() {
             </Button>
           )}
           {isAdmin && (
-            <Button asChild variant="outline">
-              <Link to="/settings"><Upload className="mr-2 h-4 w-4" />Import customers</Link>
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <Upload className="mr-2 h-4 w-4" />Import customers
             </Button>
           )}
         </div>
@@ -317,6 +319,16 @@ function CustomersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ImportDialog
+        open={importing}
+        kind="customer"
+        singular="Customer"
+        plural="Customers"
+        companyId={companyId}
+        onClose={() => setImporting(false)}
+        onSaved={() => qc.invalidateQueries({ queryKey: ["customers", companyId] })}
+      />
     </div>
   );
 }
