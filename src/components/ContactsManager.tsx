@@ -55,6 +55,19 @@ export function ContactsManager({
   const [deleting, setDeleting] = useState<Contact | null>(null);
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
+  type SortKey = "customer_name" | "contact_person" | "designation" | "email" | "phone";
+  const [sortKey, setSortKey] = useState<SortKey>("customer_name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("asc"); }
+  }
+  function SortIcon({ k }: { k: SortKey }) {
+    if (sortKey !== k) return <ArrowUpDown className="ml-1 inline h-3 w-3 opacity-50" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="ml-1 inline h-3 w-3" />
+      : <ArrowDown className="ml-1 inline h-3 w-3" />;
+  }
 
   const queryKey = [`contacts-${kind}`, companyId];
 
