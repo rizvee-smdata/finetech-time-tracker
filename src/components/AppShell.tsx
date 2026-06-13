@@ -204,10 +204,10 @@ export function AppShell() {
     );
   }
 
-  const items = [
-    ...nav,
-    ...(isStaff ? [{ to: "/team", label: "Team", icon: Users }, ...staffNav] : []),
-    ...(isAdmin ? [{ to: "/audit", label: "Audit log", icon: ScrollText }, { to: "/settings", label: "Settings", icon: Settings }] : []),
+  const sections: NavSection[] = [
+    ...navSections,
+    ...(isStaff ? [staffSection] : []),
+    ...(isAdmin ? [adminSection] : []),
   ];
 
   const switcher = companies.length > 0 && (
