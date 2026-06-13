@@ -243,21 +243,17 @@ function CustomerFormDialog({
   };
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState<Customer | null>(isCreate ? emptyForm : customer);
+  const [dupes, setDupes] = useState<DuplicateHit[] | null>(null);
+  const [checking, setChecking] = useState(false);
+  const checkDuplicates = useServerFn(findCustomerDuplicates);
 
   // sync form when customer changes
   if (!isCreate && customer && (!form || form.id !== customer.id)) {
     setForm(customer);
   }
 
-  async function save() {
+  async function doInsertOrUpdate() {
     if (!form) return;
-    if (!form.customer_name?.trim()) return toast.error("Customer name is required");
-    if (isCreate && !companyId) {
-      return toast.error("No active company selected. Pick a company in the header first.");
-    }
-    if (isCreate && !userId) {
-      return toast.error("You're not signed in. Please sign in again.");
-    }
     setBusy(true);
     try {
       if (isCreate) {
@@ -298,9 +294,44 @@ function CustomerFormDialog({
       onSaved();
       onClose();
       if (isCreate) setForm(emptyForm);
+      setDupes(null);
     } finally {
       setBusy(false);
     }
+  }
+
+  async function save() {
+    if (!form) return;
+    if (!form.customer_name?.trim()) return toast.error("Customer name is required");
+    if (isCreate && !companyId) {
+      return toast.error("No active company selected. Pick a company in the header first.");
+    }
+    if (isCreate && !userId) {
+      return toast.error("You're not signed in. Please sign in again.");
+    }
+    if (isCreate) {
+      setChecking(true);
+      try {
+        const res = await checkDuplicates({
+          data: {
+            companyId: companyId!,
+            customer_name: form.customer_name.trim(),
+            contact_person: form.contact_person?.trim() || null,
+            email: form.email?.trim() || null,
+            phone: form.phone?.trim() || null,
+          },
+        });
+        if (res.duplicates && res.duplicates.length > 0) {
+          setDupes(res.duplicates as DuplicateHit[]);
+          return;
+        }
+      } catch (e) {
+        console.error("Duplicate check failed", e);
+      } finally {
+        setChecking(false);
+      }
+    }
+    await doInsertOrUpdate();
   }
 
   const set = (k: keyof Customer) => (e: React.ChangeEvent<HTMLInputElement>) =>
