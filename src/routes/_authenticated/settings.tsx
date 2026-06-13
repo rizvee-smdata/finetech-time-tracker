@@ -17,6 +17,16 @@ import {
   adminSetUserCompanies,
 } from "@/lib/admin.functions";
 import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
+import {
+  listRecycleBin,
+  restoreDeleted,
+  listAuditLog,
+  listCompaniesMaintenance,
+  setMaintenanceMode,
+  snapshotToStorage,
+  listSnapshots,
+  getSnapshotUrl,
+} from "@/lib/safety.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,11 +64,14 @@ function SettingsPage() {
         </p>
       </div>
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="holidays">Holidays</TabsTrigger>
           <TabsTrigger value="import">Import</TabsTrigger>
           <TabsTrigger value="backup">Backup &amp; Restore</TabsTrigger>
+          <TabsTrigger value="recycle">Recycle Bin</TabsTrigger>
+          <TabsTrigger value="audit">Audit Log</TabsTrigger>
+          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
         <TabsContent value="general" className="space-y-6">
           <CompaniesCard />
@@ -75,7 +88,17 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="backup" className="space-y-6">
           <BackupCard />
+          <SnapshotsCard />
           <RestoreCard />
+        </TabsContent>
+        <TabsContent value="recycle" className="space-y-6">
+          <RecycleBinCard />
+        </TabsContent>
+        <TabsContent value="audit" className="space-y-6">
+          <AuditLogCard />
+        </TabsContent>
+        <TabsContent value="maintenance" className="space-y-6">
+          <MaintenanceModeCard />
         </TabsContent>
       </Tabs>
     </div>
@@ -1047,4 +1070,271 @@ function BackdateDaysCard() {
   );
 }
 
+// ---------- Recycle Bin ----------
+
+function RecycleBinCard() {
+  const list = useServerFn(listRecycleBin);
+  const restore = useServerFn(restoreDeleted);
+  const qc = useQueryClient();
+  const [filter, setFilter] = useState<string>("all");
+
+  const q = useQuery({
+    queryKey: ["recycle-bin", filter],
+    queryFn: () => list({ data: filter === "all" ? {} : { entity_type: filter } }),
+  });
+
+  const m = useMutation({
+    mutationFn: async (row: { entity_type: string; entity_id: string }) =>
+      restore({ data: row }),
+    onSuccess: () => {
+      toast.success("Restored");
+      qc.invalidateQueries({ queryKey: ["recycle-bin"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Restore failed"),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Trash2 className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold">Recycle Bin</h2>
+        </div>
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="customer">Customers</SelectItem>
+            <SelectItem value="lead">Leads</SelectItem>
+            <SelectItem value="quote">Quotes</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Deletions from the last 30 days. Restore re-inserts the row exactly as it was.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+              <th className="py-2">Type</th><th>Name</th><th>Deleted at</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {(q.data ?? []).length === 0 && (
+              <tr><td colSpan={4} className="py-4 text-center text-muted-foreground">Nothing here.</td></tr>
+            )}
+            {(q.data ?? []).map((r: any) => (
+              <tr key={r.id} className="border-b">
+                <td className="py-2"><Badge variant="secondary">{r.entity_type}</Badge></td>
+                <td>{r.name}</td>
+                <td className="text-muted-foreground">{format(parseISO(r.created_at), "PP p")}</td>
+                <td className="text-right">
+                  <Button size="sm" variant="outline" disabled={m.isPending}
+                    onClick={() => m.mutate({ entity_type: r.entity_type, entity_id: r.entity_id })}>
+                    <RotateCcw className="mr-1 h-3 w-3" /> Restore
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
+// ---------- Audit Log ----------
+
+function AuditLogCard() {
+  const list = useServerFn(listAuditLog);
+  const [entity, setEntity] = useState("all");
+  const [action, setAction] = useState("all");
+
+  const q = useQuery({
+    queryKey: ["audit-log", entity, action],
+    queryFn: () =>
+      list({
+        data: {
+          ...(entity !== "all" ? { entity_type: entity } : {}),
+          ...(action !== "all" ? { action } : {}),
+          limit: 200,
+        },
+      }),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <SettingsIcon className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold">Audit Log</h2>
+        </div>
+        <div className="flex gap-2">
+          <Select value={entity} onValueChange={setEntity}>
+            <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All entities</SelectItem>
+              <SelectItem value="customer">Customer</SelectItem>
+              <SelectItem value="lead">Lead</SelectItem>
+              <SelectItem value="quote">Quote</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={action} onValueChange={setAction}>
+            <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All actions</SelectItem>
+              <SelectItem value="create">Create</SelectItem>
+              <SelectItem value="update">Update</SelectItem>
+              <SelectItem value="delete">Delete</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="max-h-[600px] overflow-auto">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 bg-card">
+            <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+              <th className="py-2">When</th><th>Type</th><th>Action</th><th>Actor</th><th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(q.data ?? []).map((r: any) => (
+              <tr key={r.id} className="border-b">
+                <td className="py-2 text-muted-foreground whitespace-nowrap">{format(parseISO(r.created_at), "PP p")}</td>
+                <td><Badge variant="secondary">{r.entity_type}</Badge></td>
+                <td>{r.action}</td>
+                <td className="font-mono text-xs">{r.actor_id?.slice(0, 8) ?? "—"}</td>
+                <td className="text-muted-foreground">{r.summary}</td>
+              </tr>
+            ))}
+            {(q.data ?? []).length === 0 && (
+              <tr><td colSpan={5} className="py-4 text-center text-muted-foreground">No entries.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
+// ---------- Maintenance Mode ----------
+
+function MaintenanceModeCard() {
+  const list = useServerFn(listCompaniesMaintenance);
+  const setMM = useServerFn(setMaintenanceMode);
+  const qc = useQueryClient();
+
+  const q = useQuery({
+    queryKey: ["maintenance-companies"],
+    queryFn: () => list(),
+  });
+
+  const m = useMutation({
+    mutationFn: async (v: { company_id: string; enabled: boolean }) => setMM({ data: v }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["maintenance-companies"] });
+      toast.success("Updated");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed"),
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center gap-2">
+        <SettingsIcon className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Maintenance mode</h2>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        When enabled, only admins can create, update or delete customers, leads and quotes for that
+        company. Use this during a restore or while resolving an incident.
+      </p>
+      <div className="space-y-2">
+        {(q.data ?? []).map((c: any) => (
+          <div key={c.id} className="flex items-center justify-between rounded-md border border-border p-3">
+            <div>
+              <div className="font-medium">{c.name}</div>
+              <div className="text-xs text-muted-foreground">
+                {c.maintenance_mode ? "Read-only for non-admins" : "Normal operation"}
+              </div>
+            </div>
+            <Button
+              variant={c.maintenance_mode ? "destructive" : "outline"}
+              size="sm"
+              disabled={m.isPending}
+              onClick={() => {
+                if (!c.maintenance_mode && !confirm(`Enable maintenance mode for ${c.name}? Non-admin writes will be blocked.`)) return;
+                m.mutate({ company_id: c.id, enabled: !c.maintenance_mode });
+              }}
+            >
+              {c.maintenance_mode ? "Disable" : "Enable"}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+// ---------- Automatic Snapshots ----------
+
+function SnapshotsCard() {
+  const list = useServerFn(listSnapshots);
+  const sign = useServerFn(getSnapshotUrl);
+  const snap = useServerFn(snapshotToStorage);
+  const qc = useQueryClient();
+
+  const q = useQuery({ queryKey: ["snapshots"], queryFn: () => list() });
+
+  const runM = useMutation({
+    mutationFn: async () => snap(),
+    onSuccess: () => {
+      toast.success("Snapshot saved");
+      qc.invalidateQueries({ queryKey: ["snapshots"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Snapshot failed"),
+  });
+
+  async function download(name: string) {
+    const { url } = await sign({ data: { path: name } });
+    window.open(url, "_blank");
+  }
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <DatabaseBackup className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold">Automatic snapshots</h2>
+        </div>
+        <Button size="sm" onClick={() => runM.mutate()} disabled={runM.isPending}>
+          {runM.isPending ? "Running…" : "Run snapshot now"}
+        </Button>
+      </div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Daily snapshots are uploaded to private storage and kept for 30 days. You can also trigger one
+        manually.
+      </p>
+      <div className="space-y-2">
+        {(q.data ?? []).length === 0 && (
+          <div className="text-sm text-muted-foreground">No snapshots yet.</div>
+        )}
+        {(q.data ?? []).map((f: any) => (
+          <div key={f.name} className="flex items-center justify-between rounded-md border border-border p-3">
+            <div>
+              <div className="font-mono text-sm">{f.name}</div>
+              <div className="text-xs text-muted-foreground">
+                {f.metadata?.size ? `${(f.metadata.size / 1024).toFixed(1)} KB · ` : ""}
+                {f.created_at ? format(parseISO(f.created_at), "PP p") : ""}
+              </div>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => download(f.name)}>
+              <Download className="mr-1 h-3 w-3" /> Download
+            </Button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
 

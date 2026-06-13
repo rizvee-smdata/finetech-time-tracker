@@ -179,6 +179,7 @@ import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/a
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
+import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
@@ -1138,6 +1139,12 @@ const ApiPublicHooksNarrativesWeeklyCronRoute =
     path: '/api/public/hooks/narratives-weekly-cron',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksDailyBackupRoute =
+  ApiPublicHooksDailyBackupRouteImport.update({
+    id: '/api/public/hooks/daily-backup',
+    path: '/api/public/hooks/daily-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksCrmRenewalsRoute =
   ApiPublicHooksCrmRenewalsRouteImport.update({
     id: '/api/public/hooks/crm-renewals',
@@ -1383,6 +1390,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -1554,6 +1562,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -1739,6 +1748,7 @@ export interface FileRoutesById {
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
@@ -1924,6 +1934,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -2095,6 +2106,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -2279,6 +2291,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
+    | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
@@ -2305,6 +2318,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
+  ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
@@ -3508,6 +3522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksNarrativesWeeklyCronRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/daily-backup': {
+      id: '/api/public/hooks/daily-backup'
+      path: '/api/public/hooks/daily-backup'
+      fullPath: '/api/public/hooks/daily-backup'
+      preLoaderRoute: typeof ApiPublicHooksDailyBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/crm-renewals': {
       id: '/api/public/hooks/crm-renewals'
       path: '/api/public/hooks/crm-renewals'
@@ -4172,6 +4193,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksCopilotScheduledCronRoute,
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
+  ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
   ApiPublicHooksNarrativesWeeklyCronRoute:
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
