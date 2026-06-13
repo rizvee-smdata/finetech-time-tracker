@@ -177,78 +177,117 @@ function CustomersPage() {
   );
 }
 
-function EditCustomerDialog({
-  customer, onClose, onSaved,
-}: { customer: Customer | null; onClose: () => void; onSaved: () => void }) {
+function CustomerFormDialog({
+  customer,
+  companyId,
+  userId,
+  open,
+  onClose,
+  onSaved,
+}: {
+  customer: Customer | null;
+  companyId: string | null;
+  userId: string | undefined;
+  open: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const isCreate = !customer;
+  const emptyForm: Customer = {
+    id: "",
+    customer_name: "",
+    contact_person: null,
+    designation: null,
+    email: null,
+    phone: null,
+  };
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState<Customer | null>(customer);
+  const [form, setForm] = useState<Customer | null>(isCreate ? emptyForm : customer);
 
   // sync form when customer changes
-  if (customer && (!form || form.id !== customer.id)) {
+  if (!isCreate && customer && (!form || form.id !== customer.id)) {
     setForm(customer);
   }
-  if (!customer && form) setForm(null);
 
   async function save() {
     if (!form) return;
     if (!form.customer_name?.trim()) return toast.error("Customer name is required");
     setBusy(true);
-    const { error } = await supabase
-      .from("customers")
-      .update({
+    if (isCreate) {
+      const { error } = await supabase.from("customers").insert({
+        company_id: companyId,
+        created_by: userId,
         customer_name: form.customer_name.trim(),
         contact_person: form.contact_person?.trim() || null,
         designation: form.designation?.trim() || null,
         email: form.email?.trim() || null,
         phone: form.phone?.trim() || null,
-      })
-      .eq("id", form.id);
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Customer updated");
+        kind: "customer",
+      });
+      setBusy(false);
+      if (error) return toast.error(error.message);
+      toast.success("Customer created");
+    } else {
+      const { error } = await supabase
+        .from("customers")
+        .update({
+          customer_name: form.customer_name.trim(),
+          contact_person: form.contact_person?.trim() || null,
+          designation: form.designation?.trim() || null,
+          email: form.email?.trim() || null,
+          phone: form.phone?.trim() || null,
+        })
+        .eq("id", form.id);
+      setBusy(false);
+      if (error) return toast.error(error.message);
+      toast.success("Customer updated");
+    }
     onSaved();
     onClose();
+    if (isCreate) setForm(emptyForm);
   }
 
   const set = (k: keyof Customer) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => (f ? { ...f, [k]: e.target.value } : f));
 
   return (
-    <Dialog open={!!customer} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit customer</DialogTitle>
-          <DialogDescription>Update customer details below.</DialogDescription>
+          <DialogTitle>{isCreate ? "Add customer" : "Edit customer"}</DialogTitle>
+          <DialogDescription>
+            {isCreate ? "Enter new customer details below." : "Update customer details below."}
+          </DialogDescription>
         </DialogHeader>
         {form && (
           <div className="grid gap-4 py-2">
             <div className="grid gap-2">
-              <Label htmlFor="ec_name">Customer name *</Label>
-              <Input id="ec_name" value={form.customer_name ?? ""} onChange={set("customer_name")} />
+              <Label htmlFor="cf_name">Customer name *</Label>
+              <Input id="cf_name" value={form.customer_name ?? ""} onChange={set("customer_name")} />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="grid gap-2">
-                <Label htmlFor="ec_person">Contact person</Label>
-                <Input id="ec_person" value={form.contact_person ?? ""} onChange={set("contact_person")} />
+                <Label htmlFor="cf_person">Contact person</Label>
+                <Input id="cf_person" value={form.contact_person ?? ""} onChange={set("contact_person")} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="ec_des">Designation</Label>
-                <Input id="ec_des" value={form.designation ?? ""} onChange={set("designation")} />
+                <Label htmlFor="cf_des">Designation</Label>
+                <Input id="cf_des" value={form.designation ?? ""} onChange={set("designation")} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="ec_email">Email</Label>
-                <Input id="ec_email" type="email" value={form.email ?? ""} onChange={set("email")} />
+                <Label htmlFor="cf_email">Email</Label>
+                <Input id="cf_email" type="email" value={form.email ?? ""} onChange={set("email")} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="ec_phone">Phone</Label>
-                <Input id="ec_phone" value={form.phone ?? ""} onChange={set("phone")} />
+                <Label htmlFor="cf_phone">Phone</Label>
+                <Input id="cf_phone" value={form.phone ?? ""} onChange={set("phone")} />
               </div>
             </div>
           </div>
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save"}</Button>
+          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : (isCreate ? "Create" : "Save")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
