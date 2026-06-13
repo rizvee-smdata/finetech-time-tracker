@@ -329,7 +329,10 @@ function parseCsv(text: string): Record<string, string>[] {
       else cur += c;
     }
     out.push(cur);
-    return out.map((s) => s.trim());
+    // strip BOM, non-breaking spaces, zero-width chars, then trim
+    return out.map((s) =>
+      s.replace(/^\uFEFF/, "").replace(/[\u00A0\u200B-\u200D\u2060]/g, " ").trim(),
+    );
   };
   const headers = splitLine(lines[0]).map((h) => h.toLowerCase().replace(/\s+/g, "_"));
   return lines.slice(1).map((l) => {
