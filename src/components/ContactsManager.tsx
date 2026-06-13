@@ -120,6 +120,33 @@ export function ContactsManager({
 
   const pg = usePagination(sorted, 20);
 
+  function doExport(fmt: "xlsx" | "csv" | "pdf") {
+    if (!sorted.length) return;
+    const header = [singular, "Contact person", "Designation", "Email", "Phone"];
+    const rows: ExportRow[] = sorted.map((c) => [
+      c.customer_name ?? "",
+      c.contact_person ?? "",
+      c.designation ?? "",
+      c.email ?? "",
+      c.phone ?? "",
+    ]);
+    const base = plural.toLowerCase().replace(/\s+/g, "-");
+    if (fmt === "xlsx") exportToExcel(base, plural, header, rows);
+    else if (fmt === "pdf") exportToPDF(base, plural, header, rows);
+    else {
+      const esc = (v: any) => {
+        const s = String(v ?? "");
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `${base}.csv`; a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
