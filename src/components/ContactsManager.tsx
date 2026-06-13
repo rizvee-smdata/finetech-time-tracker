@@ -19,9 +19,13 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, Users, Pencil, Trash2, Plus, Upload, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, Users, Pencil, Trash2, Plus, Upload, ArrowUpDown, ArrowUp, ArrowDown, Download } from "lucide-react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
+import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type ContactKind = "customer" | "partner" | "consultant";
 
@@ -116,6 +120,33 @@ export function ContactsManager({
 
   const pg = usePagination(sorted, 20);
 
+  function doExport(fmt: "xlsx" | "csv" | "pdf") {
+    if (!sorted.length) return;
+    const header = [singular, "Contact person", "Designation", "Email", "Phone"];
+    const rows: ExportRow[] = sorted.map((c) => [
+      c.customer_name ?? "",
+      c.contact_person ?? "",
+      c.designation ?? "",
+      c.email ?? "",
+      c.phone ?? "",
+    ]);
+    const base = plural.toLowerCase().replace(/\s+/g, "-");
+    if (fmt === "xlsx") exportToExcel(base, plural, header, rows);
+    else if (fmt === "pdf") exportToPDF(base, plural, header, rows);
+    else {
+      const esc = (v: any) => {
+        const s = String(v ?? "");
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `${base}.csv`; a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -125,6 +156,18 @@ export function ContactsManager({
         </div>
         {isStaff && (
           <div className="flex flex-wrap gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={!sorted.length}>
+                  <Download className="mr-2 h-4 w-4" />Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => doExport("xlsx")}>Excel (.xlsx)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("csv")}>CSV (.csv)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isAdmin && (
               <Button variant="outline" onClick={() => setImporting(true)}>
                 <Upload className="mr-2 h-4 w-4" />Import CSV
