@@ -85,11 +85,18 @@ function CustomersPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
           <p className="text-sm text-muted-foreground">All customers imported for this company.</p>
         </div>
-        {isAdmin && (
-          <Button asChild variant="outline">
-            <Link to="/settings"><Upload className="mr-2 h-4 w-4" />Import customers</Link>
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {isStaff && (
+            <Button onClick={() => setCreating(true)}>
+              <Plus className="mr-2 h-4 w-4" />Add customer
+            </Button>
+          )}
+          {isAdmin && (
+            <Button asChild variant="outline">
+              <Link to="/settings"><Upload className="mr-2 h-4 w-4" />Import customers</Link>
+            </Button>
+          )}
+        </div>
       </header>
 
       <div className="relative max-w-sm">
