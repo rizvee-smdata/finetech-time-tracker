@@ -374,9 +374,44 @@ function CustomerFormDialog({
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : (isCreate ? "Create" : "Save")}</Button>
+          <Button onClick={save} disabled={busy || checking}>
+            {checking ? "Checking for duplicates..." : busy ? "Saving..." : (isCreate ? "Create" : "Save")}
+          </Button>
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={!!dupes} onOpenChange={(o) => !o && setDupes(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Possible duplicate{(dupes?.length ?? 0) > 1 ? "s" : ""} found
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The following customer{(dupes?.length ?? 0) > 1 ? "s" : ""} already exist in your database and look like a match. Please review before creating a new record.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-72 overflow-y-auto space-y-2 rounded-md border p-2 bg-muted/30">
+            {dupes?.map((d) => (
+              <div key={d.id} className="rounded-md bg-background p-2 text-sm border">
+                <div className="font-medium">{d.customer_name}</div>
+                <div className="text-muted-foreground text-xs">
+                  {[d.contact_person, d.email, d.phone].filter(Boolean).join(" · ") || "—"}
+                </div>
+                <div className="mt-1 text-xs italic text-amber-700 dark:text-amber-400">
+                  {d.reason}
+                </div>
+              </div>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDupes(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => { setDupes(null); await doInsertOrUpdate(); }}>
+              Save anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
