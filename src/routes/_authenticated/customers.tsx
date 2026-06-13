@@ -100,6 +100,40 @@ function CustomersPage() {
     qc.invalidateQueries({ queryKey: ["customers", companyId] });
   }
 
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    const pageIds = new Set(pg.paged.map((c) => c.id));
+    const allSelected = pg.paged.every((c) => selectedIds.has(c.id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        pageIds.forEach((id) => next.delete(id));
+      } else {
+        pageIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  }
+
+  async function confirmBulkDelete() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    const { error } = await supabase.from("customers").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    toast.success(`${ids.length} customer${ids.length > 1 ? "s" : ""} deleted`);
+    setSelectedIds(new Set());
+    setBulkDeleting(false);
+    qc.invalidateQueries({ queryKey: ["customers", companyId] });
+  }
+
   const pg = usePagination(filtered, 20);
 
   return (
