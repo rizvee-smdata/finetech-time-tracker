@@ -310,6 +310,71 @@ export type Database = {
           },
         ]
       }
+      card_scans: {
+        Row: {
+          company_id: string
+          confidence: number | null
+          created_at: string
+          duplicate_lead_id: string | null
+          extracted: Json | null
+          file_mime: string | null
+          file_path: string
+          id: string
+          industry_guess: string | null
+          language_detected: string | null
+          linked_customer_id: string | null
+          linked_lead_id: string | null
+          source: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          confidence?: number | null
+          created_at?: string
+          duplicate_lead_id?: string | null
+          extracted?: Json | null
+          file_mime?: string | null
+          file_path: string
+          id?: string
+          industry_guess?: string | null
+          language_detected?: string | null
+          linked_customer_id?: string | null
+          linked_lead_id?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          confidence?: number | null
+          created_at?: string
+          duplicate_lead_id?: string | null
+          extracted?: Json | null
+          file_mime?: string | null
+          file_path?: string
+          id?: string
+          industry_guess?: string | null
+          language_detected?: string | null
+          linked_customer_id?: string | null
+          linked_lead_id?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_scans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_channel_members: {
         Row: {
           channel_id: string
