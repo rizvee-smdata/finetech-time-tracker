@@ -175,11 +175,11 @@ function CheckinPage() {
         </Card>
       )}
 
-      {openCheckin ? (
-        <Card className="space-y-3 p-4">
-          <div className="flex items-center justify-between">
+      {openCheckin && (
+        <Card className="space-y-3 p-4 border-primary/40 bg-primary/5">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-xs text-muted-foreground">Currently checked in at</div>
+              <div className="text-xs text-muted-foreground">Last field check-in</div>
               <div className="text-lg font-semibold">{openCheckin.client_name ?? "Client"}</div>
               <div className="text-xs text-muted-foreground">since {format(new Date(openCheckin.checkin_time), "p")}</div>
             </div>
@@ -187,70 +187,73 @@ function CheckinPage() {
               {openCheckin.is_geofence_valid ? "On-site" : "Override"}
             </Badge>
           </div>
-          <Button className="w-full" size="lg" onClick={() => checkOutMut.mutate()} disabled={!pos || checkOutMut.isPending}>
-            <LogOut className="mr-2 h-4 w-4" />Check out
-          </Button>
-        </Card>
-      ) : (
-        <Card className="space-y-4 p-4">
-          <div className="space-y-1.5">
-            <Label>Client</Label>
-            <Select value={leadId ?? ""} onValueChange={(v) => setLeadId(v)}>
-              <SelectTrigger><SelectValue placeholder="Select a client with a saved address" /></SelectTrigger>
-              <SelectContent>
-                {leads.map((l) => <SelectItem key={l.id} value={l.id}>{l.customer_name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-            <div className="flex items-center gap-2 font-medium"><MapPin className="h-4 w-4" />Your location</div>
-            {posError && <p className="mt-1 text-destructive">{posError}. Please grant location permission.</p>}
-            {!pos && !posError && <p className="mt-1 text-muted-foreground">Acquiring GPS…</p>}
-            {pos && (
-              <p className="mt-1 text-muted-foreground">
-                {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)} · ±{Math.round(pos.accuracy)} m
-              </p>
-            )}
-            {distance != null && (
-              <div className={`mt-2 flex items-center gap-2 font-medium ${withinFence ? "text-success" : "text-warning"}`}>
-                {withinFence ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
-                {Math.round(distance)} m from client {withinFence ? "(within 200 m)" : "(outside 200 m)"}
-              </div>
-            )}
-          </div>
-
-          {withinFence === false && (
-            <div className="space-y-1.5">
-              <Label>Override reason (manager approval flag)</Label>
-              <Textarea value={override} onChange={(e) => setOverride(e.target.value)} placeholder="e.g. meeting moved to nearby café" rows={2} />
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-2">
-            <label className="cursor-pointer">
-              <Input type="file" accept="image/*" capture="user" className="hidden" onChange={(e) => setSelfie(e.target.files?.[0] ?? null)} />
-              <Button asChild variant="outline" className="w-full" type="button">
-                <span><Camera className="mr-2 h-4 w-4" />{selfie ? "Photo ✓" : "Selfie"}</span>
-              </Button>
-            </label>
-            {recording ? (
-              <Button variant="outline" onClick={stopRec}><Square className="mr-2 h-4 w-4" />Stop ({voiceBlob ? "re-record" : "recording"})</Button>
-            ) : (
-              <Button variant="outline" onClick={startRec}><Mic className="mr-2 h-4 w-4" />{voiceBlob ? "Voice ✓" : "Voice note"}</Button>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Notes (optional)</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
-          </div>
-
-          <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !lead || !online || checkInMut.isPending}>
-            <CheckCircle2 className="mr-2 h-5 w-5" />CHECK IN
+          <p className="text-xs text-muted-foreground">
+            Check-out is optional — just check in at your next visit, or use the attendance check-out at end of day.
+          </p>
+          <Button variant="outline" className="w-full" onClick={() => checkOutMut.mutate()} disabled={checkOutMut.isPending}>
+            <LogOut className="mr-2 h-4 w-4" />Check out (optional)
           </Button>
         </Card>
       )}
+
+      <Card className="space-y-4 p-4">
+        <div className="space-y-1.5">
+          <Label>Client</Label>
+          <Select value={leadId ?? ""} onValueChange={(v) => setLeadId(v)}>
+            <SelectTrigger><SelectValue placeholder="Select a client with a saved address" /></SelectTrigger>
+            <SelectContent>
+              {leads.map((l) => <SelectItem key={l.id} value={l.id}>{l.customer_name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="rounded-lg border bg-muted/40 p-3 text-sm">
+          <div className="flex items-center gap-2 font-medium"><MapPin className="h-4 w-4" />Your location</div>
+          {posError && <p className="mt-1 text-destructive">{posError}. Please grant location permission.</p>}
+          {!pos && !posError && <p className="mt-1 text-muted-foreground">Acquiring GPS…</p>}
+          {pos && (
+            <p className="mt-1 text-muted-foreground">
+              {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)} · ±{Math.round(pos.accuracy)} m
+            </p>
+          )}
+          {distance != null && (
+            <div className={`mt-2 flex items-center gap-2 font-medium ${withinFence ? "text-success" : "text-warning"}`}>
+              {withinFence ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+              {Math.round(distance)} m from client {withinFence ? "(within 200 m)" : "(outside 200 m)"}
+            </div>
+          )}
+        </div>
+
+        {withinFence === false && (
+          <div className="space-y-1.5">
+            <Label>Override reason (manager approval flag)</Label>
+            <Textarea value={override} onChange={(e) => setOverride(e.target.value)} placeholder="e.g. meeting moved to nearby café" rows={2} />
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-2">
+          <label className="cursor-pointer">
+            <Input type="file" accept="image/*" capture="user" className="hidden" onChange={(e) => setSelfie(e.target.files?.[0] ?? null)} />
+            <Button asChild variant="outline" className="w-full" type="button">
+              <span><Camera className="mr-2 h-4 w-4" />{selfie ? "Photo ✓" : "Selfie"}</span>
+            </Button>
+          </label>
+          {recording ? (
+            <Button variant="outline" onClick={stopRec}><Square className="mr-2 h-4 w-4" />Stop ({voiceBlob ? "re-record" : "recording"})</Button>
+          ) : (
+            <Button variant="outline" onClick={startRec}><Mic className="mr-2 h-4 w-4" />{voiceBlob ? "Voice ✓" : "Voice note"}</Button>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>Notes (optional)</Label>
+          <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+        </div>
+
+        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !lead || !online || checkInMut.isPending}>
+          <CheckCircle2 className="mr-2 h-5 w-5" />{openCheckin ? "CHECK IN AT NEXT VISIT" : "CHECK IN"}
+        </Button>
+      </Card>
 
       <div className="text-center text-xs text-muted-foreground">
         <Link to="/gps/today" className="underline">Today's route</Link> · <Link to="/gps/history" className="underline">History</Link>
