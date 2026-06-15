@@ -104,18 +104,18 @@ function CheckinPage() {
       if (withinFence === false && !override.trim()) {
         throw new Error(`You are ${Math.round(distance!)} m away — provide an override reason or move closer.`);
       }
-      // Auto-close any prior open field check-in (check-out is optional now)
-      if (openCheckin) {
-        await supabase.from("visit_checkins").update({
-          checkout_time: new Date().toISOString(),
-          checkout_lat: pos.lat, checkout_lng: pos.lng,
-        }).eq("id", openCheckin.id);
-      }
+      // Auto-close all prior open field check-ins (check-out is optional now)
+      const checkinTime = new Date().toISOString();
+      const { error: closeError } = await supabase.from("visit_checkins").update({
+        checkout_time: checkinTime,
+        checkout_lat: pos.lat, checkout_lng: pos.lng,
+      }).eq("user_id", user.id).eq("company_id", companyId).is("checkout_time", null);
+      if (closeError) throw closeError;
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
       const { error } = await supabase.from("visit_checkins").insert({
         user_id: user.id, company_id: companyId, lead_id: lead.id, client_name: lead.customer_name,
-        checkin_lat: pos.lat, checkin_lng: pos.lng,
+        checkin_lat: pos.lat, checkin_lng: pos.lng, checkin_time: checkinTime,
         distance_from_client_m: distance, is_geofence_valid: !!withinFence,
         override_reason: override || null, selfie_url, voice_url, notes: notes || null,
       });
