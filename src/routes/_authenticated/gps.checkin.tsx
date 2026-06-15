@@ -104,6 +104,13 @@ function CheckinPage() {
       if (withinFence === false && !override.trim()) {
         throw new Error(`You are ${Math.round(distance!)} m away — provide an override reason or move closer.`);
       }
+      // Auto-close any prior open field check-in (check-out is optional now)
+      if (openCheckin) {
+        await supabase.from("visit_checkins").update({
+          checkout_time: new Date().toISOString(),
+          checkout_lat: pos.lat, checkout_lng: pos.lng,
+        }).eq("id", openCheckin.id);
+      }
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
       const { error } = await supabase.from("visit_checkins").insert({
@@ -124,13 +131,12 @@ function CheckinPage() {
 
   const checkOutMut = useMutation({
     mutationFn: async () => {
-      if (!openCheckin || !pos) throw new Error("No active check-in or GPS");
+      if (!openCheckin) throw new Error("No active check-in");
       const { error } = await supabase.from("visit_checkins").update({
         checkout_time: new Date().toISOString(),
-        checkout_lat: pos.lat, checkout_lng: pos.lng,
+        checkout_lat: pos?.lat ?? null, checkout_lng: pos?.lng ?? null,
       }).eq("id", openCheckin.id);
       if (error) throw error;
-      // Fire-and-forget mileage compute
       try {
         await supabase.functions.invoke("compute-mileage", { body: { date: format(new Date(), "yyyy-MM-dd") } });
       } catch {}
