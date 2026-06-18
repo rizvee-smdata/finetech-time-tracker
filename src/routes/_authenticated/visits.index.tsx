@@ -118,7 +118,7 @@ function VisitsList() {
       <div className="space-y-3">
         {filtered.length === 0 && (
           <Card className="p-10 text-center text-sm text-muted-foreground">
-            No entries yet. Click "New visit" or "Office study" to add one.
+            No entries yet. Click "New visit" or "Office work" to add one.
           </Card>
         )}
         {pg.paged.map((v: any) => {
