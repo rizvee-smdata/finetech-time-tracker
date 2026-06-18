@@ -118,7 +118,7 @@ function VisitsList() {
       <div className="space-y-3">
         {filtered.length === 0 && (
           <Card className="p-10 text-center text-sm text-muted-foreground">
-            No entries yet. Click "New visit" or "Office study" to add one.
+            No entries yet. Click "New visit" or "Office work" to add one.
           </Card>
         )}
         {pg.paged.map((v: any) => {
@@ -138,7 +138,7 @@ function VisitsList() {
                     {isStudy ? (
                       <>
                         <BookOpen className="h-4 w-4 text-primary" />
-                        Office study
+                        Office work
                       </>
                     ) : (
                       <>
@@ -269,7 +269,7 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
     <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit {isStudy ? "office study" : "visit"}</DialogTitle>
+          <DialogTitle>Edit {isStudy ? "office work" : "visit"}</DialogTitle>
           <DialogDescription>Update the details and save.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
@@ -351,14 +351,14 @@ function OfficeStudyDialog() {
     const { error } = await supabase.from("customer_visits").insert({
       user_id: user.id,
       company_id: companyId,
-      customer_name: "Office study",
+      customer_name: "Office work",
       status: "office_study",
       meeting_at: new Date(date).toISOString(),
       discussion_summary: notes.trim() || null,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Office study logged");
+    toast.success("Office work logged");
     setOpen(false);
     qc.invalidateQueries({ queryKey: ["visits"] });
   }
@@ -366,13 +366,13 @@ function OfficeStudyDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline"><BookOpen className="mr-2 h-4 w-4" />Office study</Button>
+        <Button variant="outline"><BookOpen className="mr-2 h-4 w-4" />Office work</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Log office study</DialogTitle>
+          <DialogTitle>Log office work</DialogTitle>
           <DialogDescription>
-            Use this when you didn't visit any customer and spent the day studying in office.
+            Use this when you didn't visit any customer and spent the day working in office.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
@@ -415,7 +415,7 @@ function ViewVisitDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office study</>) : visit.customer_name}
+            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office work</>) : visit.customer_name}
             {isStudy && <Badge variant="secondary">No visit</Badge>}
           </DialogTitle>
           <DialogDescription>
