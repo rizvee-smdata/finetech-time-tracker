@@ -351,14 +351,14 @@ function OfficeStudyDialog() {
     const { error } = await supabase.from("customer_visits").insert({
       user_id: user.id,
       company_id: companyId,
-      customer_name: "Office study",
+      customer_name: "Office work",
       status: "office_study",
       meeting_at: new Date(date).toISOString(),
       discussion_summary: notes.trim() || null,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Office study logged");
+    toast.success("Office work logged");
     setOpen(false);
     qc.invalidateQueries({ queryKey: ["visits"] });
   }
