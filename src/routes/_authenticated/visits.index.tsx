@@ -370,9 +370,9 @@ function OfficeStudyDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Log office study</DialogTitle>
+          <DialogTitle>Log office work</DialogTitle>
           <DialogDescription>
-            Use this when you didn't visit any customer and spent the day studying in office.
+            Use this when you didn't visit any customer and spent the day working in office.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
