@@ -269,7 +269,7 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
     <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit {isStudy ? "office study" : "visit"}</DialogTitle>
+          <DialogTitle>Edit {isStudy ? "office work" : "visit"}</DialogTitle>
           <DialogDescription>Update the details and save.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
