@@ -415,7 +415,7 @@ function ViewVisitDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office study</>) : visit.customer_name}
+            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office work</>) : visit.customer_name}
             {isStudy && <Badge variant="secondary">No visit</Badge>}
           </DialogTitle>
           <DialogDescription>
