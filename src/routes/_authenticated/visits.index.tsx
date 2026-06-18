@@ -366,7 +366,7 @@ function OfficeStudyDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline"><BookOpen className="mr-2 h-4 w-4" />Office study</Button>
+        <Button variant="outline"><BookOpen className="mr-2 h-4 w-4" />Office work</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
