@@ -138,7 +138,7 @@ function VisitsList() {
                     {isStudy ? (
                       <>
                         <BookOpen className="h-4 w-4 text-primary" />
-                        Office study
+                        Office work
                       </>
                     ) : (
                       <>
