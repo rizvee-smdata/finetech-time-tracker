@@ -1640,10 +1640,12 @@ export type Database = {
           lost_at: string | null
           lost_reason: string | null
           notes: string | null
+          oem_id: string | null
           parent_lead_id: string | null
           phone: string | null
           priority: Database["public"]["Enums"]["crm_priority"]
           probability: number
+          product_id: string | null
           product_name: string | null
           renewal_date: string | null
           renewal_kind: Database["public"]["Enums"]["crm_renewal_kind"]
@@ -1687,10 +1689,12 @@ export type Database = {
           lost_at?: string | null
           lost_reason?: string | null
           notes?: string | null
+          oem_id?: string | null
           parent_lead_id?: string | null
           phone?: string | null
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          product_id?: string | null
           product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
@@ -1734,10 +1738,12 @@ export type Database = {
           lost_at?: string | null
           lost_reason?: string | null
           notes?: string | null
+          oem_id?: string | null
           parent_lead_id?: string | null
           phone?: string | null
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
+          product_id?: string | null
           product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
@@ -1759,10 +1765,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_leads_oem_id_fkey"
+            columns: ["oem_id"]
+            isOneToOne: false
+            referencedRelation: "crm_oems"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "crm_leads_parent_lead_id_fkey"
             columns: ["parent_lead_id"]
             isOneToOne: false
             referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_leads_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
             referencedColumns: ["id"]
           },
           {
@@ -1813,6 +1833,62 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_oems: {
+        Row: {
+          code: string | null
+          company_id: string
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          code?: string | null
+          company_id: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          code?: string | null
+          company_id?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_oems_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_products: {
         Row: {
           base_price: number
@@ -1823,6 +1899,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          oem_id: string | null
           unit: string | null
           updated_at: string
         }
@@ -1835,6 +1912,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          oem_id?: string | null
           unit?: string | null
           updated_at?: string
         }
@@ -1847,10 +1925,19 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          oem_id?: string | null
           unit?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "crm_products_oem_id_fkey"
+            columns: ["oem_id"]
+            isOneToOne: false
+            referencedRelation: "crm_oems"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       crm_quote_line_items: {
         Row: {

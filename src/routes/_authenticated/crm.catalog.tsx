@@ -13,6 +13,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatMoney } from "@/lib/crm/types";
+import { fetchOems } from "@/lib/crm/oems";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const sb = supabase as any;
 
@@ -54,6 +56,7 @@ function CatalogPage() {
               <div>
                 <div className="font-medium">{p.name}</div>
                 <div className="text-sm text-muted-foreground">
+                  {(p as any).oem_name && <span className="mr-1">{(p as any).oem_name} ·</span>}
                   {formatMoney(p.base_price)} / {p.unit || "each"}
                   {p.category && <> · {p.category}</>}
                 </div>
@@ -88,23 +91,25 @@ function ProductDialog({ open, onOpenChange, companyId, product, onSaved }: {
 }) {
   const qc = useQueryClient();
   const [name, setName] = useState(product?.name ?? "");
+  const [oemId, setOemId] = useState<string>(product?.oem_id ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [unit, setUnit] = useState(product?.unit ?? "each");
   const [price, setPrice] = useState<string>(String(product?.base_price ?? 0));
   const [description, setDescription] = useState(product?.description ?? "");
   const [busy, setBusy] = useState(false);
 
-  // reset when reopened with different product
-  useState(() => { /* no-op */ });
-  if (open && product && product.id !== (product as any).__loadedId) {
-    // simple sync on open
-  }
+  const oems = useQuery({
+    queryKey: ["crm-oems", companyId],
+    queryFn: () => fetchOems(companyId),
+    enabled: !!companyId && open,
+  });
 
   async function save() {
     if (!name.trim()) return toast.error("Name required");
     setBusy(true);
     const payload = {
       company_id: companyId,
+      oem_id: oemId || null,
       name: name.trim(),
       category: category || null,
       unit: unit || "each",
@@ -129,9 +134,23 @@ function ProductDialog({ open, onOpenChange, companyId, product, onSaved }: {
       <DialogContent>
         <DialogHeader><DialogTitle>{product ? "Edit product" : "New product"}</DialogTitle></DialogHeader>
         <div className="grid gap-3 py-2">
-          <div className="grid gap-1"><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1">
+              <Label>OEM / Vendor</Label>
+              <Select value={oemId || "__none"} onValueChange={(v) => setOemId(v === "__none" ? "" : v)}>
+                <SelectTrigger><SelectValue placeholder="Select OEM" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">— None —</SelectItem>
+                  {(oems.data ?? []).map((o) => (
+                    <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-1"><Label>Name *</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+          </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="grid gap-1"><Label>Price (USD)</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+            <div className="grid gap-1"><Label>Price</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
             <div className="grid gap-1"><Label>Unit</Label><Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="each, hr, license" /></div>
             <div className="grid gap-1"><Label>Category</Label><Input value={category} onChange={(e) => setCategory(e.target.value)} /></div>
           </div>
