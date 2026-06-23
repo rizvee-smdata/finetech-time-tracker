@@ -86,6 +86,7 @@ export function LeadFormDialog({
         .from("customers")
         .select("id, customer_name, contact_person, designation, email, phone")
         .eq("company_id", companyId)
+        .eq("kind", "customer")
         .is("deleted_at", null)
         .order("customer_name")
         .limit(500);
