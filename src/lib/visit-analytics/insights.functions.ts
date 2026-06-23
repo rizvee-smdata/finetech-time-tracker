@@ -260,7 +260,7 @@ export const getLatestVisitInsight = createServerFn({ method: "GET" })
     if (!membership?.company_id) return null;
     const { data } = await supabase
       .from("ai_visit_insights")
-      .select("id, generated_at, content, model, filter_params")
+      .select("id, generated_at, content, model, filter_params, reasoning")
       .eq("company_id", membership.company_id)
       .order("generated_at", { ascending: false })
       .limit(1)
