@@ -5533,6 +5533,92 @@ export type Database = {
         }
         Relationships: []
       }
+      visit_alert_log: {
+        Row: {
+          account_id: string | null
+          alert_type: string
+          company_id: string
+          created_at: string
+          days_since_visit: number | null
+          fired_at: string
+          id: string
+        }
+        Insert: {
+          account_id?: string | null
+          alert_type: string
+          company_id: string
+          created_at?: string
+          days_since_visit?: number | null
+          fired_at?: string
+          id?: string
+        }
+        Update: {
+          account_id?: string | null
+          alert_type?: string
+          company_id?: string
+          created_at?: string
+          days_since_visit?: number | null
+          fired_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_alert_log_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_alert_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visit_analytics_settings: {
+        Row: {
+          company_id: string
+          created_at: string
+          stale_alert_enabled: boolean
+          stale_threshold_days: number
+          strategic_tiers: string[]
+          updated_at: string
+          weekly_report_enabled: boolean
+          weekly_report_recipients: string[]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          stale_alert_enabled?: boolean
+          stale_threshold_days?: number
+          strategic_tiers?: string[]
+          updated_at?: string
+          weekly_report_enabled?: boolean
+          weekly_report_recipients?: string[]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          stale_alert_enabled?: boolean
+          stale_threshold_days?: number
+          strategic_tiers?: string[]
+          updated_at?: string
+          weekly_report_enabled?: boolean
+          weekly_report_recipients?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_analytics_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visit_checkins: {
         Row: {
           account_id: string | null

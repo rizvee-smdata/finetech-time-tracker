@@ -65,6 +65,7 @@ import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
+import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
@@ -489,6 +490,12 @@ const AuthenticatedVoiceHistoryRoute =
   AuthenticatedVoiceHistoryRouteImport.update({
     id: '/voice/history',
     path: '/voice/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsRepComparisonRoute =
+  AuthenticatedVisitsRepComparisonRouteImport.update({
+    id: '/visits/rep-comparison',
+    path: '/visits/rep-comparison',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
@@ -1392,6 +1399,7 @@ export interface FileRoutesByFullPath {
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1568,6 +1576,7 @@ export interface FileRoutesByTo {
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1758,6 +1767,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1948,6 +1958,7 @@ export interface FileRouteTypes {
     | '/visits/coverage'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/rep-comparison'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2124,6 +2135,7 @@ export interface FileRouteTypes {
     | '/visits/coverage'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/rep-comparison'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2313,6 +2325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
+    | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2773,6 +2786,13 @@ declare module '@tanstack/react-router' {
       path: '/voice/history'
       fullPath: '/voice/history'
       preLoaderRoute: typeof AuthenticatedVoiceHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/rep-comparison': {
+      id: '/_authenticated/visits/rep-comparison'
+      path: '/visits/rep-comparison'
+      fullPath: '/visits/rep-comparison'
+      preLoaderRoute: typeof AuthenticatedVisitsRepComparisonRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/new': {
@@ -4184,6 +4204,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
@@ -4253,6 +4274,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
