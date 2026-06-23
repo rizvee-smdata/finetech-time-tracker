@@ -106,7 +106,7 @@ function ScanPage() {
       let mime = file.type || "application/octet-stream";
       if (file.type.startsWith("image/")) {
         try {
-          uploadBlob = await compressImage(file, 1600, 0.82);
+          uploadBlob = await compressImage(file, 1280, 0.75);
           mime = "image/jpeg";
           ext = "jpg";
         } catch {
