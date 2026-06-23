@@ -270,7 +270,7 @@ export function LeadFormDialog({
                 <div className="text-xs font-semibold text-muted-foreground">Vendor budget comparison</div>
                 <div className="text-[11px] text-muted-foreground">List other vendors quoting for the same {form.product_name?.trim() ? `"${form.product_name}"` : "product / service"}.</div>
               </div>
-              <Button type="button" size="sm" variant="outline" onClick={() => setForm({ ...form, vendor_quotes: [...(form.vendor_quotes ?? []), { vendor: "", price: null, currency: "BDT", notes: "" }] })}>
+              <Button type="button" size="sm" variant="outline" onClick={() => setForm({ ...form, vendor_quotes: [...(form.vendor_quotes ?? []), { vendor: "", price: null, currency: "USD", notes: "" }] })}>
                 + Add vendor
               </Button>
             </div>
