@@ -181,6 +181,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
+import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
@@ -1155,6 +1156,12 @@ const ApiPublicHooksVisitReminderCheckRoute =
     path: '/api/public/hooks/visit-reminder-check',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksVisitAnalyticsAlertsRoute =
+  ApiPublicHooksVisitAnalyticsAlertsRouteImport.update({
+    id: '/api/public/hooks/visit-analytics-alerts',
+    path: '/api/public/hooks/visit-analytics-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -1433,6 +1440,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1610,6 +1618,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1801,6 +1810,7 @@ export interface FileRoutesById {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1992,6 +2002,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2169,6 +2180,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2359,6 +2371,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2386,6 +2399,7 @@ export interface RootRouteChildren {
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
+  ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -3600,6 +3614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksVisitReminderCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/visit-analytics-alerts': {
+      id: '/api/public/hooks/visit-analytics-alerts'
+      path: '/api/public/hooks/visit-analytics-alerts'
+      fullPath: '/api/public/hooks/visit-analytics-alerts'
+      preLoaderRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -4308,6 +4329,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
+  ApiPublicHooksVisitAnalyticsAlertsRoute:
+    ApiPublicHooksVisitAnalyticsAlertsRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
