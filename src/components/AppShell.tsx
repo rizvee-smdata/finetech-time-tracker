@@ -102,6 +102,8 @@ const navSections: NavSection[] = [
       { to: "/visits/anomalies", label: "Anomaly Detector", icon: AlertTriangle },
       { to: "/visits/territory-sim", label: "Territory Simulator", icon: Target },
       { to: "/visits/leaderboard", label: "Field Leaderboard", icon: TrendingUp },
+      { to: "/visits/partner-portal", label: "Partner Portal", icon: Handshake },
+      { to: "/visits/confirmations", label: "Visit Confirmations", icon: MessageSquare },
       { to: "/visits/settings", label: "Visit Settings", icon: ClipboardList },
       { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
       { to: "/voice/history", label: "Voice Notes", icon: Sparkles },

@@ -27,11 +27,9 @@ export const getPartnerPortalDigest = createServerFn({ method: "POST" })
     const days = data.days ?? 30;
     const since = new Date(Date.now() - days * 86400000).toISOString();
 
-    const [{ data: accounts }, { data: visits }, { data: leads }, { data: customers }] =
+    const [{ data: accounts }, { data: visits }, { data: leads }, { data: partnersList }] =
       await Promise.all([
-        supabase
-          .from("crm_accounts")
-          .select("id, name, partner_id"),
+        supabase.from("crm_accounts").select("id, name"),
         supabase
           .from("customer_visits")
           .select("id, account_id, meeting_at, discussion_summary, next_action")
@@ -39,23 +37,29 @@ export const getPartnerPortalDigest = createServerFn({ method: "POST" })
           .order("meeting_at", { ascending: false }),
         supabase
           .from("crm_leads")
-          .select("account_id, expected_value, stage"),
-        supabase
-          .from("customers")
-          .select("id, customer_name, contact_type")
-          .eq("contact_type", "partner"),
+          .select("account_id, partner_id, expected_value, stage"),
+        supabase.from("customers").select("id, customer_name, kind").eq("kind", "partner"),
       ]);
 
     const partnerMap = new Map(
-      (customers ?? []).map((p) => [p.id, p.customer_name ?? "Partner"]),
+      (partnersList ?? []).map((p) => [p.id, p.customer_name ?? "Partner"]),
     );
 
-    const accountById = new Map((accounts ?? []).map((a) => [a.id, a]));
-    const filtered = (accounts ?? []).filter((a) =>
-      data.partner_id ? a.partner_id === data.partner_id : !!a.partner_id,
-    );
+    // Derive partner_id per account from leads (most recent association wins).
+    const accountPartner = new Map<string, string>();
+    (leads ?? []).forEach((l) => {
+      if (l.account_id && l.partner_id && !accountPartner.has(l.account_id)) {
+        accountPartner.set(l.account_id, l.partner_id);
+      }
+    });
 
-    const visitsByAcc = new Map<string, typeof visits>();
+    const filtered = (accounts ?? []).filter((a) => {
+      const pid = accountPartner.get(a.id);
+      if (!pid) return false;
+      return data.partner_id ? pid === data.partner_id : true;
+    });
+
+    const visitsByAcc = new Map<string, NonNullable<typeof visits>>();
     (visits ?? []).forEach((v) => {
       if (!v.account_id) return;
       const arr = visitsByAcc.get(v.account_id) ?? [];
@@ -76,10 +80,11 @@ export const getPartnerPortalDigest = createServerFn({ method: "POST" })
       const vs = visitsByAcc.get(a.id) ?? [];
       const last = vs[0];
       const pipe = pipelineByAcc.get(a.id) ?? { value: 0, count: 0 };
+      const pid = accountPartner.get(a.id);
       return {
         account_id: a.id,
         account_name: a.name ?? "Account",
-        partner_name: a.partner_id ? (partnerMap.get(a.partner_id) ?? null) : null,
+        partner_name: pid ? (partnerMap.get(pid) ?? null) : null,
         visits_30d: vs.length,
         last_visit_at: last?.meeting_at ?? null,
         last_visit_summary: last?.discussion_summary ?? null,
@@ -89,10 +94,10 @@ export const getPartnerPortalDigest = createServerFn({ method: "POST" })
       };
     });
 
-    // Build partner summary
     const partnerCounts = new Map<string, number>();
     filtered.forEach((a) => {
-      if (a.partner_id) partnerCounts.set(a.partner_id, (partnerCounts.get(a.partner_id) ?? 0) + 1);
+      const pid = accountPartner.get(a.id);
+      if (pid) partnerCounts.set(pid, (partnerCounts.get(pid) ?? 0) + 1);
     });
     const partners = Array.from(partnerCounts.entries()).map(([id, account_count]) => ({
       id,
