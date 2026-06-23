@@ -31,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/visits/new")({
 });
 
 const schema = z.object({
+  account_id: z.string().uuid({ message: "Please pick a customer/partner from the list" }),
   customer_name: z.string().trim().min(1).max(120),
   designation: z.string().trim().max(120).optional().or(z.literal("")),
   email: z.string().trim().max(160).email().optional().or(z.literal("")),
