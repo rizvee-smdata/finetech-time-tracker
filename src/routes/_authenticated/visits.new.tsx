@@ -175,7 +175,7 @@ function NewVisit() {
       toast.error("Select a company first");
       return;
     }
-    const parsed = schema.safeParse(form);
+    const parsed = schema.safeParse({ ...form, account_id: selectedId ?? "" });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
