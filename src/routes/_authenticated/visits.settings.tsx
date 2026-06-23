@@ -146,6 +146,32 @@ function VisitSettingsPage() {
           </div>
         </div>
 
+        <div className="border-t pt-4">
+          <Label className="text-sm font-semibold">Trust & Data Quality (Phase 1)</Label>
+        </div>
+
+        <div>
+          <Label htmlFor="lowQualMin">Low-quality visit threshold (minutes)</Label>
+          <Input
+            id="lowQualMin" type="number" min={1} max={60}
+            value={lowQualMin}
+            onChange={(e) => setLowQualMin(Number(e.target.value))}
+            disabled={readOnly}
+            className="mt-1 w-32"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Visits shorter than this with no notes and no next action are flagged low-quality.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between rounded border p-3">
+          <div>
+            <Label className="text-sm">Show integrity scores to reps</Label>
+            <p className="text-xs text-muted-foreground">Off = admin/manager only. On = reps see their own row.</p>
+          </div>
+          <Switch checked={repVisible} onCheckedChange={setRepVisible} disabled={readOnly} />
+        </div>
+
         <div className="flex items-center justify-between rounded border p-3">
           <div>
             <Label className="text-sm">Stale-account alerts</Label>
