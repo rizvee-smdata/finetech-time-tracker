@@ -65,6 +65,7 @@ import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
+import { Route as AuthenticatedVisitsTodayRouteImport } from './routes/_authenticated/visits.today'
 import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_authenticated/visits.smart-plan'
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
@@ -75,6 +76,7 @@ import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_auth
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
+import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedVisitsBriefsRouteImport } from './routes/_authenticated/visits.briefs'
@@ -504,6 +506,12 @@ const AuthenticatedVoiceHistoryRoute =
     path: '/voice/history',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsTodayRoute =
+  AuthenticatedVisitsTodayRouteImport.update({
+    id: '/visits/today',
+    path: '/visits/today',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsSmartPlanRoute =
   AuthenticatedVisitsSmartPlanRouteImport.update({
     id: '/visits/smart-plan',
@@ -561,6 +569,12 @@ const AuthenticatedVisitsIntegrityRoute =
   AuthenticatedVisitsIntegrityRouteImport.update({
     id: '/visits/integrity',
     path: '/visits/integrity',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsHeatmapRoute =
+  AuthenticatedVisitsHeatmapRouteImport.update({
+    id: '/visits/heatmap',
+    path: '/visits/heatmap',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsDealCorrelationRoute =
@@ -1485,6 +1499,7 @@ export interface FileRoutesByFullPath {
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
@@ -1495,6 +1510,7 @@ export interface FileRoutesByFullPath {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1674,6 +1690,7 @@ export interface FileRoutesByTo {
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
@@ -1684,6 +1701,7 @@ export interface FileRoutesByTo {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1877,6 +1895,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
@@ -1887,6 +1906,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/_authenticated/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/_authenticated/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -2080,6 +2100,7 @@ export interface FileRouteTypes {
     | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
@@ -2090,6 +2111,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2269,6 +2291,7 @@ export interface FileRouteTypes {
     | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
@@ -2279,6 +2302,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2471,6 +2495,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/briefs'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
+    | '/_authenticated/visits/heatmap'
     | '/_authenticated/visits/integrity'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
@@ -2481,6 +2506,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
     | '/_authenticated/visits/smart-plan'
+    | '/_authenticated/visits/today'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2945,6 +2971,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVoiceHistoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/visits/today': {
+      id: '/_authenticated/visits/today'
+      path: '/visits/today'
+      fullPath: '/visits/today'
+      preLoaderRoute: typeof AuthenticatedVisitsTodayRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/visits/smart-plan': {
       id: '/_authenticated/visits/smart-plan'
       path: '/visits/smart-plan'
@@ -3013,6 +3046,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/integrity'
       fullPath: '/visits/integrity'
       preLoaderRoute: typeof AuthenticatedVisitsIntegrityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/heatmap': {
+      id: '/_authenticated/visits/heatmap'
+      path: '/visits/heatmap'
+      fullPath: '/visits/heatmap'
+      preLoaderRoute: typeof AuthenticatedVisitsHeatmapRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/deal-correlation': {
@@ -4447,6 +4487,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsBriefsRoute: typeof AuthenticatedVisitsBriefsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
+  AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
@@ -4457,6 +4498,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
   AuthenticatedVisitsSmartPlanRoute: typeof AuthenticatedVisitsSmartPlanRoute
+  AuthenticatedVisitsTodayRoute: typeof AuthenticatedVisitsTodayRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
@@ -4528,6 +4570,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
     AuthenticatedVisitsDealCorrelationRoute,
+  AuthenticatedVisitsHeatmapRoute: AuthenticatedVisitsHeatmapRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
@@ -4539,6 +4582,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
   AuthenticatedVisitsSmartPlanRoute: AuthenticatedVisitsSmartPlanRoute,
+  AuthenticatedVisitsTodayRoute: AuthenticatedVisitsTodayRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,

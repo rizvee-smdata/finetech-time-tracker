@@ -85,6 +85,8 @@ const navSections: NavSection[] = [
     label: "Field Operations",
     items: [
       { to: "/visits", label: "Visits", icon: ClipboardList },
+      { to: "/visits/today", label: "Today's Plan", icon: Calendar },
+      { to: "/visits/heatmap", label: "Visit Heatmap", icon: MapPin },
       { to: "/visits/coverage", label: "Coverage Map", icon: MapPin },
       { to: "/visits/needs-attention", label: "Needs Attention", icon: ClipboardList },
       { to: "/visits/rep-comparison", label: "Rep Comparison", icon: ClipboardList },
