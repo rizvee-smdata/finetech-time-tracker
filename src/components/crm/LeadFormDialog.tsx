@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource, type VendorQuote } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
+import { fetchOems } from "@/lib/crm/oems";
+import { fetchProducts } from "@/lib/crm/products";
 
 const sb = supabase as any;
 
@@ -53,9 +55,22 @@ export function LeadFormDialog({
       renewal_kind: lead?.renewal_kind ?? "one_time",
       renewal_date: lead?.renewal_date ?? "",
       product_name: lead?.product_name ?? "",
+      oem_id: (lead as any)?.oem_id ?? "",
+      product_id: (lead as any)?.product_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
     });
   }, [open, lead, user?.id]);
+
+  const oems = useQuery({
+    queryKey: ["crm-oems", companyId],
+    queryFn: () => fetchOems(companyId!),
+    enabled: !!companyId && open,
+  });
+  const products = useQuery({
+    queryKey: ["crm-products", companyId, form.oem_id],
+    queryFn: () => fetchProducts(companyId!, form.oem_id || null),
+    enabled: !!companyId && open,
+  });
 
   async function save() {
     if (!user || !companyId) return toast.error("Select a company first");
@@ -84,6 +99,8 @@ export function LeadFormDialog({
       renewal_kind: form.renewal_kind,
       renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
       product_name: form.product_name?.trim() || null,
+      oem_id: form.oem_id || null,
+      product_id: form.product_id || null,
       vendor_quotes: (form.vendor_quotes ?? [])
         .filter((v: VendorQuote) => v.vendor?.trim())
         .map((v: VendorQuote) => ({
@@ -120,8 +137,37 @@ export function LeadFormDialog({
             <Field label="Company">
               <Input value={form.company_name || ""} onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
             </Field>
-            <Field label="Product / Service">
-              <Input placeholder="e.g. ERP License, AC Unit, Cloud Hosting" value={form.product_name || ""} onChange={(e) => setForm({ ...form, product_name: e.target.value })} />
+            <Field label="OEM / Vendor">
+              <Select
+                value={form.oem_id || "__none"}
+                onValueChange={(v) => setForm({ ...form, oem_id: v === "__none" ? "" : v, product_id: "", product_name: "" })}
+              >
+                <SelectTrigger><SelectValue placeholder="Select OEM" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">— None —</SelectItem>
+                  {(oems.data ?? []).map((o) => (
+                    <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Product">
+              <Select
+                value={form.product_id || "__none"}
+                onValueChange={(v) => {
+                  if (v === "__none") return setForm({ ...form, product_id: "", product_name: "" });
+                  const p = (products.data ?? []).find((x) => x.id === v);
+                  setForm({ ...form, product_id: v, product_name: p?.name ?? "" });
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder={form.oem_id ? "Select product" : "Select OEM first or any product"} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">— None —</SelectItem>
+                  {(products.data ?? []).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field label="Contact person">
               <Input value={form.contact_person || ""} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} />
