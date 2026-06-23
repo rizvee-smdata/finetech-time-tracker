@@ -73,6 +73,40 @@ export function LeadFormDialog({
     queryFn: () => fetchProducts(companyId!, form.oem_id || null),
     enabled: !!companyId && open,
   });
+  const partners = useQuery({
+    queryKey: ["crm-partners", companyId],
+    queryFn: () => fetchPartners(companyId!),
+    enabled: !!companyId && open,
+  });
+  const customers = useQuery({
+    queryKey: ["crm-customers-suggest", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data, error } = await sb
+        .from("customers")
+        .select("id, customer_name, contact_person, designation, email, phone")
+        .eq("company_id", companyId)
+        .is("deleted_at", null)
+        .order("customer_name")
+        .limit(500);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
+    },
+  });
+  const accounts = useQuery({
+    queryKey: ["crm-accounts-suggest", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data, error } = await sb
+        .from("crm_accounts")
+        .select("id, name")
+        .eq("company_id", companyId)
+        .order("name")
+        .limit(500);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; name: string }>;
+    },
+  });
 
   async function save() {
     if (!user || !companyId) return toast.error("Select a company first");
