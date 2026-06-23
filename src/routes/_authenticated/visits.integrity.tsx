@@ -18,7 +18,8 @@ export const Route = createFileRoute("/_authenticated/visits/integrity")({
 function pct(n: number) { return `${Math.round(n * 100)}%`; }
 
 function IntegrityReviewPage() {
-  const { isStaff, userId } = useAuth();
+  const { isStaff, user } = useAuth();
+  const userId = user?.id;
   const fetchScores = useServerFn(getRepIntegrityScores);
   const fetchVisible = useServerFn(getMyIntegrityVisible);
   const [periodDays, setPeriodDays] = useState<30 | 60 | 90>(30);
