@@ -100,6 +100,8 @@ const navSections: NavSection[] = [
       { to: "/visits/predictions", label: "Deal Predictions", icon: Sparkles },
       { to: "/visits/account-health", label: "Account Health", icon: HeartPulse },
       { to: "/visits/anomalies", label: "Anomaly Detector", icon: AlertTriangle },
+      { to: "/visits/territory-sim", label: "Territory Simulator", icon: Target },
+      { to: "/visits/leaderboard", label: "Field Leaderboard", icon: TrendingUp },
       { to: "/visits/settings", label: "Visit Settings", icon: ClipboardList },
       { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
       { to: "/voice/history", label: "Voice Notes", icon: Sparkles },

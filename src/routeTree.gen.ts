@@ -76,6 +76,7 @@ import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authe
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
+import { Route as AuthenticatedVisitsLeaderboardRouteImport } from './routes/_authenticated/visits.leaderboard'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
@@ -570,6 +571,12 @@ const AuthenticatedVisitsNeedsAttentionRoute =
   AuthenticatedVisitsNeedsAttentionRouteImport.update({
     id: '/visits/needs-attention',
     path: '/visits/needs-attention',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsLeaderboardRoute =
+  AuthenticatedVisitsLeaderboardRouteImport.update({
+    id: '/visits/leaderboard',
+    path: '/visits/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsIntegrityRoute =
@@ -1508,6 +1515,7 @@ export interface FileRoutesByFullPath {
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -1700,6 +1708,7 @@ export interface FileRoutesByTo {
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -1906,6 +1915,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/_authenticated/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -2112,6 +2122,7 @@ export interface FileRouteTypes {
     | '/visits/deal-correlation'
     | '/visits/heatmap'
     | '/visits/integrity'
+    | '/visits/leaderboard'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
@@ -2304,6 +2315,7 @@ export interface FileRouteTypes {
     | '/visits/deal-correlation'
     | '/visits/heatmap'
     | '/visits/integrity'
+    | '/visits/leaderboard'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
@@ -2509,6 +2521,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/deal-correlation'
     | '/_authenticated/visits/heatmap'
     | '/_authenticated/visits/integrity'
+    | '/_authenticated/visits/leaderboard'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
@@ -3059,6 +3072,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/needs-attention'
       fullPath: '/visits/needs-attention'
       preLoaderRoute: typeof AuthenticatedVisitsNeedsAttentionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/leaderboard': {
+      id: '/_authenticated/visits/leaderboard'
+      path: '/visits/leaderboard'
+      fullPath: '/visits/leaderboard'
+      preLoaderRoute: typeof AuthenticatedVisitsLeaderboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/integrity': {
@@ -4509,6 +4529,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
   AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
+  AuthenticatedVisitsLeaderboardRoute: typeof AuthenticatedVisitsLeaderboardRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
@@ -4593,6 +4614,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedVisitsDealCorrelationRoute,
   AuthenticatedVisitsHeatmapRoute: AuthenticatedVisitsHeatmapRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
+  AuthenticatedVisitsLeaderboardRoute: AuthenticatedVisitsLeaderboardRoute,
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
