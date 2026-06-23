@@ -28,6 +28,7 @@ import {
   MessageSquare,
   ScrollText,
   AlertTriangle,
+  ShieldAlert,
   
   TrendingUp,
   HeartPulse,
