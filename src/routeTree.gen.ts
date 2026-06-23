@@ -69,6 +69,7 @@ import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_auth
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authenticated/visits.renewals'
+import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authenticated/visits.one-on-one'
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
@@ -522,6 +523,12 @@ const AuthenticatedVisitsRenewalsRoute =
   AuthenticatedVisitsRenewalsRouteImport.update({
     id: '/visits/renewals',
     path: '/visits/renewals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsOneOnOneRoute =
+  AuthenticatedVisitsOneOnOneRouteImport.update({
+    id: '/visits/one-on-one',
+    path: '/visits/one-on-one',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsOemHealthRoute =
@@ -1459,6 +1466,7 @@ export interface FileRoutesByFullPath {
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -1644,6 +1652,7 @@ export interface FileRoutesByTo {
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -1843,6 +1852,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/_authenticated/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/_authenticated/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -2042,6 +2052,7 @@ export interface FileRouteTypes {
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
+    | '/visits/one-on-one'
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
@@ -2227,6 +2238,7 @@ export interface FileRouteTypes {
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
+    | '/visits/one-on-one'
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
@@ -2425,6 +2437,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
+    | '/_authenticated/visits/one-on-one'
     | '/_authenticated/visits/renewals'
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
@@ -2919,6 +2932,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/renewals'
       fullPath: '/visits/renewals'
       preLoaderRoute: typeof AuthenticatedVisitsRenewalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/one-on-one': {
+      id: '/_authenticated/visits/one-on-one'
+      path: '/visits/one-on-one'
+      fullPath: '/visits/one-on-one'
+      preLoaderRoute: typeof AuthenticatedVisitsOneOnOneRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/oem-health': {
@@ -4369,6 +4389,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
+  AuthenticatedVisitsOneOnOneRoute: typeof AuthenticatedVisitsOneOnOneRoute
   AuthenticatedVisitsRenewalsRoute: typeof AuthenticatedVisitsRenewalsRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
@@ -4447,6 +4468,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsOemHealthRoute: AuthenticatedVisitsOemHealthRoute,
+  AuthenticatedVisitsOneOnOneRoute: AuthenticatedVisitsOneOnOneRoute,
   AuthenticatedVisitsRenewalsRoute: AuthenticatedVisitsRenewalsRoute,
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
