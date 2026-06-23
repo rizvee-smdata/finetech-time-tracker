@@ -236,7 +236,7 @@ export const getOneOnOneSnapshot = createServerFn({ method: "POST" })
 
     const visitsArr = visits ?? [];
     const uniqueAccounts = new Set<string>();
-    for (const v of visitsArr) if (v.lead_id) uniqueAccounts.add(v.lead_id);
+    for (const v of visitsArr) if (v.account_id) uniqueAccounts.add(v.account_id);
 
     const leadsArr = leads ?? [];
     const openPipeline = leadsArr
