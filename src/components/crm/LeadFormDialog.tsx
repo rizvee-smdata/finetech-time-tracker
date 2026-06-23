@@ -106,7 +106,7 @@ export function LeadFormDialog({
         .map((v: VendorQuote) => ({
           vendor: v.vendor.trim(),
           price: v.price === null || v.price === undefined || (v.price as any) === "" ? null : Number(v.price),
-          currency: v.currency || form.currency || "BDT",
+          currency: v.currency || form.currency || "USD",
           notes: v.notes || null,
         })),
     };
