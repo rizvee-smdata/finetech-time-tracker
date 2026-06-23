@@ -5,6 +5,7 @@ const sb = supabase as any;
 export type CrmProduct = {
   id: string;
   company_id: string;
+  oem_id: string | null;
   name: string;
   description: string | null;
   category: string | null;
@@ -13,13 +14,15 @@ export type CrmProduct = {
   is_active: boolean;
 };
 
-export async function fetchProducts(companyId: string): Promise<CrmProduct[]> {
-  const { data, error } = await sb
+export async function fetchProducts(companyId: string, oemId?: string | null): Promise<CrmProduct[]> {
+  let q = sb
     .from("crm_products")
     .select("*")
     .eq("company_id", companyId)
     .eq("is_active", true)
     .order("name");
+  if (oemId) q = q.eq("oem_id", oemId);
+  const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as CrmProduct[];
 }
