@@ -217,6 +217,26 @@ export const generateVisitInsights = createServerFn({ method: "POST" })
     const content: string = aiJson.choices?.[0]?.message?.content ?? "";
     if (!content.trim()) throw new Response("Empty AI response", { status: 502 });
 
+    // Reasoning trail for AI explainability layer
+    const reasoning = {
+      period_days: periodDays,
+      data_points_evaluated: {
+        accounts_total: accounts.length,
+        stale_strategic_count: stale.length,
+        open_negatives_count: negatives.length,
+        reps_in_coverage_analysis: repCoverage.length,
+        regions_analyzed: regions.length,
+      },
+      triggers: [
+        stale.length > 0 ? `${stale.length} strategic/standard accounts not visited in ${periodDays}+ days` : null,
+        negatives.length > 0 ? `${negatives.length} accounts with negative sentiment or pending action on last meeting` : null,
+        regions.filter((r) => r.delta_pct !== null && r.delta_pct < -20).length > 0
+          ? `${regions.filter((r) => r.delta_pct !== null && r.delta_pct < -20).length} regions with >20% visit-volume drop`
+          : null,
+      ].filter(Boolean),
+      model,
+    };
+
     // Save
     const { data: saved, error: saveErr } = await supabase.from("ai_visit_insights").insert({
       company_id: companyId,
@@ -224,7 +244,8 @@ export const generateVisitInsights = createServerFn({ method: "POST" })
       content,
       model,
       created_by: userId,
-    }).select("id, generated_at, content, model").single();
+      reasoning,
+    }).select("id, generated_at, content, model, reasoning").single();
     if (saveErr) throw new Response(`Save failed: ${saveErr.message}`, { status: 500 });
 
     return saved;
