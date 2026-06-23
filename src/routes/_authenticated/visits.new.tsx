@@ -48,8 +48,10 @@ const schema = z.object({
 function NewVisit() {
   const { user, companyId, company } = useAuth();
   const nav = useNavigate();
+  const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [contactType, setContactType] = useState<ContactType>("customer");
   const [form, setForm] = useState({
@@ -64,14 +66,40 @@ function NewVisit() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
-        .select("id, customer_name, contact_person, designation, email, phone")
+        .select("id, customer_name, contact_person, designation, email, phone, kind")
         .eq("company_id", companyId!)
         .eq("kind", contactType)
+        .is("deleted_at", null)
         .order("customer_name");
       if (error) throw error;
-      return data ?? [];
+      // Dedupe by company name (case-insensitive)
+      const seen = new Set<string>();
+      const unique: typeof data = [];
+      for (const c of data ?? []) {
+        const key = (c.customer_name ?? "").trim().toLowerCase();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        unique.push(c);
+      }
+      return unique;
     },
   });
+
+  async function addNewAccount() {
+    if (!companyId || !user) return;
+    const name = search.trim();
+    if (!name) { toast.error("Type a name first"); return; }
+    const { data, error } = await supabase
+      .from("customers")
+      .insert({ company_id: companyId, customer_name: name, kind: contactType, created_by: user.id })
+      .select("id, customer_name, contact_person, designation, email, phone, kind")
+      .single();
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Added ${TYPE_LABELS[contactType].singular.toLowerCase()}: ${name}`);
+    qc.invalidateQueries({ queryKey: ["contacts-picker", companyId, contactType] });
+    pickCustomer(data);
+  }
+
 
   // Backdating window: allow today + previous 2 working days (skip company weekend days & holidays)
   const { data: holidaySet = new Set<string>() } = useQuery({
