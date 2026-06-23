@@ -83,27 +83,42 @@ Rules:
 - industry_guess: infer from company name or title (e.g. "Banking & Finance", "Pharmaceuticals", "ICT", "FMCG").
 - Bangla text is supported natively — extract it as-is.`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: dataUrl } },
-            ],
-          },
-        ],
-        tools: [extractionTool],
-        tool_choice: { type: "function", function: { name: "submit_card_extraction" } },
-      }),
-    });
+    // Hard timeout so the browser doesn't see a generic "Failed to fetch"
+    // when the AI gateway hangs or the worker exceeds its limit.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25_000);
+    let res: Response;
+    try {
+      res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: prompt },
+                { type: "image_url", image_url: { url: dataUrl } },
+              ],
+            },
+          ],
+          tools: [extractionTool],
+          tool_choice: { type: "function", function: { name: "submit_card_extraction" } },
+        }),
+      });
+    } catch (e: any) {
+      if (e?.name === "AbortError") {
+        throw new Error("AI took too long to read the card. Please try a clearer, well-lit close-up photo.");
+      }
+      throw e;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (res.status === 429) throw new Error("AI rate limit reached. Please try again shortly.");
     if (res.status === 402) throw new Error("AI usage limit reached. Add credits in Settings.");
