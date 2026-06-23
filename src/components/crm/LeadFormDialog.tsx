@@ -106,7 +106,7 @@ export function LeadFormDialog({
         .map((v: VendorQuote) => ({
           vendor: v.vendor.trim(),
           price: v.price === null || v.price === undefined || (v.price as any) === "" ? null : Number(v.price),
-          currency: v.currency || form.currency || "BDT",
+          currency: v.currency || form.currency || "USD",
           notes: v.notes || null,
         })),
     };
@@ -270,7 +270,7 @@ export function LeadFormDialog({
                 <div className="text-xs font-semibold text-muted-foreground">Vendor budget comparison</div>
                 <div className="text-[11px] text-muted-foreground">List other vendors quoting for the same {form.product_name?.trim() ? `"${form.product_name}"` : "product / service"}.</div>
               </div>
-              <Button type="button" size="sm" variant="outline" onClick={() => setForm({ ...form, vendor_quotes: [...(form.vendor_quotes ?? []), { vendor: "", price: null, currency: "BDT", notes: "" }] })}>
+              <Button type="button" size="sm" variant="outline" onClick={() => setForm({ ...form, vendor_quotes: [...(form.vendor_quotes ?? []), { vendor: "", price: null, currency: "USD", notes: "" }] })}>
                 + Add vendor
               </Button>
             </div>
@@ -286,13 +286,13 @@ export function LeadFormDialog({
                   <Input type="number" placeholder="Quoted price" value={v.price ?? ""} onChange={(e) => {
                     const arr = [...form.vendor_quotes]; arr[i] = { ...v, price: e.target.value === "" ? null : Number(e.target.value) }; setForm({ ...form, vendor_quotes: arr });
                   }} />
-                  <Select value={v.currency ?? "BDT"} onValueChange={(val) => {
+                  <Select value={v.currency ?? "USD"} onValueChange={(val) => {
                     const arr = [...form.vendor_quotes]; arr[i] = { ...v, currency: val }; setForm({ ...form, vendor_quotes: arr });
                   }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BDT">BDT</SelectItem>
                       <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="BDT">BDT</SelectItem>
                       <SelectItem value="EUR">EUR</SelectItem>
                     </SelectContent>
                   </Select>
