@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ShieldAlert, AlertTriangle, TrendingDown, UserX, Bell, CheckCircle2 } from "lucide-react";
 import { differenceInDays, format, subDays } from "date-fns";
 import { toast } from "sonner";
+import { AIInsightsPanel } from "@/components/visit-analytics/AIInsightsPanel";
 
 export const Route = createFileRoute("/_authenticated/visits/needs-attention")({
   component: NeedsAttentionPage,
