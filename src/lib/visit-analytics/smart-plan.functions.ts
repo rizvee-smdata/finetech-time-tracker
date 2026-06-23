@@ -220,7 +220,7 @@ export const getOneOnOneSnapshot = createServerFn({ method: "POST" })
     const [{ data: visits }, { data: lowQ }, { data: leads }] = await Promise.all([
       supabase
         .from("customer_visits")
-        .select("id, lead_id, meeting_at")
+        .select("id, account_id, meeting_at")
         .eq("user_id", repId)
         .gte("meeting_at", since),
       supabase
