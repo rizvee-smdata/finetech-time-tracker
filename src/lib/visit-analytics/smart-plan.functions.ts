@@ -142,23 +142,12 @@ export const getVisitBriefs = createServerFn({ method: "POST" })
       .select("id, account_id, expected_value, stage")
       .in("account_id", data.accountIds);
 
-    // Visits via customer_visits + their leads
-    const leadIdsByAccount = new Map<string, string[]>();
-    for (const l of leads ?? []) {
-      const arr = leadIdsByAccount.get(l.account_id!) ?? [];
-      arr.push(l.id);
-      leadIdsByAccount.set(l.account_id!, arr);
-    }
-
-    const allLeadIds = (leads ?? []).map((l) => l.id);
-    const { data: visits } = allLeadIds.length
-      ? await supabase
-          .from("customer_visits")
-          .select("id, lead_id, meeting_at, discussion_summary, next_action")
-          .in("lead_id", allLeadIds)
-          .order("meeting_at", { ascending: false })
-          .limit(500)
-      : { data: [] as any[] };
+    const { data: visits } = await supabase
+      .from("customer_visits")
+      .select("id, account_id, meeting_at, discussion_summary, next_action")
+      .in("account_id", data.accountIds)
+      .order("meeting_at", { ascending: false })
+      .limit(500);
 
     const briefs: VisitBrief[] = [];
     for (const acc of accounts ?? []) {
