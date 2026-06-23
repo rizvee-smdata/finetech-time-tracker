@@ -66,21 +66,51 @@ function ScanPage() {
   const processMutation = useMutation({
     mutationFn: async ({ file, source }: { file: File; source: "card" | "document" | "bulk" }) => {
       if (!companyId || !user) throw new Error("Sign in required");
-      const ext = file.name.split(".").pop() || "bin";
+      // Compress images client-side. Phone-camera photos can be 5–15MB which
+      // causes Cloudflare Worker request-size/timeout failures that surface in
+      // the browser as a generic "Failed to fetch" TypeError.
+      let uploadBlob: Blob = file;
+      let ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+      let mime = file.type || "application/octet-stream";
+      if (file.type.startsWith("image/")) {
+        try {
+          uploadBlob = await compressImage(file, 1600, 0.82);
+          mime = "image/jpeg";
+          ext = "jpg";
+        } catch {
+          // fall back to the original file
+        }
+      }
       const path = `${companyId}/${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("card-scans").upload(path, file, {
-        contentType: file.type || "application/octet-stream",
-      });
-      if (upErr) throw new Error(upErr.message);
-      const res: any = await processFn({
-        data: {
-          company_id: companyId,
-          file_path: path,
-          file_mime: file.type || "image/jpeg",
-          source,
-        },
-      });
-      return res;
+      try {
+        const { error: upErr } = await supabase.storage.from("card-scans").upload(path, uploadBlob, {
+          contentType: mime,
+        });
+        if (upErr) throw new Error(upErr.message);
+      } catch (e: any) {
+        const msg = e?.message ?? "";
+        if (/failed to fetch|network|load failed/i.test(msg)) {
+          throw new Error("Upload failed — please check your connection and try again.");
+        }
+        throw e;
+      }
+      try {
+        const res: any = await processFn({
+          data: {
+            company_id: companyId,
+            file_path: path,
+            file_mime: mime,
+            source,
+          },
+        });
+        return res;
+      } catch (e: any) {
+        const msg = e?.message ?? "";
+        if (/failed to fetch|network|load failed/i.test(msg)) {
+          throw new Error("Network error while processing the card. Try a clearer/smaller image and try again.");
+        }
+        throw e;
+      }
     },
     onSuccess: (res) => {
       const r: ResultState = {
