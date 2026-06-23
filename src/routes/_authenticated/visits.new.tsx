@@ -248,7 +248,7 @@ function NewVisit() {
             </Select>
           </Field>
 
-          <Field label={`Select ${typeLabel.singular.toLowerCase()} (from list)`} id="customer_picker">
+          <Field label={`${typeLabel.singular} account *`} id="customer_picker">
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -258,18 +258,25 @@ function NewVisit() {
                   className="w-full justify-between font-normal"
                 >
                   {selected
-                    ? `${selected.customer_name}${selected.contact_person ? ` — ${selected.contact_person}` : ""}`
-                    : contacts.length
-                      ? `Search and pick a ${typeLabel.singular.toLowerCase()}...`
-                      : `No ${typeLabel.plural} yet — fill details below`}
+                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
+                    : `Search and pick a ${typeLabel.singular.toLowerCase()} (required)`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} />
+                <Command shouldFilter>
+                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} value={search} onValueChange={setSearch} />
                   <CommandList>
-                    <CommandEmpty>No {typeLabel.singular.toLowerCase()} found.</CommandEmpty>
+                    <CommandEmpty>
+                      <div className="space-y-2 px-2 py-3 text-center">
+                        <p className="text-sm text-muted-foreground">No {typeLabel.singular.toLowerCase()} found.</p>
+                        {search.trim() && (
+                          <Button type="button" size="sm" variant="default" onClick={addNewAccount}>
+                            + Add &quot;{search.trim()}&quot; as new {typeLabel.singular.toLowerCase()}
+                          </Button>
+                        )}
+                      </div>
+                    </CommandEmpty>
                     <CommandGroup>
                       {contacts.map((c: any) => (
                         <CommandItem
@@ -278,19 +285,25 @@ function NewVisit() {
                           onSelect={() => pickCustomer(c)}
                         >
                           <Check className={cn("mr-2 h-4 w-4", selectedId === c.id ? "opacity-100" : "opacity-0")} />
-                          <div className="flex flex-col">
+                          <div className="flex flex-1 items-center justify-between gap-2">
                             <span className="font-medium">{c.customer_name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {[c.contact_person, c.designation, c.phone].filter(Boolean).join(" · ") || "—"}
-                            </span>
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{c.kind}</span>
                           </div>
                         </CommandItem>
                       ))}
                     </CommandGroup>
+                    {search.trim() && (
+                      <CommandGroup heading="Not in the list?">
+                        <CommandItem onSelect={addNewAccount}>
+                          + Add &quot;{search.trim()}&quot; as new {typeLabel.singular.toLowerCase()}
+                        </CommandItem>
+                      </CommandGroup>
+                    )}
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
+            <p className="text-xs text-muted-foreground">Required. Pick from the list or add a new {typeLabel.singular.toLowerCase()} inline — no free-text accounts.</p>
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
