@@ -135,6 +135,7 @@ import { Route as AuthenticatedCrmSequencesRouteImport } from './routes/_authent
 import { Route as AuthenticatedCrmRenewalsRouteImport } from './routes/_authenticated/crm.renewals'
 import { Route as AuthenticatedCrmQuotesRouteImport } from './routes/_authenticated/crm.quotes'
 import { Route as AuthenticatedCrmPipelineRouteImport } from './routes/_authenticated/crm.pipeline'
+import { Route as AuthenticatedCrmPartnersRouteImport } from './routes/_authenticated/crm.partners'
 import { Route as AuthenticatedCrmOemsRouteImport } from './routes/_authenticated/crm.oems'
 import { Route as AuthenticatedCrmLostRouteImport } from './routes/_authenticated/crm.lost'
 import { Route as AuthenticatedCrmListRouteImport } from './routes/_authenticated/crm.list'
@@ -891,6 +892,12 @@ const AuthenticatedCrmPipelineRoute =
     path: '/pipeline',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmPartnersRoute =
+  AuthenticatedCrmPartnersRouteImport.update({
+    id: '/partners',
+    path: '/partners',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmOemsRoute = AuthenticatedCrmOemsRouteImport.update({
   id: '/oems',
   path: '/oems',
@@ -1298,6 +1305,7 @@ export interface FileRoutesByFullPath {
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/oems': typeof AuthenticatedCrmOemsRoute
+  '/crm/partners': typeof AuthenticatedCrmPartnersRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
@@ -1471,6 +1479,7 @@ export interface FileRoutesByTo {
   '/crm/list': typeof AuthenticatedCrmListRoute
   '/crm/lost': typeof AuthenticatedCrmLostRoute
   '/crm/oems': typeof AuthenticatedCrmOemsRoute
+  '/crm/partners': typeof AuthenticatedCrmPartnersRoute
   '/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
@@ -1658,6 +1667,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/list': typeof AuthenticatedCrmListRoute
   '/_authenticated/crm/lost': typeof AuthenticatedCrmLostRoute
   '/_authenticated/crm/oems': typeof AuthenticatedCrmOemsRoute
+  '/_authenticated/crm/partners': typeof AuthenticatedCrmPartnersRoute
   '/_authenticated/crm/pipeline': typeof AuthenticatedCrmPipelineRoute
   '/_authenticated/crm/quotes': typeof AuthenticatedCrmQuotesRoute
   '/_authenticated/crm/renewals': typeof AuthenticatedCrmRenewalsRoute
@@ -1845,6 +1855,7 @@ export interface FileRouteTypes {
     | '/crm/list'
     | '/crm/lost'
     | '/crm/oems'
+    | '/crm/partners'
     | '/crm/pipeline'
     | '/crm/quotes'
     | '/crm/renewals'
@@ -2018,6 +2029,7 @@ export interface FileRouteTypes {
     | '/crm/list'
     | '/crm/lost'
     | '/crm/oems'
+    | '/crm/partners'
     | '/crm/pipeline'
     | '/crm/quotes'
     | '/crm/renewals'
@@ -2204,6 +2216,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/list'
     | '/_authenticated/crm/lost'
     | '/_authenticated/crm/oems'
+    | '/_authenticated/crm/partners'
     | '/_authenticated/crm/pipeline'
     | '/_authenticated/crm/quotes'
     | '/_authenticated/crm/renewals'
@@ -3226,6 +3239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmPipelineRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/partners': {
+      id: '/_authenticated/crm/partners'
+      path: '/partners'
+      fullPath: '/crm/partners'
+      preLoaderRoute: typeof AuthenticatedCrmPartnersRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/oems': {
       id: '/_authenticated/crm/oems'
       path: '/oems'
@@ -3708,6 +3728,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmListRoute: typeof AuthenticatedCrmListRoute
   AuthenticatedCrmLostRoute: typeof AuthenticatedCrmLostRoute
   AuthenticatedCrmOemsRoute: typeof AuthenticatedCrmOemsRoute
+  AuthenticatedCrmPartnersRoute: typeof AuthenticatedCrmPartnersRoute
   AuthenticatedCrmPipelineRoute: typeof AuthenticatedCrmPipelineRoute
   AuthenticatedCrmQuotesRoute: typeof AuthenticatedCrmQuotesRoute
   AuthenticatedCrmRenewalsRoute: typeof AuthenticatedCrmRenewalsRoute
@@ -3738,6 +3759,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmListRoute: AuthenticatedCrmListRoute,
   AuthenticatedCrmLostRoute: AuthenticatedCrmLostRoute,
   AuthenticatedCrmOemsRoute: AuthenticatedCrmOemsRoute,
+  AuthenticatedCrmPartnersRoute: AuthenticatedCrmPartnersRoute,
   AuthenticatedCrmPipelineRoute: AuthenticatedCrmPipelineRoute,
   AuthenticatedCrmQuotesRoute: AuthenticatedCrmQuotesRoute,
   AuthenticatedCrmRenewalsRoute: AuthenticatedCrmRenewalsRoute,

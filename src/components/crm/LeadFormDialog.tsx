@@ -13,6 +13,7 @@ import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource, 
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 import { fetchOems } from "@/lib/crm/oems";
 import { fetchProducts } from "@/lib/crm/products";
+import { fetchPartners } from "@/lib/crm/partners";
 
 const sb = supabase as any;
 
@@ -57,6 +58,7 @@ export function LeadFormDialog({
       product_name: lead?.product_name ?? "",
       oem_id: (lead as any)?.oem_id ?? "",
       product_id: (lead as any)?.product_id ?? "",
+      partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
     });
   }, [open, lead, user?.id]);
@@ -70,6 +72,40 @@ export function LeadFormDialog({
     queryKey: ["crm-products", companyId, form.oem_id],
     queryFn: () => fetchProducts(companyId!, form.oem_id || null),
     enabled: !!companyId && open,
+  });
+  const partners = useQuery({
+    queryKey: ["crm-partners", companyId],
+    queryFn: () => fetchPartners(companyId!),
+    enabled: !!companyId && open,
+  });
+  const customers = useQuery({
+    queryKey: ["crm-customers-suggest", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data, error } = await sb
+        .from("customers")
+        .select("id, customer_name, contact_person, designation, email, phone")
+        .eq("company_id", companyId)
+        .is("deleted_at", null)
+        .order("customer_name")
+        .limit(500);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
+    },
+  });
+  const accounts = useQuery({
+    queryKey: ["crm-accounts-suggest", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data, error } = await sb
+        .from("crm_accounts")
+        .select("id, name")
+        .eq("company_id", companyId)
+        .order("name")
+        .limit(500);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; name: string }>;
+    },
   });
 
   async function save() {
@@ -101,6 +137,7 @@ export function LeadFormDialog({
       product_name: form.product_name?.trim() || null,
       oem_id: form.oem_id || null,
       product_id: form.product_id || null,
+      partner_id: form.partner_id || null,
       vendor_quotes: (form.vendor_quotes ?? [])
         .filter((v: VendorQuote) => v.vendor?.trim())
         .map((v: VendorQuote) => ({
@@ -132,10 +169,47 @@ export function LeadFormDialog({
         <div className="grid gap-4 py-2">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Customer name *">
-              <Input value={form.customer_name || ""} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
+              <Input
+                list="lead-customer-suggestions"
+                value={form.customer_name || ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  const match = (customers.data ?? []).find((c) => c.customer_name === v);
+                  if (match) {
+                    setForm({
+                      ...form,
+                      customer_name: match.customer_name,
+                      contact_person: form.contact_person || match.contact_person || "",
+                      designation: form.designation || match.designation || "",
+                      email: form.email || match.email || "",
+                      phone: form.phone || match.phone || "",
+                    });
+                  } else {
+                    setForm({ ...form, customer_name: v });
+                  }
+                }}
+                placeholder="Start typing — pick existing or add new"
+              />
+              <datalist id="lead-customer-suggestions">
+                {(customers.data ?? []).map((c) => (
+                  <option key={c.id} value={c.customer_name}>
+                    {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
+                  </option>
+                ))}
+              </datalist>
             </Field>
             <Field label="Company">
-              <Input value={form.company_name || ""} onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+              <Input
+                list="lead-company-suggestions"
+                value={form.company_name || ""}
+                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                placeholder="Start typing — pick existing or add new"
+              />
+              <datalist id="lead-company-suggestions">
+                {(accounts.data ?? []).map((a) => (
+                  <option key={a.id} value={a.name} />
+                ))}
+              </datalist>
             </Field>
             <Field label="OEM / Vendor">
               <Select
@@ -164,6 +238,20 @@ export function LeadFormDialog({
                 <SelectContent>
                   <SelectItem value="__none">— None —</SelectItem>
                   {(products.data ?? []).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Partner (optional)">
+              <Select
+                value={form.partner_id || "__none"}
+                onValueChange={(v) => setForm({ ...form, partner_id: v === "__none" ? "" : v })}
+              >
+                <SelectTrigger><SelectValue placeholder="Did a partner bring this lead?" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">— No partner —</SelectItem>
+                  {(partners.data ?? []).map((p) => (
                     <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                   ))}
                 </SelectContent>

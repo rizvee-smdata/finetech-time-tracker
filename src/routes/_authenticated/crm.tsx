@@ -50,6 +50,7 @@ const groups: Group[] = [
       { to: "/crm/duplicates", label: "Duplicates" },
       { to: "/crm/oems", label: "OEM / Vendors" },
       { to: "/crm/catalog", label: "Products" },
+      { to: "/crm/partners", label: "Partners" },
     ],
   },
   {
