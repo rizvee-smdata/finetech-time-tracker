@@ -137,6 +137,7 @@ export function LeadFormDialog({
       product_name: form.product_name?.trim() || null,
       oem_id: form.oem_id || null,
       product_id: form.product_id || null,
+      partner_id: form.partner_id || null,
       vendor_quotes: (form.vendor_quotes ?? [])
         .filter((v: VendorQuote) => v.vendor?.trim())
         .map((v: VendorQuote) => ({
