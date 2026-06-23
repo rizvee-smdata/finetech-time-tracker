@@ -66,6 +66,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
 import { Route as AuthenticatedVisitsTodayRouteImport } from './routes/_authenticated/visits.today'
+import { Route as AuthenticatedVisitsTerritorySimRouteImport } from './routes/_authenticated/visits.territory-sim'
 import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_authenticated/visits.smart-plan'
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
@@ -75,6 +76,7 @@ import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authe
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
+import { Route as AuthenticatedVisitsLeaderboardRouteImport } from './routes/_authenticated/visits.leaderboard'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
@@ -512,6 +514,12 @@ const AuthenticatedVisitsTodayRoute =
     path: '/visits/today',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsTerritorySimRoute =
+  AuthenticatedVisitsTerritorySimRouteImport.update({
+    id: '/visits/territory-sim',
+    path: '/visits/territory-sim',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsSmartPlanRoute =
   AuthenticatedVisitsSmartPlanRouteImport.update({
     id: '/visits/smart-plan',
@@ -563,6 +571,12 @@ const AuthenticatedVisitsNeedsAttentionRoute =
   AuthenticatedVisitsNeedsAttentionRouteImport.update({
     id: '/visits/needs-attention',
     path: '/visits/needs-attention',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsLeaderboardRoute =
+  AuthenticatedVisitsLeaderboardRouteImport.update({
+    id: '/visits/leaderboard',
+    path: '/visits/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsIntegrityRoute =
@@ -1501,6 +1515,7 @@ export interface FileRoutesByFullPath {
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -1510,6 +1525,7 @@ export interface FileRoutesByFullPath {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -1692,6 +1708,7 @@ export interface FileRoutesByTo {
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -1701,6 +1718,7 @@ export interface FileRoutesByTo {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -1897,6 +1915,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
+  '/_authenticated/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
@@ -1906,6 +1925,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/_authenticated/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/_authenticated/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/_authenticated/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -2102,6 +2122,7 @@ export interface FileRouteTypes {
     | '/visits/deal-correlation'
     | '/visits/heatmap'
     | '/visits/integrity'
+    | '/visits/leaderboard'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
@@ -2111,6 +2132,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/territory-sim'
     | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
@@ -2293,6 +2315,7 @@ export interface FileRouteTypes {
     | '/visits/deal-correlation'
     | '/visits/heatmap'
     | '/visits/integrity'
+    | '/visits/leaderboard'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
@@ -2302,6 +2325,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/territory-sim'
     | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
@@ -2497,6 +2521,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/deal-correlation'
     | '/_authenticated/visits/heatmap'
     | '/_authenticated/visits/integrity'
+    | '/_authenticated/visits/leaderboard'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
@@ -2506,6 +2531,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
     | '/_authenticated/visits/smart-plan'
+    | '/_authenticated/visits/territory-sim'
     | '/_authenticated/visits/today'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
@@ -2978,6 +3004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsTodayRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/visits/territory-sim': {
+      id: '/_authenticated/visits/territory-sim'
+      path: '/visits/territory-sim'
+      fullPath: '/visits/territory-sim'
+      preLoaderRoute: typeof AuthenticatedVisitsTerritorySimRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/visits/smart-plan': {
       id: '/_authenticated/visits/smart-plan'
       path: '/visits/smart-plan'
@@ -3039,6 +3072,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/needs-attention'
       fullPath: '/visits/needs-attention'
       preLoaderRoute: typeof AuthenticatedVisitsNeedsAttentionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/leaderboard': {
+      id: '/_authenticated/visits/leaderboard'
+      path: '/visits/leaderboard'
+      fullPath: '/visits/leaderboard'
+      preLoaderRoute: typeof AuthenticatedVisitsLeaderboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/integrity': {
@@ -4489,6 +4529,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
   AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
+  AuthenticatedVisitsLeaderboardRoute: typeof AuthenticatedVisitsLeaderboardRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
@@ -4498,6 +4539,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
   AuthenticatedVisitsSmartPlanRoute: typeof AuthenticatedVisitsSmartPlanRoute
+  AuthenticatedVisitsTerritorySimRoute: typeof AuthenticatedVisitsTerritorySimRoute
   AuthenticatedVisitsTodayRoute: typeof AuthenticatedVisitsTodayRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
@@ -4572,6 +4614,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedVisitsDealCorrelationRoute,
   AuthenticatedVisitsHeatmapRoute: AuthenticatedVisitsHeatmapRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
+  AuthenticatedVisitsLeaderboardRoute: AuthenticatedVisitsLeaderboardRoute,
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
@@ -4582,6 +4625,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
   AuthenticatedVisitsSmartPlanRoute: AuthenticatedVisitsSmartPlanRoute,
+  AuthenticatedVisitsTerritorySimRoute: AuthenticatedVisitsTerritorySimRoute,
   AuthenticatedVisitsTodayRoute: AuthenticatedVisitsTodayRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
