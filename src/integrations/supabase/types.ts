@@ -24,6 +24,7 @@ export type Database = {
           generated_at: string
           id: string
           model: string | null
+          reasoning: Json | null
         }
         Insert: {
           company_id: string
@@ -34,6 +35,7 @@ export type Database = {
           generated_at?: string
           id?: string
           model?: string | null
+          reasoning?: Json | null
         }
         Update: {
           company_id?: string
@@ -44,6 +46,7 @@ export type Database = {
           generated_at?: string
           id?: string
           model?: string | null
+          reasoning?: Json | null
         }
         Relationships: [
           {
@@ -2484,10 +2487,12 @@ export type Database = {
           discussion_summary: string | null
           email: string | null
           id: string
+          is_low_quality: boolean
           location: string | null
           meeting_at: string
           next_action: string | null
           next_meeting_at: string | null
+          quality_reasons: Json | null
           remarks: string | null
           status: string
           updated_at: string
@@ -2513,10 +2518,12 @@ export type Database = {
           discussion_summary?: string | null
           email?: string | null
           id?: string
+          is_low_quality?: boolean
           location?: string | null
           meeting_at: string
           next_action?: string | null
           next_meeting_at?: string | null
+          quality_reasons?: Json | null
           remarks?: string | null
           status?: string
           updated_at?: string
@@ -2542,10 +2549,12 @@ export type Database = {
           discussion_summary?: string | null
           email?: string | null
           id?: string
+          is_low_quality?: boolean
           location?: string | null
           meeting_at?: string
           next_action?: string | null
           next_meeting_at?: string | null
+          quality_reasons?: Json | null
           remarks?: string | null
           status?: string
           updated_at?: string
@@ -5542,6 +5551,7 @@ export type Database = {
           days_since_visit: number | null
           fired_at: string
           id: string
+          reasoning: Json | null
         }
         Insert: {
           account_id?: string | null
@@ -5551,6 +5561,7 @@ export type Database = {
           days_since_visit?: number | null
           fired_at?: string
           id?: string
+          reasoning?: Json | null
         }
         Update: {
           account_id?: string | null
@@ -5560,6 +5571,7 @@ export type Database = {
           days_since_visit?: number | null
           fired_at?: string
           id?: string
+          reasoning?: Json | null
         }
         Relationships: [
           {
@@ -5582,6 +5594,8 @@ export type Database = {
         Row: {
           company_id: string
           created_at: string
+          integrity_visible_to_reps: boolean
+          low_quality_min_duration_minutes: number
           stale_alert_enabled: boolean
           stale_threshold_days: number
           strategic_tiers: string[]
@@ -5592,6 +5606,8 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
+          integrity_visible_to_reps?: boolean
+          low_quality_min_duration_minutes?: number
           stale_alert_enabled?: boolean
           stale_threshold_days?: number
           strategic_tiers?: string[]
@@ -5602,6 +5618,8 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
+          integrity_visible_to_reps?: boolean
+          low_quality_min_duration_minutes?: number
           stale_alert_enabled?: boolean
           stale_threshold_days?: number
           strategic_tiers?: string[]
@@ -5706,6 +5724,44 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visit_quality_flags: {
+        Row: {
+          company_id: string
+          detected_at: string
+          id: string
+          reasoning_text: string | null
+          reasons: Json
+          user_id: string
+          visit_id: string
+        }
+        Insert: {
+          company_id: string
+          detected_at?: string
+          id?: string
+          reasoning_text?: string | null
+          reasons: Json
+          user_id: string
+          visit_id: string
+        }
+        Update: {
+          company_id?: string
+          detected_at?: string
+          id?: string
+          reasoning_text?: string | null
+          reasons?: Json
+          user_id?: string
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_quality_flags_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: true
+            referencedRelation: "customer_visits"
             referencedColumns: ["id"]
           },
         ]

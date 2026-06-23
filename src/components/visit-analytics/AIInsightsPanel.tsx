@@ -9,6 +9,7 @@ import { Sparkles, RotateCw } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { ReasoningTooltip } from "@/components/visit-analytics/ReasoningTooltip";
 
 export function AIInsightsPanel({ periodDays }: { periodDays: 30 | 60 | 90 }) {
   const qc = useQueryClient();
@@ -40,6 +41,16 @@ export function AIInsightsPanel({ periodDays }: { periodDays: 30 | 60 | 90 }) {
             <Badge variant="outline" className="text-[10px]">
               {format(new Date(latest.generated_at), "MMM d, p")}
             </Badge>
+          )}
+          {(latest as any)?.reasoning && (
+            <ReasoningTooltip
+              reasoning={[
+                ...(((latest as any).reasoning?.triggers ?? []) as string[]),
+                `Model: ${(latest as any).reasoning?.model ?? "—"}`,
+                `Accounts evaluated: ${(latest as any).reasoning?.data_points_evaluated?.accounts_total ?? "—"}`,
+              ]}
+              label="Reasoning"
+            />
           )}
         </div>
         <div className="flex items-center gap-2">

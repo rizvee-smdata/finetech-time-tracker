@@ -55,6 +55,8 @@ function VisitSettingsPage() {
   const [recipients, setRecipients] = useState<string[]>([]);
   const [weeklyEnabled, setWeeklyEnabled] = useState(true);
   const [staleEnabled, setStaleEnabled] = useState(true);
+  const [lowQualMin, setLowQualMin] = useState(3);
+  const [repVisible, setRepVisible] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -63,6 +65,8 @@ function VisitSettingsPage() {
       setRecipients(settings.weekly_report_recipients ?? []);
       setWeeklyEnabled(settings.weekly_report_enabled ?? true);
       setStaleEnabled(settings.stale_alert_enabled ?? true);
+      setLowQualMin((settings as any).low_quality_min_duration_minutes ?? 3);
+      setRepVisible((settings as any).integrity_visible_to_reps ?? false);
     }
   }, [settings]);
 
@@ -75,6 +79,8 @@ function VisitSettingsPage() {
         weekly_report_recipients: recipients,
         weekly_report_enabled: weeklyEnabled,
         stale_alert_enabled: staleEnabled,
+        low_quality_min_duration_minutes: lowQualMin,
+        integrity_visible_to_reps: repVisible,
       });
       if (error) throw error;
     },
@@ -138,6 +144,32 @@ function VisitSettingsPage() {
               </label>
             ))}
           </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <Label className="text-sm font-semibold">Trust & Data Quality (Phase 1)</Label>
+        </div>
+
+        <div>
+          <Label htmlFor="lowQualMin">Low-quality visit threshold (minutes)</Label>
+          <Input
+            id="lowQualMin" type="number" min={1} max={60}
+            value={lowQualMin}
+            onChange={(e) => setLowQualMin(Number(e.target.value))}
+            disabled={readOnly}
+            className="mt-1 w-32"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Visits shorter than this with no notes and no next action are flagged low-quality.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between rounded border p-3">
+          <div>
+            <Label className="text-sm">Show integrity scores to reps</Label>
+            <p className="text-xs text-muted-foreground">Off = admin/manager only. On = reps see their own row.</p>
+          </div>
+          <Switch checked={repVisible} onCheckedChange={setRepVisible} disabled={readOnly} />
         </div>
 
         <div className="flex items-center justify-between rounded border p-3">

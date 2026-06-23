@@ -69,6 +69,7 @@ import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authe
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
+import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
@@ -515,6 +516,12 @@ const AuthenticatedVisitsNeedsAttentionRoute =
   AuthenticatedVisitsNeedsAttentionRouteImport.update({
     id: '/visits/needs-attention',
     path: '/visits/needs-attention',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsIntegrityRoute =
+  AuthenticatedVisitsIntegrityRouteImport.update({
+    id: '/visits/integrity',
+    path: '/visits/integrity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsCoverageRoute =
@@ -1411,6 +1418,7 @@ export interface FileRoutesByFullPath {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -1590,6 +1598,7 @@ export interface FileRoutesByTo {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -1783,6 +1792,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -1976,6 +1986,7 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/coverage'
+    | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/rep-comparison'
@@ -2155,6 +2166,7 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/coverage'
+    | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/rep-comparison'
@@ -2347,6 +2359,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/today'
     | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/coverage'
+    | '/_authenticated/visits/integrity'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/rep-comparison'
@@ -2841,6 +2854,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/needs-attention'
       fullPath: '/visits/needs-attention'
       preLoaderRoute: typeof AuthenticatedVisitsNeedsAttentionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/integrity': {
+      id: '/_authenticated/visits/integrity'
+      path: '/visits/integrity'
+      fullPath: '/visits/integrity'
+      preLoaderRoute: typeof AuthenticatedVisitsIntegrityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/coverage': {
@@ -4243,6 +4263,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPrepTaskIdRoute: typeof AuthenticatedPrepTaskIdRoute
   AuthenticatedPrepHistoryRoute: typeof AuthenticatedPrepHistoryRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
+  AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
@@ -4313,6 +4334,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPrepTaskIdRoute: AuthenticatedPrepTaskIdRoute,
   AuthenticatedPrepHistoryRoute: AuthenticatedPrepHistoryRoute,
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
+  AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
@@ -4363,13 +4385,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
