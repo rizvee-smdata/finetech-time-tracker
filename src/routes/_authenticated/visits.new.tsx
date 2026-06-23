@@ -197,6 +197,7 @@ function NewVisit() {
     const payload = {
       user_id: user!.id,
       company_id: companyId,
+      account_id: selectedId,
       customer_name: form.customer_name.trim(),
       designation: form.designation.trim() || null,
       email: form.email.trim() || null,
