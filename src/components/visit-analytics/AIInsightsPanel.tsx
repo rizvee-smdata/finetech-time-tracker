@@ -42,6 +42,16 @@ export function AIInsightsPanel({ periodDays }: { periodDays: 30 | 60 | 90 }) {
               {format(new Date(latest.generated_at), "MMM d, p")}
             </Badge>
           )}
+          {(latest as any)?.reasoning && (
+            <ReasoningTooltip
+              reasoning={[
+                ...(((latest as any).reasoning?.triggers ?? []) as string[]),
+                `Model: ${(latest as any).reasoning?.model ?? "—"}`,
+                `Accounts evaluated: ${(latest as any).reasoning?.data_points_evaluated?.accounts_total ?? "—"}`,
+              ]}
+              label="Reasoning"
+            />
+          )}
         </div>
         <div className="flex items-center gap-2">
           {latest && (
