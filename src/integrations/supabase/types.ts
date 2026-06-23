@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_visit_insights: {
+        Row: {
+          company_id: string
+          content: string
+          created_at: string
+          created_by: string | null
+          filter_params: Json
+          generated_at: string
+          id: string
+          model: string | null
+        }
+        Insert: {
+          company_id: string
+          content: string
+          created_at?: string
+          created_by?: string | null
+          filter_params?: Json
+          generated_at?: string
+          id?: string
+          model?: string | null
+        }
+        Update: {
+          company_id?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          filter_params?: Json
+          generated_at?: string
+          id?: string
+          model?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_visit_insights_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_visit_reports: {
         Row: {
           account_id: string | null
