@@ -69,6 +69,7 @@ import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_auth
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authenticated/visits.renewals'
+import { Route as AuthenticatedVisitsPredictionsRouteImport } from './routes/_authenticated/visits.predictions'
 import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authenticated/visits.one-on-one'
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
@@ -77,6 +78,8 @@ import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_auth
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedVisitsBriefsRouteImport } from './routes/_authenticated/visits.briefs'
+import { Route as AuthenticatedVisitsAnomaliesRouteImport } from './routes/_authenticated/visits.anomalies'
+import { Route as AuthenticatedVisitsAccountHealthRouteImport } from './routes/_authenticated/visits.account-health'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
@@ -525,6 +528,12 @@ const AuthenticatedVisitsRenewalsRoute =
     path: '/visits/renewals',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsPredictionsRoute =
+  AuthenticatedVisitsPredictionsRouteImport.update({
+    id: '/visits/predictions',
+    path: '/visits/predictions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsOneOnOneRoute =
   AuthenticatedVisitsOneOnOneRouteImport.update({
     id: '/visits/one-on-one',
@@ -570,6 +579,18 @@ const AuthenticatedVisitsBriefsRoute =
   AuthenticatedVisitsBriefsRouteImport.update({
     id: '/visits/briefs',
     path: '/visits/briefs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsAnomaliesRoute =
+  AuthenticatedVisitsAnomaliesRouteImport.update({
+    id: '/visits/anomalies',
+    path: '/visits/anomalies',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsAccountHealthRoute =
+  AuthenticatedVisitsAccountHealthRouteImport.update({
+    id: '/visits/account-health',
+    path: '/visits/account-health',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedTasksWeeklyRoute =
@@ -1459,6 +1480,8 @@ export interface FileRoutesByFullPath {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
+  '/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
@@ -1467,6 +1490,7 @@ export interface FileRoutesByFullPath {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -1645,6 +1669,8 @@ export interface FileRoutesByTo {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
+  '/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
@@ -1653,6 +1679,7 @@ export interface FileRoutesByTo {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -1845,6 +1872,8 @@ export interface FileRoutesById {
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/_authenticated/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
+  '/_authenticated/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/_authenticated/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
@@ -1853,6 +1882,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/_authenticated/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/_authenticated/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/_authenticated/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
@@ -2045,6 +2075,8 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/tasks/today'
     | '/tasks/weekly'
+    | '/visits/account-health'
+    | '/visits/anomalies'
     | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
@@ -2053,6 +2085,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/visits/oem-health'
     | '/visits/one-on-one'
+    | '/visits/predictions'
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
@@ -2231,6 +2264,8 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/tasks/today'
     | '/tasks/weekly'
+    | '/visits/account-health'
+    | '/visits/anomalies'
     | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
@@ -2239,6 +2274,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/visits/oem-health'
     | '/visits/one-on-one'
+    | '/visits/predictions'
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
@@ -2430,6 +2466,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/reports'
     | '/_authenticated/tasks/today'
     | '/_authenticated/tasks/weekly'
+    | '/_authenticated/visits/account-health'
+    | '/_authenticated/visits/anomalies'
     | '/_authenticated/visits/briefs'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
@@ -2438,6 +2476,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
     | '/_authenticated/visits/one-on-one'
+    | '/_authenticated/visits/predictions'
     | '/_authenticated/visits/renewals'
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
@@ -2934,6 +2973,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsRenewalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/visits/predictions': {
+      id: '/_authenticated/visits/predictions'
+      path: '/visits/predictions'
+      fullPath: '/visits/predictions'
+      preLoaderRoute: typeof AuthenticatedVisitsPredictionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/visits/one-on-one': {
       id: '/_authenticated/visits/one-on-one'
       path: '/visits/one-on-one'
@@ -2988,6 +3034,20 @@ declare module '@tanstack/react-router' {
       path: '/visits/briefs'
       fullPath: '/visits/briefs'
       preLoaderRoute: typeof AuthenticatedVisitsBriefsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/anomalies': {
+      id: '/_authenticated/visits/anomalies'
+      path: '/visits/anomalies'
+      fullPath: '/visits/anomalies'
+      preLoaderRoute: typeof AuthenticatedVisitsAnomaliesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/account-health': {
+      id: '/_authenticated/visits/account-health'
+      path: '/visits/account-health'
+      fullPath: '/visits/account-health'
+      preLoaderRoute: typeof AuthenticatedVisitsAccountHealthRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tasks/weekly': {
@@ -4382,6 +4442,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
   AuthenticatedPrepTaskIdRoute: typeof AuthenticatedPrepTaskIdRoute
   AuthenticatedPrepHistoryRoute: typeof AuthenticatedPrepHistoryRoute
+  AuthenticatedVisitsAccountHealthRoute: typeof AuthenticatedVisitsAccountHealthRoute
+  AuthenticatedVisitsAnomaliesRoute: typeof AuthenticatedVisitsAnomaliesRoute
   AuthenticatedVisitsBriefsRoute: typeof AuthenticatedVisitsBriefsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
@@ -4390,6 +4452,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
   AuthenticatedVisitsOneOnOneRoute: typeof AuthenticatedVisitsOneOnOneRoute
+  AuthenticatedVisitsPredictionsRoute: typeof AuthenticatedVisitsPredictionsRoute
   AuthenticatedVisitsRenewalsRoute: typeof AuthenticatedVisitsRenewalsRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
@@ -4459,6 +4522,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
   AuthenticatedPrepTaskIdRoute: AuthenticatedPrepTaskIdRoute,
   AuthenticatedPrepHistoryRoute: AuthenticatedPrepHistoryRoute,
+  AuthenticatedVisitsAccountHealthRoute: AuthenticatedVisitsAccountHealthRoute,
+  AuthenticatedVisitsAnomaliesRoute: AuthenticatedVisitsAnomaliesRoute,
   AuthenticatedVisitsBriefsRoute: AuthenticatedVisitsBriefsRoute,
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
@@ -4469,6 +4534,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsOemHealthRoute: AuthenticatedVisitsOemHealthRoute,
   AuthenticatedVisitsOneOnOneRoute: AuthenticatedVisitsOneOnOneRoute,
+  AuthenticatedVisitsPredictionsRoute: AuthenticatedVisitsPredictionsRoute,
   AuthenticatedVisitsRenewalsRoute: AuthenticatedVisitsRenewalsRoute,
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,

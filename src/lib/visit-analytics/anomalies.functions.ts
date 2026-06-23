@@ -8,7 +8,7 @@ export type VisitAnomaly = {
   description: string;
   rep_id?: string | null;
   rep_name?: string | null;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, number | string | boolean>;
 };
 
 /**
