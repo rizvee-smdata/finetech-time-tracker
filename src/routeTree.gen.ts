@@ -65,6 +65,8 @@ import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
+import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
+import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
@@ -180,6 +182,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
+import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
@@ -489,6 +492,18 @@ const AuthenticatedVoiceHistoryRoute =
   AuthenticatedVoiceHistoryRouteImport.update({
     id: '/voice/history',
     path: '/voice/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsSettingsRoute =
+  AuthenticatedVisitsSettingsRouteImport.update({
+    id: '/visits/settings',
+    path: '/visits/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsRepComparisonRoute =
+  AuthenticatedVisitsRepComparisonRouteImport.update({
+    id: '/visits/rep-comparison',
+    path: '/visits/rep-comparison',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
@@ -1148,6 +1163,12 @@ const ApiPublicHooksVisitReminderCheckRoute =
     path: '/api/public/hooks/visit-reminder-check',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksVisitAnalyticsAlertsRoute =
+  ApiPublicHooksVisitAnalyticsAlertsRouteImport.update({
+    id: '/api/public/hooks/visit-analytics-alerts',
+    path: '/api/public/hooks/visit-analytics-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -1392,6 +1413,8 @@ export interface FileRoutesByFullPath {
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
+  '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1425,6 +1448,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1568,6 +1592,8 @@ export interface FileRoutesByTo {
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
+  '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1601,6 +1627,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1758,6 +1785,8 @@ export interface FileRoutesById {
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
+  '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1791,6 +1820,7 @@ export interface FileRoutesById {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
+  '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1948,6 +1978,8 @@ export interface FileRouteTypes {
     | '/visits/coverage'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/rep-comparison'
+    | '/visits/settings'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -1981,6 +2013,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2124,6 +2157,8 @@ export interface FileRouteTypes {
     | '/visits/coverage'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/rep-comparison'
+    | '/visits/settings'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2157,6 +2192,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2313,6 +2349,8 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
+    | '/_authenticated/visits/rep-comparison'
+    | '/_authenticated/visits/settings'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2346,6 +2384,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
+    | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -2373,6 +2412,7 @@ export interface RootRouteChildren {
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
+  ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -2773,6 +2813,20 @@ declare module '@tanstack/react-router' {
       path: '/voice/history'
       fullPath: '/voice/history'
       preLoaderRoute: typeof AuthenticatedVoiceHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/settings': {
+      id: '/_authenticated/visits/settings'
+      path: '/visits/settings'
+      fullPath: '/visits/settings'
+      preLoaderRoute: typeof AuthenticatedVisitsSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/rep-comparison': {
+      id: '/_authenticated/visits/rep-comparison'
+      path: '/visits/rep-comparison'
+      fullPath: '/visits/rep-comparison'
+      preLoaderRoute: typeof AuthenticatedVisitsRepComparisonRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/new': {
@@ -3580,6 +3634,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksVisitReminderCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/visit-analytics-alerts': {
+      id: '/api/public/hooks/visit-analytics-alerts'
+      path: '/api/public/hooks/visit-analytics-alerts'
+      fullPath: '/api/public/hooks/visit-analytics-alerts'
+      preLoaderRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -4184,6 +4245,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
+  AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
@@ -4253,6 +4316,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
+  AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
@@ -4286,6 +4351,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
+  ApiPublicHooksVisitAnalyticsAlertsRoute:
+    ApiPublicHooksVisitAnalyticsAlertsRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
