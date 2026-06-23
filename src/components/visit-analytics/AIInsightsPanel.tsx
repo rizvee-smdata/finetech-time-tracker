@@ -9,6 +9,7 @@ import { Sparkles, RotateCw } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { ReasoningTooltip } from "@/components/visit-analytics/ReasoningTooltip";
 
 export function AIInsightsPanel({ periodDays }: { periodDays: 30 | 60 | 90 }) {
   const qc = useQueryClient();
