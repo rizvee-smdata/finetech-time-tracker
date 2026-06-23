@@ -2424,6 +2424,7 @@ export type Database = {
       }
       customer_visits: {
         Row: {
+          account_id: string | null
           ai_action_items: Json | null
           ai_analyzed_at: string | null
           ai_follow_up_email: string | null
@@ -2452,6 +2453,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_id?: string | null
           ai_action_items?: Json | null
           ai_analyzed_at?: string | null
           ai_follow_up_email?: string | null
@@ -2480,6 +2482,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_id?: string | null
           ai_action_items?: Json | null
           ai_analyzed_at?: string | null
           ai_follow_up_email?: string | null
@@ -2509,6 +2512,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "customer_visits_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "customer_visits_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2519,6 +2529,8 @@ export type Database = {
       }
       customers: {
         Row: {
+          address: string | null
+          assigned_rep_id: string | null
           company_id: string | null
           contact_person: string | null
           created_at: string
@@ -2528,12 +2540,18 @@ export type Database = {
           deleted_by: string | null
           designation: string | null
           email: string | null
+          gps_lat: number | null
+          gps_lng: number | null
           id: string
           kind: string
           phone: string | null
+          region: string | null
+          tier: Database["public"]["Enums"]["customer_tier"]
           updated_at: string
         }
         Insert: {
+          address?: string | null
+          assigned_rep_id?: string | null
           company_id?: string | null
           contact_person?: string | null
           created_at?: string
@@ -2543,12 +2561,18 @@ export type Database = {
           deleted_by?: string | null
           designation?: string | null
           email?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           id?: string
           kind?: string
           phone?: string | null
+          region?: string | null
+          tier?: Database["public"]["Enums"]["customer_tier"]
           updated_at?: string
         }
         Update: {
+          address?: string | null
+          assigned_rep_id?: string | null
           company_id?: string | null
           contact_person?: string | null
           created_at?: string
@@ -2558,12 +2582,30 @@ export type Database = {
           deleted_by?: string | null
           designation?: string | null
           email?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           id?: string
           kind?: string
           phone?: string | null
+          region?: string | null
+          tier?: Database["public"]["Enums"]["customer_tier"]
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "customers_assigned_rep_id_fkey"
+            columns: ["assigned_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_assigned_rep_id_fkey"
+            columns: ["assigned_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "customers_company_id_fkey"
             columns: ["company_id"]
@@ -3743,6 +3785,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          manager_id: string | null
           must_change_password: boolean
           phone: string | null
           updated_at: string
@@ -3754,6 +3797,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          manager_id?: string | null
           must_change_password?: boolean
           phone?: string | null
           updated_at?: string
@@ -3765,12 +3809,28 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          manager_id?: string | null
           must_change_password?: boolean
           phone?: string | null
           updated_at?: string
           whatsapp_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reminders: {
         Row: {
@@ -5434,6 +5494,7 @@ export type Database = {
       }
       visit_checkins: {
         Row: {
+          account_id: string | null
           checkin_lat: number
           checkin_lng: number
           checkin_time: string
@@ -5455,6 +5516,7 @@ export type Database = {
           voice_url: string | null
         }
         Insert: {
+          account_id?: string | null
           checkin_lat: number
           checkin_lng: number
           checkin_time?: string
@@ -5476,6 +5538,7 @@ export type Database = {
           voice_url?: string | null
         }
         Update: {
+          account_id?: string | null
           checkin_lat?: number
           checkin_lng?: number
           checkin_time?: string
@@ -5497,6 +5560,13 @@ export type Database = {
           voice_url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "visit_checkins_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "visit_checkins_company_id_fkey"
             columns: ["company_id"]
@@ -5846,6 +5916,27 @@ export type Database = {
         }
         Relationships: []
       }
+      visit_account_migration_summary: {
+        Row: {
+          auto_matched: number | null
+          company_id: string | null
+          needs_review: number | null
+          total_rows: number | null
+        }
+        Relationships: []
+      }
+      visits_needing_account_review: {
+        Row: {
+          company_id: string | null
+          id: string | null
+          original_name: string | null
+          rep_id: string | null
+          rep_name: string | null
+          source: string | null
+          visit_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       chat_can_access_channel: {
@@ -5949,6 +6040,10 @@ export type Database = {
           read_ct: number
         }[]
       }
+      reports_to_user: {
+        Args: { _manager: string; _user: string }
+        Returns: boolean
+      }
       restore_deleted_entity: {
         Args: { _entity_id: string; _entity_type: string }
         Returns: Json
@@ -6011,6 +6106,7 @@ export type Database = {
       crm_priority: "low" | "medium" | "high"
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
+      customer_tier: "strategic" | "standard" | "low_priority"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
       notification_category:
         | "general"
@@ -6236,6 +6332,7 @@ export const Constants = {
       crm_priority: ["low", "medium", "high"],
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
+      customer_tier: ["strategic", "standard", "low_priority"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
       notification_category: [
         "general",

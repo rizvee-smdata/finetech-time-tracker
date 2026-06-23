@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/visits/new")({
 });
 
 const schema = z.object({
+  account_id: z.string().uuid({ message: "Please pick a customer/partner from the list" }),
   customer_name: z.string().trim().min(1).max(120),
   designation: z.string().trim().max(120).optional().or(z.literal("")),
   email: z.string().trim().max(160).email().optional().or(z.literal("")),
@@ -47,8 +48,10 @@ const schema = z.object({
 function NewVisit() {
   const { user, companyId, company } = useAuth();
   const nav = useNavigate();
+  const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [contactType, setContactType] = useState<ContactType>("customer");
   const [form, setForm] = useState({
@@ -63,14 +66,40 @@ function NewVisit() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
-        .select("id, customer_name, contact_person, designation, email, phone")
+        .select("id, customer_name, contact_person, designation, email, phone, kind")
         .eq("company_id", companyId!)
         .eq("kind", contactType)
+        .is("deleted_at", null)
         .order("customer_name");
       if (error) throw error;
-      return data ?? [];
+      // Dedupe by company name (case-insensitive)
+      const seen = new Set<string>();
+      const unique: typeof data = [];
+      for (const c of data ?? []) {
+        const key = (c.customer_name ?? "").trim().toLowerCase();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        unique.push(c);
+      }
+      return unique;
     },
   });
+
+  async function addNewAccount() {
+    if (!companyId || !user) return;
+    const name = search.trim();
+    if (!name) { toast.error("Type a name first"); return; }
+    const { data, error } = await supabase
+      .from("customers")
+      .insert({ company_id: companyId, customer_name: name, kind: contactType, created_by: user.id })
+      .select("id, customer_name, contact_person, designation, email, phone, kind")
+      .single();
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Added ${TYPE_LABELS[contactType].singular.toLowerCase()}: ${name}`);
+    qc.invalidateQueries({ queryKey: ["contacts-picker", companyId, contactType] });
+    pickCustomer(data);
+  }
+
 
   // Backdating window: allow today + previous 2 working days (skip company weekend days & holidays)
   const { data: holidaySet = new Set<string>() } = useQuery({
@@ -146,7 +175,7 @@ function NewVisit() {
       toast.error("Select a company first");
       return;
     }
-    const parsed = schema.safeParse(form);
+    const parsed = schema.safeParse({ ...form, account_id: selectedId ?? "" });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -168,6 +197,7 @@ function NewVisit() {
     const payload = {
       user_id: user!.id,
       company_id: companyId,
+      account_id: selectedId,
       customer_name: form.customer_name.trim(),
       designation: form.designation.trim() || null,
       email: form.email.trim() || null,
@@ -218,7 +248,7 @@ function NewVisit() {
             </Select>
           </Field>
 
-          <Field label={`Select ${typeLabel.singular.toLowerCase()} (from list)`} id="customer_picker">
+          <Field label={`${typeLabel.singular} account *`} id="customer_picker">
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -228,18 +258,25 @@ function NewVisit() {
                   className="w-full justify-between font-normal"
                 >
                   {selected
-                    ? `${selected.customer_name}${selected.contact_person ? ` — ${selected.contact_person}` : ""}`
-                    : contacts.length
-                      ? `Search and pick a ${typeLabel.singular.toLowerCase()}...`
-                      : `No ${typeLabel.plural} yet — fill details below`}
+                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
+                    : `Search and pick a ${typeLabel.singular.toLowerCase()} (required)`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} />
+                <Command shouldFilter>
+                  <CommandInput placeholder={`Search ${typeLabel.plural}...`} value={search} onValueChange={setSearch} />
                   <CommandList>
-                    <CommandEmpty>No {typeLabel.singular.toLowerCase()} found.</CommandEmpty>
+                    <CommandEmpty>
+                      <div className="space-y-2 px-2 py-3 text-center">
+                        <p className="text-sm text-muted-foreground">No {typeLabel.singular.toLowerCase()} found.</p>
+                        {search.trim() && (
+                          <Button type="button" size="sm" variant="default" onClick={addNewAccount}>
+                            + Add &quot;{search.trim()}&quot; as new {typeLabel.singular.toLowerCase()}
+                          </Button>
+                        )}
+                      </div>
+                    </CommandEmpty>
                     <CommandGroup>
                       {contacts.map((c: any) => (
                         <CommandItem
@@ -248,19 +285,25 @@ function NewVisit() {
                           onSelect={() => pickCustomer(c)}
                         >
                           <Check className={cn("mr-2 h-4 w-4", selectedId === c.id ? "opacity-100" : "opacity-0")} />
-                          <div className="flex flex-col">
+                          <div className="flex flex-1 items-center justify-between gap-2">
                             <span className="font-medium">{c.customer_name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {[c.contact_person, c.designation, c.phone].filter(Boolean).join(" · ") || "—"}
-                            </span>
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{c.kind}</span>
                           </div>
                         </CommandItem>
                       ))}
                     </CommandGroup>
+                    {search.trim() && (
+                      <CommandGroup heading="Not in the list?">
+                        <CommandItem onSelect={addNewAccount}>
+                          + Add &quot;{search.trim()}&quot; as new {typeLabel.singular.toLowerCase()}
+                        </CommandItem>
+                      </CommandGroup>
+                    )}
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
+            <p className="text-xs text-muted-foreground">Required. Pick from the list or add a new {typeLabel.singular.toLowerCase()} inline — no free-text accounts.</p>
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
