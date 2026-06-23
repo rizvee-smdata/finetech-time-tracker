@@ -65,6 +65,7 @@ import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
+import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_authenticated/visits.smart-plan'
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authenticated/visits.renewals'
@@ -496,6 +497,12 @@ const AuthenticatedVoiceHistoryRoute =
   AuthenticatedVoiceHistoryRouteImport.update({
     id: '/voice/history',
     path: '/voice/history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsSmartPlanRoute =
+  AuthenticatedVisitsSmartPlanRouteImport.update({
+    id: '/visits/smart-plan',
+    path: '/visits/smart-plan',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsSettingsRoute =
@@ -1447,6 +1454,7 @@ export interface FileRoutesByFullPath {
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
+  '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1630,6 +1638,7 @@ export interface FileRoutesByTo {
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
+  '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -1827,6 +1836,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
+  '/_authenticated/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -2024,6 +2034,7 @@ export interface FileRouteTypes {
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
+    | '/visits/smart-plan'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2207,6 +2218,7 @@ export interface FileRouteTypes {
     | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
+    | '/visits/smart-plan'
     | '/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2403,6 +2415,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/renewals'
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
+    | '/_authenticated/visits/smart-plan'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
     | '/lovable/email/suppression'
@@ -2865,6 +2878,13 @@ declare module '@tanstack/react-router' {
       path: '/voice/history'
       fullPath: '/voice/history'
       preLoaderRoute: typeof AuthenticatedVoiceHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/smart-plan': {
+      id: '/_authenticated/visits/smart-plan'
+      path: '/visits/smart-plan'
+      fullPath: '/visits/smart-plan'
+      preLoaderRoute: typeof AuthenticatedVisitsSmartPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/settings': {
@@ -4331,6 +4351,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsRenewalsRoute: typeof AuthenticatedVisitsRenewalsRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
+  AuthenticatedVisitsSmartPlanRoute: typeof AuthenticatedVisitsSmartPlanRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
@@ -4407,6 +4428,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsRenewalsRoute: AuthenticatedVisitsRenewalsRoute,
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
+  AuthenticatedVisitsSmartPlanRoute: AuthenticatedVisitsSmartPlanRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
