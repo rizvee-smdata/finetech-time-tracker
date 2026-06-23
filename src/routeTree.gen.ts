@@ -67,9 +67,12 @@ import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
+import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authenticated/visits.renewals'
+import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
+import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
@@ -507,6 +510,18 @@ const AuthenticatedVisitsRepComparisonRoute =
     path: '/visits/rep-comparison',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsRenewalsRoute =
+  AuthenticatedVisitsRenewalsRouteImport.update({
+    id: '/visits/renewals',
+    path: '/visits/renewals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsOemHealthRoute =
+  AuthenticatedVisitsOemHealthRouteImport.update({
+    id: '/visits/oem-health',
+    path: '/visits/oem-health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsNewRoute = AuthenticatedVisitsNewRouteImport.update({
   id: '/visits/new',
   path: '/visits/new',
@@ -522,6 +537,12 @@ const AuthenticatedVisitsIntegrityRoute =
   AuthenticatedVisitsIntegrityRouteImport.update({
     id: '/visits/integrity',
     path: '/visits/integrity',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsDealCorrelationRoute =
+  AuthenticatedVisitsDealCorrelationRouteImport.update({
+    id: '/visits/deal-correlation',
+    path: '/visits/deal-correlation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsCoverageRoute =
@@ -1418,9 +1439,12 @@ export interface FileRoutesByFullPath {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
@@ -1598,9 +1622,12 @@ export interface FileRoutesByTo {
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
@@ -1792,9 +1819,12 @@ export interface FileRoutesById {
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
+  '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
+  '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/_authenticated/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
@@ -1986,9 +2016,12 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/coverage'
+    | '/visits/deal-correlation'
     | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/oem-health'
+    | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/voice/history'
@@ -2166,9 +2199,12 @@ export interface FileRouteTypes {
     | '/tasks/today'
     | '/tasks/weekly'
     | '/visits/coverage'
+    | '/visits/deal-correlation'
     | '/visits/integrity'
     | '/visits/needs-attention'
     | '/visits/new'
+    | '/visits/oem-health'
+    | '/visits/renewals'
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/voice/history'
@@ -2359,9 +2395,12 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/today'
     | '/_authenticated/tasks/weekly'
     | '/_authenticated/visits/coverage'
+    | '/_authenticated/visits/deal-correlation'
     | '/_authenticated/visits/integrity'
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
+    | '/_authenticated/visits/oem-health'
+    | '/_authenticated/visits/renewals'
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
     | '/_authenticated/voice/history'
@@ -2842,6 +2881,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsRepComparisonRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/visits/renewals': {
+      id: '/_authenticated/visits/renewals'
+      path: '/visits/renewals'
+      fullPath: '/visits/renewals'
+      preLoaderRoute: typeof AuthenticatedVisitsRenewalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/oem-health': {
+      id: '/_authenticated/visits/oem-health'
+      path: '/visits/oem-health'
+      fullPath: '/visits/oem-health'
+      preLoaderRoute: typeof AuthenticatedVisitsOemHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/visits/new': {
       id: '/_authenticated/visits/new'
       path: '/visits/new'
@@ -2861,6 +2914,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/integrity'
       fullPath: '/visits/integrity'
       preLoaderRoute: typeof AuthenticatedVisitsIntegrityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/deal-correlation': {
+      id: '/_authenticated/visits/deal-correlation'
+      path: '/visits/deal-correlation'
+      fullPath: '/visits/deal-correlation'
+      preLoaderRoute: typeof AuthenticatedVisitsDealCorrelationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/coverage': {
@@ -4263,9 +4323,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPrepTaskIdRoute: typeof AuthenticatedPrepTaskIdRoute
   AuthenticatedPrepHistoryRoute: typeof AuthenticatedPrepHistoryRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
+  AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
+  AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
+  AuthenticatedVisitsRenewalsRoute: typeof AuthenticatedVisitsRenewalsRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
@@ -4334,10 +4397,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPrepTaskIdRoute: AuthenticatedPrepTaskIdRoute,
   AuthenticatedPrepHistoryRoute: AuthenticatedPrepHistoryRoute,
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
+  AuthenticatedVisitsDealCorrelationRoute:
+    AuthenticatedVisitsDealCorrelationRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
   AuthenticatedVisitsNeedsAttentionRoute:
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
+  AuthenticatedVisitsOemHealthRoute: AuthenticatedVisitsOemHealthRoute,
+  AuthenticatedVisitsRenewalsRoute: AuthenticatedVisitsRenewalsRoute,
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
