@@ -4,26 +4,21 @@ const sb = supabase as any;
 
 export type CrmPartner = {
   id: string;
-  company_id: string;
   name: string;
-  code: string | null;
-  website: string | null;
-  contact_name: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  notes: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
 };
 
+/**
+ * Partners are stored in the shared `customers` table with kind = 'partner'.
+ * (Same source as the "Partners" page in the left menu.)
+ */
 export async function fetchPartners(companyId: string): Promise<CrmPartner[]> {
   const { data, error } = await sb
-    .from("crm_partners")
-    .select("*")
+    .from("customers")
+    .select("id, customer_name")
     .eq("company_id", companyId)
-    .eq("is_active", true)
-    .order("name");
+    .eq("kind", "partner")
+    .is("deleted_at", null)
+    .order("customer_name");
   if (error) throw error;
-  return (data ?? []) as CrmPartner[];
+  return (data ?? []).map((c: any) => ({ id: c.id, name: c.customer_name }));
 }
