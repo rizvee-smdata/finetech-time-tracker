@@ -169,10 +169,47 @@ export function LeadFormDialog({
         <div className="grid gap-4 py-2">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Customer name *">
-              <Input value={form.customer_name || ""} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
+              <Input
+                list="lead-customer-suggestions"
+                value={form.customer_name || ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  const match = (customers.data ?? []).find((c) => c.customer_name === v);
+                  if (match) {
+                    setForm({
+                      ...form,
+                      customer_name: match.customer_name,
+                      contact_person: form.contact_person || match.contact_person || "",
+                      designation: form.designation || match.designation || "",
+                      email: form.email || match.email || "",
+                      phone: form.phone || match.phone || "",
+                    });
+                  } else {
+                    setForm({ ...form, customer_name: v });
+                  }
+                }}
+                placeholder="Start typing — pick existing or add new"
+              />
+              <datalist id="lead-customer-suggestions">
+                {(customers.data ?? []).map((c) => (
+                  <option key={c.id} value={c.customer_name}>
+                    {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
+                  </option>
+                ))}
+              </datalist>
             </Field>
             <Field label="Company">
-              <Input value={form.company_name || ""} onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+              <Input
+                list="lead-company-suggestions"
+                value={form.company_name || ""}
+                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                placeholder="Start typing — pick existing or add new"
+              />
+              <datalist id="lead-company-suggestions">
+                {(accounts.data ?? []).map((a) => (
+                  <option key={a.id} value={a.name} />
+                ))}
+              </datalist>
             </Field>
             <Field label="OEM / Vendor">
               <Select
@@ -201,6 +238,20 @@ export function LeadFormDialog({
                 <SelectContent>
                   <SelectItem value="__none">— None —</SelectItem>
                   {(products.data ?? []).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Partner (optional)">
+              <Select
+                value={form.partner_id || "__none"}
+                onValueChange={(v) => setForm({ ...form, partner_id: v === "__none" ? "" : v })}
+              >
+                <SelectTrigger><SelectValue placeholder="Did a partner bring this lead?" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">— No partner —</SelectItem>
+                  {(partners.data ?? []).map((p) => (
                     <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                   ))}
                 </SelectContent>
