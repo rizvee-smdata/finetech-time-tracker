@@ -66,6 +66,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as ApiSsoVerifyRouteImport } from './routes/api/sso/verify'
 import { Route as AuthenticatedVoiceHistoryRouteImport } from './routes/_authenticated/voice.history'
 import { Route as AuthenticatedVisitsTodayRouteImport } from './routes/_authenticated/visits.today'
+import { Route as AuthenticatedVisitsTerritorySimRouteImport } from './routes/_authenticated/visits.territory-sim'
 import { Route as AuthenticatedVisitsSmartPlanRouteImport } from './routes/_authenticated/visits.smart-plan'
 import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authenticated/visits.settings'
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
@@ -510,6 +511,12 @@ const AuthenticatedVisitsTodayRoute =
   AuthenticatedVisitsTodayRouteImport.update({
     id: '/visits/today',
     path: '/visits/today',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsTerritorySimRoute =
+  AuthenticatedVisitsTerritorySimRouteImport.update({
+    id: '/visits/territory-sim',
+    path: '/visits/territory-sim',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsSmartPlanRoute =
@@ -1510,6 +1517,7 @@ export interface FileRoutesByFullPath {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -1701,6 +1709,7 @@ export interface FileRoutesByTo {
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -1906,6 +1915,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
   '/_authenticated/visits/settings': typeof AuthenticatedVisitsSettingsRoute
   '/_authenticated/visits/smart-plan': typeof AuthenticatedVisitsSmartPlanRoute
+  '/_authenticated/visits/territory-sim': typeof AuthenticatedVisitsTerritorySimRoute
   '/_authenticated/visits/today': typeof AuthenticatedVisitsTodayRoute
   '/_authenticated/voice/history': typeof AuthenticatedVoiceHistoryRoute
   '/api/sso/verify': typeof ApiSsoVerifyRoute
@@ -2111,6 +2121,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/territory-sim'
     | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
@@ -2302,6 +2313,7 @@ export interface FileRouteTypes {
     | '/visits/rep-comparison'
     | '/visits/settings'
     | '/visits/smart-plan'
+    | '/visits/territory-sim'
     | '/visits/today'
     | '/voice/history'
     | '/api/sso/verify'
@@ -2506,6 +2518,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/rep-comparison'
     | '/_authenticated/visits/settings'
     | '/_authenticated/visits/smart-plan'
+    | '/_authenticated/visits/territory-sim'
     | '/_authenticated/visits/today'
     | '/_authenticated/voice/history'
     | '/api/sso/verify'
@@ -2976,6 +2989,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/today'
       fullPath: '/visits/today'
       preLoaderRoute: typeof AuthenticatedVisitsTodayRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/territory-sim': {
+      id: '/_authenticated/visits/territory-sim'
+      path: '/visits/territory-sim'
+      fullPath: '/visits/territory-sim'
+      preLoaderRoute: typeof AuthenticatedVisitsTerritorySimRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/smart-plan': {
@@ -4498,6 +4518,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
   AuthenticatedVisitsSettingsRoute: typeof AuthenticatedVisitsSettingsRoute
   AuthenticatedVisitsSmartPlanRoute: typeof AuthenticatedVisitsSmartPlanRoute
+  AuthenticatedVisitsTerritorySimRoute: typeof AuthenticatedVisitsTerritorySimRoute
   AuthenticatedVisitsTodayRoute: typeof AuthenticatedVisitsTodayRoute
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
@@ -4582,6 +4603,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
   AuthenticatedVisitsSettingsRoute: AuthenticatedVisitsSettingsRoute,
   AuthenticatedVisitsSmartPlanRoute: AuthenticatedVisitsSmartPlanRoute,
+  AuthenticatedVisitsTerritorySimRoute: AuthenticatedVisitsTerritorySimRoute,
   AuthenticatedVisitsTodayRoute: AuthenticatedVisitsTodayRoute,
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
