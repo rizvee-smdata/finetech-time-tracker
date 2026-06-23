@@ -55,6 +55,8 @@ function VisitSettingsPage() {
   const [recipients, setRecipients] = useState<string[]>([]);
   const [weeklyEnabled, setWeeklyEnabled] = useState(true);
   const [staleEnabled, setStaleEnabled] = useState(true);
+  const [lowQualMin, setLowQualMin] = useState(3);
+  const [repVisible, setRepVisible] = useState(false);
 
   useEffect(() => {
     if (settings) {
