@@ -103,7 +103,7 @@ export const getVisitAnomalies = createServerFn({ method: "POST" })
             description: `Active in prior 60 days but no visits in the last ${lookback}.`,
             rep_id: p.id,
             rep_name: nameOf(p.id),
-            metadata: { lookback_days: lookback, prior_60d_count: count },
+            metadata: { lookback_days: lookback, prior_60d_count: count ?? 0 },
           });
         }
       }
