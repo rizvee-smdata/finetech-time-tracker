@@ -58,6 +58,7 @@ export function LeadFormDialog({
       product_name: lead?.product_name ?? "",
       oem_id: (lead as any)?.oem_id ?? "",
       product_id: (lead as any)?.product_id ?? "",
+      partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
     });
   }, [open, lead, user?.id]);
