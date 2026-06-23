@@ -13,6 +13,7 @@ import { STAGES, LEAD_SOURCES, type Lead, type CrmPriority, type CrmLeadSource, 
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 import { fetchOems } from "@/lib/crm/oems";
 import { fetchProducts } from "@/lib/crm/products";
+import { fetchPartners } from "@/lib/crm/partners";
 
 const sb = supabase as any;
 
