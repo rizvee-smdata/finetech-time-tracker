@@ -151,8 +151,7 @@ export const getVisitBriefs = createServerFn({ method: "POST" })
 
     const briefs: VisitBrief[] = [];
     for (const acc of accounts ?? []) {
-      const accLeadIds = new Set(leadIdsByAccount.get(acc.id) ?? []);
-      const accVisits = (visits ?? []).filter((v) => accLeadIds.has(v.lead_id));
+      const accVisits = (visits ?? []).filter((v) => v.account_id === acc.id);
       const lastVisit = accVisits[0];
       const openLeads = (leads ?? []).filter((l) => l.account_id === acc.id && l.stage !== "won" && l.stage !== "lost");
       const openValue = openLeads.reduce((s, l) => s + Number(l.expected_value ?? 0), 0);
