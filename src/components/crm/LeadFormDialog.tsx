@@ -286,13 +286,13 @@ export function LeadFormDialog({
                   <Input type="number" placeholder="Quoted price" value={v.price ?? ""} onChange={(e) => {
                     const arr = [...form.vendor_quotes]; arr[i] = { ...v, price: e.target.value === "" ? null : Number(e.target.value) }; setForm({ ...form, vendor_quotes: arr });
                   }} />
-                  <Select value={v.currency ?? "BDT"} onValueChange={(val) => {
+                  <Select value={v.currency ?? "USD"} onValueChange={(val) => {
                     const arr = [...form.vendor_quotes]; arr[i] = { ...v, currency: val }; setForm({ ...form, vendor_quotes: arr });
                   }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BDT">BDT</SelectItem>
                       <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="BDT">BDT</SelectItem>
                       <SelectItem value="EUR">EUR</SelectItem>
                     </SelectContent>
                   </Select>
