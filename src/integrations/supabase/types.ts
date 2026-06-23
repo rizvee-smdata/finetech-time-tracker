@@ -1785,7 +1785,7 @@ export type Database = {
             foreignKeyName: "crm_leads_partner_id_fkey"
             columns: ["partner_id"]
             isOneToOne: false
-            referencedRelation: "crm_partners"
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
           {
@@ -1892,62 +1892,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "crm_oems_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      crm_partners: {
-        Row: {
-          code: string | null
-          company_id: string
-          contact_email: string | null
-          contact_name: string | null
-          contact_phone: string | null
-          created_at: string
-          created_by: string | null
-          id: string
-          is_active: boolean
-          name: string
-          notes: string | null
-          updated_at: string
-          website: string | null
-        }
-        Insert: {
-          code?: string | null
-          company_id: string
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          notes?: string | null
-          updated_at?: string
-          website?: string | null
-        }
-        Update: {
-          code?: string | null
-          company_id?: string
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          notes?: string | null
-          updated_at?: string
-          website?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "crm_partners_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
