@@ -46,6 +46,38 @@ function ConfidenceDot({ score }: { score: number | undefined }) {
   );
 }
 
+async function compressImage(file: File, maxDim = 1600, quality = 0.82): Promise<Blob> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = () => reject(new Error("Could not load image"));
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas unavailable");
+  ctx.drawImage(img, 0, 0, w, h);
+  const blob: Blob = await new Promise((resolve, reject) =>
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("Canvas encode failed"))),
+      "image/jpeg",
+      quality,
+    ),
+  );
+  return blob;
+}
+
 function ScanPage() {
   const { user, companyId } = useAuth();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -66,21 +98,51 @@ function ScanPage() {
   const processMutation = useMutation({
     mutationFn: async ({ file, source }: { file: File; source: "card" | "document" | "bulk" }) => {
       if (!companyId || !user) throw new Error("Sign in required");
-      const ext = file.name.split(".").pop() || "bin";
+      // Compress images client-side. Phone-camera photos can be 5–15MB which
+      // causes Cloudflare Worker request-size/timeout failures that surface in
+      // the browser as a generic "Failed to fetch" TypeError.
+      let uploadBlob: Blob = file;
+      let ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+      let mime = file.type || "application/octet-stream";
+      if (file.type.startsWith("image/")) {
+        try {
+          uploadBlob = await compressImage(file, 1600, 0.82);
+          mime = "image/jpeg";
+          ext = "jpg";
+        } catch {
+          // fall back to the original file
+        }
+      }
       const path = `${companyId}/${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("card-scans").upload(path, file, {
-        contentType: file.type || "application/octet-stream",
-      });
-      if (upErr) throw new Error(upErr.message);
-      const res: any = await processFn({
-        data: {
-          company_id: companyId,
-          file_path: path,
-          file_mime: file.type || "image/jpeg",
-          source,
-        },
-      });
-      return res;
+      try {
+        const { error: upErr } = await supabase.storage.from("card-scans").upload(path, uploadBlob, {
+          contentType: mime,
+        });
+        if (upErr) throw new Error(upErr.message);
+      } catch (e: any) {
+        const msg = e?.message ?? "";
+        if (/failed to fetch|network|load failed/i.test(msg)) {
+          throw new Error("Upload failed — please check your connection and try again.");
+        }
+        throw e;
+      }
+      try {
+        const res: any = await processFn({
+          data: {
+            company_id: companyId,
+            file_path: path,
+            file_mime: mime,
+            source,
+          },
+        });
+        return res;
+      } catch (e: any) {
+        const msg = e?.message ?? "";
+        if (/failed to fetch|network|load failed/i.test(msg)) {
+          throw new Error("Network error while processing the card. Try a clearer/smaller image and try again.");
+        }
+        throw e;
+      }
     },
     onSuccess: (res) => {
       const r: ResultState = {
