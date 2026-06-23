@@ -75,6 +75,7 @@ import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
+import { Route as AuthenticatedVisitsBriefsRouteImport } from './routes/_authenticated/visits.briefs'
 import { Route as AuthenticatedTasksWeeklyRouteImport } from './routes/_authenticated/tasks.weekly'
 import { Route as AuthenticatedTasksTodayRouteImport } from './routes/_authenticated/tasks.today'
 import { Route as AuthenticatedTasksReportsRouteImport } from './routes/_authenticated/tasks.reports'
@@ -556,6 +557,12 @@ const AuthenticatedVisitsCoverageRoute =
   AuthenticatedVisitsCoverageRouteImport.update({
     id: '/visits/coverage',
     path: '/visits/coverage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsBriefsRoute =
+  AuthenticatedVisitsBriefsRouteImport.update({
+    id: '/visits/briefs',
+    path: '/visits/briefs',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedTasksWeeklyRoute =
@@ -1445,6 +1452,7 @@ export interface FileRoutesByFullPath {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
@@ -1629,6 +1637,7 @@ export interface FileRoutesByTo {
   '/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
@@ -1827,6 +1836,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/reports': typeof AuthenticatedTasksReportsRoute
   '/_authenticated/tasks/today': typeof AuthenticatedTasksTodayRoute
   '/_authenticated/tasks/weekly': typeof AuthenticatedTasksWeeklyRoute
+  '/_authenticated/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
@@ -2025,6 +2035,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/tasks/today'
     | '/tasks/weekly'
+    | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
     | '/visits/integrity'
@@ -2209,6 +2220,7 @@ export interface FileRouteTypes {
     | '/tasks/reports'
     | '/tasks/today'
     | '/tasks/weekly'
+    | '/visits/briefs'
     | '/visits/coverage'
     | '/visits/deal-correlation'
     | '/visits/integrity'
@@ -2406,6 +2418,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/reports'
     | '/_authenticated/tasks/today'
     | '/_authenticated/tasks/weekly'
+    | '/_authenticated/visits/briefs'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
     | '/_authenticated/visits/integrity'
@@ -2948,6 +2961,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/coverage'
       fullPath: '/visits/coverage'
       preLoaderRoute: typeof AuthenticatedVisitsCoverageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/briefs': {
+      id: '/_authenticated/visits/briefs'
+      path: '/visits/briefs'
+      fullPath: '/visits/briefs'
+      preLoaderRoute: typeof AuthenticatedVisitsBriefsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tasks/weekly': {
@@ -4342,6 +4362,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
   AuthenticatedPrepTaskIdRoute: typeof AuthenticatedPrepTaskIdRoute
   AuthenticatedPrepHistoryRoute: typeof AuthenticatedPrepHistoryRoute
+  AuthenticatedVisitsBriefsRoute: typeof AuthenticatedVisitsBriefsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
@@ -4417,6 +4438,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
   AuthenticatedPrepTaskIdRoute: AuthenticatedPrepTaskIdRoute,
   AuthenticatedPrepHistoryRoute: AuthenticatedPrepHistoryRoute,
+  AuthenticatedVisitsBriefsRoute: AuthenticatedVisitsBriefsRoute,
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
     AuthenticatedVisitsDealCorrelationRoute,
