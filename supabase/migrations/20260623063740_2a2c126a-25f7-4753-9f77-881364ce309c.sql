@@ -1,0 +1,1 @@
+ALTER TABLE public.card_scans ALTER COLUMN confidence TYPE jsonb USING CASE WHEN confidence IS NULL THEN NULL ELSE to_jsonb(confidence) END;
