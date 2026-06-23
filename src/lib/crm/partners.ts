@@ -14,11 +14,21 @@ export type CrmPartner = {
 export async function fetchPartners(companyId: string): Promise<CrmPartner[]> {
   const { data, error } = await sb
     .from("customers")
-    .select("id, customer_name")
+    .select("id, customer_name, created_at")
     .eq("company_id", companyId)
     .eq("kind", "partner")
     .is("deleted_at", null)
-    .order("customer_name");
+    .order("customer_name")
+    .order("created_at", { ascending: true });
   if (error) throw error;
-  return (data ?? []).map((c: any) => ({ id: c.id, name: c.customer_name }));
+  // Dedupe by normalized name — the contacts table can contain duplicates from imports.
+  const seen = new Set<string>();
+  const out: CrmPartner[] = [];
+  for (const c of (data ?? []) as Array<{ id: string; customer_name: string }>) {
+    const key = (c.customer_name ?? "").trim().toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ id: c.id, name: c.customer_name });
+  }
+  return out;
 }
