@@ -313,7 +313,7 @@ export type Database = {
       card_scans: {
         Row: {
           company_id: string
-          confidence: number | null
+          confidence: Json | null
           created_at: string
           duplicate_lead_id: string | null
           extracted: Json | null
@@ -331,7 +331,7 @@ export type Database = {
         }
         Insert: {
           company_id: string
-          confidence?: number | null
+          confidence?: Json | null
           created_at?: string
           duplicate_lead_id?: string | null
           extracted?: Json | null
@@ -349,7 +349,7 @@ export type Database = {
         }
         Update: {
           company_id?: string
-          confidence?: number | null
+          confidence?: Json | null
           created_at?: string
           duplicate_lead_id?: string | null
           extracted?: Json | null
