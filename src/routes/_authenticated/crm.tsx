@@ -48,7 +48,8 @@ const groups: Group[] = [
       { to: "/crm/quotes", label: "Quotes" },
       { to: "/crm/renewals", label: "Renewals" },
       { to: "/crm/duplicates", label: "Duplicates" },
-      { to: "/crm/catalog", label: "Catalog" },
+      { to: "/crm/oems", label: "OEM / Vendors" },
+      { to: "/crm/catalog", label: "Products" },
     ],
   },
   {
