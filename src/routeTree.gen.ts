@@ -72,6 +72,7 @@ import { Route as AuthenticatedVisitsSettingsRouteImport } from './routes/_authe
 import { Route as AuthenticatedVisitsRepComparisonRouteImport } from './routes/_authenticated/visits.rep-comparison'
 import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authenticated/visits.renewals'
 import { Route as AuthenticatedVisitsPredictionsRouteImport } from './routes/_authenticated/visits.predictions'
+import { Route as AuthenticatedVisitsPartnerPortalRouteImport } from './routes/_authenticated/visits.partner-portal'
 import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authenticated/visits.one-on-one'
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
@@ -81,6 +82,7 @@ import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_auth
 import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
+import { Route as AuthenticatedVisitsConfirmationsRouteImport } from './routes/_authenticated/visits.confirmations'
 import { Route as AuthenticatedVisitsBriefsRouteImport } from './routes/_authenticated/visits.briefs'
 import { Route as AuthenticatedVisitsAnomaliesRouteImport } from './routes/_authenticated/visits.anomalies'
 import { Route as AuthenticatedVisitsAccountHealthRouteImport } from './routes/_authenticated/visits.account-health'
@@ -550,6 +552,12 @@ const AuthenticatedVisitsPredictionsRoute =
     path: '/visits/predictions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsPartnerPortalRoute =
+  AuthenticatedVisitsPartnerPortalRouteImport.update({
+    id: '/visits/partner-portal',
+    path: '/visits/partner-portal',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVisitsOneOnOneRoute =
   AuthenticatedVisitsOneOnOneRouteImport.update({
     id: '/visits/one-on-one',
@@ -601,6 +609,12 @@ const AuthenticatedVisitsCoverageRoute =
   AuthenticatedVisitsCoverageRouteImport.update({
     id: '/visits/coverage',
     path: '/visits/coverage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsConfirmationsRoute =
+  AuthenticatedVisitsConfirmationsRouteImport.update({
+    id: '/visits/confirmations',
+    path: '/visits/confirmations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsBriefsRoute =
@@ -1511,6 +1525,7 @@ export interface FileRoutesByFullPath {
   '/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
   '/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
+  '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
@@ -1520,6 +1535,7 @@ export interface FileRoutesByFullPath {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -1704,6 +1720,7 @@ export interface FileRoutesByTo {
   '/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
   '/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
+  '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
@@ -1713,6 +1730,7 @@ export interface FileRoutesByTo {
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -1911,6 +1929,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/account-health': typeof AuthenticatedVisitsAccountHealthRoute
   '/_authenticated/visits/anomalies': typeof AuthenticatedVisitsAnomaliesRoute
   '/_authenticated/visits/briefs': typeof AuthenticatedVisitsBriefsRoute
+  '/_authenticated/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
   '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
@@ -1920,6 +1939,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
   '/_authenticated/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
+  '/_authenticated/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/_authenticated/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
   '/_authenticated/visits/renewals': typeof AuthenticatedVisitsRenewalsRoute
   '/_authenticated/visits/rep-comparison': typeof AuthenticatedVisitsRepComparisonRoute
@@ -2118,6 +2138,7 @@ export interface FileRouteTypes {
     | '/visits/account-health'
     | '/visits/anomalies'
     | '/visits/briefs'
+    | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
     | '/visits/heatmap'
@@ -2127,6 +2148,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/visits/oem-health'
     | '/visits/one-on-one'
+    | '/visits/partner-portal'
     | '/visits/predictions'
     | '/visits/renewals'
     | '/visits/rep-comparison'
@@ -2311,6 +2333,7 @@ export interface FileRouteTypes {
     | '/visits/account-health'
     | '/visits/anomalies'
     | '/visits/briefs'
+    | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
     | '/visits/heatmap'
@@ -2320,6 +2343,7 @@ export interface FileRouteTypes {
     | '/visits/new'
     | '/visits/oem-health'
     | '/visits/one-on-one'
+    | '/visits/partner-portal'
     | '/visits/predictions'
     | '/visits/renewals'
     | '/visits/rep-comparison'
@@ -2517,6 +2541,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/account-health'
     | '/_authenticated/visits/anomalies'
     | '/_authenticated/visits/briefs'
+    | '/_authenticated/visits/confirmations'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
     | '/_authenticated/visits/heatmap'
@@ -2526,6 +2551,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
     | '/_authenticated/visits/one-on-one'
+    | '/_authenticated/visits/partner-portal'
     | '/_authenticated/visits/predictions'
     | '/_authenticated/visits/renewals'
     | '/_authenticated/visits/rep-comparison'
@@ -3046,6 +3072,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVisitsPredictionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/visits/partner-portal': {
+      id: '/_authenticated/visits/partner-portal'
+      path: '/visits/partner-portal'
+      fullPath: '/visits/partner-portal'
+      preLoaderRoute: typeof AuthenticatedVisitsPartnerPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/visits/one-on-one': {
       id: '/_authenticated/visits/one-on-one'
       path: '/visits/one-on-one'
@@ -3107,6 +3140,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/coverage'
       fullPath: '/visits/coverage'
       preLoaderRoute: typeof AuthenticatedVisitsCoverageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/confirmations': {
+      id: '/_authenticated/visits/confirmations'
+      path: '/visits/confirmations'
+      fullPath: '/visits/confirmations'
+      preLoaderRoute: typeof AuthenticatedVisitsConfirmationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/briefs': {
@@ -4525,6 +4565,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsAccountHealthRoute: typeof AuthenticatedVisitsAccountHealthRoute
   AuthenticatedVisitsAnomaliesRoute: typeof AuthenticatedVisitsAnomaliesRoute
   AuthenticatedVisitsBriefsRoute: typeof AuthenticatedVisitsBriefsRoute
+  AuthenticatedVisitsConfirmationsRoute: typeof AuthenticatedVisitsConfirmationsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
   AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
@@ -4534,6 +4575,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
   AuthenticatedVisitsOneOnOneRoute: typeof AuthenticatedVisitsOneOnOneRoute
+  AuthenticatedVisitsPartnerPortalRoute: typeof AuthenticatedVisitsPartnerPortalRoute
   AuthenticatedVisitsPredictionsRoute: typeof AuthenticatedVisitsPredictionsRoute
   AuthenticatedVisitsRenewalsRoute: typeof AuthenticatedVisitsRenewalsRoute
   AuthenticatedVisitsRepComparisonRoute: typeof AuthenticatedVisitsRepComparisonRoute
@@ -4609,6 +4651,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsAccountHealthRoute: AuthenticatedVisitsAccountHealthRoute,
   AuthenticatedVisitsAnomaliesRoute: AuthenticatedVisitsAnomaliesRoute,
   AuthenticatedVisitsBriefsRoute: AuthenticatedVisitsBriefsRoute,
+  AuthenticatedVisitsConfirmationsRoute: AuthenticatedVisitsConfirmationsRoute,
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
     AuthenticatedVisitsDealCorrelationRoute,
@@ -4620,6 +4663,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsOemHealthRoute: AuthenticatedVisitsOemHealthRoute,
   AuthenticatedVisitsOneOnOneRoute: AuthenticatedVisitsOneOnOneRoute,
+  AuthenticatedVisitsPartnerPortalRoute: AuthenticatedVisitsPartnerPortalRoute,
   AuthenticatedVisitsPredictionsRoute: AuthenticatedVisitsPredictionsRoute,
   AuthenticatedVisitsRenewalsRoute: AuthenticatedVisitsRenewalsRoute,
   AuthenticatedVisitsRepComparisonRoute: AuthenticatedVisitsRepComparisonRoute,
