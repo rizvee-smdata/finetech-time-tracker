@@ -65,6 +65,8 @@ function VisitSettingsPage() {
       setRecipients(settings.weekly_report_recipients ?? []);
       setWeeklyEnabled(settings.weekly_report_enabled ?? true);
       setStaleEnabled(settings.stale_alert_enabled ?? true);
+      setLowQualMin((settings as any).low_quality_min_duration_minutes ?? 3);
+      setRepVisible((settings as any).integrity_visible_to_reps ?? false);
     }
   }, [settings]);
 
@@ -77,6 +79,8 @@ function VisitSettingsPage() {
         weekly_report_recipients: recipients,
         weekly_report_enabled: weeklyEnabled,
         stale_alert_enabled: staleEnabled,
+        low_quality_min_duration_minutes: lowQualMin,
+        integrity_visible_to_reps: repVisible,
       });
       if (error) throw error;
     },
