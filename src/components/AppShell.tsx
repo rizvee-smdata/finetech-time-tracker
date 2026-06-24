@@ -94,6 +94,7 @@ const navSections: NavSection[] = [
       { to: "/visits/deal-correlation", label: "Deal Correlation", icon: TrendingUp },
       { to: "/visits/renewals", label: "Renewal Radar", icon: Bell },
       { to: "/visits/oem-health", label: "OEM Health", icon: Target },
+      { to: "/visits/oem-rep-matrix", label: "OEM × Rep Matrix", icon: BarChart3 },
       { to: "/visits/smart-plan", label: "Smart Plan", icon: RouteIcon },
       { to: "/visits/briefs", label: "Visit Briefs", icon: FileText },
       { to: "/visits/one-on-one", label: "1:1 Prep", icon: Users },

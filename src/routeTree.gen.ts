@@ -74,6 +74,7 @@ import { Route as AuthenticatedVisitsRenewalsRouteImport } from './routes/_authe
 import { Route as AuthenticatedVisitsPredictionsRouteImport } from './routes/_authenticated/visits.predictions'
 import { Route as AuthenticatedVisitsPartnerPortalRouteImport } from './routes/_authenticated/visits.partner-portal'
 import { Route as AuthenticatedVisitsOneOnOneRouteImport } from './routes/_authenticated/visits.one-on-one'
+import { Route as AuthenticatedVisitsOemRepMatrixRouteImport } from './routes/_authenticated/visits.oem-rep-matrix'
 import { Route as AuthenticatedVisitsOemHealthRouteImport } from './routes/_authenticated/visits.oem-health'
 import { Route as AuthenticatedVisitsNewRouteImport } from './routes/_authenticated/visits.new'
 import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/_authenticated/visits.needs-attention'
@@ -562,6 +563,12 @@ const AuthenticatedVisitsOneOnOneRoute =
   AuthenticatedVisitsOneOnOneRouteImport.update({
     id: '/visits/one-on-one',
     path: '/visits/one-on-one',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVisitsOemRepMatrixRoute =
+  AuthenticatedVisitsOemRepMatrixRouteImport.update({
+    id: '/visits/oem-rep-matrix',
+    path: '/visits/oem-rep-matrix',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVisitsOemHealthRoute =
@@ -1534,6 +1541,7 @@ export interface FileRoutesByFullPath {
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/oem-rep-matrix': typeof AuthenticatedVisitsOemRepMatrixRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
@@ -1729,6 +1737,7 @@ export interface FileRoutesByTo {
   '/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/visits/new': typeof AuthenticatedVisitsNewRoute
   '/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/visits/oem-rep-matrix': typeof AuthenticatedVisitsOemRepMatrixRoute
   '/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
@@ -1938,6 +1947,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/needs-attention': typeof AuthenticatedVisitsNeedsAttentionRoute
   '/_authenticated/visits/new': typeof AuthenticatedVisitsNewRoute
   '/_authenticated/visits/oem-health': typeof AuthenticatedVisitsOemHealthRoute
+  '/_authenticated/visits/oem-rep-matrix': typeof AuthenticatedVisitsOemRepMatrixRoute
   '/_authenticated/visits/one-on-one': typeof AuthenticatedVisitsOneOnOneRoute
   '/_authenticated/visits/partner-portal': typeof AuthenticatedVisitsPartnerPortalRoute
   '/_authenticated/visits/predictions': typeof AuthenticatedVisitsPredictionsRoute
@@ -2147,6 +2157,7 @@ export interface FileRouteTypes {
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
+    | '/visits/oem-rep-matrix'
     | '/visits/one-on-one'
     | '/visits/partner-portal'
     | '/visits/predictions'
@@ -2342,6 +2353,7 @@ export interface FileRouteTypes {
     | '/visits/needs-attention'
     | '/visits/new'
     | '/visits/oem-health'
+    | '/visits/oem-rep-matrix'
     | '/visits/one-on-one'
     | '/visits/partner-portal'
     | '/visits/predictions'
@@ -2550,6 +2562,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/needs-attention'
     | '/_authenticated/visits/new'
     | '/_authenticated/visits/oem-health'
+    | '/_authenticated/visits/oem-rep-matrix'
     | '/_authenticated/visits/one-on-one'
     | '/_authenticated/visits/partner-portal'
     | '/_authenticated/visits/predictions'
@@ -3084,6 +3097,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/one-on-one'
       fullPath: '/visits/one-on-one'
       preLoaderRoute: typeof AuthenticatedVisitsOneOnOneRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/oem-rep-matrix': {
+      id: '/_authenticated/visits/oem-rep-matrix'
+      path: '/visits/oem-rep-matrix'
+      fullPath: '/visits/oem-rep-matrix'
+      preLoaderRoute: typeof AuthenticatedVisitsOemRepMatrixRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/oem-health': {
@@ -4574,6 +4594,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsNeedsAttentionRoute: typeof AuthenticatedVisitsNeedsAttentionRoute
   AuthenticatedVisitsNewRoute: typeof AuthenticatedVisitsNewRoute
   AuthenticatedVisitsOemHealthRoute: typeof AuthenticatedVisitsOemHealthRoute
+  AuthenticatedVisitsOemRepMatrixRoute: typeof AuthenticatedVisitsOemRepMatrixRoute
   AuthenticatedVisitsOneOnOneRoute: typeof AuthenticatedVisitsOneOnOneRoute
   AuthenticatedVisitsPartnerPortalRoute: typeof AuthenticatedVisitsPartnerPortalRoute
   AuthenticatedVisitsPredictionsRoute: typeof AuthenticatedVisitsPredictionsRoute
@@ -4662,6 +4683,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedVisitsNeedsAttentionRoute,
   AuthenticatedVisitsNewRoute: AuthenticatedVisitsNewRoute,
   AuthenticatedVisitsOemHealthRoute: AuthenticatedVisitsOemHealthRoute,
+  AuthenticatedVisitsOemRepMatrixRoute: AuthenticatedVisitsOemRepMatrixRoute,
   AuthenticatedVisitsOneOnOneRoute: AuthenticatedVisitsOneOnOneRoute,
   AuthenticatedVisitsPartnerPortalRoute: AuthenticatedVisitsPartnerPortalRoute,
   AuthenticatedVisitsPredictionsRoute: AuthenticatedVisitsPredictionsRoute,
@@ -4716,13 +4738,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
