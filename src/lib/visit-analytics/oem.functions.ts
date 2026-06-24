@@ -2,7 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const Input = z.object({ periodDays: z.union([z.literal(30), z.literal(90), z.literal(180), z.literal(365)]).default(90) });
+const Input = z.object({
+  periodDays: z.union([z.literal(30), z.literal(90), z.literal(180), z.literal(365)]).default(90),
+  companyId: z.string().uuid().nullable().optional(),
+});
 
 export type OemHealthRow = {
   oem_id: string;
@@ -23,8 +26,12 @@ export const getOemHealth = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data, context }): Promise<{ rows: OemHealthRow[] }> => {
     const { supabase, userId } = context;
-    const { data: cm } = await supabase
-      .from("company_members").select("company_id").eq("user_id", userId).maybeSingle();
+    let membershipQuery = supabase
+      .from("company_members")
+      .select("company_id")
+      .eq("user_id", userId);
+    if (data.companyId) membershipQuery = membershipQuery.eq("company_id", data.companyId);
+    const { data: cm } = await membershipQuery.limit(1).maybeSingle();
     const companyId = cm?.company_id;
     if (!companyId) return { rows: [] };
 
