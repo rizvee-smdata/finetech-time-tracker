@@ -51,9 +51,10 @@ function OemRepMatrixPage() {
     <div className="mx-auto max-w-7xl space-y-4 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">OEM × Rep Matrix</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Vendor × Rep Matrix</h1>
           <p className="text-sm text-muted-foreground">
-            Lead count, open pipeline and won value broken down by OEM partner and salesperson.
+            Leads, open pipeline and won value by vendor (OEM or product) and salesperson.
+            Falls back to product name when an OEM is not linked.
           </p>
         </div>
         <div className="flex items-center gap-2">
