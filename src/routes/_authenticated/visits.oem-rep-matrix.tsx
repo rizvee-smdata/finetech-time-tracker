@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatBDT } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/visits/oem-rep-matrix")({
   component: OemRepMatrixPage,
@@ -16,12 +17,14 @@ type Metric = "leads" | "pipeline_value" | "won_value";
 
 function OemRepMatrixPage() {
   const fetchFn = useServerFn(getOemRepMatrix);
+  const { companyId } = useAuth();
   const [periodDays, setPeriodDays] = useState<30 | 90 | 180 | 365>(90);
   const [metric, setMetric] = useState<Metric>("leads");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["oem-rep-matrix", periodDays],
-    queryFn: () => fetchFn({ data: { periodDays } }),
+    queryKey: ["oem-rep-matrix", companyId, periodDays],
+    enabled: !!companyId,
+    queryFn: () => fetchFn({ data: { periodDays, companyId } }),
   });
 
   const cellIndex = useMemo(() => {
@@ -82,7 +85,7 @@ function OemRepMatrixPage() {
         {isLoading ? (
           <div className="p-6 text-sm text-muted-foreground">Loading…</div>
         ) : oems.length === 0 || reps.length === 0 ? (
-          <div className="p-6 text-sm text-muted-foreground">No OEM-linked leads in this period.</div>
+          <div className="p-6 text-sm text-muted-foreground">No vendor/product leads in this period.</div>
         ) : (
           <div className="overflow-auto">
             <table className="w-full text-sm border-collapse">

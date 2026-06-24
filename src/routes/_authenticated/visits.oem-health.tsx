@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/visits/oem-health")({
   component: OemHealthPage,
@@ -16,10 +17,12 @@ const healthVariant = (h: string) => h === "at_risk" ? "destructive" : h === "wa
 
 function OemHealthPage() {
   const fetchFn = useServerFn(getOemHealth);
+  const { companyId } = useAuth();
   const [periodDays, setPeriodDays] = useState<30 | 90 | 180 | 365>(90);
   const { data, isLoading } = useQuery({
-    queryKey: ["oem-health", periodDays],
-    queryFn: () => fetchFn({ data: { periodDays } }),
+    queryKey: ["oem-health", companyId, periodDays],
+    enabled: !!companyId,
+    queryFn: () => fetchFn({ data: { periodDays, companyId } }),
   });
 
   const rows = data?.rows ?? [];
@@ -29,7 +32,7 @@ function OemHealthPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">OEM Partner Health</h1>
-          <p className="text-sm text-muted-foreground">Pipeline, win-rate and visit coverage by OEM partner.</p>
+          <p className="text-sm text-muted-foreground">Pipeline, win-rate and visit coverage by vendor, using product name when no OEM is linked.</p>
         </div>
         <Select value={String(periodDays)} onValueChange={(v) => setPeriodDays(Number(v) as 30 | 90 | 180 | 365)}>
           <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
@@ -67,7 +70,7 @@ function OemHealthPage() {
                   </TableCell>
                 </TableRow>
               ))}
-            {!isLoading && rows.length === 0 && <TableRow><TableCell colSpan={7} className="text-muted-foreground">No active OEM partners.</TableCell></TableRow>}
+            {!isLoading && rows.length === 0 && <TableRow><TableCell colSpan={7} className="text-muted-foreground">No vendor/product leads in this period.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </Card>
