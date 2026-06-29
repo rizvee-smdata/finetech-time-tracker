@@ -4,11 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, startOfDay, endOfDay, subDays, startOfMonth } from "date-fns";
 import { useState } from "react";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
@@ -28,10 +34,17 @@ export const Route = createFileRoute("/_authenticated/team")({
 function TeamPage() {
   const { isAdmin, companyId } = useAuth();
 
-  const [selected, setSelected] = useState<{ id: string; name: string; scope: "today" | "all" } | null>(null);
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
+  const fromIso = range?.from ? startOfDay(range.from).toISOString() : null;
+  const toIso = range?.to ? endOfDay(range.to).toISOString() : (range?.from ? endOfDay(range.from).toISOString() : null);
+
+  const [selected, setSelected] = useState<{ id: string; name: string; scope: "range" | "all" } | null>(null);
 
   const { data: members, refetch } = useQuery({
-    queryKey: ["team-members", companyId],
+    queryKey: ["team-members", companyId, fromIso, toIso],
     enabled: !!companyId,
     queryFn: async () => {
       const { data: cm } = await supabase
@@ -53,11 +66,17 @@ function TeamPage() {
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
         const userVisits = (visits ?? []).filter((v) => v.user_id === p.id);
         const todayVisits = userVisits.filter((v) => new Date(v.meeting_at) >= todayStart).length;
+        const rangeVisits = userVisits.filter((v) => {
+          if (!fromIso || !toIso) return true;
+          const t = new Date(v.meeting_at).getTime();
+          return t >= new Date(fromIso).getTime() && t <= new Date(toIso).getTime();
+        }).length;
         const open = (time ?? []).find((t) => t.user_id === p.id && !t.check_out);
         return {
           ...p,
           roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role as string),
           totalVisits: userVisits.length,
+          rangeVisits,
           todayVisits,
           isCheckedIn: !!open,
         };
@@ -66,16 +85,15 @@ function TeamPage() {
   });
 
   const { data: visitDetails, isLoading: loadingDetails } = useQuery({
-    queryKey: ["team-visit-details", selected?.id, selected?.scope, companyId],
+    queryKey: ["team-visit-details", selected?.id, selected?.scope, companyId, fromIso, toIso],
     enabled: !!selected && !!companyId,
     queryFn: async () => {
       let q = supabase.from("customer_visits").select("*")
         .eq("user_id", selected!.id)
         .eq("company_id", companyId!)
         .order("meeting_at", { ascending: false });
-      if (selected!.scope === "today") {
-        const start = new Date(); start.setHours(0, 0, 0, 0);
-        q = q.gte("meeting_at", start.toISOString());
+      if (selected!.scope === "range" && fromIso && toIso) {
+        q = q.gte("meeting_at", fromIso).lte("meeting_at", toIso);
       }
       const { data, error } = await q;
       if (error) throw error;
@@ -95,9 +113,37 @@ function TeamPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
-        <p className="text-sm text-muted-foreground">Monitor employee activity and manage access.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
+          <p className="text-sm text-muted-foreground">Monitor employee activity and manage access.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("justify-start text-left font-normal", !range && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {range?.from ? (
+                  range.to ? `${format(range.from, "LLL d, y")} – ${format(range.to, "LLL d, y")}` : format(range.from, "LLL d, y")
+                ) : <span>Pick date range</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={range}
+                onSelect={setRange}
+                numberOfMonths={2}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: startOfDay(n), to: n }); }}>Today</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: subDays(n, 6), to: n }); }}>7d</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: subDays(n, 29), to: n }); }}>30d</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: startOfMonth(n), to: n }); }}>MTD</Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -118,11 +164,11 @@ function TeamPage() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
               <button
                 type="button"
-                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "today" })}
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "range" })}
                 className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
               >
-                <div className="text-xs text-muted-foreground">Today</div>
-                <div className="font-semibold">{m.todayVisits}</div>
+                <div className="text-xs text-muted-foreground">In range</div>
+                <div className="font-semibold">{m.rangeVisits}</div>
               </button>
               <button
                 type="button"
@@ -156,9 +202,10 @@ function TeamPage() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selected?.name} — {selected?.scope === "today" ? "Today's visits" : "All visits"}
+              {selected?.name} — {selected?.scope === "range" ? "Visits in range" : "All visits"}
             </DialogTitle>
           </DialogHeader>
+
           {loadingDetails ? (
             <div className="text-sm text-muted-foreground">Loading…</div>
           ) : (visitDetails ?? []).length === 0 ? (
