@@ -113,9 +113,37 @@ function TeamPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
-        <p className="text-sm text-muted-foreground">Monitor employee activity and manage access.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
+          <p className="text-sm text-muted-foreground">Monitor employee activity and manage access.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("justify-start text-left font-normal", !range && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {range?.from ? (
+                  range.to ? `${format(range.from, "LLL d, y")} – ${format(range.to, "LLL d, y")}` : format(range.from, "LLL d, y")
+                ) : <span>Pick date range</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={range}
+                onSelect={setRange}
+                numberOfMonths={2}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: startOfDay(n), to: n }); }}>Today</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: subDays(n, 6), to: n }); }}>7d</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: subDays(n, 29), to: n }); }}>30d</Button>
+          <Button variant="ghost" size="sm" onClick={() => { const n = new Date(); setRange({ from: startOfMonth(n), to: n }); }}>MTD</Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -136,11 +164,11 @@ function TeamPage() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
               <button
                 type="button"
-                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "today" })}
+                onClick={() => setSelected({ id: m.id, name: (m.full_name || m.email || "User"), scope: "range" })}
                 className="rounded-md bg-muted p-2 hover:bg-muted/70 transition"
               >
-                <div className="text-xs text-muted-foreground">Today</div>
-                <div className="font-semibold">{m.todayVisits}</div>
+                <div className="text-xs text-muted-foreground">In range</div>
+                <div className="font-semibold">{m.rangeVisits}</div>
               </button>
               <button
                 type="button"
@@ -174,9 +202,10 @@ function TeamPage() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selected?.name} — {selected?.scope === "today" ? "Today's visits" : "All visits"}
+              {selected?.name} — {selected?.scope === "range" ? "Visits in range" : "All visits"}
             </DialogTitle>
           </DialogHeader>
+
           {loadingDetails ? (
             <div className="text-sm text-muted-foreground">Loading…</div>
           ) : (visitDetails ?? []).length === 0 ? (
