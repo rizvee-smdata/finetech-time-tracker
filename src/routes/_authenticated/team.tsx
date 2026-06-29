@@ -34,10 +34,17 @@ export const Route = createFileRoute("/_authenticated/team")({
 function TeamPage() {
   const { isAdmin, companyId } = useAuth();
 
-  const [selected, setSelected] = useState<{ id: string; name: string; scope: "today" | "all" } | null>(null);
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
+  const fromIso = range?.from ? startOfDay(range.from).toISOString() : null;
+  const toIso = range?.to ? endOfDay(range.to).toISOString() : (range?.from ? endOfDay(range.from).toISOString() : null);
+
+  const [selected, setSelected] = useState<{ id: string; name: string; scope: "range" | "all" } | null>(null);
 
   const { data: members, refetch } = useQuery({
-    queryKey: ["team-members", companyId],
+    queryKey: ["team-members", companyId, fromIso, toIso],
     enabled: !!companyId,
     queryFn: async () => {
       const { data: cm } = await supabase
@@ -59,11 +66,17 @@ function TeamPage() {
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
         const userVisits = (visits ?? []).filter((v) => v.user_id === p.id);
         const todayVisits = userVisits.filter((v) => new Date(v.meeting_at) >= todayStart).length;
+        const rangeVisits = userVisits.filter((v) => {
+          if (!fromIso || !toIso) return true;
+          const t = new Date(v.meeting_at).getTime();
+          return t >= new Date(fromIso).getTime() && t <= new Date(toIso).getTime();
+        }).length;
         const open = (time ?? []).find((t) => t.user_id === p.id && !t.check_out);
         return {
           ...p,
           roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role as string),
           totalVisits: userVisits.length,
+          rangeVisits,
           todayVisits,
           isCheckedIn: !!open,
         };
@@ -72,16 +85,15 @@ function TeamPage() {
   });
 
   const { data: visitDetails, isLoading: loadingDetails } = useQuery({
-    queryKey: ["team-visit-details", selected?.id, selected?.scope, companyId],
+    queryKey: ["team-visit-details", selected?.id, selected?.scope, companyId, fromIso, toIso],
     enabled: !!selected && !!companyId,
     queryFn: async () => {
       let q = supabase.from("customer_visits").select("*")
         .eq("user_id", selected!.id)
         .eq("company_id", companyId!)
         .order("meeting_at", { ascending: false });
-      if (selected!.scope === "today") {
-        const start = new Date(); start.setHours(0, 0, 0, 0);
-        q = q.gte("meeting_at", start.toISOString());
+      if (selected!.scope === "range" && fromIso && toIso) {
+        q = q.gte("meeting_at", fromIso).lte("meeting_at", toIso);
       }
       const { data, error } = await q;
       if (error) throw error;
