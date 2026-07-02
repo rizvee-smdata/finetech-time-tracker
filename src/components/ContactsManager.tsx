@@ -154,8 +154,8 @@ export function ContactsManager({
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        {isStaff && (
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
+          {isStaff && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" disabled={!sorted.length}>
@@ -168,16 +168,17 @@ export function ContactsManager({
                 <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAdmin && (
-              <Button variant="outline" onClick={() => setImporting(true)}>
-                <Upload className="mr-2 h-4 w-4" />Import CSV
-              </Button>
-            )}
-            <Button onClick={() => setAdding(true)}>
-              <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+          )}
+          {isAdmin && (
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <Upload className="mr-2 h-4 w-4" />Import CSV
             </Button>
-          </div>
-        )}
+          )}
+          <Button onClick={() => setAdding(true)}>
+            <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+          </Button>
+        </div>
+
       </header>
 
       <div className="relative max-w-sm">
