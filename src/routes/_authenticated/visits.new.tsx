@@ -70,20 +70,13 @@ function NewVisit() {
         .eq("company_id", companyId!)
         .eq("kind", contactType)
         .is("deleted_at", null)
-        .order("customer_name");
+        .order("customer_name")
+        .order("contact_person");
       if (error) throw error;
-      // Dedupe by company name (case-insensitive)
-      const seen = new Set<string>();
-      const unique: typeof data = [];
-      for (const c of data ?? []) {
-        const key = (c.customer_name ?? "").trim().toLowerCase();
-        if (!key || seen.has(key)) continue;
-        seen.add(key);
-        unique.push(c);
-      }
-      return unique;
+      return data ?? [];
     },
   });
+
 
   async function addNewAccount() {
     if (!companyId || !user) return;
@@ -258,8 +251,9 @@ function NewVisit() {
                   className="w-full justify-between font-normal"
                 >
                   {selected
-                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
+                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}{selected.contact_person ? ` — ${selected.contact_person}` : ""}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
                     : `Search and pick a ${typeLabel.singular.toLowerCase()} (required)`}
+
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -286,9 +280,17 @@ function NewVisit() {
                         >
                           <Check className={cn("mr-2 h-4 w-4", selectedId === c.id ? "opacity-100" : "opacity-0")} />
                           <div className="flex flex-1 items-center justify-between gap-2">
-                            <span className="font-medium">{c.customer_name}</span>
+                            <span className="flex flex-col">
+                              <span className="font-medium">{c.customer_name}</span>
+                              {(c.contact_person || c.designation) && (
+                                <span className="text-xs text-muted-foreground">
+                                  {c.contact_person}{c.contact_person && c.designation ? " · " : ""}{c.designation}
+                                </span>
+                              )}
+                            </span>
                             <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{c.kind}</span>
                           </div>
+
                         </CommandItem>
                       ))}
                     </CommandGroup>

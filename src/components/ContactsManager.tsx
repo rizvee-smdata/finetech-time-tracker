@@ -154,8 +154,8 @@ export function ContactsManager({
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        {isStaff && (
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
+          {(
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" disabled={!sorted.length}>
@@ -168,16 +168,17 @@ export function ContactsManager({
                 <DropdownMenuItem onClick={() => doExport("pdf")}>PDF (.pdf)</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAdmin && (
-              <Button variant="outline" onClick={() => setImporting(true)}>
-                <Upload className="mr-2 h-4 w-4" />Import CSV
-              </Button>
-            )}
-            <Button onClick={() => setAdding(true)}>
-              <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+          )}
+          {isAdmin && (
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <Upload className="mr-2 h-4 w-4" />Import CSV
             </Button>
-          </div>
-        )}
+          )}
+          <Button onClick={() => setAdding(true)}>
+            <Plus className="mr-2 h-4 w-4" />Add {singular.toLowerCase()}
+          </Button>
+        </div>
+
       </header>
 
       <div className="relative max-w-sm">
@@ -204,7 +205,7 @@ export function ContactsManager({
                 <TableHead><button type="button" onClick={() => toggleSort("designation")} className="inline-flex items-center hover:text-foreground">Designation<SortIcon k="designation" /></button></TableHead>
                 <TableHead><button type="button" onClick={() => toggleSort("email")} className="inline-flex items-center hover:text-foreground">Email<SortIcon k="email" /></button></TableHead>
                 <TableHead><button type="button" onClick={() => toggleSort("phone")} className="inline-flex items-center hover:text-foreground">Phone<SortIcon k="phone" /></button></TableHead>
-                {isStaff && <TableHead className="w-[120px] text-right">Actions</TableHead>}
+                {<TableHead className="w-[120px] text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -215,7 +216,7 @@ export function ContactsManager({
                   <TableCell>{c.designation || "—"}</TableCell>
                   <TableCell>{c.email || "—"}</TableCell>
                   <TableCell>{c.phone || "—"}</TableCell>
-                  {isStaff && (
+                  {(
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => setEditing(c)} aria-label="Edit">
                         <Pencil className="h-4 w-4" />
