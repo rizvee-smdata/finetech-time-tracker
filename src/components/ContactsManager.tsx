@@ -155,7 +155,7 @@ export function ContactsManager({
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {isStaff && (
+          {(
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" disabled={!sorted.length}>
@@ -205,7 +205,7 @@ export function ContactsManager({
                 <TableHead><button type="button" onClick={() => toggleSort("designation")} className="inline-flex items-center hover:text-foreground">Designation<SortIcon k="designation" /></button></TableHead>
                 <TableHead><button type="button" onClick={() => toggleSort("email")} className="inline-flex items-center hover:text-foreground">Email<SortIcon k="email" /></button></TableHead>
                 <TableHead><button type="button" onClick={() => toggleSort("phone")} className="inline-flex items-center hover:text-foreground">Phone<SortIcon k="phone" /></button></TableHead>
-                {isStaff && <TableHead className="w-[120px] text-right">Actions</TableHead>}
+                {<TableHead className="w-[120px] text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -216,7 +216,7 @@ export function ContactsManager({
                   <TableCell>{c.designation || "—"}</TableCell>
                   <TableCell>{c.email || "—"}</TableCell>
                   <TableCell>{c.phone || "—"}</TableCell>
-                  {isStaff && (
+                  {(
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => setEditing(c)} aria-label="Edit">
                         <Pencil className="h-4 w-4" />
