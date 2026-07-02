@@ -70,20 +70,13 @@ function NewVisit() {
         .eq("company_id", companyId!)
         .eq("kind", contactType)
         .is("deleted_at", null)
-        .order("customer_name");
+        .order("customer_name")
+        .order("contact_person");
       if (error) throw error;
-      // Dedupe by company name (case-insensitive)
-      const seen = new Set<string>();
-      const unique: typeof data = [];
-      for (const c of data ?? []) {
-        const key = (c.customer_name ?? "").trim().toLowerCase();
-        if (!key || seen.has(key)) continue;
-        seen.add(key);
-        unique.push(c);
-      }
-      return unique;
+      return data ?? [];
     },
   });
+
 
   async function addNewAccount() {
     if (!companyId || !user) return;
