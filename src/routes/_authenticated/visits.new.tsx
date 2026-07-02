@@ -251,8 +251,9 @@ function NewVisit() {
                   className="w-full justify-between font-normal"
                 >
                   {selected
-                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
+                    ? <span className="flex items-center gap-2"><span>{selected.customer_name}{selected.contact_person ? ` — ${selected.contact_person}` : ""}</span><span className="rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{selected.kind}</span></span>
                     : `Search and pick a ${typeLabel.singular.toLowerCase()} (required)`}
+
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
