@@ -96,7 +96,34 @@ function ListPage() {
     queryFn: () => fetchCompanyMembers(companyId!),
   });
 
-  const pg = usePagination(data ?? [], 20);
+  const sortedLeads = useMemo(() => {
+    const arr = [...(data ?? [])];
+    const stageOrder: Record<string, number> = Object.fromEntries(STAGES.map((s, i) => [s.id, i]));
+    const dir = sortDir === "asc" ? 1 : -1;
+    const cmp = (a: Lead, b: Lead): number => {
+      switch (sortKey) {
+        case "customer": return (a.customer_name ?? "").localeCompare(b.customer_name ?? "") * dir;
+        case "stage": return ((stageOrder[a.stage] ?? 0) - (stageOrder[b.stage] ?? 0)) * dir;
+        case "value": return ((a.expected_value ?? 0) - (b.expected_value ?? 0)) * dir;
+        case "probability": return ((a.probability ?? 0) - (b.probability ?? 0)) * dir;
+        case "close": {
+          const av = a.expected_close_date ? new Date(a.expected_close_date).getTime() : Number.POSITIVE_INFINITY;
+          const bv = b.expected_close_date ? new Date(b.expected_close_date).getTime() : Number.POSITIVE_INFINITY;
+          return (av - bv) * dir;
+        }
+        case "assignee": {
+          const an = a.assignee?.full_name || a.assignee?.email || "";
+          const bn = b.assignee?.full_name || b.assignee?.email || "";
+          return an.localeCompare(bn) * dir;
+        }
+        case "activity": return (new Date(a.last_activity_at).getTime() - new Date(b.last_activity_at).getTime()) * dir;
+      }
+    };
+    arr.sort(cmp);
+    return arr;
+  }, [data, sortKey, sortDir]);
+
+  const pg = usePagination(sortedLeads, 20);
   const leads = data ?? [];
   const allOnPageSelected = pg.paged.length > 0 && pg.paged.every((l) => selected.has(l.id));
 
