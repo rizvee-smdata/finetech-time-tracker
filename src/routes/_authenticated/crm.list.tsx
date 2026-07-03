@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2 } from "lucide-react";
+import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
 import { STAGES, stageMeta, formatMoney, type CrmStage, type Lead } from "@/lib/crm/types";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { ImportLeadsDialog } from "@/components/crm/ImportLeadsDialog";
@@ -68,6 +68,13 @@ function ListPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAssignee, setBulkAssignee] = useState<string>("");
   const [bulkStage, setBulkStage] = useState<CrmStage | "">("");
+  type SortKey = "customer" | "stage" | "value" | "probability" | "close" | "assignee" | "activity";
+  const [sortKey, setSortKey] = useState<SortKey>("activity");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const toggleSort = (k: SortKey) => {
+    if (sortKey === k) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(k); setSortDir(k === "customer" || k === "assignee" || k === "stage" ? "asc" : "desc"); }
+  };
 
   const { data } = useQuery({
     queryKey: ["crm-leads", companyId, stage, search, company, assignee, dateFrom, dateTo],
@@ -89,7 +96,34 @@ function ListPage() {
     queryFn: () => fetchCompanyMembers(companyId!),
   });
 
-  const pg = usePagination(data ?? [], 20);
+  const sortedLeads = useMemo(() => {
+    const arr = [...(data ?? [])];
+    const stageOrder: Record<string, number> = Object.fromEntries(STAGES.map((s, i) => [s.id, i]));
+    const dir = sortDir === "asc" ? 1 : -1;
+    const cmp = (a: Lead, b: Lead): number => {
+      switch (sortKey) {
+        case "customer": return (a.customer_name ?? "").localeCompare(b.customer_name ?? "") * dir;
+        case "stage": return ((stageOrder[a.stage] ?? 0) - (stageOrder[b.stage] ?? 0)) * dir;
+        case "value": return ((a.expected_value ?? 0) - (b.expected_value ?? 0)) * dir;
+        case "probability": return ((a.probability ?? 0) - (b.probability ?? 0)) * dir;
+        case "close": {
+          const av = a.expected_close_date ? new Date(a.expected_close_date).getTime() : Number.POSITIVE_INFINITY;
+          const bv = b.expected_close_date ? new Date(b.expected_close_date).getTime() : Number.POSITIVE_INFINITY;
+          return (av - bv) * dir;
+        }
+        case "assignee": {
+          const an = a.assignee?.full_name || a.assignee?.email || "";
+          const bn = b.assignee?.full_name || b.assignee?.email || "";
+          return an.localeCompare(bn) * dir;
+        }
+        case "activity": return (new Date(a.last_activity_at).getTime() - new Date(b.last_activity_at).getTime()) * dir;
+      }
+    };
+    arr.sort(cmp);
+    return arr;
+  }, [data, sortKey, sortDir]);
+
+  const pg = usePagination(sortedLeads, 20);
   const leads = data ?? [];
   const allOnPageSelected = pg.paged.length > 0 && pg.paged.every((l) => selected.has(l.id));
 
@@ -244,13 +278,13 @@ function ListPage() {
               <TableHead className="w-[40px]">
                 <Checkbox checked={allOnPageSelected} onCheckedChange={toggleAll} aria-label="Select all on page" />
               </TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Stage</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Probability</TableHead>
-              <TableHead>Close date</TableHead>
-              <TableHead>Assignee</TableHead>
-              <TableHead>Last activity</TableHead>
+              <SortableHead label="Customer" k="customer" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Stage" k="stage" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Value" k="value" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Probability" k="probability" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Close date" k="close" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Assignee" k="assignee" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Last activity" k="activity" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -291,5 +325,26 @@ function ListPage() {
         onImported={() => qc.invalidateQueries({ queryKey: ["crm-leads"] })}
       />
     </div>
+  );
+}
+
+function SortableHead<K extends string>({
+  label, k, sortKey, sortDir, onClick,
+}: {
+  label: string; k: K; sortKey: K; sortDir: "asc" | "desc"; onClick: (k: K) => void;
+}) {
+  const active = sortKey === k;
+  const Icon = !active ? ChevronsUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <TableHead>
+      <button
+        type="button"
+        onClick={() => onClick(k)}
+        className={`inline-flex items-center gap-1 hover:text-foreground transition-colors ${active ? "text-foreground" : ""}`}
+      >
+        {label}
+        <Icon className="h-3.5 w-3.5 opacity-70" />
+      </button>
+    </TableHead>
   );
 }
