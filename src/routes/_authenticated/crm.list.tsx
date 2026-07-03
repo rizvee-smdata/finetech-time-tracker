@@ -327,3 +327,24 @@ function ListPage() {
     </div>
   );
 }
+
+function SortableHead<K extends string>({
+  label, k, sortKey, sortDir, onClick,
+}: {
+  label: string; k: K; sortKey: K; sortDir: "asc" | "desc"; onClick: (k: K) => void;
+}) {
+  const active = sortKey === k;
+  const Icon = !active ? ChevronsUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <TableHead>
+      <button
+        type="button"
+        onClick={() => onClick(k)}
+        className={`inline-flex items-center gap-1 hover:text-foreground transition-colors ${active ? "text-foreground" : ""}`}
+      >
+        {label}
+        <Icon className="h-3.5 w-3.5 opacity-70" />
+      </button>
+    </TableHead>
+  );
+}
