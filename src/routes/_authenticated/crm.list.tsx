@@ -68,6 +68,13 @@ function ListPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAssignee, setBulkAssignee] = useState<string>("");
   const [bulkStage, setBulkStage] = useState<CrmStage | "">("");
+  type SortKey = "customer" | "stage" | "value" | "probability" | "close" | "assignee" | "activity";
+  const [sortKey, setSortKey] = useState<SortKey>("activity");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const toggleSort = (k: SortKey) => {
+    if (sortKey === k) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(k); setSortDir(k === "customer" || k === "assignee" || k === "stage" ? "asc" : "desc"); }
+  };
 
   const { data } = useQuery({
     queryKey: ["crm-leads", companyId, stage, search, company, assignee, dateFrom, dateTo],
