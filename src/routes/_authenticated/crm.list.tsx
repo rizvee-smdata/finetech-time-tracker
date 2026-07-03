@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2 } from "lucide-react";
+import { Plus, Search, Download, UserCog, ArrowRightLeft, Upload, Trash2, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
 import { STAGES, stageMeta, formatMoney, type CrmStage, type Lead } from "@/lib/crm/types";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
 import { ImportLeadsDialog } from "@/components/crm/ImportLeadsDialog";
