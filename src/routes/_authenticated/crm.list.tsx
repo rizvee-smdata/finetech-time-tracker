@@ -278,13 +278,13 @@ function ListPage() {
               <TableHead className="w-[40px]">
                 <Checkbox checked={allOnPageSelected} onCheckedChange={toggleAll} aria-label="Select all on page" />
               </TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Stage</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Probability</TableHead>
-              <TableHead>Close date</TableHead>
-              <TableHead>Assignee</TableHead>
-              <TableHead>Last activity</TableHead>
+              <SortableHead label="Customer" k="customer" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Stage" k="stage" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Value" k="value" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Probability" k="probability" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Close date" k="close" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Assignee" k="assignee" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+              <SortableHead label="Last activity" k="activity" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
             </TableRow>
           </TableHeader>
           <TableBody>
