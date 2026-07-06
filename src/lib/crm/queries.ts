@@ -136,7 +136,12 @@ export async function fetchCompanyMembers(companyId: string) {
   const { data: mem } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
   const ids = (mem ?? []).map((m: any) => m.user_id);
   if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
-  const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", ids);
+  // Exclude cross-company admins so the assignee list only shows this company's staff/employees
+  const { data: roles } = await sb.from("user_roles").select("user_id, role").in("user_id", ids);
+  const adminIds = new Set((roles ?? []).filter((r: any) => r.role === "admin").map((r: any) => r.user_id));
+  const filtered = ids.filter((id: string) => !adminIds.has(id));
+  if (!filtered.length) return [] as { id: string; full_name: string | null; email: string | null }[];
+  const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", filtered);
   return (profs ?? []) as { id: string; full_name: string | null; email: string | null }[];
 }
 
