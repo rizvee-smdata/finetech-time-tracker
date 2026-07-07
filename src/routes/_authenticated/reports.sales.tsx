@@ -217,7 +217,114 @@ function SalesReport() {
           )}
         </CardContent>
       </Card>
+
+      <ProjectedCloses companyId={companyId} isStaff={isStaff} userId={user?.id ?? null} />
     </div>
+  );
+}
+
+function ProjectedCloses({ companyId, isStaff, userId }: { companyId: string | null; isStaff: boolean; userId: string | null }) {
+  const { data } = useQuery({
+    queryKey: ["projected-closes-30d", companyId, isStaff, userId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const today = new Date();
+      const in30 = new Date();
+      in30.setDate(today.getDate() + 30);
+      const q = supabase
+        .from("crm_leads")
+        .select("id, customer_name, company_name, stage, expected_value, expected_close_date, probability, assigned_to, customer_id, last_activity_at")
+        .in("stage", ["pricing", "negotiation", "closure"])
+        .gte("expected_close_date", today.toISOString().slice(0, 10))
+        .lte("expected_close_date", in30.toISOString().slice(0, 10))
+        .order("expected_close_date");
+      if (companyId) q.eq("company_id", companyId);
+      if (!isStaff && userId) q.eq("assigned_to", userId);
+      const { data: leads, error } = await q;
+      if (error) throw error;
+      const rows = (leads ?? []) as any[];
+      const custIds = Array.from(new Set(rows.map((r) => r.customer_id).filter(Boolean))) as string[];
+      let lastVisitByCust = new Map<string, string>();
+      if (custIds.length) {
+        const { data: gaps } = await supabase
+          .from("visit_gap_scores")
+          .select("customer_id, last_visit_date")
+          .in("customer_id", custIds);
+        lastVisitByCust = new Map((gaps ?? []).map((g: any) => [g.customer_id, g.last_visit_date]));
+      }
+      const userIds = Array.from(new Set(rows.map((r) => r.assigned_to).filter(Boolean))) as string[];
+      let profileMap = new Map<string, any>();
+      if (userIds.length) {
+        const { data: ps } = await supabase.from("profiles").select("id, full_name, email").in("id", userIds);
+        profileMap = new Map((ps ?? []).map((p: any) => [p.id, p]));
+      }
+      return rows.map((r) => ({
+        ...r,
+        last_visit: r.customer_id ? lastVisitByCust.get(r.customer_id) : null,
+        rep: profileMap.get(r.assigned_to)?.full_name ?? profileMap.get(r.assigned_to)?.email ?? "—",
+      }));
+    },
+  });
+
+  const rows = data ?? [];
+  const bdt = (n: number) => `৳ ${n.toLocaleString()}`;
+  const weightedTotal = rows.reduce((s, r) => s + Number(r.expected_value ?? 0) * (Number(r.probability ?? 0) / 100), 0);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Projected to close · next 30 days</CardTitle>
+        <CardDescription>
+          Deals in pricing / negotiation / closure with an expected close date within 30 days.
+          Weighted total: <span className="font-medium text-foreground">{bdt(Math.round(weightedTotal))}</span>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {rows.length === 0 ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">No deals projected to close in the next 30 days.</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account</TableHead>
+                <TableHead>Rep</TableHead>
+                <TableHead>Stage</TableHead>
+                <TableHead className="text-right">Value</TableHead>
+                <TableHead className="text-right">P%</TableHead>
+                <TableHead className="text-right">Weighted</TableHead>
+                <TableHead>Close date</TableHead>
+                <TableHead>Last visit</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((r) => {
+                const value = Number(r.expected_value ?? 0);
+                const weighted = value * (Number(r.probability ?? 0) / 100);
+                const daysSinceVisit = r.last_visit
+                  ? Math.floor((Date.now() - new Date(r.last_visit).getTime()) / 86400000)
+                  : null;
+                const needsVisit = daysSinceVisit == null || daysSinceVisit > 14;
+                return (
+                  <TableRow key={r.id} className={needsVisit ? "bg-red-50 dark:bg-red-950/20" : ""}>
+                    <TableCell className="font-medium">{r.customer_name}{r.company_name && <span className="text-muted-foreground"> · {r.company_name}</span>}</TableCell>
+                    <TableCell>{r.rep}</TableCell>
+                    <TableCell><Badge variant="secondary" className="capitalize">{r.stage}</Badge></TableCell>
+                    <TableCell className="text-right tabular-nums">{bdt(value)}</TableCell>
+                    <TableCell className="text-right tabular-nums">{r.probability ?? 0}%</TableCell>
+                    <TableCell className="text-right tabular-nums">{bdt(Math.round(weighted))}</TableCell>
+                    <TableCell className="text-xs">{r.expected_close_date}</TableCell>
+                    <TableCell className="text-xs">
+                      {r.last_visit ? `${daysSinceVisit}d ago` : <span className="text-red-600 font-medium">never</span>}
+                      {needsVisit && <div className="text-[10px] text-red-600 font-medium">Needs a visit before closing</div>}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
