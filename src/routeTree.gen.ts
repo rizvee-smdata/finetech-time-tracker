@@ -81,6 +81,7 @@ import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/
 import { Route as AuthenticatedVisitsLeaderboardRouteImport } from './routes/_authenticated/visits.leaderboard'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
+import { Route as AuthenticatedVisitsDueRouteImport } from './routes/_authenticated/visits.due'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedVisitsConfirmationsRouteImport } from './routes/_authenticated/visits.confirmations'
@@ -606,6 +607,11 @@ const AuthenticatedVisitsHeatmapRoute =
     path: '/visits/heatmap',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsDueRoute = AuthenticatedVisitsDueRouteImport.update({
+  id: '/visits/due',
+  path: '/visits/due',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVisitsDealCorrelationRoute =
   AuthenticatedVisitsDealCorrelationRouteImport.update({
     id: '/visits/deal-correlation',
@@ -1535,6 +1541,7 @@ export interface FileRoutesByFullPath {
   '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/due': typeof AuthenticatedVisitsDueRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -1731,6 +1738,7 @@ export interface FileRoutesByTo {
   '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/due': typeof AuthenticatedVisitsDueRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -1941,6 +1949,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/_authenticated/visits/due': typeof AuthenticatedVisitsDueRoute
   '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/_authenticated/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -2151,6 +2160,7 @@ export interface FileRouteTypes {
     | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/due'
     | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/leaderboard'
@@ -2347,6 +2357,7 @@ export interface FileRouteTypes {
     | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/due'
     | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/leaderboard'
@@ -2556,6 +2567,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/confirmations'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
+    | '/_authenticated/visits/due'
     | '/_authenticated/visits/heatmap'
     | '/_authenticated/visits/integrity'
     | '/_authenticated/visits/leaderboard'
@@ -3146,6 +3158,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/heatmap'
       fullPath: '/visits/heatmap'
       preLoaderRoute: typeof AuthenticatedVisitsHeatmapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/due': {
+      id: '/_authenticated/visits/due'
+      path: '/visits/due'
+      fullPath: '/visits/due'
+      preLoaderRoute: typeof AuthenticatedVisitsDueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/deal-correlation': {
@@ -4588,6 +4607,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsConfirmationsRoute: typeof AuthenticatedVisitsConfirmationsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
+  AuthenticatedVisitsDueRoute: typeof AuthenticatedVisitsDueRoute
   AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
   AuthenticatedVisitsLeaderboardRoute: typeof AuthenticatedVisitsLeaderboardRoute
@@ -4676,6 +4696,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
     AuthenticatedVisitsDealCorrelationRoute,
+  AuthenticatedVisitsDueRoute: AuthenticatedVisitsDueRoute,
   AuthenticatedVisitsHeatmapRoute: AuthenticatedVisitsHeatmapRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
   AuthenticatedVisitsLeaderboardRoute: AuthenticatedVisitsLeaderboardRoute,
