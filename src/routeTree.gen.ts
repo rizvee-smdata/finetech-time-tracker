@@ -209,6 +209,7 @@ import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/publ
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
 import { Route as ApiPublicHooksCopilotAnomaliesCronRouteImport } from './routes/api/public/hooks/copilot-anomalies-cron'
+import { Route as ApiPublicHooksComputeVisitGapsRouteImport } from './routes/api/public/hooks/compute-visit-gaps'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
@@ -1342,6 +1343,12 @@ const ApiPublicHooksCopilotAnomaliesCronRoute =
     path: '/api/public/hooks/copilot-anomalies-cron',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksComputeVisitGapsRoute =
+  ApiPublicHooksComputeVisitGapsRouteImport.update({
+    id: '/api/public/hooks/compute-visit-gaps',
+    path: '/api/public/hooks/compute-visit-gaps',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -1583,6 +1590,7 @@ export interface FileRoutesByFullPath {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -1780,6 +1788,7 @@ export interface FileRoutesByTo {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -1991,6 +2000,7 @@ export interface FileRoutesById {
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -2202,6 +2212,7 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2399,6 +2410,7 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2609,6 +2621,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2637,6 +2650,7 @@ export interface RootRouteChildren {
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksComputeVisitGapsRoute: typeof ApiPublicHooksComputeVisitGapsRoute
   ApiPublicHooksCopilotAnomaliesCronRoute: typeof ApiPublicHooksCopilotAnomaliesCronRoute
   ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -4056,6 +4070,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCopilotAnomaliesCronRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/compute-visit-gaps': {
+      id: '/api/public/hooks/compute-visit-gaps'
+      path: '/api/public/hooks/compute-visit-gaps'
+      fullPath: '/api/public/hooks/compute-visit-gaps'
+      preLoaderRoute: typeof ApiPublicHooksComputeVisitGapsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks/projects/$projectId': {
       id: '/_authenticated/tasks/projects/$projectId'
       path: '/$projectId'
@@ -4736,6 +4757,7 @@ const rootRouteChildren: RootRouteChildren = {
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksComputeVisitGapsRoute: ApiPublicHooksComputeVisitGapsRoute,
   ApiPublicHooksCopilotAnomaliesCronRoute:
     ApiPublicHooksCopilotAnomaliesCronRoute,
   ApiPublicHooksCopilotScheduledCronRoute:
