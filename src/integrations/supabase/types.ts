@@ -2590,6 +2590,7 @@ export type Database = {
           deleted_by: string | null
           designation: string | null
           email: string | null
+          expected_visit_interval_days: number | null
           gps_lat: number | null
           gps_lng: number | null
           id: string
@@ -2611,6 +2612,7 @@ export type Database = {
           deleted_by?: string | null
           designation?: string | null
           email?: string | null
+          expected_visit_interval_days?: number | null
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
@@ -2632,6 +2634,7 @@ export type Database = {
           deleted_by?: string | null
           designation?: string | null
           email?: string | null
+          expected_visit_interval_days?: number | null
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
@@ -5728,6 +5731,98 @@ export type Database = {
           },
         ]
       }
+      visit_frequency_rules: {
+        Row: {
+          company_id: string
+          id: string
+          interval_days: number
+          tier: Database["public"]["Enums"]["customer_tier"]
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          id?: string
+          interval_days: number
+          tier: Database["public"]["Enums"]["customer_tier"]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          interval_days?: number
+          tier?: Database["public"]["Enums"]["customer_tier"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_frequency_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visit_gap_scores: {
+        Row: {
+          assigned_rep_id: string | null
+          company_id: string
+          computed_at: string
+          customer_id: string
+          days_since_last_visit: number | null
+          expected_interval_days: number
+          gap_score: number
+          has_near_close: boolean
+          last_visit_date: string | null
+          open_pipeline_value: number
+          priority: string
+          tier: Database["public"]["Enums"]["customer_tier"] | null
+        }
+        Insert: {
+          assigned_rep_id?: string | null
+          company_id: string
+          computed_at?: string
+          customer_id: string
+          days_since_last_visit?: number | null
+          expected_interval_days: number
+          gap_score?: number
+          has_near_close?: boolean
+          last_visit_date?: string | null
+          open_pipeline_value?: number
+          priority: string
+          tier?: Database["public"]["Enums"]["customer_tier"] | null
+        }
+        Update: {
+          assigned_rep_id?: string | null
+          company_id?: string
+          computed_at?: string
+          customer_id?: string
+          days_since_last_visit?: number | null
+          expected_interval_days?: number
+          gap_score?: number
+          has_near_close?: boolean
+          last_visit_date?: string | null
+          open_pipeline_value?: number
+          priority?: string
+          tier?: Database["public"]["Enums"]["customer_tier"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_gap_scores_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_gap_scores_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visit_quality_flags: {
         Row: {
           company_id: string
@@ -5868,6 +5963,51 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visit_snoozes: {
+        Row: {
+          company_id: string
+          created_at: string
+          customer_id: string
+          id: string
+          reason: string | null
+          snoozed_until: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          reason?: string | null
+          snoozed_until: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          reason?: string | null
+          snoozed_until?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_snoozes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_snoozes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -6161,6 +6301,7 @@ export type Database = {
           visits_actual: number
         }[]
       }
+      compute_visit_gaps: { Args: { _company?: string }; Returns: number }
       crm_can_view_lead: {
         Args: { _lead: string; _user: string }
         Returns: boolean

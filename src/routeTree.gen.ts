@@ -81,6 +81,7 @@ import { Route as AuthenticatedVisitsNeedsAttentionRouteImport } from './routes/
 import { Route as AuthenticatedVisitsLeaderboardRouteImport } from './routes/_authenticated/visits.leaderboard'
 import { Route as AuthenticatedVisitsIntegrityRouteImport } from './routes/_authenticated/visits.integrity'
 import { Route as AuthenticatedVisitsHeatmapRouteImport } from './routes/_authenticated/visits.heatmap'
+import { Route as AuthenticatedVisitsDueRouteImport } from './routes/_authenticated/visits.due'
 import { Route as AuthenticatedVisitsDealCorrelationRouteImport } from './routes/_authenticated/visits.deal-correlation'
 import { Route as AuthenticatedVisitsCoverageRouteImport } from './routes/_authenticated/visits.coverage'
 import { Route as AuthenticatedVisitsConfirmationsRouteImport } from './routes/_authenticated/visits.confirmations'
@@ -208,6 +209,7 @@ import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/publ
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
 import { Route as ApiPublicHooksCopilotAnomaliesCronRouteImport } from './routes/api/public/hooks/copilot-anomalies-cron'
+import { Route as ApiPublicHooksComputeVisitGapsRouteImport } from './routes/api/public/hooks/compute-visit-gaps'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
@@ -606,6 +608,11 @@ const AuthenticatedVisitsHeatmapRoute =
     path: '/visits/heatmap',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVisitsDueRoute = AuthenticatedVisitsDueRouteImport.update({
+  id: '/visits/due',
+  path: '/visits/due',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVisitsDealCorrelationRoute =
   AuthenticatedVisitsDealCorrelationRouteImport.update({
     id: '/visits/deal-correlation',
@@ -1336,6 +1343,12 @@ const ApiPublicHooksCopilotAnomaliesCronRoute =
     path: '/api/public/hooks/copilot-anomalies-cron',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksComputeVisitGapsRoute =
+  ApiPublicHooksComputeVisitGapsRouteImport.update({
+    id: '/api/public/hooks/compute-visit-gaps',
+    path: '/api/public/hooks/compute-visit-gaps',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -1535,6 +1548,7 @@ export interface FileRoutesByFullPath {
   '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/due': typeof AuthenticatedVisitsDueRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -1576,6 +1590,7 @@ export interface FileRoutesByFullPath {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -1731,6 +1746,7 @@ export interface FileRoutesByTo {
   '/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/visits/due': typeof AuthenticatedVisitsDueRoute
   '/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -1772,6 +1788,7 @@ export interface FileRoutesByTo {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -1941,6 +1958,7 @@ export interface FileRoutesById {
   '/_authenticated/visits/confirmations': typeof AuthenticatedVisitsConfirmationsRoute
   '/_authenticated/visits/coverage': typeof AuthenticatedVisitsCoverageRoute
   '/_authenticated/visits/deal-correlation': typeof AuthenticatedVisitsDealCorrelationRoute
+  '/_authenticated/visits/due': typeof AuthenticatedVisitsDueRoute
   '/_authenticated/visits/heatmap': typeof AuthenticatedVisitsHeatmapRoute
   '/_authenticated/visits/integrity': typeof AuthenticatedVisitsIntegrityRoute
   '/_authenticated/visits/leaderboard': typeof AuthenticatedVisitsLeaderboardRoute
@@ -1982,6 +2000,7 @@ export interface FileRoutesById {
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -2151,6 +2170,7 @@ export interface FileRouteTypes {
     | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/due'
     | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/leaderboard'
@@ -2192,6 +2212,7 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2347,6 +2368,7 @@ export interface FileRouteTypes {
     | '/visits/confirmations'
     | '/visits/coverage'
     | '/visits/deal-correlation'
+    | '/visits/due'
     | '/visits/heatmap'
     | '/visits/integrity'
     | '/visits/leaderboard'
@@ -2388,6 +2410,7 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2556,6 +2579,7 @@ export interface FileRouteTypes {
     | '/_authenticated/visits/confirmations'
     | '/_authenticated/visits/coverage'
     | '/_authenticated/visits/deal-correlation'
+    | '/_authenticated/visits/due'
     | '/_authenticated/visits/heatmap'
     | '/_authenticated/visits/integrity'
     | '/_authenticated/visits/leaderboard'
@@ -2597,6 +2621,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
@@ -2625,6 +2650,7 @@ export interface RootRouteChildren {
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksComputeVisitGapsRoute: typeof ApiPublicHooksComputeVisitGapsRoute
   ApiPublicHooksCopilotAnomaliesCronRoute: typeof ApiPublicHooksCopilotAnomaliesCronRoute
   ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
@@ -3146,6 +3172,13 @@ declare module '@tanstack/react-router' {
       path: '/visits/heatmap'
       fullPath: '/visits/heatmap'
       preLoaderRoute: typeof AuthenticatedVisitsHeatmapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/visits/due': {
+      id: '/_authenticated/visits/due'
+      path: '/visits/due'
+      fullPath: '/visits/due'
+      preLoaderRoute: typeof AuthenticatedVisitsDueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/visits/deal-correlation': {
@@ -4037,6 +4070,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCopilotAnomaliesCronRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/compute-visit-gaps': {
+      id: '/api/public/hooks/compute-visit-gaps'
+      path: '/api/public/hooks/compute-visit-gaps'
+      fullPath: '/api/public/hooks/compute-visit-gaps'
+      preLoaderRoute: typeof ApiPublicHooksComputeVisitGapsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks/projects/$projectId': {
       id: '/_authenticated/tasks/projects/$projectId'
       path: '/$projectId'
@@ -4588,6 +4628,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVisitsConfirmationsRoute: typeof AuthenticatedVisitsConfirmationsRoute
   AuthenticatedVisitsCoverageRoute: typeof AuthenticatedVisitsCoverageRoute
   AuthenticatedVisitsDealCorrelationRoute: typeof AuthenticatedVisitsDealCorrelationRoute
+  AuthenticatedVisitsDueRoute: typeof AuthenticatedVisitsDueRoute
   AuthenticatedVisitsHeatmapRoute: typeof AuthenticatedVisitsHeatmapRoute
   AuthenticatedVisitsIntegrityRoute: typeof AuthenticatedVisitsIntegrityRoute
   AuthenticatedVisitsLeaderboardRoute: typeof AuthenticatedVisitsLeaderboardRoute
@@ -4676,6 +4717,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVisitsCoverageRoute: AuthenticatedVisitsCoverageRoute,
   AuthenticatedVisitsDealCorrelationRoute:
     AuthenticatedVisitsDealCorrelationRoute,
+  AuthenticatedVisitsDueRoute: AuthenticatedVisitsDueRoute,
   AuthenticatedVisitsHeatmapRoute: AuthenticatedVisitsHeatmapRoute,
   AuthenticatedVisitsIntegrityRoute: AuthenticatedVisitsIntegrityRoute,
   AuthenticatedVisitsLeaderboardRoute: AuthenticatedVisitsLeaderboardRoute,
@@ -4715,6 +4757,7 @@ const rootRouteChildren: RootRouteChildren = {
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksComputeVisitGapsRoute: ApiPublicHooksComputeVisitGapsRoute,
   ApiPublicHooksCopilotAnomaliesCronRoute:
     ApiPublicHooksCopilotAnomaliesCronRoute,
   ApiPublicHooksCopilotScheduledCronRoute:

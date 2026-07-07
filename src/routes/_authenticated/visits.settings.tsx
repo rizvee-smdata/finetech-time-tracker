@@ -217,6 +217,8 @@ function VisitSettingsPage() {
         </div>
       </Card>
 
+      <TierIntervalCard companyId={companyId} readOnly={readOnly} />
+
       <Card className="space-y-1 p-4 text-xs text-muted-foreground">
         <p className="font-medium text-foreground">How alerts work</p>
         <p>• A daily job checks strategic accounts against the threshold and creates in-app reminders for the assigned rep and all listed recipients.</p>
@@ -226,3 +228,84 @@ function VisitSettingsPage() {
     </div>
   );
 }
+
+const DEFAULT_INTERVALS: Record<string, number> = { strategic: 14, standard: 30, low_priority: 60 };
+
+function TierIntervalCard({ companyId, readOnly }: { companyId: string | null; readOnly: boolean }) {
+  const qc = useQueryClient();
+  const [values, setValues] = useState<Record<string, number>>(DEFAULT_INTERVALS);
+
+  const { data: rules } = useQuery({
+    queryKey: ["vfr", companyId],
+    enabled: !!companyId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("visit_frequency_rules")
+        .select("tier, interval_days")
+        .eq("company_id", companyId!);
+      return data ?? [];
+    },
+  });
+
+  useEffect(() => {
+    if (rules) {
+      const merged = { ...DEFAULT_INTERVALS };
+      (rules as any[]).forEach((r) => (merged[r.tier] = r.interval_days));
+      setValues(merged);
+    }
+  }, [rules]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!companyId) return;
+      const rows = TIERS.map((t) => ({
+        company_id: companyId,
+        tier: t,
+        interval_days: values[t] ?? DEFAULT_INTERVALS[t],
+      }));
+      const { error } = await supabase
+        .from("visit_frequency_rules")
+        .upsert(rows, { onConflict: "company_id,tier" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Tier intervals saved");
+      qc.invalidateQueries({ queryKey: ["vfr"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Save failed"),
+  });
+
+  return (
+    <Card className="space-y-4 p-4">
+      <div>
+        <Label className="text-sm font-semibold">Expected visit interval by tier (days)</Label>
+        <p className="text-xs text-muted-foreground">
+          Drives "My visits due" and the gap-score engine. Individual accounts can override this on the customer page.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {TIERS.map((t) => (
+          <div key={t}>
+            <Label className="capitalize text-xs">{t.replace("_", " ")}</Label>
+            <Input
+              type="number"
+              min={1}
+              max={365}
+              value={values[t] ?? ""}
+              disabled={readOnly}
+              onChange={(e) => setValues({ ...values, [t]: Number(e.target.value) })}
+              className="mt-1"
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-end">
+        <Button disabled={readOnly || save.isPending} onClick={() => save.mutate()}>
+          <Save className="mr-1.5 h-4 w-4" />
+          {save.isPending ? "Saving…" : "Save intervals"}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
