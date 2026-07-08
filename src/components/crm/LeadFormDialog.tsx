@@ -15,6 +15,7 @@ import { fetchOems } from "@/lib/crm/oems";
 import { fetchProducts } from "@/lib/crm/products";
 import { fetchPartners } from "@/lib/crm/partners";
 import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 const sb = supabase as any;
 
