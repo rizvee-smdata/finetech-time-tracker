@@ -1,88 +1,107 @@
-# DeskIQ Intelligence Layer
 
-Depth 3 = focused, high-impact AI everywhere — not a token feature in every form. One global agent + the highest-leverage inline assists per module.
+# Form Customization Framework
 
-## 1. Global AI Agent Sidebar (`/_authenticated`)
+Admins get one central **Form Builder** to reshape every major form in the app — rename labels, hide fields, reorder them, and add unlimited custom fields per company. Built-in columns are never dropped, so reports, AI insights, imports, exports, and automations keep working.
 
-A right-side slide-over (CMD+J), context-aware of the current route.
+## What admins can do
 
-- **Component**: `src/components/global/AIAgent.tsx` (sheet, chat UI, streaming).
-- **Server fn**: `src/lib/ai/agent.functions.ts` — `runAgent({ messages, route, context })` using Lovable AI Gateway, `google/gemini-3-flash-preview`, tool-calling enabled.
-- **Tool surface** (executed server-side then applied client-side via a single `applyAction` reducer):
-  - `search_data` — read deals / leads / meetings / tasks / proposals
-  - `update_deal_stage`, `add_deal_interaction`, `create_next_best_action`
-  - `create_task`, `complete_task`
-  - `draft_email`, `draft_proposal_section`
-  - `start_timer`, `stop_timer`
-  - `summarize_meeting`, `link_meeting_to_deal`
-- **Auto-apply**: every tool call returns `{ applied: true, undo: <snapshot> }` and shows an inline "Undo" chip in the chat for 30s. No confirmation modal — user asked for full agent.
-- **Safety rails**: hard-disallow destructive ops (delete deal, delete user, mass updates >5 rows) — agent returns "needs confirmation" instead.
-- **Page context**: each route registers `useAIContext({ summary, entities })` so the agent prompt always carries "you are on /deals/abc — deal: Jamuna Bank, stage Negotiation".
+Per entity (Leads, Customers, Visits, Expenses, Tasks, Contracts):
 
-## 2. Inline AI assists (the high-leverage ones)
+- **Rename** any built-in field's label (e.g. "Customer Name" → "Client")
+- **Hide** built-in fields that aren't relevant (they stay in DB, just not shown)
+- **Reorder** fields via drag-and-drop
+- **Mark required / optional** (overrides default, within safe limits — truly required system fields like `customer_name` stay required)
+- **Add custom fields** of these types:
+  - Text (single-line, multi-line)
+  - Number
+  - Dropdown (single choice, admin defines options)
+  - Multi-select (admin defines options)
+  - Date
+  - Date + time
+  - Checkbox / toggle
+  - File upload (stored in a private bucket, scoped per company)
+  - User picker (team member from same company)
+- **Group** fields into sections/tabs with custom headings
+- **Preview** the resulting form before saving
 
-| Module | Surface | Action |
-|---|---|---|
-| CRM Lead form | "✨ Score & enrich" button | AI scores 0-100 + tags industry/tier/reasoning |
-| CRM Lead detail | "Draft outreach" | Personalized first-touch email (BD market tone) |
-| CRM Lead row | Inline "Next step" chip | One-sentence next action (regenerable) |
-| Deals detail | "Coach me" panel | 3-bullet coaching: risks, what to say, when |
-| Deals pipeline | "Weekly digest" button (top) | Markdown digest of stalled / hot / closing-this-week |
-| Tasks board | "Plan my day" (top of board) | Generates an ordered list with reasoning, one-click apply as task order |
-| Planning new | "Suggest plan" | Drafts plan items from open deals + recent meetings |
-| Visits new | "Summarize notes" on textarea | Cleans up raw notes → structured summary + tags |
-| Meetings ResultsView | (already has AI) — add "Generate follow-up tasks" | Creates tasks from action items in one click |
-| Reports index | "Explain this week" card | Narrative summary of pipeline + time + wins |
+## What stays locked (for safety)
 
-Each assist = one shared `<AIButton>` component + a thin server fn per use-case under `src/lib/ai/assists/`.
+- Built-in fields are never deleted from the database — only hidden
+- A short list of "system-critical" fields per entity can't be hidden (e.g. Lead's `customer_name`, `stage`; Expense's `amount`, `category`). Attempting to hide shows a tooltip explaining why.
+- Field keys (internal identifiers) can't be edited after creation — only labels
 
-## 3. Shared infrastructure
+## Where admins access it
 
-- `src/lib/ai/gateway.ts` — already exists (`ai-gateway.ts`). Reused.
-- `src/lib/ai/agent.functions.ts` — new, the agent loop with tool dispatch.
-- `src/lib/ai/tools.ts` — tool schemas (zod) + server-side executors that read/write the existing localStorage stores via the existing `integrations.ts` helpers.
-- `src/lib/ai/context.tsx` — `<AIContextProvider>` + `useAIContext()` hook; mounted once in `_authenticated/route.tsx`.
-- `src/components/global/AIAgent.tsx` — the sheet, chat list (react-markdown), streaming, undo chips. Keyboard: CMD+J / CTRL+J.
-- `src/components/ai/AIButton.tsx` — small reusable button with spinner + result drawer.
-- `AppShell.tsx` — add a Sparkles trigger next to GlobalSearch on desktop and mobile.
+New **Settings → Form Builder** page with an entity picker at the top (Leads / Customers / Visits / Expenses / Tasks / Contracts). Each entity opens its own builder.
 
-## 4. Architecture notes (technical)
+## Technical section
 
-```text
-User → AIAgent sheet → runAgent serverFn
-                          ↓ (tool call loop)
-                       Gemini decides → returns tool call
-                          ↓
-                       executor (server) returns data OR plan
-                          ↓
-                       sheet applies via window events
-                       (deskiq:deals-updated, deskiq:time-updated, etc.)
-                          ↓
-                       all existing stores auto-rehydrate
+### Data model
+
+Extend the existing `crm_custom_field_defs` pattern into a generic table:
+
+```
+form_field_defs
+├── id, company_id, entity ('lead' | 'customer' | 'visit' | 'expense' | 'task' | 'contract')
+├── field_key (slug, unique per company+entity)
+├── field_kind ('builtin' | 'custom')
+├── field_type ('text' | 'textarea' | 'number' | 'select' | 'multiselect'
+│                | 'date' | 'datetime' | 'boolean' | 'file' | 'user')
+├── label (admin-editable display name)
+├── options jsonb  (for select/multiselect: [{value,label}])
+├── is_hidden, is_required_override, sort_order
+├── section (optional group heading)
+└── is_system_locked (built-in fields we forbid hiding)
 ```
 
-- All state lives in localStorage today; agent reads/writes through the same `useDealsStore`/`useTimeStore`/`useProposalsStore` event channels that already exist — no schema changes, no migrations.
-- Streaming response via SSE through existing `ai-gateway.ts` pattern (already used by `briefing.functions.ts`).
-- One model: `google/gemini-3-flash-preview` for assists, `google/gemini-2.5-pro` only for the agent loop (better tool-calling).
+Seed one `builtin` row per built-in field per company on first access, so admins see the full form and can rename/hide/reorder in one place.
 
-## 5. Out of scope for this pass (call out)
+```
+form_field_values          -- stores custom field data
+├── id, company_id, entity, entity_id (uuid of the lead/customer/etc.)
+├── field_def_id → form_field_defs.id
+└── value jsonb  (typed by field_type)
 
-- Vector search / RAG over past meetings — would need pgvector, ask later.
-- Voice input for the agent — easy follow-up.
-- AI in Attendance, Expenses, Contracts, Surveys, Targets, Reminders — lower leverage, will add if you want a second pass.
-- Confirmation modals on destructive ops are *off* per your "full agent" pick; if you change your mind, flip one flag.
+form_field_files           -- for file-type fields
+├── id, value_id → form_field_values.id
+├── storage_path, file_name, mime_type, size_bytes
+```
 
-## 6. Build order (single pass)
+RLS: all rows scoped to `company_id`; admins manage defs, members read defs and read/write their own values (mirroring parent entity's RLS).
 
-1. `lib/ai/context.tsx` + `_authenticated/route.tsx` wiring
-2. `lib/ai/tools.ts` (schemas + executors)
-3. `lib/ai/agent.functions.ts` (agent loop)
-4. `components/global/AIAgent.tsx` + `AppShell` trigger + CMD+J
-5. `components/ai/AIButton.tsx` + 10 inline assists (one server fn each, ~15 LOC each)
-6. Smoke-check build, fix types
+Storage: new private bucket `form-uploads` with policies scoped by `company_id/entity/entity_id/`.
 
-Estimated ~15 files added, ~6 files touched.
+### UI components
 
----
+- `src/routes/_authenticated/settings.form-builder.tsx` — entity picker + builder canvas
+- `src/components/form-builder/FieldList.tsx` — dnd-kit list (rename, toggle hidden, reorder, edit options)
+- `src/components/form-builder/AddFieldDialog.tsx` — pick type, label, options
+- `src/components/form-builder/FormPreview.tsx` — live render using the same renderer
+- `src/components/form-builder/DynamicFormFields.tsx` — the renderer used by every entity's create/edit dialog. Renders both built-in fields (in the order/labels admins chose) and custom fields.
 
-Approve and I'll build it. Reply with any tweaks (e.g. "skip Reports", "use Gemini Pro for assists too", "require confirmation on destructive tools").
+Each existing form (LeadFormDialog, ExpenseForm, TaskFormDialog, VisitCheckin form, etc.) is refactored to delegate its field layout to `DynamicFormFields`, keeping their existing submit logic. Built-in fields stay bound to their real columns; custom values are saved to `form_field_values` in the same transaction.
+
+### Hooks & helpers
+
+- `useFormSchema(entity)` — fetches defs, merges with built-in registry, returns ordered/filtered field list
+- `useFormValues(entity, entityId)` — fetches custom values for a record
+- `saveCustomFieldValues(entity, entityId, values)` — upsert on submit
+- Built-in field registry per entity (`src/lib/form-builder/registry.ts`) declares which columns exist, their type, and which are system-locked
+
+### Rollout order
+
+1. Migration: `form_field_defs`, `form_field_values`, `form_field_files`, `form-uploads` bucket, RLS, seeding function
+2. Registry + `useFormSchema` + `DynamicFormFields` renderer
+3. Settings → Form Builder page with entity picker (Leads first)
+4. Refactor `LeadFormDialog` to use `DynamicFormFields`
+5. Roll out entity-by-entity: Customers → Visits → Expenses → Tasks → Contracts
+6. Add "Custom fields" columns to list views (opt-in, admin-configurable)
+
+### Compatibility
+
+- Existing `crm_custom_field_defs` data is migrated into `form_field_defs` with `entity='lead'` so nothing is lost.
+- Reports, AI, imports, exports keep reading real columns for built-ins; they gain access to custom values via a generated view per entity.
+
+## Scope note
+
+This is a substantial build — roughly 6 entities × (renderer + refactor) plus the shared framework. If you'd like, I can ship it in phases and start with **Leads + framework** this turn, then tackle the other entities in follow-up turns. Reply "start with leads" or "do everything" and I'll proceed.
