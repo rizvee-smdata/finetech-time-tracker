@@ -15,8 +15,19 @@ import {
 import { toast } from "sonner";
 import { Mail, RefreshCw, CheckCircle2, AlertTriangle, Unplug } from "lucide-react";
 import { format } from "date-fns";
-import { startGmailAuth, disconnectGmail, getMyGmailAccount } from "@/lib/gmail/oauth.functions";
+import {
+  startGmailAuth,
+  disconnectGmail,
+  getMyGmailAccount,
+  getCompanyGmailConfig,
+  saveCompanyGmailConfig,
+  listMyCompanies,
+} from "@/lib/gmail/oauth.functions";
 import { syncGmailForMe } from "@/lib/gmail/sync.functions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const sb = supabase as any;
 
