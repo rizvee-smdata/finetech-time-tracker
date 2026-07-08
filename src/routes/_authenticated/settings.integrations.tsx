@@ -252,3 +252,147 @@ function useIsAdmin(userId?: string) {
     enabled: !!userId,
   });
 }
+
+function AdminGmailConfigPanel() {
+  const qc = useQueryClient();
+  const listFn = useServerFn(listMyCompanies);
+  const getFn = useServerFn(getCompanyGmailConfig);
+  const saveFn = useServerFn(saveCompanyGmailConfig);
+
+  const companies = useQuery({
+    queryKey: ["my-companies"],
+    queryFn: () => listFn(),
+  });
+
+  const [companyId, setCompanyId] = useState<string>("");
+  useEffect(() => {
+    if (!companyId && companies.data && companies.data.length > 0) {
+      setCompanyId(companies.data[0].id);
+    }
+  }, [companies.data, companyId]);
+
+  const cfg = useQuery({
+    queryKey: ["gmail-config", companyId],
+    queryFn: () => getFn({ data: { companyId } }),
+    enabled: !!companyId,
+  });
+
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [workspaceDomain, setWorkspaceDomain] = useState("");
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    if (cfg.data) {
+      setClientId(cfg.data.client_id ?? "");
+      setWorkspaceDomain(cfg.data.workspace_domain ?? "");
+      setEnabled(cfg.data.enabled ?? true);
+      setClientSecret("");
+    } else {
+      setClientId("");
+      setWorkspaceDomain("");
+      setEnabled(true);
+      setClientSecret("");
+    }
+  }, [cfg.data, companyId]);
+
+  const save = useMutation({
+    mutationFn: () =>
+      saveFn({
+        data: { companyId, clientId, clientSecret, workspaceDomain, enabled },
+      }),
+    onSuccess: () => {
+      toast.success("Gmail config saved");
+      qc.invalidateQueries({ queryKey: ["gmail-config", companyId] });
+      setClientSecret("");
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Failed to save"),
+  });
+
+  const list = companies.data ?? [];
+  const hasExisting = !!cfg.data;
+
+  return (
+    <Card className="p-6 space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold">Gmail OAuth configuration (admin)</h2>
+        <p className="text-sm text-muted-foreground">
+          Each company uses its own Google Cloud project. Create OAuth credentials in your Google
+          Cloud console → APIs &amp; Services → Credentials, then paste the values here. Redirect
+          URI to authorize:{" "}
+          <code className="rounded bg-muted px-1">{typeof window !== "undefined" ? `${window.location.origin}/api/public/gmail/callback` : "/api/public/gmail/callback"}</code>
+        </p>
+      </div>
+
+      {list.length > 1 && (
+        <div className="space-y-1">
+          <Label>Company</Label>
+          <Select value={companyId} onValueChange={setCompanyId}>
+            <SelectTrigger className="w-full max-w-md">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {list.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1">
+          <Label>Google Client ID</Label>
+          <Input
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            placeholder="xxxxxxxx.apps.googleusercontent.com"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label>Google Client Secret {hasExisting && <span className="text-muted-foreground text-xs">(leave blank to keep existing)</span>}</Label>
+          <Input
+            type="password"
+            value={clientSecret}
+            onChange={(e) => setClientSecret(e.target.value)}
+            placeholder={hasExisting ? "•••••••• (unchanged)" : "GOCSPX-…"}
+          />
+        </div>
+        <div className="space-y-1">
+          <Label>Workspace domain</Label>
+          <Input
+            value={workspaceDomain}
+            onChange={(e) => setWorkspaceDomain(e.target.value)}
+            placeholder="yourcompany.com"
+          />
+          <p className="text-xs text-muted-foreground">
+            Only @{workspaceDomain || "yourdomain.com"} accounts will be allowed to connect.
+          </p>
+        </div>
+        <div className="space-y-1 flex flex-col justify-end">
+          <div className="flex items-center gap-2">
+            <Switch checked={enabled} onCheckedChange={setEnabled} />
+            <Label>Enable Gmail for this company</Label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <Button
+          onClick={() => {
+            if (!companyId) return toast.error("Select a company");
+            if (hasExisting && !clientSecret) {
+              // keep existing secret: send a marker so server rejects if truly empty
+              return toast.error("Enter the Client Secret to save changes.");
+            }
+            save.mutate();
+          }}
+          disabled={save.isPending}
+        >
+          {save.isPending ? "Saving…" : hasExisting ? "Update config" : "Save config"}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
