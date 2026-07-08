@@ -469,7 +469,7 @@ function CustomerView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {p ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                           {p.customer_name}
                         </button>
                       ) : "—"}
@@ -494,7 +494,7 @@ function CustomerView({ companyId, entity, tf, onJump }: {
               if (!p) return null;
               return (
                 <Button key={pid} variant="outline" size="sm" className="h-7 gap-1"
-                  onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                  onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                   <Handshake className="h-3 w-3" /> {p.customer_name}
                   <ChevronRight className="h-3 w-3" />
                 </Button>
@@ -653,7 +653,7 @@ function PartnerView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {cust ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: cust.id, name: cust.customer_name, type: "customer" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: cust.id, name: cust.customer_name, type: "customer" }))}>
                           {cust.customer_name}
                         </button>
                       ) : "—"}
@@ -856,7 +856,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {cust ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: cust.id, name: cust.customer_name, type: "customer" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: cust.id, name: cust.customer_name, type: "customer" }))}>
                           {cust.customer_name}
                         </button>
                       ) : "—"}
@@ -867,7 +867,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {p ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                           {p.customer_name}
                         </button>
                       ) : "—"}
