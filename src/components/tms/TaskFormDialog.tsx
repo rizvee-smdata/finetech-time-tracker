@@ -123,6 +123,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
         status_id: statusId,
         is_private: isPrivate,
         created_by: editing?.created_by ?? user.id,
+        custom_fields: customFields as any,
       };
 
       let taskId: string;
