@@ -138,7 +138,9 @@ export async function getFreshToken(
     return { accessToken: acc.access_token, gmailAddress: acc.gmail_address };
   }
   try {
-    const tk = await refreshAccessToken(acc.refresh_token);
+    if (!acc.company_id) throw new Error("Gmail account is missing company assignment.");
+    const config = await getCompanyGoogleConfig(supabaseAdmin, acc.company_id);
+    const tk = await refreshAccessToken(acc.refresh_token, config);
     const newExpiry = new Date(Date.now() + tk.expires_in * 1000).toISOString();
     await supabaseAdmin
       .from("gmail_accounts")
