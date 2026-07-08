@@ -223,7 +223,7 @@ function VisitSettingsPage() {
         <p className="font-medium text-foreground">How alerts work</p>
         <p>• A daily job checks strategic accounts against the threshold and creates in-app reminders for the assigned rep and all listed recipients.</p>
         <p>• Each account-alert pair is deduplicated within one threshold window so reps aren't spammed.</p>
-        <p>• The Monday summary creates a reminder pointing recipients to the AI Insights panel under <span className="font-medium">Needs Attention</span>.</p>
+        <p>• The Saturday summary creates a reminder pointing recipients to the AI Insights panel under <span className="font-medium">Needs Attention</span>.</p>
       </Card>
     </div>
   );
