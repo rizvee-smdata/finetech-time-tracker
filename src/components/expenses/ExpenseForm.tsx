@@ -126,7 +126,7 @@ export default function ExpenseForm({ initial, onDone }: Props) {
       receipt_path: finalPath,
       status: submitNow ? ("submitted" as const) : ("draft" as const),
       submitted_at: submitNow ? new Date().toISOString() : null,
-      custom_fields: customFields,
+      custom_fields: customFields as any,
     };
 
     if (initial) {
