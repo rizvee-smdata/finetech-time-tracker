@@ -70,6 +70,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setStatusId(defaultStatusId ?? null);
       setAssigneeIds([]);
       setIsPrivate(false);
+      setCustomFields({});
     }
   }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId]);
 
