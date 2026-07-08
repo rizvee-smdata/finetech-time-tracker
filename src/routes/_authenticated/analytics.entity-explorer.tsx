@@ -498,14 +498,16 @@ function PartnerView({ companyId, entity, tf, onJump }: {
   companyId: string | null; entity: Entity; tf: Timeframe; onJump: (e: Entity) => void;
 }) {
   const { start, end } = tfRange(tf);
+  const ids = entity.ids ?? [entity.id];
+  const idsKey = ids.slice().sort().join(",");
 
   const visits = useQuery({
-    queryKey: ["ea-part-visits", companyId, entity.id, tf],
+    queryKey: ["ea-part-visits", companyId, idsKey, tf],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits")
         .select("id, meeting_at, user_id, discussion_summary, next_action")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .gte("meeting_at", start.toISOString()).lte("meeting_at", end.toISOString())
         .order("meeting_at", { ascending: false });
       return (data ?? []) as any[];
@@ -513,23 +515,23 @@ function PartnerView({ companyId, entity, tf, onJump }: {
   });
 
   const lastVisit = useQuery({
-    queryKey: ["ea-part-lastvisit", companyId, entity.id],
+    queryKey: ["ea-part-lastvisit", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits").select("meeting_at")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .order("meeting_at", { ascending: false }).limit(1);
       return data?.[0]?.meeting_at ?? null;
     },
   });
 
   const referred = useQuery({
-    queryKey: ["ea-part-referred", companyId, entity.id],
+    queryKey: ["ea-part-referred", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("crm_leads")
         .select("id, customer_name, customer_id, stage, expected_value, expected_close_date, assigned_to, won_at, created_at")
-        .eq("company_id", companyId).eq("partner_id", entity.id).is("deleted_at", null);
+        .eq("company_id", companyId).in("partner_id", ids).is("deleted_at", null);
       return (data ?? []) as any[];
     },
   });
