@@ -14,6 +14,7 @@ import { fetchCompanyMembers } from "@/lib/crm/queries";
 import { fetchOems } from "@/lib/crm/oems";
 import { fetchProducts } from "@/lib/crm/products";
 import { fetchPartners } from "@/lib/crm/partners";
+import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
 
 const sb = supabase as any;
 
@@ -60,8 +61,15 @@ export function LeadFormDialog({
       product_id: (lead as any)?.product_id ?? "",
       partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
+      custom_fields: ((lead as any)?.custom_fields ?? {}) as Record<string, unknown>,
     });
   }, [open, lead, user?.id]);
+
+  const customFieldDefs = useQuery({
+    queryKey: ["crm-custom-fields-active", companyId],
+    enabled: !!companyId && open,
+    queryFn: () => fetchCustomFieldDefs(companyId!, { activeOnly: true }),
+  });
 
   const oems = useQuery({
     queryKey: ["crm-oems", companyId],
@@ -112,6 +120,25 @@ export function LeadFormDialog({
   async function save() {
     if (!user || !companyId) return toast.error("Select a company first");
     if (!form.customer_name?.trim()) return toast.error("Customer name required");
+    // Validate custom fields
+    const defs = customFieldDefs.data ?? [];
+    const cfIn = (form.custom_fields ?? {}) as Record<string, unknown>;
+    const cfOut: Record<string, unknown> = {};
+    for (const d of defs) {
+      const raw = cfIn[d.field_key];
+      const str = raw == null ? "" : String(raw).trim();
+      if (d.is_required && str === "") {
+        return toast.error(`${d.label} is required`);
+      }
+      if (str === "") continue;
+      if (d.field_type === "number") {
+        const n = Number(str);
+        if (!Number.isFinite(n)) return toast.error(`${d.label} must be a number`);
+        cfOut[d.field_key] = n;
+      } else {
+        cfOut[d.field_key] = str;
+      }
+    }
     setBusy(true);
     const payload: any = {
       customer_name: form.customer_name.trim(),
@@ -147,6 +174,7 @@ export function LeadFormDialog({
           currency: v.currency || form.currency || "USD",
           notes: v.notes || null,
         })),
+      custom_fields: cfOut,
     };
     const { error } = lead
       ? await sb.from("crm_leads").update(payload).eq("id", lead.id)
@@ -405,9 +433,35 @@ export function LeadFormDialog({
           </div>
 
 
+          {(customFieldDefs.data ?? []).length > 0 && (
+            <div className="rounded-md border p-3">
+              <div className="mb-2 text-xs font-semibold text-muted-foreground">Additional fields</div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {(customFieldDefs.data ?? []).map((d) => {
+                  const val = (form.custom_fields ?? {})[d.field_key];
+                  return (
+                    <Field key={d.id} label={d.is_required ? `${d.label} *` : d.label}>
+                      <Input
+                        type={d.field_type === "number" ? "number" : "text"}
+                        value={val == null ? "" : String(val)}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            custom_fields: { ...(form.custom_fields ?? {}), [d.field_key]: e.target.value },
+                          })
+                        }
+                      />
+                    </Field>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <Field label="Notes">
             <Textarea rows={3} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </Field>
+
 
           {form.stage === "lost" && (
             <Field label="Lost reason">

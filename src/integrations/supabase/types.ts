@@ -1467,6 +1467,56 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_custom_field_defs: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          field_key: string
+          field_type: string
+          id: string
+          is_active: boolean
+          is_required: boolean
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          field_key: string
+          field_type: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          field_key?: string
+          field_type?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_custom_field_defs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_document_templates: {
         Row: {
           body: string
@@ -1668,6 +1718,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          custom_fields: Json
           customer_id: string | null
           customer_name: string
           deleted_at: string | null
@@ -1718,6 +1769,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          custom_fields?: Json
           customer_id?: string | null
           customer_name: string
           deleted_at?: string | null
@@ -1768,6 +1820,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          custom_fields?: Json
           customer_id?: string | null
           customer_name?: string
           deleted_at?: string | null
