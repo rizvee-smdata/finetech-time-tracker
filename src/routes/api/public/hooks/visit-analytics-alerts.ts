@@ -19,7 +19,8 @@ export const Route = createFileRoute("/api/public/hooks/visit-analytics-alerts")
         const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 
         const now = new Date();
-        const isMonday = now.getUTCDay() === 1;
+        // Weekly summary fires on Saturday (business week starts Sat; Friday is the weekly holiday).
+        const isWeeklySummaryDay = now.getUTCDay() === 6;
         const results: any[] = [];
 
         const { data: companies } = await sb.from("visit_analytics_settings")
