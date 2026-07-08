@@ -30,6 +30,7 @@ function NewContract() {
   const [paymentTerms, setPaymentTerms] = useState("");
   const [notes, setNotes] = useState("");
   const [leadId, setLeadId] = useState<string>("");
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
   const wonLeads = useQuery({
     queryKey: ["contracts-won-leads", companyId],
