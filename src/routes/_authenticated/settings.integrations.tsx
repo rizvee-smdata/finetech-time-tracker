@@ -180,6 +180,8 @@ function IntegrationsPage() {
         </div>
       </Card>
 
+      {isAdmin.data && <AdminGmailConfigPanel />}
+
       {isAdmin.data && (
         <Card className="p-6 space-y-3">
           <h2 className="text-lg font-semibold">Team Gmail connections (admin)</h2>
@@ -210,6 +212,7 @@ function IntegrationsPage() {
           </div>
         </Card>
       )}
+
 
       <AlertDialog open={disconnectOpen} onOpenChange={setDisconnectOpen}>
         <AlertDialogContent>
