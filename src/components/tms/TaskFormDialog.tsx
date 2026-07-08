@@ -41,6 +41,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
   const [statusId, setStatusId] = useState<string | null>(defaultStatusId ?? null);
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     if (!open) return;
