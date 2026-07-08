@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -72,6 +72,12 @@ function SettingsPage() {
           <TabsTrigger value="recycle">Recycle Bin</TabsTrigger>
           <TabsTrigger value="audit">Audit Log</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <Link
+            to="/settings/integrations"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Integrations
+          </Link>
         </TabsList>
         <TabsContent value="general" className="space-y-6">
           <CompaniesCard />
