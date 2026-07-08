@@ -51,6 +51,7 @@ import { Route as AuthenticatedVisitsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks.index'
 import { Route as AuthenticatedTargetsIndexRouteImport } from './routes/_authenticated/targets.index'
 import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
@@ -440,6 +441,12 @@ const AuthenticatedSurveysIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSurveysRoute,
+  } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedReportsIndexRoute =
   AuthenticatedReportsIndexRouteImport.update({
@@ -1630,6 +1637,7 @@ export interface FileRoutesByFullPath {
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/reports/': typeof AuthenticatedReportsIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -1684,7 +1692,6 @@ export interface FileRoutesByTo {
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/scan': typeof AuthenticatedScanRouteWithChildren
   '/scorecard': typeof AuthenticatedScorecardRouteWithChildren
-  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
@@ -1835,6 +1842,7 @@ export interface FileRoutesByTo {
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
   '/reports': typeof AuthenticatedReportsIndexRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/surveys': typeof AuthenticatedSurveysIndexRoute
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
@@ -2054,6 +2062,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/surveys/': typeof AuthenticatedSurveysIndexRoute
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -2273,6 +2282,7 @@ export interface FileRouteTypes {
     | '/proposals/'
     | '/reminders/'
     | '/reports/'
+    | '/settings/'
     | '/surveys/'
     | '/targets/'
     | '/tasks/'
@@ -2327,7 +2337,6 @@ export interface FileRouteTypes {
     | '/preferences'
     | '/scan'
     | '/scorecard'
-    | '/settings'
     | '/team'
     | '/email/unsubscribe'
     | '/q/$token'
@@ -2478,6 +2487,7 @@ export interface FileRouteTypes {
     | '/proposals'
     | '/reminders'
     | '/reports'
+    | '/settings'
     | '/surveys'
     | '/targets'
     | '/tasks'
@@ -2696,6 +2706,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
     | '/_authenticated/reports/'
+    | '/_authenticated/settings/'
     | '/_authenticated/surveys/'
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
@@ -3055,6 +3066,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/surveys/'
       preLoaderRoute: typeof AuthenticatedSurveysIndexRouteImport
       parentRoute: typeof AuthenticatedSurveysRoute
+    }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/reports/': {
       id: '/_authenticated/reports/'
@@ -4606,6 +4624,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
 interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
@@ -4613,6 +4632,7 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
     AuthenticatedSettingsIntegrationsRoute,
   AuthenticatedSettingsWhatsappRoute:
     AuthenticatedSettingsWhatsappRouteWithChildren,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 
 const AuthenticatedSettingsRouteWithChildren =
