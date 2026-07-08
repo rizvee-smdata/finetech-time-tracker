@@ -227,6 +227,15 @@ export default function ExpenseForm({ initial, onDone }: Props) {
           </div>
         </div>
 
+        {companyId && (
+          <CustomFieldsSection
+            companyId={companyId}
+            entity="expense"
+            values={customFields}
+            onChange={setCustomFields}
+          />
+        )}
+
         <div className="flex flex-wrap items-center justify-end gap-2 border-t pt-4">
           <Button variant="ghost" onClick={onDone} disabled={saving}>Cancel</Button>
           <Button variant="outline" onClick={() => save(false)} disabled={saving}>Save draft</Button>
