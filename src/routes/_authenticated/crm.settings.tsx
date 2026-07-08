@@ -310,3 +310,119 @@ function StagesTab() {
     </Card>
   );
 }
+
+// =========================================================
+function CustomFieldsTab({ companyId }: { companyId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [label, setLabel] = useState("");
+  const [fieldType, setFieldType] = useState<"text" | "number">("text");
+  const [required, setRequired] = useState(false);
+
+  const list = useQuery({
+    queryKey: ["crm-custom-fields", companyId],
+    queryFn: () => fetchCustomFieldDefs(companyId),
+  });
+
+  async function add() {
+    const trimmed = label.trim();
+    if (!trimmed) return toast.error("Label required");
+    const existingKeys = new Set((list.data ?? []).map((d) => d.field_key));
+    let key = slugifyKey(trimmed);
+    let i = 2;
+    while (existingKeys.has(key)) key = `${slugifyKey(trimmed)}_${i++}`;
+    const sort_order = (list.data ?? []).length;
+    const { error } = await sb.from("crm_custom_field_defs").insert({
+      company_id: companyId,
+      field_key: key,
+      label: trimmed,
+      field_type: fieldType,
+      is_required: required,
+      sort_order,
+      created_by: user?.id,
+    });
+    if (error) return toast.error(error.message);
+    setLabel(""); setFieldType("text"); setRequired(false);
+    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+    toast.success("Custom field added");
+  }
+
+  async function toggleActive(f: CustomFieldDef) {
+    const { error } = await sb.from("crm_custom_field_defs").update({ is_active: !f.is_active }).eq("id", f.id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+  }
+  async function toggleRequired(f: CustomFieldDef) {
+    const { error } = await sb.from("crm_custom_field_defs").update({ is_required: !f.is_required }).eq("id", f.id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+  }
+  async function remove(id: string) {
+    if (!confirm("Delete this custom field? Existing lead values will remain in the database but be hidden.")) return;
+    const { error } = await sb.from("crm_custom_field_defs").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+  }
+
+  return (
+    <>
+      <Card className="p-4 space-y-3">
+        <p className="text-xs text-muted-foreground">
+          Add custom fields to this company's lead form. Fields appear on the New Lead / Edit Lead dialog for everyone in this company.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-[1fr_140px_120px_auto] items-end">
+          <div className="grid gap-1">
+            <Label className="text-xs">Field label</Label>
+            <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Tender Reference, Budget Code" />
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-xs">Type</Label>
+            <Select value={fieldType} onValueChange={(v) => setFieldType(v as "text" | "number")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="number">Number</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 pb-2">
+            <Switch checked={required} onCheckedChange={setRequired} id="req" />
+            <Label htmlFor="req" className="text-xs">Required</Label>
+          </div>
+          <Button onClick={add}><Plus className="mr-2 h-4 w-4" />Add field</Button>
+        </div>
+      </Card>
+
+      <div className="space-y-2">
+        {(list.data ?? []).map((f) => (
+          <Card key={f.id} className="p-3 flex items-center justify-between gap-3 flex-wrap">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{f.label}</span>
+                <Badge variant="outline" className="capitalize">{f.field_type}</Badge>
+                {!f.is_active && <Badge variant="secondary">Inactive</Badge>}
+              </div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">key: <code>{f.field_key}</code></div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Switch checked={f.is_required} onCheckedChange={() => toggleRequired(f)} id={`req-${f.id}`} />
+                <Label htmlFor={`req-${f.id}`} className="text-xs">Required</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={f.is_active} onCheckedChange={() => toggleActive(f)} id={`act-${f.id}`} />
+                <Label htmlFor={`act-${f.id}`} className="text-xs">Active</Label>
+              </div>
+              <Button size="icon" variant="ghost" onClick={() => remove(f.id)}>
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </div>
+          </Card>
+        ))}
+        {(list.data ?? []).length === 0 && (
+          <p className="text-sm text-muted-foreground">No custom fields yet. Add your first one above.</p>
+        )}
+      </div>
+    </>
+  );
+}
