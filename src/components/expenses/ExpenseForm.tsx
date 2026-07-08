@@ -32,6 +32,9 @@ export default function ExpenseForm({ initial, onDone }: Props) {
   const [leadId, setLeadId] = useState<string>(initial?.lead_id ?? "");
   const [receiptPath, setReceiptPath] = useState<string | null>(initial?.receipt_path ?? null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+    ((initial as any)?.custom_fields ?? {}) as Record<string, unknown>,
+  );
 
   const { data: categories } = useQuery({
     queryKey: ["expense-categories", companyId],
