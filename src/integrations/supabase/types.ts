@@ -3257,6 +3257,125 @@ export type Database = {
           },
         ]
       }
+      gmail_accounts: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          gmail_address: string
+          history_id: string | null
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          refresh_token: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          gmail_address: string
+          history_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          gmail_address?: string
+          history_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gmail_notifications: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          lead_id: string
+          read_at: string | null
+          sample_from: string | null
+          sample_subject: string | null
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          lead_id: string
+          read_at?: string | null
+          sample_from?: string | null
+          sample_subject?: string | null
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          lead_id?: string
+          read_at?: string | null
+          sample_from?: string | null
+          sample_subject?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gmail_notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gmail_sync_logs: {
+        Row: {
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          new_emails: number
+          scope: string
+          started_at: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          new_emails?: number
+          scope?: string
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          new_emails?: number
+          scope?: string
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       kb_article_versions: {
         Row: {
           article_id: string
@@ -3475,6 +3594,141 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_contacts: {
+        Row: {
+          created_at: string
+          designation: string | null
+          email: string
+          id: string
+          lead_id: string
+          name: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation?: string | null
+          email: string
+          id?: string
+          lead_id: string
+          name?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string | null
+          email?: string
+          id?: string
+          lead_id?: string
+          name?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_contacts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_email_summaries: {
+        Row: {
+          ball_in_court: string | null
+          based_on_message_ids: string[]
+          generated_at: string
+          lead_id: string
+          next_action: string | null
+          summary_bullets: string[]
+        }
+        Insert: {
+          ball_in_court?: string | null
+          based_on_message_ids?: string[]
+          generated_at?: string
+          lead_id: string
+          next_action?: string | null
+          summary_bullets?: string[]
+        }
+        Update: {
+          ball_in_court?: string | null
+          based_on_message_ids?: string[]
+          generated_at?: string
+          lead_id?: string
+          next_action?: string | null
+          summary_bullets?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_email_summaries_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_emails: {
+        Row: {
+          account_user_id: string
+          body_preview: string | null
+          created_at: string
+          direction: string
+          from_email: string
+          gmail_message_id: string
+          gmail_thread_id: string
+          has_attachments: boolean
+          id: string
+          lead_id: string
+          sent_at: string
+          snippet: string | null
+          subject: string | null
+          to_emails: string[]
+        }
+        Insert: {
+          account_user_id: string
+          body_preview?: string | null
+          created_at?: string
+          direction: string
+          from_email: string
+          gmail_message_id: string
+          gmail_thread_id: string
+          has_attachments?: boolean
+          id?: string
+          lead_id: string
+          sent_at: string
+          snippet?: string | null
+          subject?: string | null
+          to_emails?: string[]
+        }
+        Update: {
+          account_user_id?: string
+          body_preview?: string | null
+          created_at?: string
+          direction?: string
+          from_email?: string
+          gmail_message_id?: string
+          gmail_thread_id?: string
+          has_attachments?: boolean
+          id?: string
+          lead_id?: string
+          sent_at?: string
+          snippet?: string | null
+          subject?: string | null
+          to_emails?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_emails_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
             referencedColumns: ["id"]
           },
         ]
