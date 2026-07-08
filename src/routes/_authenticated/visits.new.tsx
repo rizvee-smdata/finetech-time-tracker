@@ -60,6 +60,7 @@ function NewVisit() {
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
   const { data: contacts = [] } = useQuery({
     queryKey: ["contacts-picker", companyId, contactType],
