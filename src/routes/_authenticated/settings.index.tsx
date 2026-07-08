@@ -39,7 +39,7 @@ import { toast } from "sonner";
 import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Sparkles, Download, DatabaseBackup, Settings as SettingsIcon, RotateCcw } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
-export const Route = createFileRoute("/_authenticated/settings")({
+export const Route = createFileRoute("/_authenticated/settings/")({
   beforeLoad: async () => {
     const { data: s } = await supabase.auth.getSession();
     if (!s.session) throw redirect({ to: "/auth" });
