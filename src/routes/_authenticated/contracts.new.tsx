@@ -67,6 +67,7 @@ function NewContract() {
           notes: notes || null,
           lead_id: leadId || null,
           status: "active",
+          custom_fields: customFields as any,
         }).select("id").single();
       if (error) throw error;
       return data.id as string;
