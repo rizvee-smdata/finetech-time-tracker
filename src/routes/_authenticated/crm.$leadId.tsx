@@ -30,6 +30,8 @@ import { CallsPanel } from "@/components/crm/CallsPanel";
 import { AIInsightsPanel } from "@/components/crm/AIInsightsPanel";
 import { SequencesPanel } from "@/components/crm/SequencesPanel";
 import { LeadScoreCard } from "@/components/crm/LeadScoreCard";
+import { LeadContactsPanel } from "@/components/gmail/LeadContactsPanel";
+import { LeadEmailsTab } from "@/components/gmail/LeadEmailsTab";
 
 
 const sb = supabase as any;
@@ -191,8 +193,10 @@ function LeadDetail() {
       <LeadScoreCard lead={lead as any} activityCount={activities.data?.length ?? 0} />
 
       <Tabs defaultValue="timeline">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="timeline">Timeline ({activities.data?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
+          <TabsTrigger value="contacts">Contacts</TabsTrigger>
           <TabsTrigger value="calls">Calls</TabsTrigger>
           <TabsTrigger value="tasks">Tasks ({tasks.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="quotes">Quotes ({quotes.data?.length ?? 0})</TabsTrigger>
@@ -207,9 +211,18 @@ function LeadDetail() {
           <Timeline items={activities.data ?? []} />
         </TabsContent>
 
+        <TabsContent value="emails" className="space-y-4">
+          <LeadEmailsTab leadId={leadId} />
+        </TabsContent>
+
+        <TabsContent value="contacts" className="space-y-4">
+          <LeadContactsPanel leadId={leadId} />
+        </TabsContent>
+
         <TabsContent value="calls" className="space-y-4">
           <CallsPanel leadId={leadId} userId={user!.id} phone={lead.phone} />
         </TabsContent>
+
 
         <TabsContent value="tasks" className="space-y-4">
           <AddTask leadId={leadId} companyId={lead.company_id} userId={user!.id} />

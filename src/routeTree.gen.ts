@@ -104,6 +104,7 @@ import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
+import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
@@ -742,6 +743,12 @@ const AuthenticatedSettingsWhatsappRoute =
   AuthenticatedSettingsWhatsappRouteImport.update({
     id: '/whatsapp',
     path: '/whatsapp',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsIntegrationsRoute =
+  AuthenticatedSettingsIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedScorecardTeamRoute =
@@ -1569,6 +1576,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -1773,6 +1781,7 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -1991,6 +2000,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2209,6 +2219,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/integrations'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2413,6 +2424,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/integrations'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2630,6 +2642,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
+    | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/whatsapp'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
@@ -3412,6 +3425,13 @@ declare module '@tanstack/react-router' {
       path: '/whatsapp'
       fullPath: '/settings/whatsapp'
       preLoaderRoute: typeof AuthenticatedSettingsWhatsappRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/integrations': {
+      id: '/_authenticated/settings/integrations'
+      path: '/integrations'
+      fullPath: '/settings/integrations'
+      preLoaderRoute: typeof AuthenticatedSettingsIntegrationsRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/scorecard/team': {
@@ -4584,10 +4604,13 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
   )
 
 interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsIntegrationsRoute:
+    AuthenticatedSettingsIntegrationsRoute,
   AuthenticatedSettingsWhatsappRoute:
     AuthenticatedSettingsWhatsappRouteWithChildren,
 }
