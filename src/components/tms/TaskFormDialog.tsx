@@ -57,6 +57,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setStatusId(editing.status_id);
       setAssigneeIds(editing.tms_task_assignees.map((a) => a.user_id));
       setIsPrivate(editing.is_private);
+      setCustomFields((((editing as any).custom_fields) ?? {}) as Record<string, unknown>);
     } else {
       setTitle("");
       setDescription("");
