@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/analytics/entity-explorer"
 });
 
 type EntityType = "customer" | "partner" | "salesperson";
-type Entity = { id: string; name: string; type: EntityType; sub?: string | null };
+type Entity = { id: string; name: string; type: EntityType; sub?: string | null; ids?: string[] };
 type Timeframe = "30" | "60" | "90" | "ytd";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ef4444", "#06b6d4", "#ec4899", "#84cc16"];
