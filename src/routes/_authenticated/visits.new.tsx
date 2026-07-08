@@ -361,6 +361,15 @@ function NewVisit() {
             <Textarea id="remarks" rows={2} value={form.remarks} onChange={set("remarks")} placeholder="Important notes, observations, special requirements." />
           </Field>
 
+          {companyId && (
+            <CustomFieldsSection
+              companyId={companyId}
+              entity="visit"
+              values={customFields}
+              onChange={setCustomFields}
+            />
+          )}
+
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => nav({ to: "/visits" })}>Cancel</Button>
             <Button type="submit" disabled={busy}>{busy ? "Saving..." : "Save visit"}</Button>
