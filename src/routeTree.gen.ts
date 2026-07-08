@@ -186,6 +186,7 @@ import { Route as AuthenticatedAttendanceTeamRouteImport } from './routes/_authe
 import { Route as AuthenticatedAttendanceSettingsRouteImport } from './routes/_authenticated/attendance.settings'
 import { Route as AuthenticatedAttendanceReportsRouteImport } from './routes/_authenticated/attendance.reports'
 import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance.history'
+import { Route as AuthenticatedAnalyticsEntityExplorerRouteImport } from './routes/_authenticated/analytics.entity-explorer'
 import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenticated/ai-visits.new'
 import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_authenticated/ai-visits.history'
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
@@ -1211,6 +1212,12 @@ const AuthenticatedAttendanceHistoryRoute =
     path: '/history',
     getParentRoute: () => AuthenticatedAttendanceRoute,
   } as any)
+const AuthenticatedAnalyticsEntityExplorerRoute =
+  AuthenticatedAnalyticsEntityExplorerRouteImport.update({
+    id: '/analytics/entity-explorer',
+    path: '/analytics/entity-explorer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAiVisitsNewRoute =
   AuthenticatedAiVisitsNewRouteImport.update({
     id: '/ai-visits/new',
@@ -1444,6 +1451,7 @@ export interface FileRoutesByFullPath {
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
+  '/analytics/entity-explorer': typeof AuthenticatedAnalyticsEntityExplorerRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1642,6 +1650,7 @@ export interface FileRoutesByTo {
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
+  '/analytics/entity-explorer': typeof AuthenticatedAnalyticsEntityExplorerRoute
   '/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -1854,6 +1863,7 @@ export interface FileRoutesById {
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/_authenticated/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/_authenticated/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
+  '/_authenticated/analytics/entity-explorer': typeof AuthenticatedAnalyticsEntityExplorerRoute
   '/_authenticated/attendance/history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/attendance/reports': typeof AuthenticatedAttendanceReportsRoute
   '/_authenticated/attendance/settings': typeof AuthenticatedAttendanceSettingsRoute
@@ -2066,6 +2076,7 @@ export interface FileRouteTypes {
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
+    | '/analytics/entity-explorer'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -2264,6 +2275,7 @@ export interface FileRouteTypes {
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
+    | '/analytics/entity-explorer'
     | '/attendance/history'
     | '/attendance/reports'
     | '/attendance/settings'
@@ -2475,6 +2487,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai-visits/$id'
     | '/_authenticated/ai-visits/history'
     | '/_authenticated/ai-visits/new'
+    | '/_authenticated/analytics/entity-explorer'
     | '/_authenticated/attendance/history'
     | '/_authenticated/attendance/reports'
     | '/_authenticated/attendance/settings'
@@ -3909,6 +3922,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedAttendanceRoute
     }
+    '/_authenticated/analytics/entity-explorer': {
+      id: '/_authenticated/analytics/entity-explorer'
+      path: '/analytics/entity-explorer'
+      fullPath: '/analytics/entity-explorer'
+      preLoaderRoute: typeof AuthenticatedAnalyticsEntityExplorerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ai-visits/new': {
       id: '/_authenticated/ai-visits/new'
       path: '/ai-visits/new'
@@ -4605,6 +4625,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
   AuthenticatedAiVisitsHistoryRoute: typeof AuthenticatedAiVisitsHistoryRoute
   AuthenticatedAiVisitsNewRoute: typeof AuthenticatedAiVisitsNewRoute
+  AuthenticatedAnalyticsEntityExplorerRoute: typeof AuthenticatedAnalyticsEntityExplorerRoute
   AuthenticatedClientsHealthRoute: typeof AuthenticatedClientsHealthRoute
   AuthenticatedCoachHistoryRoute: typeof AuthenticatedCoachHistoryRoute
   AuthenticatedCoachMeRoute: typeof AuthenticatedCoachMeRoute
@@ -4693,6 +4714,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
   AuthenticatedAiVisitsHistoryRoute: AuthenticatedAiVisitsHistoryRoute,
   AuthenticatedAiVisitsNewRoute: AuthenticatedAiVisitsNewRoute,
+  AuthenticatedAnalyticsEntityExplorerRoute:
+    AuthenticatedAnalyticsEntityExplorerRoute,
   AuthenticatedClientsHealthRoute: AuthenticatedClientsHealthRoute,
   AuthenticatedCoachHistoryRoute: AuthenticatedCoachHistoryRoute,
   AuthenticatedCoachMeRoute: AuthenticatedCoachMeRoute,
