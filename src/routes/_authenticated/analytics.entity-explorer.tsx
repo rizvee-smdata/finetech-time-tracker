@@ -148,7 +148,7 @@ function EntitySearch({
           id: g.ids[0],
           ids: g.ids,
           name: g.name,
-          type: kind as const,
+          type: kind,
           sub: kind === "customer" ? (g.tier ?? g.region) : g.region,
         }));
     };
