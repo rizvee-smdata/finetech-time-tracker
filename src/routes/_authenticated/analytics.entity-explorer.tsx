@@ -126,14 +126,34 @@ function EntitySearch({
 
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const customers: Entity[] = (accounts.data ?? [])
-      .filter((a) => a.kind === "customer" && (!needle || a.customer_name.toLowerCase().includes(needle)))
-      .slice(0, 8)
-      .map((a) => ({ id: a.id, name: a.customer_name, type: "customer" as const, sub: a.tier ?? a.region }));
-    const partners: Entity[] = (accounts.data ?? [])
-      .filter((a) => a.kind === "partner" && (!needle || a.customer_name.toLowerCase().includes(needle)))
-      .slice(0, 8)
-      .map((a) => ({ id: a.id, name: a.customer_name, type: "partner" as const, sub: a.region }));
+    const groupByName = (kind: "customer" | "partner"): Entity[] => {
+      const rows = (accounts.data ?? []).filter(
+        (a) => a.kind === kind && (!needle || a.customer_name.toLowerCase().includes(needle)),
+      );
+      const groups = new Map<string, { name: string; ids: string[]; tier: string | null; region: string | null }>();
+      for (const r of rows) {
+        const key = r.customer_name.trim().toLowerCase();
+        const g = groups.get(key);
+        if (g) {
+          g.ids.push(r.id);
+          if (!g.tier && r.tier) g.tier = r.tier;
+          if (!g.region && r.region) g.region = r.region;
+        } else {
+          groups.set(key, { name: r.customer_name, ids: [r.id], tier: r.tier, region: r.region });
+        }
+      }
+      return Array.from(groups.values())
+        .slice(0, 8)
+        .map((g) => ({
+          id: g.ids[0],
+          ids: g.ids,
+          name: g.name,
+          type: kind as const,
+          sub: kind === "customer" ? (g.tier ?? g.region) : g.region,
+        }));
+    };
+    const customers = groupByName("customer");
+    const partners = groupByName("partner");
     const reps: Entity[] = ((members.data ?? []) as any[])
       .filter((m) => {
         const label = (m.full_name || m.email || "").toLowerCase();
