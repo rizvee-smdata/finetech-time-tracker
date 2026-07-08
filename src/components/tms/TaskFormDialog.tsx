@@ -268,6 +268,16 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
             </ScrollArea>
           </div>
 
+          {companyId && (
+            <CustomFieldsSection
+              companyId={companyId}
+              entity="task"
+              values={customFields}
+              onChange={setCustomFields}
+              members={(members.data ?? []).map((m) => ({ id: m.id, label: personName(m) }))}
+            />
+          )}
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={save.isPending}>{save.isPending ? "Saving..." : "Save"}</Button>
