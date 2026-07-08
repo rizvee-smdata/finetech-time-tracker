@@ -307,14 +307,16 @@ function CustomerView({ companyId, entity, tf, onJump }: {
   companyId: string | null; entity: Entity; tf: Timeframe; onJump: (e: Entity) => void;
 }) {
   const { start, end } = tfRange(tf);
+  const ids = entity.ids ?? [entity.id];
+  const idsKey = ids.slice().sort().join(",");
 
   const visits = useQuery({
-    queryKey: ["ea-cust-visits", companyId, entity.id, tf],
+    queryKey: ["ea-cust-visits", companyId, idsKey, tf],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits")
         .select("id, meeting_at, user_id, discussion_summary, next_action, contact_type, company")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .gte("meeting_at", start.toISOString()).lte("meeting_at", end.toISOString())
         .order("meeting_at", { ascending: false });
       return (data ?? []) as any[];
@@ -322,26 +324,27 @@ function CustomerView({ companyId, entity, tf, onJump }: {
   });
 
   const lastVisit = useQuery({
-    queryKey: ["ea-cust-lastvisit", companyId, entity.id],
+    queryKey: ["ea-cust-lastvisit", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits").select("meeting_at")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .order("meeting_at", { ascending: false }).limit(1);
       return data?.[0]?.meeting_at ?? null;
     },
   });
 
   const leads = useQuery({
-    queryKey: ["ea-cust-leads", companyId, entity.id],
+    queryKey: ["ea-cust-leads", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("crm_leads")
         .select("id, customer_name, company_name, stage, expected_value, probability, expected_close_date, assigned_to, lead_source, partner_id, won_at")
-        .eq("company_id", companyId).eq("customer_id", entity.id).is("deleted_at", null);
+        .eq("company_id", companyId).in("customer_id", ids).is("deleted_at", null);
       return (data ?? []) as any[];
     },
   });
+
 
   const profileIds = [...(visits.data ?? []).map((v) => v.user_id), ...(leads.data ?? []).map((l) => l.assigned_to)];
   const profiles = useProfiles(profileIds);
