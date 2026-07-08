@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { personName } from "@/lib/tms/utils";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type Props = {
   open: boolean;
