@@ -183,7 +183,7 @@ function VisitSettingsPage() {
         <div className="flex items-center justify-between rounded border p-3">
           <div>
             <Label className="text-sm">Weekly summary digest</Label>
-            <p className="text-xs text-muted-foreground">Every Monday, recipients get a reminder to review AI insights.</p>
+            <p className="text-xs text-muted-foreground">Every Saturday, recipients get a reminder to review AI insights.</p>
           </div>
           <Switch checked={weeklyEnabled} onCheckedChange={setWeeklyEnabled} disabled={readOnly} />
         </div>
