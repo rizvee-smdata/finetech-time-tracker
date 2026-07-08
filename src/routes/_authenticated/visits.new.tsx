@@ -204,6 +204,7 @@ function NewVisit() {
       next_action: form.next_action.trim() || null,
       next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
       remarks: form.remarks.trim() || null,
+      custom_fields: customFields as any,
     };
     const { error } = await supabase.from("customer_visits").insert({ ...payload, contact_type: contactType });
     setBusy(false);
