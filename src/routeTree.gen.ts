@@ -112,6 +112,7 @@ import { Route as AuthenticatedScanHistoryRouteImport } from './routes/_authenti
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
 import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
+import { Route as AuthenticatedReportsLeadsRouteImport } from './routes/_authenticated/reports.leads'
 import { Route as AuthenticatedRemindersPreferencesRouteImport } from './routes/_authenticated/reminders.preferences'
 import { Route as AuthenticatedProposalsTemplatesRouteImport } from './routes/_authenticated/proposals.templates'
 import { Route as AuthenticatedProposalsNewRouteImport } from './routes/_authenticated/proposals.new'
@@ -785,6 +786,12 @@ const AuthenticatedReportsSalesRoute =
   AuthenticatedReportsSalesRouteImport.update({
     id: '/sales',
     path: '/sales',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedReportsLeadsRoute =
+  AuthenticatedReportsLeadsRouteImport.update({
+    id: '/leads',
+    path: '/leads',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
 const AuthenticatedRemindersPreferencesRoute =
@@ -1526,6 +1533,7 @@ export interface FileRoutesByFullPath {
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -1725,6 +1733,7 @@ export interface FileRoutesByTo {
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -1938,6 +1947,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/_authenticated/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/_authenticated/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/_authenticated/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -2151,6 +2161,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/proposals/templates'
     | '/reminders/preferences'
+    | '/reports/leads'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -2350,6 +2361,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/proposals/templates'
     | '/reminders/preferences'
+    | '/reports/leads'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -2562,6 +2574,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals/new'
     | '/_authenticated/proposals/templates'
     | '/_authenticated/reminders/preferences'
+    | '/_authenticated/reports/leads'
     | '/_authenticated/reports/sales'
     | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
@@ -3402,6 +3415,13 @@ declare module '@tanstack/react-router' {
       path: '/sales'
       fullPath: '/reports/sales'
       preLoaderRoute: typeof AuthenticatedReportsSalesRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reports/leads': {
+      id: '/_authenticated/reports/leads'
+      path: '/leads'
+      fullPath: '/reports/leads'
+      preLoaderRoute: typeof AuthenticatedReportsLeadsRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
     '/_authenticated/reminders/preferences': {
@@ -4416,6 +4436,7 @@ const AuthenticatedRemindersRouteWithChildren =
   )
 
 interface AuthenticatedReportsRouteChildren {
+  AuthenticatedReportsLeadsRoute: typeof AuthenticatedReportsLeadsRoute
   AuthenticatedReportsSalesRoute: typeof AuthenticatedReportsSalesRoute
   AuthenticatedReportsTeamRoute: typeof AuthenticatedReportsTeamRoute
   AuthenticatedReportsVisitsRoute: typeof AuthenticatedReportsVisitsRoute
@@ -4423,6 +4444,7 @@ interface AuthenticatedReportsRouteChildren {
 }
 
 const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
+  AuthenticatedReportsLeadsRoute: AuthenticatedReportsLeadsRoute,
   AuthenticatedReportsSalesRoute: AuthenticatedReportsSalesRoute,
   AuthenticatedReportsTeamRoute: AuthenticatedReportsTeamRoute,
   AuthenticatedReportsVisitsRoute: AuthenticatedReportsVisitsRoute,
