@@ -181,6 +181,7 @@ const staffSection: NavSection = {
     { to: "/team", label: "Team", icon: Users },
     { to: "/manager/dashboard", label: "Manager", icon: LayoutDashboard },
     { to: "/reports", label: "Reports", icon: BarChart3 },
+    { to: "/analytics/entity-explorer", label: "Entity Analyzer", icon: Search },
     { to: "/predictor/team", label: "Team Predictor", icon: TrendingUp },
     { to: "/coach/team", label: "Team Coaching", icon: Sparkles },
     { to: "/admin/routes", label: "Team Routes Map", icon: NavigationIcon },
