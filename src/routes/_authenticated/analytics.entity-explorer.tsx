@@ -796,7 +796,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
               const idx = e?.activeTooltipIndex;
               if (idx == null) return;
               const item = perAccount[idx];
-              if (item?.id) onJump({ id: item.id, name: item.name, type: item.kind === "partner" ? "partner" : "customer" });
+              if (item?.id) onJump(expandAccountEntity(accounts.data, { id: item.id, name: item.name, type: item.kind === "partner" ? "partner" : "customer" }));
             }}>
             <XAxis type="number" fontSize={11} allowDecimals={false} />
             <YAxis type="category" dataKey="name" fontSize={11} width={140} />
