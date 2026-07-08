@@ -3295,6 +3295,176 @@ export type Database = {
           },
         ]
       }
+      form_field_defs: {
+        Row: {
+          company_id: string
+          created_at: string
+          entity: Database["public"]["Enums"]["form_entity"]
+          field_key: string
+          field_kind: Database["public"]["Enums"]["form_field_kind"]
+          field_type: Database["public"]["Enums"]["form_field_type"]
+          help_text: string | null
+          id: string
+          is_hidden: boolean
+          is_required_override: boolean | null
+          is_system_locked: boolean
+          label: string
+          options: Json
+          placeholder: string | null
+          section: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          entity: Database["public"]["Enums"]["form_entity"]
+          field_key: string
+          field_kind?: Database["public"]["Enums"]["form_field_kind"]
+          field_type: Database["public"]["Enums"]["form_field_type"]
+          help_text?: string | null
+          id?: string
+          is_hidden?: boolean
+          is_required_override?: boolean | null
+          is_system_locked?: boolean
+          label: string
+          options?: Json
+          placeholder?: string | null
+          section?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          entity?: Database["public"]["Enums"]["form_entity"]
+          field_key?: string
+          field_kind?: Database["public"]["Enums"]["form_field_kind"]
+          field_type?: Database["public"]["Enums"]["form_field_type"]
+          help_text?: string | null
+          id?: string
+          is_hidden?: boolean
+          is_required_override?: boolean | null
+          is_system_locked?: boolean
+          label?: string
+          options?: Json
+          placeholder?: string | null
+          section?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_field_defs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_field_files: {
+        Row: {
+          company_id: string
+          created_at: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string | null
+          value_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by?: string | null
+          value_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string | null
+          value_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_field_files_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_field_files_value_id_fkey"
+            columns: ["value_id"]
+            isOneToOne: false
+            referencedRelation: "form_field_values"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_field_values: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          entity: Database["public"]["Enums"]["form_entity"]
+          entity_id: string
+          field_def_id: string
+          id: string
+          updated_at: string
+          value: Json | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          entity: Database["public"]["Enums"]["form_entity"]
+          entity_id: string
+          field_def_id: string
+          id?: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          entity?: Database["public"]["Enums"]["form_entity"]
+          entity_id?: string
+          field_def_id?: string
+          id?: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_field_values_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_field_values_field_def_id_fkey"
+            columns: ["field_def_id"]
+            isOneToOne: false
+            referencedRelation: "form_field_defs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gmail_accounts: {
         Row: {
           access_token: string | null
@@ -6933,6 +7103,25 @@ export type Database = {
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
       customer_tier: "strategic" | "standard" | "low_priority"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
+      form_entity:
+        | "lead"
+        | "customer"
+        | "visit"
+        | "expense"
+        | "task"
+        | "contract"
+      form_field_kind: "builtin" | "custom"
+      form_field_type:
+        | "text"
+        | "textarea"
+        | "number"
+        | "select"
+        | "multiselect"
+        | "date"
+        | "datetime"
+        | "boolean"
+        | "file"
+        | "user"
       notification_category:
         | "general"
         | "lead"
@@ -7159,6 +7348,20 @@ export const Constants = {
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
       customer_tier: ["strategic", "standard", "low_priority"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
+      form_entity: ["lead", "customer", "visit", "expense", "task", "contract"],
+      form_field_kind: ["builtin", "custom"],
+      form_field_type: [
+        "text",
+        "textarea",
+        "number",
+        "select",
+        "multiselect",
+        "date",
+        "datetime",
+        "boolean",
+        "file",
+        "user",
+      ],
       notification_category: [
         "general",
         "lead",
