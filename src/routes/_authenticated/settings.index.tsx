@@ -69,6 +69,12 @@ function SettingsPage() {
           >
             Integrations
           </Link>
+          <Link
+            to="/settings/form-builder"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Form Builder
+          </Link>
         </TabsList>
         <TabsContent value="general" className="space-y-6">
           <CompaniesCard />
