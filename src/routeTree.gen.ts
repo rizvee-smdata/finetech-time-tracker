@@ -208,12 +208,14 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
+import { Route as ApiPublicHooksGmailSyncRouteImport } from './routes/api/public/hooks/gmail-sync'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
 import { Route as ApiPublicHooksCrmLeadCaptureRouteImport } from './routes/api/public/hooks/crm-lead-capture'
 import { Route as ApiPublicHooksCopilotScheduledCronRouteImport } from './routes/api/public/hooks/copilot-scheduled-cron'
 import { Route as ApiPublicHooksCopilotAnomaliesCronRouteImport } from './routes/api/public/hooks/copilot-anomalies-cron'
 import { Route as ApiPublicHooksComputeVisitGapsRouteImport } from './routes/api/public/hooks/compute-visit-gaps'
+import { Route as ApiPublicGmailCallbackRouteImport } from './routes/api/public/gmail/callback'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
@@ -1341,6 +1343,11 @@ const ApiPublicHooksNarrativesWeeklyCronRoute =
     path: '/api/public/hooks/narratives-weekly-cron',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksGmailSyncRoute = ApiPublicHooksGmailSyncRouteImport.update({
+  id: '/api/public/hooks/gmail-sync',
+  path: '/api/public/hooks/gmail-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksDailyBackupRoute =
   ApiPublicHooksDailyBackupRouteImport.update({
     id: '/api/public/hooks/daily-backup',
@@ -1377,6 +1384,11 @@ const ApiPublicHooksComputeVisitGapsRoute =
     path: '/api/public/hooks/compute-visit-gaps',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicGmailCallbackRoute = ApiPublicGmailCallbackRouteImport.update({
+  id: '/api/public/gmail/callback',
+  path: '/api/public/gmail/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedTasksProjectsProjectIdRoute =
   AuthenticatedTasksProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -1621,12 +1633,14 @@ export interface FileRoutesByFullPath {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
   '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1823,12 +1837,14 @@ export interface FileRoutesByTo {
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
   '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2039,12 +2055,14 @@ export interface FileRoutesById {
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
+  '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
   '/api/public/hooks/compute-visit-gaps': typeof ApiPublicHooksComputeVisitGapsRoute
   '/api/public/hooks/copilot-anomalies-cron': typeof ApiPublicHooksCopilotAnomaliesCronRoute
   '/api/public/hooks/copilot-scheduled-cron': typeof ApiPublicHooksCopilotScheduledCronRoute
   '/api/public/hooks/crm-lead-capture': typeof ApiPublicHooksCrmLeadCaptureRoute
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2255,12 +2273,14 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/gmail/callback'
     | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/gmail-sync'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2457,12 +2477,14 @@ export interface FileRouteTypes {
     | '/manager/approvals/visits'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
+    | '/api/public/gmail/callback'
     | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/gmail-sync'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2672,12 +2694,14 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/approvals/visits'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
+    | '/api/public/gmail/callback'
     | '/api/public/hooks/compute-visit-gaps'
     | '/api/public/hooks/copilot-anomalies-cron'
     | '/api/public/hooks/copilot-scheduled-cron'
     | '/api/public/hooks/crm-lead-capture'
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/gmail-sync'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2702,12 +2726,14 @@ export interface RootRouteChildren {
   QTokenRoute: typeof QTokenRoute
   ApiSsoVerifyRoute: typeof ApiSsoVerifyRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicGmailCallbackRoute: typeof ApiPublicGmailCallbackRoute
   ApiPublicHooksComputeVisitGapsRoute: typeof ApiPublicHooksComputeVisitGapsRoute
   ApiPublicHooksCopilotAnomaliesCronRoute: typeof ApiPublicHooksCopilotAnomaliesCronRoute
   ApiPublicHooksCopilotScheduledCronRoute: typeof ApiPublicHooksCopilotScheduledCronRoute
   ApiPublicHooksCrmLeadCaptureRoute: typeof ApiPublicHooksCrmLeadCaptureRoute
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
+  ApiPublicHooksGmailSyncRoute: typeof ApiPublicHooksGmailSyncRoute
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -4116,6 +4142,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksNarrativesWeeklyCronRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/gmail-sync': {
+      id: '/api/public/hooks/gmail-sync'
+      path: '/api/public/hooks/gmail-sync'
+      fullPath: '/api/public/hooks/gmail-sync'
+      preLoaderRoute: typeof ApiPublicHooksGmailSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/daily-backup': {
       id: '/api/public/hooks/daily-backup'
       path: '/api/public/hooks/daily-backup'
@@ -4156,6 +4189,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/compute-visit-gaps'
       fullPath: '/api/public/hooks/compute-visit-gaps'
       preLoaderRoute: typeof ApiPublicHooksComputeVisitGapsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/gmail/callback': {
+      id: '/api/public/gmail/callback'
+      path: '/api/public/gmail/callback'
+      fullPath: '/api/public/gmail/callback'
+      preLoaderRoute: typeof ApiPublicGmailCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/tasks/projects/$projectId': {
@@ -4845,6 +4885,7 @@ const rootRouteChildren: RootRouteChildren = {
   QTokenRoute: QTokenRoute,
   ApiSsoVerifyRoute: ApiSsoVerifyRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicGmailCallbackRoute: ApiPublicGmailCallbackRoute,
   ApiPublicHooksComputeVisitGapsRoute: ApiPublicHooksComputeVisitGapsRoute,
   ApiPublicHooksCopilotAnomaliesCronRoute:
     ApiPublicHooksCopilotAnomaliesCronRoute,
@@ -4853,6 +4894,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksCrmLeadCaptureRoute: ApiPublicHooksCrmLeadCaptureRoute,
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
+  ApiPublicHooksGmailSyncRoute: ApiPublicHooksGmailSyncRoute,
   ApiPublicHooksNarrativesWeeklyCronRoute:
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,
