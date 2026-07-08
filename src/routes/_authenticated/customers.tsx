@@ -404,6 +404,9 @@ function CustomerFormDialog({
   };
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState<Customer | null>(isCreate ? emptyForm : customer);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+    ((customer as any)?.custom_fields as Record<string, unknown>) ?? {},
+  );
   const [dupes, setDupes] = useState<DuplicateHit[] | null>(null);
   const [checking, setChecking] = useState(false);
   const checkDuplicates = useServerFn(findCustomerDuplicates);
