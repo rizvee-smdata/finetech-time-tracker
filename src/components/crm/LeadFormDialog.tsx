@@ -439,7 +439,7 @@ export function LeadFormDialog({
               companyId={companyId}
               entity="lead"
               values={(form.custom_fields ?? {}) as Record<string, unknown>}
-              onChange={(next) => setForm({ ...form, custom_fields: next })}
+              onChange={(next: Record<string, unknown>) => setForm({ ...form, custom_fields: next })}
               members={(members.data ?? []).map((m: any) => ({
                 id: m.id,
                 label: m.full_name || m.email || m.id,
