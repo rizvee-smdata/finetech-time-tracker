@@ -488,6 +488,8 @@ function CreateUserCard() {
 
 // ---------- Users list ----------
 
+const USERS_PAGE_SIZE = 10;
+
 function UsersListCard() {
   const fn = useServerFn(adminListUsers);
   const setMembers = useServerFn(adminSetUserCompanies);
@@ -502,6 +504,9 @@ function UsersListCard() {
   const [draftIds, setDraftIds] = useState<string[]>([]);
   const [pwdUserId, setPwdUserId] = useState<string | null>(null);
   const [newPwd, setNewPwd] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   const m = useMutation({
     mutationFn: async () => setMembers({ data: { user_id: editingUserId!, company_ids: draftIds } }),
@@ -525,14 +530,71 @@ function UsersListCard() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const filteredUsers = useMemo(() => {
+    const all = (users ?? []) as any[];
+    const q = search.trim().toLowerCase();
+    return all.filter((u) => {
+      if (activeTab === "all") {
+        // include all
+      } else if (activeTab === "unassigned") {
+        if ((u.company_ids ?? []).length > 0) return false;
+      } else {
+        if (!(u.company_ids ?? []).includes(activeTab)) return false;
+      }
+      if (!q) return true;
+      return (
+        (u.full_name ?? "").toLowerCase().includes(q) ||
+        (u.email ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [users, activeTab, search]);
+
+  useEffect(() => { setPage(1); }, [activeTab, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / USERS_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * USERS_PAGE_SIZE;
+  const pagedUsers = filteredUsers.slice(pageStart, pageStart + USERS_PAGE_SIZE);
+
+  const tabList = [
+    { id: "all", label: "All", count: (users ?? []).length },
+    ...((companies ?? []) as any[]).map((c) => ({
+      id: c.id,
+      label: c.name,
+      count: (users ?? []).filter((u: any) => (u.company_ids ?? []).includes(c.id)).length,
+    })),
+    { id: "unassigned", label: "Unassigned", count: (users ?? []).filter((u: any) => (u.company_ids ?? []).length === 0).length },
+  ];
+
   return (
     <Card className="p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Users className="h-5 w-5 text-primary" />
-        <h2 className="font-semibold">All users</h2>
+      <div className="mb-4 flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Users className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold">All users</h2>
+          <Badge variant="secondary">{filteredUsers.length}</Badge>
+        </div>
+        <Input
+          placeholder="Search name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+        />
       </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-3">
+        <TabsList className="flex flex-wrap h-auto">
+          {tabList.map((t) => (
+            <TabsTrigger key={t.id} value={t.id} className="gap-2">
+              {t.label}
+              <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">{t.count}</Badge>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
       <div className="divide-y divide-border">
-        {(users ?? []).map((u: any) => {
+        {pagedUsers.map((u: any) => {
           const userCompanies = (companies ?? []).filter((c: any) => u.company_ids?.includes(c.id));
           const isSelf = u.id === user?.id;
           return (
@@ -596,11 +658,37 @@ function UsersListCard() {
             </div>
           );
         })}
-        {!users?.length && <div className="py-6 text-center text-sm text-muted-foreground">No users yet.</div>}
+        {!filteredUsers.length && <div className="py-6 text-center text-sm text-muted-foreground">No users match.</div>}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="text-xs text-muted-foreground">
+            Page {currentPage} of {totalPages} · {filteredUsers.length} user{filteredUsers.length === 1 ? "" : "s"}
+          </div>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="outline" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>Previous</Button>
+            {Array.from({ length: totalPages }).slice(0, 7).map((_, i) => {
+              const p = i + 1;
+              return (
+                <Button
+                  key={p}
+                  size="sm"
+                  variant={p === currentPage ? "default" : "outline"}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </Button>
+              );
+            })}
+            <Button size="sm" variant="outline" disabled={currentPage >= totalPages} onClick={() => setPage(currentPage + 1)}>Next</Button>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
+
 
 // ---------- Import customers ----------
 
