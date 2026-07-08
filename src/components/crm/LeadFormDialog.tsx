@@ -174,6 +174,7 @@ export function LeadFormDialog({
           currency: v.currency || form.currency || "USD",
           notes: v.notes || null,
         })),
+      custom_fields: cfOut,
     };
     const { error } = lead
       ? await sb.from("crm_leads").update(payload).eq("id", lead.id)
