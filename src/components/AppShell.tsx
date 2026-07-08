@@ -106,7 +106,7 @@ const navSections: NavSection[] = [
       { to: "/visits/leaderboard", label: "Field Leaderboard", icon: TrendingUp },
       { to: "/visits/partner-portal", label: "Partner Portal", icon: Handshake },
       { to: "/visits/confirmations", label: "Visit Confirmations", icon: MessageSquare },
-      { to: "/visits/settings", label: "Visit Settings", icon: ClipboardList },
+      
       { to: "/ai-visits/new", label: "AI Visit Summary", icon: Sparkles },
       { to: "/voice/history", label: "Voice Notes", icon: Sparkles },
       { to: "/planning", label: "Planning", icon: RouteIcon },
@@ -188,6 +188,7 @@ const staffSection: NavSection = {
     { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
     { to: "/narratives", label: "Exec Narratives", icon: ScrollText },
     { to: "/ai", label: "Ask AI", icon: Sparkles },
+    { to: "/visits/settings", label: "Visit Settings", icon: Settings },
   ],
 };
 
