@@ -447,6 +447,7 @@ function CustomerFormDialog({
             designation: form.designation?.trim() || null,
             email: form.email?.trim() || null,
             phone: form.phone?.trim() || null,
+            custom_fields: customFields as any,
           })
           .eq("id", form.id);
         if (error) {
