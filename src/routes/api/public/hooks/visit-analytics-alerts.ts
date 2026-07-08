@@ -84,7 +84,7 @@ export const Route = createFileRoute("/api/public/hooks/visit-analytics-alerts")
           }
 
           let weeklyFired = 0;
-          if (isMonday && cfg.weekly_report_enabled && (cfg.weekly_report_recipients ?? []).length > 0) {
+          if (isWeeklySummaryDay && cfg.weekly_report_enabled && (cfg.weekly_report_recipients ?? []).length > 0) {
             for (const uid of cfg.weekly_report_recipients) {
               await sb.from("reminders").insert({
                 user_id: uid,
