@@ -430,6 +430,7 @@ function CustomerFormDialog({
           email: form.email?.trim() || null,
           phone: form.phone?.trim() || null,
           kind: "customer",
+          custom_fields: customFields as any,
         });
         if (error) {
           console.error("Customer insert failed", error);
