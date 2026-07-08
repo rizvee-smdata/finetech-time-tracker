@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { personName } from "@/lib/tms/utils";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type Props = {
   open: boolean;
@@ -40,6 +41,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
   const [statusId, setStatusId] = useState<string | null>(defaultStatusId ?? null);
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     if (!open) return;
@@ -55,6 +57,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setStatusId(editing.status_id);
       setAssigneeIds(editing.tms_task_assignees.map((a) => a.user_id));
       setIsPrivate(editing.is_private);
+      setCustomFields((((editing as any).custom_fields) ?? {}) as Record<string, unknown>);
     } else {
       setTitle("");
       setDescription("");
@@ -67,6 +70,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setStatusId(defaultStatusId ?? null);
       setAssigneeIds([]);
       setIsPrivate(false);
+      setCustomFields({});
     }
   }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId]);
 
@@ -119,6 +123,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
         status_id: statusId,
         is_private: isPrivate,
         created_by: editing?.created_by ?? user.id,
+        custom_fields: customFields as any,
       };
 
       let taskId: string;
@@ -262,6 +267,16 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
               </div>
             </ScrollArea>
           </div>
+
+          {companyId && (
+            <CustomFieldsSection
+              companyId={companyId}
+              entity="task"
+              values={customFields}
+              onChange={setCustomFields}
+              members={(members.data ?? []).map((m) => ({ id: m.id, label: personName(m) }))}
+            />
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Expense, ExpenseCategory } from "@/lib/expenses/types";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 interface Props {
   initial?: Expense;
@@ -31,6 +32,9 @@ export default function ExpenseForm({ initial, onDone }: Props) {
   const [leadId, setLeadId] = useState<string>(initial?.lead_id ?? "");
   const [receiptPath, setReceiptPath] = useState<string | null>(initial?.receipt_path ?? null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+    ((initial as any)?.custom_fields ?? {}) as Record<string, unknown>,
+  );
 
   const { data: categories } = useQuery({
     queryKey: ["expense-categories", companyId],
@@ -122,6 +126,7 @@ export default function ExpenseForm({ initial, onDone }: Props) {
       receipt_path: finalPath,
       status: submitNow ? ("submitted" as const) : ("draft" as const),
       submitted_at: submitNow ? new Date().toISOString() : null,
+      custom_fields: customFields as any,
     };
 
     if (initial) {
@@ -221,6 +226,15 @@ export default function ExpenseForm({ initial, onDone }: Props) {
             </div>
           </div>
         </div>
+
+        {companyId && (
+          <CustomFieldsSection
+            companyId={companyId}
+            entity="expense"
+            values={customFields}
+            onChange={setCustomFields}
+          />
+        )}
 
         <div className="flex flex-wrap items-center justify-end gap-2 border-t pt-4">
           <Button variant="ghost" onClick={onDone} disabled={saving}>Cancel</Button>

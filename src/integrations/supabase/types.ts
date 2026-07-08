@@ -1121,6 +1121,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          custom_fields: Json
           end_date: string | null
           file_name: string | null
           file_path: string | null
@@ -1143,6 +1144,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          custom_fields?: Json
           end_date?: string | null
           file_name?: string | null
           file_path?: string | null
@@ -1165,6 +1167,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          custom_fields?: Json
           end_date?: string | null
           file_name?: string | null
           file_path?: string | null
@@ -2573,6 +2576,7 @@ export type Database = {
           contact_number: string | null
           contact_type: string
           created_at: string
+          custom_fields: Json
           customer_name: string
           designation: string | null
           discussion_summary: string | null
@@ -2604,6 +2608,7 @@ export type Database = {
           contact_number?: string | null
           contact_type?: string
           created_at?: string
+          custom_fields?: Json
           customer_name: string
           designation?: string | null
           discussion_summary?: string | null
@@ -2635,6 +2640,7 @@ export type Database = {
           contact_number?: string | null
           contact_type?: string
           created_at?: string
+          custom_fields?: Json
           customer_name?: string
           designation?: string | null
           discussion_summary?: string | null
@@ -2676,6 +2682,7 @@ export type Database = {
           contact_person: string | null
           created_at: string
           created_by: string | null
+          custom_fields: Json
           customer_name: string
           deleted_at: string | null
           deleted_by: string | null
@@ -2698,6 +2705,7 @@ export type Database = {
           contact_person?: string | null
           created_at?: string
           created_by?: string | null
+          custom_fields?: Json
           customer_name: string
           deleted_at?: string | null
           deleted_by?: string | null
@@ -2720,6 +2728,7 @@ export type Database = {
           contact_person?: string | null
           created_at?: string
           created_by?: string | null
+          custom_fields?: Json
           customer_name?: string
           deleted_at?: string | null
           deleted_by?: string | null
@@ -3005,6 +3014,7 @@ export type Database = {
           company_id: string
           created_at: string
           currency: string
+          custom_fields: Json
           description: string | null
           expense_date: string
           id: string
@@ -3027,6 +3037,7 @@ export type Database = {
           company_id: string
           created_at?: string
           currency?: string
+          custom_fields?: Json
           description?: string | null
           expense_date?: string
           id?: string
@@ -3049,6 +3060,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           currency?: string
+          custom_fields?: Json
           description?: string | null
           expense_date?: string
           id?: string
@@ -5959,6 +5971,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           created_by: string | null
+          custom_fields: Json
           deleted_at: string | null
           description: string | null
           due_date: string | null
@@ -5990,6 +6003,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          custom_fields?: Json
           deleted_at?: string | null
           description?: string | null
           due_date?: string | null
@@ -6021,6 +6035,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          custom_fields?: Json
           deleted_at?: string | null
           description?: string | null
           due_date?: string | null
