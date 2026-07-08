@@ -15,6 +15,7 @@ import { fetchOems } from "@/lib/crm/oems";
 import { fetchProducts } from "@/lib/crm/products";
 import { fetchPartners } from "@/lib/crm/partners";
 import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 const sb = supabase as any;
 
@@ -433,29 +434,17 @@ export function LeadFormDialog({
           </div>
 
 
-          {(customFieldDefs.data ?? []).length > 0 && (
-            <div className="rounded-md border p-3">
-              <div className="mb-2 text-xs font-semibold text-muted-foreground">Additional fields</div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {(customFieldDefs.data ?? []).map((d) => {
-                  const val = (form.custom_fields ?? {})[d.field_key];
-                  return (
-                    <Field key={d.id} label={d.is_required ? `${d.label} *` : d.label}>
-                      <Input
-                        type={d.field_type === "number" ? "number" : "text"}
-                        value={val == null ? "" : String(val)}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            custom_fields: { ...(form.custom_fields ?? {}), [d.field_key]: e.target.value },
-                          })
-                        }
-                      />
-                    </Field>
-                  );
-                })}
-              </div>
-            </div>
+          {companyId && (
+            <CustomFieldsSection
+              companyId={companyId}
+              entity="lead"
+              values={(form.custom_fields ?? {}) as Record<string, unknown>}
+              onChange={(next: Record<string, unknown>) => setForm({ ...form, custom_fields: next })}
+              members={(members.data ?? []).map((m: any) => ({
+                id: m.id,
+                label: m.full_name || m.email || m.id,
+              }))}
+            />
           )}
 
           <Field label="Notes">
