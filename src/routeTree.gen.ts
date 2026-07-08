@@ -112,6 +112,7 @@ import { Route as AuthenticatedScanHistoryRouteImport } from './routes/_authenti
 import { Route as AuthenticatedReportsVisitsRouteImport } from './routes/_authenticated/reports.visits'
 import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenticated/reports.team'
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
+import { Route as AuthenticatedReportsOfficeWorkRouteImport } from './routes/_authenticated/reports.office-work'
 import { Route as AuthenticatedReportsLeadsRouteImport } from './routes/_authenticated/reports.leads'
 import { Route as AuthenticatedRemindersPreferencesRouteImport } from './routes/_authenticated/reminders.preferences'
 import { Route as AuthenticatedProposalsTemplatesRouteImport } from './routes/_authenticated/proposals.templates'
@@ -205,6 +206,7 @@ import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/a
 import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
+import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
@@ -788,6 +790,12 @@ const AuthenticatedReportsSalesRoute =
     path: '/sales',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
+const AuthenticatedReportsOfficeWorkRoute =
+  AuthenticatedReportsOfficeWorkRouteImport.update({
+    id: '/office-work',
+    path: '/office-work',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
 const AuthenticatedReportsLeadsRoute =
   AuthenticatedReportsLeadsRouteImport.update({
     id: '/leads',
@@ -1321,6 +1329,12 @@ const ApiPublicHooksProcessRemindersRoute =
     path: '/api/public/hooks/process-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksOfficeWorkReminderRoute =
+  ApiPublicHooksOfficeWorkReminderRouteImport.update({
+    id: '/api/public/hooks/office-work-reminder',
+    path: '/api/public/hooks/office-work-reminder',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksNarrativesWeeklyCronRoute =
   ApiPublicHooksNarrativesWeeklyCronRouteImport.update({
     id: '/api/public/hooks/narratives-weekly-cron',
@@ -1534,6 +1548,7 @@ export interface FileRoutesByFullPath {
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/leads': typeof AuthenticatedReportsLeadsRoute
+  '/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -1613,6 +1628,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
+  '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
@@ -1734,6 +1750,7 @@ export interface FileRoutesByTo {
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/reports/leads': typeof AuthenticatedReportsLeadsRoute
+  '/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/reports/team': typeof AuthenticatedReportsTeamRoute
   '/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -1813,6 +1830,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
+  '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
@@ -1948,6 +1966,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/_authenticated/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
   '/_authenticated/reports/leads': typeof AuthenticatedReportsLeadsRoute
+  '/_authenticated/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
   '/_authenticated/reports/team': typeof AuthenticatedReportsTeamRoute
   '/_authenticated/reports/visits': typeof AuthenticatedReportsVisitsRoute
@@ -2027,6 +2046,7 @@ export interface FileRoutesById {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
+  '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
@@ -2162,6 +2182,7 @@ export interface FileRouteTypes {
     | '/proposals/templates'
     | '/reminders/preferences'
     | '/reports/leads'
+    | '/reports/office-work'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -2241,6 +2262,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
+    | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
@@ -2362,6 +2384,7 @@ export interface FileRouteTypes {
     | '/proposals/templates'
     | '/reminders/preferences'
     | '/reports/leads'
+    | '/reports/office-work'
     | '/reports/sales'
     | '/reports/team'
     | '/reports/visits'
@@ -2441,6 +2464,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
+    | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
@@ -2575,6 +2599,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals/templates'
     | '/_authenticated/reminders/preferences'
     | '/_authenticated/reports/leads'
+    | '/_authenticated/reports/office-work'
     | '/_authenticated/reports/sales'
     | '/_authenticated/reports/team'
     | '/_authenticated/reports/visits'
@@ -2654,6 +2679,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/narratives-weekly-cron'
+    | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
@@ -2683,6 +2709,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
+  ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
@@ -3417,6 +3444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsSalesRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
+    '/_authenticated/reports/office-work': {
+      id: '/_authenticated/reports/office-work'
+      path: '/office-work'
+      fullPath: '/reports/office-work'
+      preLoaderRoute: typeof AuthenticatedReportsOfficeWorkRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
     '/_authenticated/reports/leads': {
       id: '/_authenticated/reports/leads'
       path: '/leads'
@@ -4068,6 +4102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/office-work-reminder': {
+      id: '/api/public/hooks/office-work-reminder'
+      path: '/api/public/hooks/office-work-reminder'
+      fullPath: '/api/public/hooks/office-work-reminder'
+      preLoaderRoute: typeof ApiPublicHooksOfficeWorkReminderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/narratives-weekly-cron': {
       id: '/api/public/hooks/narratives-weekly-cron'
       path: '/api/public/hooks/narratives-weekly-cron'
@@ -4437,6 +4478,7 @@ const AuthenticatedRemindersRouteWithChildren =
 
 interface AuthenticatedReportsRouteChildren {
   AuthenticatedReportsLeadsRoute: typeof AuthenticatedReportsLeadsRoute
+  AuthenticatedReportsOfficeWorkRoute: typeof AuthenticatedReportsOfficeWorkRoute
   AuthenticatedReportsSalesRoute: typeof AuthenticatedReportsSalesRoute
   AuthenticatedReportsTeamRoute: typeof AuthenticatedReportsTeamRoute
   AuthenticatedReportsVisitsRoute: typeof AuthenticatedReportsVisitsRoute
@@ -4445,6 +4487,7 @@ interface AuthenticatedReportsRouteChildren {
 
 const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
   AuthenticatedReportsLeadsRoute: AuthenticatedReportsLeadsRoute,
+  AuthenticatedReportsOfficeWorkRoute: AuthenticatedReportsOfficeWorkRoute,
   AuthenticatedReportsSalesRoute: AuthenticatedReportsSalesRoute,
   AuthenticatedReportsTeamRoute: AuthenticatedReportsTeamRoute,
   AuthenticatedReportsVisitsRoute: AuthenticatedReportsVisitsRoute,
@@ -4812,6 +4855,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
   ApiPublicHooksNarrativesWeeklyCronRoute:
     ApiPublicHooksNarrativesWeeklyCronRoute,
+  ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
   ApiPublicHooksVisitAnalyticsAlertsRoute:
