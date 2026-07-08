@@ -13,16 +13,36 @@ export type GmailAccountRow = {
   status: string;
 };
 
-export function requireGoogleEnv() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const workspaceDomain = process.env.GOOGLE_WORKSPACE_DOMAIN;
-  if (!clientId || !clientSecret || !workspaceDomain) {
+export type GoogleConfig = {
+  clientId: string;
+  clientSecret: string;
+  workspaceDomain: string;
+};
+
+export async function getCompanyGoogleConfig(
+  supabaseAdmin: any,
+  companyId: string,
+): Promise<GoogleConfig> {
+  const { data, error } = await supabaseAdmin
+    .from("company_gmail_config")
+    .select("client_id,client_secret,workspace_domain,enabled")
+    .eq("company_id", companyId)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load Gmail config: ${error.message}`);
+  if (!data) {
     throw new Error(
-      "Gmail integration not configured. Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_WORKSPACE_DOMAIN in project secrets.",
+      "Gmail is not configured for this company. An admin must add the Google Client ID, Secret and Workspace domain in Settings → Integrations.",
     );
   }
-  return { clientId, clientSecret, workspaceDomain };
+  if (!data.enabled) throw new Error("Gmail integration is disabled for this company.");
+  if (!data.client_id || !data.client_secret || !data.workspace_domain) {
+    throw new Error("Gmail config is incomplete. An admin must fill in all fields.");
+  }
+  return {
+    clientId: data.client_id,
+    clientSecret: data.client_secret,
+    workspaceDomain: data.workspace_domain,
+  };
 }
 
 export function buildCallbackUrl(origin: string) {
@@ -32,28 +52,32 @@ export function buildCallbackUrl(origin: string) {
 export function buildAuthUrl(opts: {
   origin: string;
   state: string;
+  config: GoogleConfig;
 }) {
-  const { clientId, workspaceDomain } = requireGoogleEnv();
   const params = new URLSearchParams({
-    client_id: clientId,
+    client_id: opts.config.clientId,
     redirect_uri: buildCallbackUrl(opts.origin),
     response_type: "code",
     scope: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/userinfo.email",
     access_type: "offline",
     prompt: "consent",
     include_granted_scopes: "true",
-    hd: workspaceDomain,
+    hd: opts.config.workspaceDomain,
     state: opts.state,
   });
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
-export async function exchangeCodeForTokens(code: string, origin: string) {
-  const { clientId, clientSecret } = requireGoogleEnv();
+
+export async function exchangeCodeForTokens(
+  code: string,
+  origin: string,
+  config: GoogleConfig,
+) {
   const body = new URLSearchParams({
     code,
-    client_id: clientId,
-    client_secret: clientSecret,
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
     redirect_uri: buildCallbackUrl(origin),
     grant_type: "authorization_code",
   });
@@ -73,11 +97,10 @@ export async function exchangeCodeForTokens(code: string, origin: string) {
   };
 }
 
-export async function refreshAccessToken(refreshToken: string) {
-  const { clientId, clientSecret } = requireGoogleEnv();
+export async function refreshAccessToken(refreshToken: string, config: GoogleConfig) {
   const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
     refresh_token: refreshToken,
     grant_type: "refresh_token",
   });
@@ -89,6 +112,7 @@ export async function refreshAccessToken(refreshToken: string) {
   if (!res.ok) throw new Error(`Token refresh failed: ${await res.text()}`);
   return (await res.json()) as { access_token: string; expires_in: number };
 }
+
 
 export async function getGmailProfile(accessToken: string) {
   const res = await fetch(`${GMAIL_API}/users/me/profile`, {
@@ -114,7 +138,9 @@ export async function getFreshToken(
     return { accessToken: acc.access_token, gmailAddress: acc.gmail_address };
   }
   try {
-    const tk = await refreshAccessToken(acc.refresh_token);
+    if (!acc.company_id) throw new Error("Gmail account is missing company assignment.");
+    const config = await getCompanyGoogleConfig(supabaseAdmin, acc.company_id);
+    const tk = await refreshAccessToken(acc.refresh_token, config);
     const newExpiry = new Date(Date.now() + tk.expires_in * 1000).toISOString();
     await supabaseAdmin
       .from("gmail_accounts")

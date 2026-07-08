@@ -21,29 +21,33 @@ export const Route = createFileRoute("/api/public/gmail/callback")({
         const state = url.searchParams.get("state");
         const errParam = url.searchParams.get("error");
         if (errParam) return errPage(`Google returned: ${errParam}`);
-        if (!code || !state || !state.includes(":")) return errPage("Missing code/state.");
-        const [userId, token] = state.split(":", 2);
+        if (!code || !state) return errPage("Missing code/state.");
+        const parts = state.split(":");
+        if (parts.length !== 3) return errPage("Invalid state format.");
+        const [userId, companyId, token] = parts;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: pending } = await supabaseAdmin
           .from("gmail_accounts")
-          .select("history_id")
+          .select("history_id,company_id")
           .eq("user_id", userId)
           .maybeSingle();
-        if (!pending || pending.history_id !== token) return errPage("Invalid state token.");
+        if (!pending || pending.history_id !== token || pending.company_id !== companyId) {
+          return errPage("Invalid state token.");
+        }
 
-        const { exchangeCodeForTokens, getGmailProfile, requireGoogleEnv } = await import(
+        const { exchangeCodeForTokens, getGmailProfile, getCompanyGoogleConfig } = await import(
           "@/lib/gmail/gmail.server"
         );
         try {
-          const { workspaceDomain } = requireGoogleEnv();
+          const config = await getCompanyGoogleConfig(supabaseAdmin, companyId);
           const origin = `${url.protocol}//${url.host}`;
-          const tokens = await exchangeCodeForTokens(code, origin);
+          const tokens = await exchangeCodeForTokens(code, origin, config);
           const profile = await getGmailProfile(tokens.access_token);
           const addr = profile.emailAddress.toLowerCase();
-          if (!addr.endsWith(`@${workspaceDomain.toLowerCase()}`)) {
+          if (!addr.endsWith(`@${config.workspaceDomain.toLowerCase()}`)) {
             return errPage(
-              `Only @${workspaceDomain} accounts can connect. You tried to connect ${addr}.`,
+              `Only @${config.workspaceDomain} accounts can connect. You tried to connect ${addr}.`,
             );
           }
           if (!tokens.refresh_token) {
@@ -55,6 +59,7 @@ export const Route = createFileRoute("/api/public/gmail/callback")({
           await supabaseAdmin.from("gmail_accounts").upsert(
             {
               user_id: userId,
+              company_id: companyId,
               gmail_address: addr,
               access_token: tokens.access_token,
               refresh_token: tokens.refresh_token,

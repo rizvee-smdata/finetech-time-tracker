@@ -936,6 +936,44 @@ export type Database = {
         }
         Relationships: []
       }
+      company_gmail_config: {
+        Row: {
+          client_id: string
+          client_secret: string
+          company_id: string
+          created_at: string
+          enabled: boolean
+          updated_at: string
+          workspace_domain: string
+        }
+        Insert: {
+          client_id: string
+          client_secret: string
+          company_id: string
+          created_at?: string
+          enabled?: boolean
+          updated_at?: string
+          workspace_domain: string
+        }
+        Update: {
+          client_id?: string
+          client_secret?: string
+          company_id?: string
+          created_at?: string
+          enabled?: boolean
+          updated_at?: string
+          workspace_domain?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_gmail_config_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_holidays: {
         Row: {
           company_id: string
@@ -3260,6 +3298,7 @@ export type Database = {
       gmail_accounts: {
         Row: {
           access_token: string | null
+          company_id: string | null
           created_at: string
           gmail_address: string
           history_id: string | null
@@ -3274,6 +3313,7 @@ export type Database = {
         }
         Insert: {
           access_token?: string | null
+          company_id?: string | null
           created_at?: string
           gmail_address: string
           history_id?: string | null
@@ -3288,6 +3328,7 @@ export type Database = {
         }
         Update: {
           access_token?: string | null
+          company_id?: string | null
           created_at?: string
           gmail_address?: string
           history_id?: string | null
@@ -3300,7 +3341,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gmail_accounts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gmail_notifications: {
         Row: {
