@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Expense, ExpenseCategory } from "@/lib/expenses/types";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 interface Props {
   initial?: Expense;
