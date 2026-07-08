@@ -547,6 +547,14 @@ function CustomerFormDialog({
                 <Input id="cf_phone" value={form.phone ?? ""} onChange={set("phone")} />
               </div>
             </div>
+            {companyId && (
+              <CustomFieldsSection
+                companyId={companyId}
+                entity="customer"
+                values={customFields}
+                onChange={setCustomFields}
+              />
+            )}
           </div>
         )}
         <DialogFooter>
