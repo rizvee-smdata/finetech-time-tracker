@@ -41,11 +41,13 @@ function SettingsPage() {
           <TabsTrigger value="targets">Targets</TabsTrigger>
           <TabsTrigger value="competitors">Competitors</TabsTrigger>
           <TabsTrigger value="templates">Document Templates</TabsTrigger>
+          <TabsTrigger value="custom_fields">Custom Lead Fields</TabsTrigger>
           <TabsTrigger value="stages">Pipeline Stages</TabsTrigger>
         </TabsList>
         <TabsContent value="targets" className="space-y-3"><TargetsTab companyId={companyId} /></TabsContent>
         <TabsContent value="competitors" className="space-y-3"><CompetitorsTab companyId={companyId} /></TabsContent>
         <TabsContent value="templates" className="space-y-3"><TemplatesTab companyId={companyId} /></TabsContent>
+        <TabsContent value="custom_fields" className="space-y-3"><CustomFieldsTab companyId={companyId} /></TabsContent>
         <TabsContent value="stages" className="space-y-3"><StagesTab /></TabsContent>
       </Tabs>
     </div>
