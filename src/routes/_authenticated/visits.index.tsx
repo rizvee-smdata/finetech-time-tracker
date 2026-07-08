@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -17,11 +17,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BookOpen, Pencil, Plus, Search, Trash2, Target } from "lucide-react";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 import { convertVisitToLead } from "@/lib/crm/queries";
 import { VisitAIPanel } from "@/components/visits/VisitAIPanel";
+import { OfficeWorkFormDialog } from "@/components/office-work/OfficeWorkFormDialog";
+import { OfficeWorkCard } from "@/components/office-work/OfficeWorkCard";
+import { MyDayStrip } from "@/components/office-work/MyDayStrip";
+import { OfficeWorkReminderBanner } from "@/components/office-work/ReminderBanner";
+import {
+  fetchOfficeWorkLogs, fetchWorkCategories, deleteDayLog, sunThuWeek, todayDhaka,
+  type OfficeWorkLog,
+} from "@/lib/officeWork/api";
 
 export const Route = createFileRoute("/_authenticated/visits/")({
   component: VisitsList,
@@ -45,28 +53,41 @@ type Visit = {
   status: string;
 };
 
+type MergedItem =
+  | { kind: "visit"; date: string; visit: any }
+  | { kind: "office"; date: string; log: OfficeWorkLog };
+
 function VisitsList() {
   const { user, isStaff, companyId } = useAuth();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "visit" | "office">("all");
+  const [personFilter, setPersonFilter] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const week = sunThuWeek(todayDhaka());
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
   const [editing, setEditing] = useState<Visit | null>(null);
   const [viewing, setViewing] = useState<any | null>(null);
+  const [officeOpen, setOfficeOpen] = useState(false);
+  const [editingLogDate, setEditingLogDate] = useState<string | undefined>(undefined);
 
-  const { data } = useQuery({
+  const cats = useQuery({ queryKey: ["work-categories"], queryFn: fetchWorkCategories });
+
+  const visitsQ = useQuery({
     queryKey: ["visits", user?.id, isStaff, companyId],
     enabled: !!user,
     queryFn: async () => {
       const query = supabase
         .from("customer_visits")
         .select("*")
+        .neq("status", "office_study")
         .order("meeting_at", { ascending: false });
       if (companyId) query.eq("company_id", companyId);
       if (!isStaff) query.eq("user_id", user!.id);
       const { data, error } = await query;
       if (error) throw error;
       const visits = (data ?? []) as Visit[];
-
-      // Fetch author names separately (no FK between customer_visits and profiles)
       let profilesMap = new Map<string, { full_name: string | null; email: string | null }>();
       if (isStaff && visits.length) {
         const ids = Array.from(new Set(visits.map((v) => v.user_id)));
@@ -77,16 +98,75 @@ function VisitsList() {
     },
   });
 
-  const filtered = (data ?? []).filter((v) => {
-    if (!q) return true;
-    const s = q.toLowerCase();
-    return (
-      v.customer_name?.toLowerCase().includes(s) ||
-      v.company?.toLowerCase().includes(s) ||
-      v.location?.toLowerCase().includes(s) ||
-      v.discussion_summary?.toLowerCase().includes(s)
-    );
+  const logsQ = useQuery({
+    queryKey: ["office-work-logs", user?.id, isStaff, companyId],
+    enabled: !!user,
+    queryFn: async () => {
+      const logs = await fetchOfficeWorkLogs({
+        companyId, userId: isStaff ? undefined : user!.id, scope: "all",
+      });
+      if (isStaff && logs.length) {
+        const ids = Array.from(new Set(logs.map((l) => l.user_id)));
+        const { data: profs } = await supabase.from("profiles").select("id, full_name, email").in("id", ids);
+        const pm = new Map((profs ?? []).map((p) => [p.id, { full_name: p.full_name, email: p.email }]));
+        logs.forEach((l) => { l.author = pm.get(l.user_id) ?? null; });
+      }
+      return logs;
+    },
   });
+
+  const people = useQuery({
+    queryKey: ["visits-people", companyId],
+    enabled: isStaff && !!companyId,
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("company_members")
+        .select("user_id, profiles:user_id(id, full_name, email)")
+        .eq("company_id", companyId);
+      return (data ?? []).map((r: any) => r.profiles).filter(Boolean) as Array<{ id: string; full_name: string | null; email: string | null }>;
+    },
+  });
+
+  const merged: MergedItem[] = useMemo(() => {
+    const items: MergedItem[] = [];
+    (visitsQ.data ?? []).forEach((v: any) => items.push({ kind: "visit", date: v.meeting_at, visit: v }));
+    (logsQ.data ?? []).forEach((l) => items.push({ kind: "office", date: `${l.work_date}T18:00:00+06:00`, log: l }));
+    return items.sort((a, b) => (a.date < b.date ? 1 : -1));
+  }, [visitsQ.data, logsQ.data]);
+
+  const filtered = useMemo(() => merged.filter((it) => {
+    if (typeFilter === "visit" && it.kind !== "visit") return false;
+    if (typeFilter === "office" && it.kind !== "office") return false;
+    if (personFilter) {
+      const uid = it.kind === "visit" ? it.visit.user_id : it.log.user_id;
+      if (uid !== personFilter) return false;
+    }
+    if (categoryFilter && it.kind === "office") {
+      if (!it.log.tasks.some((t) => t.category_id === categoryFilter)) return false;
+    }
+    if (categoryFilter && it.kind === "visit") return false;
+    if (fromDate) {
+      const d = it.kind === "visit" ? it.visit.meeting_at.slice(0, 10) : it.log.work_date;
+      if (d < fromDate) return false;
+    }
+    if (toDate) {
+      const d = it.kind === "visit" ? it.visit.meeting_at.slice(0, 10) : it.log.work_date;
+      if (d > toDate) return false;
+    }
+    if (q) {
+      const s = q.toLowerCase();
+      if (it.kind === "visit") {
+        const v = it.visit;
+        return (v.customer_name?.toLowerCase().includes(s)
+          || v.company?.toLowerCase().includes(s)
+          || v.location?.toLowerCase().includes(s)
+          || v.discussion_summary?.toLowerCase().includes(s));
+      } else {
+        return it.log.tasks.some((t) =>
+          t.description.toLowerCase().includes(s) || (t.project_name ?? "").toLowerCase().includes(s));
+      }
+    }
+    return true;
+  }), [merged, typeFilter, personFilter, categoryFilter, fromDate, toDate, q]);
 
   async function deleteVisit(id: string) {
     const { error } = await supabase.from("customer_visits").delete().eq("id", id);
@@ -94,117 +174,181 @@ function VisitsList() {
     toast.success("Deleted");
     qc.invalidateQueries({ queryKey: ["visits"] });
   }
+  async function deleteLog(id: string) {
+    try { await deleteDayLog(id); toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["office-work-logs"] }); }
+    catch (e: any) { toast.error(e.message); }
+  }
 
   const pg = usePagination(filtered, 20);
 
+  function setPreset(kind: "today" | "week" | "lastWeek" | "month") {
+    const today = todayDhaka();
+    if (kind === "today") { setFromDate(today); setToDate(today); return; }
+    if (kind === "week") { const w = sunThuWeek(today); setFromDate(w.start); setToDate(w.end); return; }
+    if (kind === "lastWeek") {
+      const start = new Date(`${week.start}T12:00:00+06:00`); start.setDate(start.getDate() - 7);
+      const iso = start.toISOString().slice(0, 10);
+      const w2 = sunThuWeek(iso); setFromDate(w2.start); setToDate(w2.end); return;
+    }
+    if (kind === "month") { const [y, m] = today.split("-"); setFromDate(`${y}-${m}-01`); setToDate(today); }
+  }
+
+  function openLogDate(date?: string) {
+    setEditingLogDate(date);
+    setOfficeOpen(true);
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <OfficeWorkReminderBanner onLog={() => openLogDate()} />
+
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Customer visits</h1>
-          <p className="text-sm text-muted-foreground">{isStaff ? "All team visits" : "Your visit reports"}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Customer visits & office work</h1>
+          <p className="text-sm text-muted-foreground">{isStaff ? "All team activity" : "Your daily activity"}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <OfficeStudyDialog />
+          <Button variant="outline" onClick={() => openLogDate()}><BookOpen className="mr-2 h-4 w-4" />Office work</Button>
           <Button asChild><Link to="/visits/new"><Plus className="mr-2 h-4 w-4" />New visit</Link></Button>
         </div>
       </header>
 
-      <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search customer, company, location..." className="pl-9" />
-      </div>
+      <MyDayStrip onLogOffice={() => openLogDate()} />
+
+      {/* Filters */}
+      <Card className="p-3 flex flex-wrap items-end gap-2">
+        <div className="relative min-w-[220px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="pl-9" />
+        </div>
+        <div className="inline-flex rounded-md border p-0.5">
+          {(["all", "visit", "office"] as const).map((t) => (
+            <button key={t} onClick={() => setTypeFilter(t)}
+              className={`px-3 py-1 text-xs rounded ${typeFilter === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"}`}>
+              {t === "all" ? "All" : t === "visit" ? "Customer visits" : "Office work"}
+            </button>
+          ))}
+        </div>
+        {isStaff && (
+          <select className="h-9 rounded-md border bg-background px-2 text-sm" value={personFilter} onChange={(e) => setPersonFilter(e.target.value)}>
+            <option value="">All people</option>
+            {(people.data ?? []).map((p) => <option key={p.id} value={p.id}>{p.full_name || p.email}</option>)}
+          </select>
+        )}
+        <select className="h-9 rounded-md border bg-background px-2 text-sm" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+          <option value="">All categories</option>
+          {(cats.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <div className="flex items-center gap-1">
+          <Label className="text-xs">From</Label>
+          <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-[140px] h-9" />
+          <Label className="text-xs">To</Label>
+          <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-[140px] h-9" />
+        </div>
+        <div className="flex gap-1">
+          {(["today", "week", "lastWeek", "month"] as const).map((k) => (
+            <Button key={k} size="sm" variant="outline" onClick={() => setPreset(k)}>
+              {k === "today" ? "Today" : k === "week" ? "This week" : k === "lastWeek" ? "Last week" : "This month"}
+            </Button>
+          ))}
+          {(fromDate || toDate) && <Button size="sm" variant="ghost" onClick={() => { setFromDate(""); setToDate(""); }}>Clear</Button>}
+        </div>
+      </Card>
 
       <div className="space-y-3">
         {filtered.length === 0 && (
           <Card className="p-10 text-center text-sm text-muted-foreground">
-            No entries yet. Click "New visit" or "Office work" to add one.
+            No entries. Log office work or record a new visit to get started.
           </Card>
         )}
-        {pg.paged.map((v: any) => {
-          const isStudy = v.status === "office_study";
-          return (
-            <Card
-              key={v.id}
-              className="p-5 cursor-pointer transition-colors hover:bg-accent/30"
-              onClick={() => setViewing(v)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewing(v); } }}
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <div className="font-semibold flex items-center gap-2">
-                    {isStudy ? (
-                      <>
-                        <BookOpen className="h-4 w-4 text-primary" />
-                        Office work
-                      </>
-                    ) : (
-                      <>
-                        {v.customer_name}
-                        <span className="font-normal text-muted-foreground">· {v.company || "—"}</span>
-                      </>
-                    )}
-                    {isStudy && <Badge variant="secondary">No visit</Badge>}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {format(new Date(v.meeting_at), "PPpp")}
-                    {v.location && <> · {v.location}</>}
-                    {isStaff && v.author && <> · {v.author.full_name || v.author.email}</>}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {v.next_meeting_at && (
-                    <div className="text-right text-xs">
-                      <div className="text-muted-foreground">Next meeting</div>
-                      <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
-                    </div>
-                  )}
-                  <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditing(v); }} title="Edit">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="ghost" title="Delete" onClick={(e) => e.stopPropagation()}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
-                        <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => deleteVisit(v.id)}>Delete</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-              {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-3">{v.discussion_summary}</p>}
-              {v.next_action && (
-                <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-sm">
-                  <span className="font-medium text-accent-foreground">Next action: </span>{v.next_action}
-                </div>
-              )}
-              {v.remarks && <p className="mt-2 text-xs text-muted-foreground">Remarks: {v.remarks}</p>}
-            </Card>
-          );
-        })}
+        {pg.paged.map((it: MergedItem) => it.kind === "office" ? (
+          <OfficeWorkCard
+            key={`o-${it.log.id}`}
+            log={it.log}
+            categories={cats.data ?? []}
+            showAuthor={isStaff}
+            canEdit={it.log.user_id === user?.id || isStaff}
+            onEdit={() => openLogDate(it.log.work_date)}
+            onDelete={() => deleteLog(it.log.id)}
+          />
+        ) : (
+          <VisitCard
+            key={`v-${it.visit.id}`}
+            v={it.visit}
+            isStaff={isStaff}
+            onView={() => setViewing(it.visit)}
+            onEdit={() => setEditing(it.visit)}
+            onDelete={() => deleteVisit(it.visit.id)}
+          />
+        ))}
       </div>
 
-      <PaginationBar {...pg} label="visits" />
+      <PaginationBar {...pg} label="entries" />
 
-      <ViewVisitDialog
-        visit={viewing}
-        onClose={() => setViewing(null)}
-        onEdit={(v) => { setViewing(null); setEditing(v); }}
-        isStaff={isStaff}
-      />
+      <ViewVisitDialog visit={viewing} onClose={() => setViewing(null)}
+        onEdit={(v) => { setViewing(null); setEditing(v); }} isStaff={isStaff} />
       <EditVisitDialog visit={editing} onClose={() => setEditing(null)} />
+      <OfficeWorkFormDialog open={officeOpen} onOpenChange={setOfficeOpen} initialDate={editingLogDate} />
     </div>
+  );
+}
+
+function VisitCard({ v, isStaff, onView, onEdit, onDelete }: any) {
+  return (
+    <Card
+      className="p-5 cursor-pointer transition-colors hover:bg-accent/30"
+      onClick={onView}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onView(); } }}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="font-semibold flex items-center gap-2">
+            {v.customer_name}
+            <span className="font-normal text-muted-foreground">· {v.company || "—"}</span>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {format(new Date(v.meeting_at), "PPpp")}
+            {v.location && <> · {v.location}</>}
+            {isStaff && v.author && <> · {v.author.full_name || v.author.email}</>}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {v.next_meeting_at && (
+            <div className="text-right text-xs">
+              <div className="text-muted-foreground">Next meeting</div>
+              <div className="font-medium">{format(new Date(v.next_meeting_at), "MMM d, p")}</div>
+            </div>
+          )}
+          <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Edit"><Pencil className="h-4 w-4" /></Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="icon" variant="ghost" title="Delete" onClick={(e) => e.stopPropagation()}>
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
+                <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+      {v.discussion_summary && <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-3">{v.discussion_summary}</p>}
+      {v.next_action && (
+        <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-sm">
+          <span className="font-medium text-accent-foreground">Next action: </span>{v.next_action}
+        </div>
+      )}
+      {v.remarks && <p className="mt-2 text-xs text-muted-foreground">Remarks: {v.remarks}</p>}
+    </Card>
   );
 }
 
@@ -240,22 +384,19 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
   async function save() {
     if (!visit) return;
     setBusy(true);
-    const { error } = await supabase
-      .from("customer_visits")
-      .update({
-        customer_name: form.customer_name,
-        designation: form.designation || null,
-        email: form.email || null,
-        company: form.company || null,
-        contact_number: form.contact_number || null,
-        location: form.location || null,
-        meeting_at: form.meeting_at ? new Date(form.meeting_at).toISOString() : visit.meeting_at,
-        discussion_summary: form.discussion_summary || null,
-        next_action: form.next_action || null,
-        next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
-        remarks: form.remarks || null,
-      })
-      .eq("id", visit.id);
+    const { error } = await supabase.from("customer_visits").update({
+      customer_name: form.customer_name,
+      designation: form.designation || null,
+      email: form.email || null,
+      company: form.company || null,
+      contact_number: form.contact_number || null,
+      location: form.location || null,
+      meeting_at: form.meeting_at ? new Date(form.meeting_at).toISOString() : visit.meeting_at,
+      discussion_summary: form.discussion_summary || null,
+      next_action: form.next_action || null,
+      next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
+      remarks: form.remarks || null,
+    }).eq("id", visit.id);
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Visit updated");
@@ -263,131 +404,31 @@ function EditVisitDialog({ visit, onClose }: { visit: Visit | null; onClose: () 
     onClose();
   }
 
-  const isStudy = visit?.status === "office_study";
-
   return (
     <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit {isStudy ? "office work" : "visit"}</DialogTitle>
+          <DialogTitle>Edit visit</DialogTitle>
           <DialogDescription>Update the details and save.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
-          {!isStudy && (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label>Customer name *</Label>
-                <Input value={form.customer_name || ""} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Company</Label>
-                <Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Designation</Label>
-                <Input value={form.designation || ""} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Email</Label>
-                <Input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Contact number</Label>
-                <Input value={form.contact_number || ""} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Location</Label>
-                <Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} />
-              </div>
-            </div>
-          )}
-          <div className="grid gap-2">
-            <Label>Meeting date & time *</Label>
-            <Input type="datetime-local" value={form.meeting_at || ""} onChange={(e) => setForm({ ...form, meeting_at: e.target.value })} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2"><Label>Customer name *</Label><Input value={form.customer_name || ""} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} /></div>
+            <div className="grid gap-2"><Label>Company</Label><Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} /></div>
+            <div className="grid gap-2"><Label>Designation</Label><Input value={form.designation || ""} onChange={(e) => setForm({ ...form, designation: e.target.value })} /></div>
+            <div className="grid gap-2"><Label>Email</Label><Input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+            <div className="grid gap-2"><Label>Contact number</Label><Input value={form.contact_number || ""} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} /></div>
+            <div className="grid gap-2"><Label>Location</Label><Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
           </div>
-          <div className="grid gap-2">
-            <Label>{isStudy ? "Notes" : "Discussion summary"}</Label>
-            <Textarea rows={3} value={form.discussion_summary || ""} onChange={(e) => setForm({ ...form, discussion_summary: e.target.value })} />
-          </div>
-          {!isStudy && (
-            <>
-              <div className="grid gap-2">
-                <Label>Next action</Label>
-                <Textarea rows={2} value={form.next_action || ""} onChange={(e) => setForm({ ...form, next_action: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Next meeting</Label>
-                <Input type="datetime-local" value={form.next_meeting_at || ""} onChange={(e) => setForm({ ...form, next_meeting_at: e.target.value })} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Remarks</Label>
-                <Textarea rows={2} value={form.remarks || ""} onChange={(e) => setForm({ ...form, remarks: e.target.value })} />
-              </div>
-            </>
-          )}
+          <div className="grid gap-2"><Label>Meeting date & time *</Label><Input type="datetime-local" value={form.meeting_at || ""} onChange={(e) => setForm({ ...form, meeting_at: e.target.value })} /></div>
+          <div className="grid gap-2"><Label>Discussion summary</Label><Textarea rows={3} value={form.discussion_summary || ""} onChange={(e) => setForm({ ...form, discussion_summary: e.target.value })} /></div>
+          <div className="grid gap-2"><Label>Next action</Label><Textarea rows={2} value={form.next_action || ""} onChange={(e) => setForm({ ...form, next_action: e.target.value })} /></div>
+          <div className="grid gap-2"><Label>Next meeting</Label><Input type="datetime-local" value={form.next_meeting_at || ""} onChange={(e) => setForm({ ...form, next_meeting_at: e.target.value })} /></div>
+          <div className="grid gap-2"><Label>Remarks</Label><Textarea rows={2} value={form.remarks || ""} onChange={(e) => setForm({ ...form, remarks: e.target.value })} /></div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save changes"}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function OfficeStudyDialog() {
-  const { user, companyId } = useAuth();
-  const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 16));
-  const [notes, setNotes] = useState("I studied in office all day (no customer visit).");
-
-  async function save() {
-    if (!user) return;
-    if (!companyId) return toast.error("Select a company first");
-    if (!date) return toast.error("Pick date & time");
-    setBusy(true);
-    const { error } = await supabase.from("customer_visits").insert({
-      user_id: user.id,
-      company_id: companyId,
-      customer_name: "Office work",
-      status: "office_study",
-      meeting_at: new Date(date).toISOString(),
-      discussion_summary: notes.trim() || null,
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Office work logged");
-    setOpen(false);
-    qc.invalidateQueries({ queryKey: ["visits"] });
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline"><BookOpen className="mr-2 h-4 w-4" />Office work</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Log office work</DialogTitle>
-          <DialogDescription>
-            Use this when you didn't visit any customer and spent the day working in office.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-2">
-          <div className="grid gap-2">
-            <Label htmlFor="os_date">Date & time *</Label>
-            <Input id="os_date" type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="os_notes">Notes</Label>
-            <Textarea id="os_notes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Saving..." : "Save"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -403,76 +444,38 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-function ViewVisitDialog({
-  visit, onClose, onEdit, isStaff,
-}: { visit: any | null; onClose: () => void; onEdit: (v: Visit) => void; isStaff: boolean }) {
+function ViewVisitDialog({ visit, onClose, onEdit, isStaff }: { visit: any | null; onClose: () => void; onEdit: (v: Visit) => void; isStaff: boolean }) {
   if (!visit) return null;
-  const isStudy = visit.status === "office_study";
   const dash = <span className="text-muted-foreground">—</span>;
-
   return (
     <Dialog open={!!visit} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {isStudy ? (<><BookOpen className="h-5 w-5 text-primary" />Office work</>) : visit.customer_name}
-            {isStudy && <Badge variant="secondary">No visit</Badge>}
-          </DialogTitle>
+          <DialogTitle>{visit.customer_name}</DialogTitle>
           <DialogDescription>
             {format(new Date(visit.meeting_at), "PPpp")}
             {isStaff && visit.author && <> · {visit.author.full_name || visit.author.email}</>}
           </DialogDescription>
         </DialogHeader>
-
         <div className="grid gap-4 py-2">
-          {!isStudy && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <DetailRow label="Customer" value={visit.customer_name || dash} />
-              <DetailRow label="Company" value={visit.company || dash} />
-              <DetailRow label="Designation" value={visit.designation || dash} />
-              <DetailRow label="Email" value={visit.email || dash} />
-              <DetailRow label="Contact number" value={visit.contact_number || dash} />
-              <DetailRow label="Location" value={visit.location || dash} />
-            </div>
-          )}
-
-          <DetailRow
-            label={isStudy ? "Notes" : "Discussion summary"}
-            value={visit.discussion_summary
-              ? <p className="whitespace-pre-wrap">{visit.discussion_summary}</p>
-              : dash}
-          />
-
-          {!isStudy && (
-            <>
-              <DetailRow
-                label="Next action"
-                value={visit.next_action
-                  ? <p className="whitespace-pre-wrap">{visit.next_action}</p>
-                  : dash}
-              />
-              <DetailRow
-                label="Next meeting"
-                value={visit.next_meeting_at ? format(new Date(visit.next_meeting_at), "PPpp") : dash}
-              />
-              <DetailRow
-                label="Remarks"
-                value={visit.remarks
-                  ? <p className="whitespace-pre-wrap">{visit.remarks}</p>
-                  : dash}
-              />
-            </>
-          )}
-
-          {!isStudy && <VisitAIPanel visit={visit} />}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <DetailRow label="Customer" value={visit.customer_name || dash} />
+            <DetailRow label="Company" value={visit.company || dash} />
+            <DetailRow label="Designation" value={visit.designation || dash} />
+            <DetailRow label="Email" value={visit.email || dash} />
+            <DetailRow label="Contact number" value={visit.contact_number || dash} />
+            <DetailRow label="Location" value={visit.location || dash} />
+          </div>
+          <DetailRow label="Discussion summary" value={visit.discussion_summary ? <p className="whitespace-pre-wrap">{visit.discussion_summary}</p> : dash} />
+          <DetailRow label="Next action" value={visit.next_action ? <p className="whitespace-pre-wrap">{visit.next_action}</p> : dash} />
+          <DetailRow label="Next meeting" value={visit.next_meeting_at ? format(new Date(visit.next_meeting_at), "PPpp") : dash} />
+          <DetailRow label="Remarks" value={visit.remarks ? <p className="whitespace-pre-wrap">{visit.remarks}</p> : dash} />
+          <VisitAIPanel visit={visit} />
         </div>
-
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Close</Button>
-          {!isStudy && <ConvertToLeadButton visit={visit} />}
-          <Button onClick={() => onEdit(visit)}>
-            <Pencil className="mr-2 h-4 w-4" />Edit
-          </Button>
+          <ConvertToLeadButton visit={visit} />
+          <Button onClick={() => onEdit(visit)}><Pencil className="mr-2 h-4 w-4" />Edit</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
