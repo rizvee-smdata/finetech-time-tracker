@@ -134,6 +134,16 @@ function NewContract() {
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
         </div>
       </div>
+      {companyId && (
+        <div className="mt-4">
+          <CustomFieldsSection
+            companyId={companyId}
+            entity="contract"
+            values={customFields}
+            onChange={setCustomFields}
+          />
+        </div>
+      )}
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="outline" onClick={() => navigate({ to: "/contracts" })}>Cancel</Button>
         <Button onClick={() => create.mutate()} disabled={create.isPending}>
