@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
 const tabs = [
   { to: "/reports", label: "Overview", exact: true },
   { to: "/reports/sales", label: "Sales" },
+  { to: "/reports/leads", label: "Leads" },
   { to: "/reports/visits", label: "Visits" },
   { to: "/reports/team", label: "Team scorecard" },
 ];
