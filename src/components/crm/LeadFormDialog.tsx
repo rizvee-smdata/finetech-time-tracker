@@ -61,8 +61,15 @@ export function LeadFormDialog({
       product_id: (lead as any)?.product_id ?? "",
       partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
+      custom_fields: ((lead as any)?.custom_fields ?? {}) as Record<string, unknown>,
     });
   }, [open, lead, user?.id]);
+
+  const customFieldDefs = useQuery({
+    queryKey: ["crm-custom-fields-active", companyId],
+    enabled: !!companyId && open,
+    queryFn: () => fetchCustomFieldDefs(companyId!, { activeOnly: true }),
+  });
 
   const oems = useQuery({
     queryKey: ["crm-oems", companyId],
