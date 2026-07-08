@@ -822,7 +822,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                   <td className="p-2">
                     {a.id ? (
                       <button className="text-primary hover:underline"
-                        onClick={() => onJump({ id: a.id!, name: a.name, type: a.kind === "partner" ? "partner" : "customer" })}>
+                        onClick={() => onJump(expandAccountEntity(accounts.data, { id: a.id!, name: a.name, type: a.kind === "partner" ? "partner" : "customer" }))}>
                         {a.name}
                       </button>
                     ) : a.name}
