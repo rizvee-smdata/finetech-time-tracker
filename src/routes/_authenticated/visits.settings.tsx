@@ -183,7 +183,7 @@ function VisitSettingsPage() {
         <div className="flex items-center justify-between rounded border p-3">
           <div>
             <Label className="text-sm">Weekly summary digest</Label>
-            <p className="text-xs text-muted-foreground">Every Monday, recipients get a reminder to review AI insights.</p>
+            <p className="text-xs text-muted-foreground">Every Saturday, recipients get a reminder to review AI insights.</p>
           </div>
           <Switch checked={weeklyEnabled} onCheckedChange={setWeeklyEnabled} disabled={readOnly} />
         </div>
@@ -223,7 +223,7 @@ function VisitSettingsPage() {
         <p className="font-medium text-foreground">How alerts work</p>
         <p>• A daily job checks strategic accounts against the threshold and creates in-app reminders for the assigned rep and all listed recipients.</p>
         <p>• Each account-alert pair is deduplicated within one threshold window so reps aren't spammed.</p>
-        <p>• The Monday summary creates a reminder pointing recipients to the AI Insights panel under <span className="font-medium">Needs Attention</span>.</p>
+        <p>• The Saturday summary creates a reminder pointing recipients to the AI Insights panel under <span className="font-medium">Needs Attention</span>.</p>
       </Card>
     </div>
   );
