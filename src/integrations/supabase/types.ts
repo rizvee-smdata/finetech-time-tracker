@@ -3719,6 +3719,120 @@ export type Database = {
         }
         Relationships: []
       }
+      office_work_logs: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          day_summary: string | null
+          id: string
+          total_minutes: number
+          updated_at: string
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          day_summary?: string | null
+          id?: string
+          total_minutes?: number
+          updated_at?: string
+          user_id: string
+          work_date: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          day_summary?: string | null
+          id?: string
+          total_minutes?: number
+          updated_at?: string
+          user_id?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "office_work_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      office_work_tasks: {
+        Row: {
+          blocker_note: string | null
+          category_id: string
+          created_at: string
+          customer_id: string | null
+          description: string
+          duration_minutes: number
+          end_time: string | null
+          id: string
+          log_id: string
+          project_name: string | null
+          sort_order: number
+          start_time: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          blocker_note?: string | null
+          category_id: string
+          created_at?: string
+          customer_id?: string | null
+          description: string
+          duration_minutes: number
+          end_time?: string | null
+          id?: string
+          log_id: string
+          project_name?: string | null
+          sort_order?: number
+          start_time?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          blocker_note?: string | null
+          category_id?: string
+          created_at?: string
+          customer_id?: string | null
+          description?: string
+          duration_minutes?: number
+          end_time?: string | null
+          id?: string
+          log_id?: string
+          project_name?: string | null
+          sort_order?: number
+          start_time?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "office_work_tasks_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "work_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "office_work_tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "office_work_tasks_log_id_fkey"
+            columns: ["log_id"]
+            isOneToOne: false
+            referencedRelation: "office_work_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       performance_snapshots: {
         Row: {
           calls_actual: number
@@ -6271,6 +6385,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      work_categories: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
