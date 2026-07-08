@@ -40,15 +40,6 @@ import { Upload, UserPlus, Users, Building2, Trash2, Pencil, Calendar, Plus, Spa
 import { format, parseISO } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/settings/")({
-  beforeLoad: async () => {
-    const { data: s } = await supabase.auth.getSession();
-    if (!s.session) throw redirect({ to: "/auth" });
-    const { data: roles } = await supabase
-      .from("user_roles").select("role").eq("user_id", s.session.user.id);
-    if (!(roles ?? []).some((r) => r.role === "admin")) {
-      throw redirect({ to: "/dashboard" });
-    }
-  },
   component: SettingsPage,
 });
 
