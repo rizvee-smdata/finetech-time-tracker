@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MicButton } from "@/components/MicButton";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type ContactType = "customer" | "partner" | "consultant";
 const TYPE_LABELS: Record<ContactType, { singular: string; plural: string }> = {
