@@ -120,6 +120,25 @@ export function LeadFormDialog({
   async function save() {
     if (!user || !companyId) return toast.error("Select a company first");
     if (!form.customer_name?.trim()) return toast.error("Customer name required");
+    // Validate custom fields
+    const defs = customFieldDefs.data ?? [];
+    const cfIn = (form.custom_fields ?? {}) as Record<string, unknown>;
+    const cfOut: Record<string, unknown> = {};
+    for (const d of defs) {
+      const raw = cfIn[d.field_key];
+      const str = raw == null ? "" : String(raw).trim();
+      if (d.is_required && str === "") {
+        return toast.error(`${d.label} is required`);
+      }
+      if (str === "") continue;
+      if (d.field_type === "number") {
+        const n = Number(str);
+        if (!Number.isFinite(n)) return toast.error(`${d.label} must be a number`);
+        cfOut[d.field_key] = n;
+      } else {
+        cfOut[d.field_key] = str;
+      }
+    }
     setBusy(true);
     const payload: any = {
       customer_name: form.customer_name.trim(),
