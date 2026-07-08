@@ -28,6 +28,7 @@ import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type DuplicateHit = {
   id: string;
