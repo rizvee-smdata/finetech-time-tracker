@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { toast } from "sonner";
 import { CONTRACT_TYPE_LABEL, type ContractType } from "@/lib/contracts/types";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 export const Route = createFileRoute("/_authenticated/contracts/new")({
   component: NewContract,
