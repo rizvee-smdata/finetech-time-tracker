@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/analytics/entity-explorer"
 });
 
 type EntityType = "customer" | "partner" | "salesperson";
-type Entity = { id: string; name: string; type: EntityType; sub?: string | null };
+type Entity = { id: string; name: string; type: EntityType; sub?: string | null; ids?: string[] };
 type Timeframe = "30" | "60" | "90" | "ytd";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ef4444", "#06b6d4", "#ec4899", "#84cc16"];
@@ -126,14 +126,34 @@ function EntitySearch({
 
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const customers: Entity[] = (accounts.data ?? [])
-      .filter((a) => a.kind === "customer" && (!needle || a.customer_name.toLowerCase().includes(needle)))
-      .slice(0, 8)
-      .map((a) => ({ id: a.id, name: a.customer_name, type: "customer" as const, sub: a.tier ?? a.region }));
-    const partners: Entity[] = (accounts.data ?? [])
-      .filter((a) => a.kind === "partner" && (!needle || a.customer_name.toLowerCase().includes(needle)))
-      .slice(0, 8)
-      .map((a) => ({ id: a.id, name: a.customer_name, type: "partner" as const, sub: a.region }));
+    const groupByName = (kind: "customer" | "partner"): Entity[] => {
+      const rows = (accounts.data ?? []).filter(
+        (a) => a.kind === kind && (!needle || a.customer_name.toLowerCase().includes(needle)),
+      );
+      const groups = new Map<string, { name: string; ids: string[]; tier: string | null; region: string | null }>();
+      for (const r of rows) {
+        const key = r.customer_name.trim().toLowerCase();
+        const g = groups.get(key);
+        if (g) {
+          g.ids.push(r.id);
+          if (!g.tier && r.tier) g.tier = r.tier;
+          if (!g.region && r.region) g.region = r.region;
+        } else {
+          groups.set(key, { name: r.customer_name, ids: [r.id], tier: r.tier, region: r.region });
+        }
+      }
+      return Array.from(groups.values())
+        .slice(0, 8)
+        .map((g) => ({
+          id: g.ids[0],
+          ids: g.ids,
+          name: g.name,
+          type: kind,
+          sub: kind === "customer" ? (g.tier ?? g.region) : g.region,
+        }));
+    };
+    const customers = groupByName("customer");
+    const partners = groupByName("partner");
     const reps: Entity[] = ((members.data ?? []) as any[])
       .filter((m) => {
         const label = (m.full_name || m.email || "").toLowerCase();
@@ -253,6 +273,21 @@ function useAccounts(companyId: string | null) {
   });
 }
 
+// Expand an account entity so all duplicates sharing the same name are queried together.
+function expandAccountEntity(
+  accountsMap: Map<string, { id: string; customer_name: string; kind: string }> | undefined,
+  entity: Entity,
+): Entity {
+  if (!accountsMap || (entity.type !== "customer" && entity.type !== "partner")) return entity;
+  const key = entity.name.trim().toLowerCase();
+  const ids: string[] = [];
+  for (const v of accountsMap.values()) {
+    if (v.kind === entity.type && v.customer_name.trim().toLowerCase() === key) ids.push(v.id);
+  }
+  if (ids.length <= 1) return entity;
+  return { ...entity, id: ids[0], ids };
+}
+
 function VisitsPerWeekChart({ visits, tf }: { visits: any[]; tf: Timeframe }) {
   const data = useMemo(() => {
     const { start, end } = tfRange(tf);
@@ -287,14 +322,16 @@ function CustomerView({ companyId, entity, tf, onJump }: {
   companyId: string | null; entity: Entity; tf: Timeframe; onJump: (e: Entity) => void;
 }) {
   const { start, end } = tfRange(tf);
+  const ids = entity.ids ?? [entity.id];
+  const idsKey = ids.slice().sort().join(",");
 
   const visits = useQuery({
-    queryKey: ["ea-cust-visits", companyId, entity.id, tf],
+    queryKey: ["ea-cust-visits", companyId, idsKey, tf],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits")
         .select("id, meeting_at, user_id, discussion_summary, next_action, contact_type, company")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .gte("meeting_at", start.toISOString()).lte("meeting_at", end.toISOString())
         .order("meeting_at", { ascending: false });
       return (data ?? []) as any[];
@@ -302,26 +339,27 @@ function CustomerView({ companyId, entity, tf, onJump }: {
   });
 
   const lastVisit = useQuery({
-    queryKey: ["ea-cust-lastvisit", companyId, entity.id],
+    queryKey: ["ea-cust-lastvisit", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits").select("meeting_at")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .order("meeting_at", { ascending: false }).limit(1);
       return data?.[0]?.meeting_at ?? null;
     },
   });
 
   const leads = useQuery({
-    queryKey: ["ea-cust-leads", companyId, entity.id],
+    queryKey: ["ea-cust-leads", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("crm_leads")
         .select("id, customer_name, company_name, stage, expected_value, probability, expected_close_date, assigned_to, lead_source, partner_id, won_at")
-        .eq("company_id", companyId).eq("customer_id", entity.id).is("deleted_at", null);
+        .eq("company_id", companyId).in("customer_id", ids).is("deleted_at", null);
       return (data ?? []) as any[];
     },
   });
+
 
   const profileIds = [...(visits.data ?? []).map((v) => v.user_id), ...(leads.data ?? []).map((l) => l.assigned_to)];
   const profiles = useProfiles(profileIds);
@@ -431,7 +469,7 @@ function CustomerView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {p ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                           {p.customer_name}
                         </button>
                       ) : "—"}
@@ -456,7 +494,7 @@ function CustomerView({ companyId, entity, tf, onJump }: {
               if (!p) return null;
               return (
                 <Button key={pid} variant="outline" size="sm" className="h-7 gap-1"
-                  onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                  onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                   <Handshake className="h-3 w-3" /> {p.customer_name}
                   <ChevronRight className="h-3 w-3" />
                 </Button>
@@ -475,14 +513,16 @@ function PartnerView({ companyId, entity, tf, onJump }: {
   companyId: string | null; entity: Entity; tf: Timeframe; onJump: (e: Entity) => void;
 }) {
   const { start, end } = tfRange(tf);
+  const ids = entity.ids ?? [entity.id];
+  const idsKey = ids.slice().sort().join(",");
 
   const visits = useQuery({
-    queryKey: ["ea-part-visits", companyId, entity.id, tf],
+    queryKey: ["ea-part-visits", companyId, idsKey, tf],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits")
         .select("id, meeting_at, user_id, discussion_summary, next_action")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .gte("meeting_at", start.toISOString()).lte("meeting_at", end.toISOString())
         .order("meeting_at", { ascending: false });
       return (data ?? []) as any[];
@@ -490,23 +530,23 @@ function PartnerView({ companyId, entity, tf, onJump }: {
   });
 
   const lastVisit = useQuery({
-    queryKey: ["ea-part-lastvisit", companyId, entity.id],
+    queryKey: ["ea-part-lastvisit", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("customer_visits").select("meeting_at")
-        .eq("company_id", companyId).eq("account_id", entity.id)
+        .eq("company_id", companyId).in("account_id", ids)
         .order("meeting_at", { ascending: false }).limit(1);
       return data?.[0]?.meeting_at ?? null;
     },
   });
 
   const referred = useQuery({
-    queryKey: ["ea-part-referred", companyId, entity.id],
+    queryKey: ["ea-part-referred", companyId, idsKey],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await sb.from("crm_leads")
         .select("id, customer_name, customer_id, stage, expected_value, expected_close_date, assigned_to, won_at, created_at")
-        .eq("company_id", companyId).eq("partner_id", entity.id).is("deleted_at", null);
+        .eq("company_id", companyId).in("partner_id", ids).is("deleted_at", null);
       return (data ?? []) as any[];
     },
   });
@@ -613,7 +653,7 @@ function PartnerView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {cust ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: cust.id, name: cust.customer_name, type: "customer" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: cust.id, name: cust.customer_name, type: "customer" }))}>
                           {cust.customer_name}
                         </button>
                       ) : "—"}
@@ -756,7 +796,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
               const idx = e?.activeTooltipIndex;
               if (idx == null) return;
               const item = perAccount[idx];
-              if (item?.id) onJump({ id: item.id, name: item.name, type: item.kind === "partner" ? "partner" : "customer" });
+              if (item?.id) onJump(expandAccountEntity(accounts.data, { id: item.id, name: item.name, type: item.kind === "partner" ? "partner" : "customer" }));
             }}>
             <XAxis type="number" fontSize={11} allowDecimals={false} />
             <YAxis type="category" dataKey="name" fontSize={11} width={140} />
@@ -782,7 +822,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                   <td className="p-2">
                     {a.id ? (
                       <button className="text-primary hover:underline"
-                        onClick={() => onJump({ id: a.id!, name: a.name, type: a.kind === "partner" ? "partner" : "customer" })}>
+                        onClick={() => onJump(expandAccountEntity(accounts.data, { id: a.id!, name: a.name, type: a.kind === "partner" ? "partner" : "customer" }))}>
                         {a.name}
                       </button>
                     ) : a.name}
@@ -816,7 +856,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {cust ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: cust.id, name: cust.customer_name, type: "customer" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: cust.id, name: cust.customer_name, type: "customer" }))}>
                           {cust.customer_name}
                         </button>
                       ) : "—"}
@@ -827,7 +867,7 @@ function SalespersonView({ companyId, entity, tf, onJump }: {
                     <td className="p-2">
                       {p ? (
                         <button className="text-primary hover:underline"
-                          onClick={() => onJump({ id: p.id, name: p.customer_name, type: "partner" })}>
+                          onClick={() => onJump(expandAccountEntity(accounts.data, { id: p.id, name: p.customer_name, type: "partner" }))}>
                           {p.customer_name}
                         </button>
                       ) : "—"}
