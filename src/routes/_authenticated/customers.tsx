@@ -28,6 +28,7 @@ import { exportToExcel, exportToPDF, type ExportRow } from "@/lib/export-utils";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type DuplicateHit = {
   id: string;
@@ -403,6 +404,9 @@ function CustomerFormDialog({
   };
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState<Customer | null>(isCreate ? emptyForm : customer);
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+    ((customer as any)?.custom_fields as Record<string, unknown>) ?? {},
+  );
   const [dupes, setDupes] = useState<DuplicateHit[] | null>(null);
   const [checking, setChecking] = useState(false);
   const checkDuplicates = useServerFn(findCustomerDuplicates);
@@ -426,6 +430,7 @@ function CustomerFormDialog({
           email: form.email?.trim() || null,
           phone: form.phone?.trim() || null,
           kind: "customer",
+          custom_fields: customFields as any,
         });
         if (error) {
           console.error("Customer insert failed", error);
@@ -442,6 +447,7 @@ function CustomerFormDialog({
             designation: form.designation?.trim() || null,
             email: form.email?.trim() || null,
             phone: form.phone?.trim() || null,
+            custom_fields: customFields as any,
           })
           .eq("id", form.id);
         if (error) {
@@ -541,6 +547,14 @@ function CustomerFormDialog({
                 <Input id="cf_phone" value={form.phone ?? ""} onChange={set("phone")} />
               </div>
             </div>
+            {companyId && (
+              <CustomFieldsSection
+                companyId={companyId}
+                entity="customer"
+                values={customFields}
+                onChange={setCustomFields}
+              />
+            )}
           </div>
         )}
         <DialogFooter>

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MicButton } from "@/components/MicButton";
+import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
 
 type ContactType = "customer" | "partner" | "consultant";
 const TYPE_LABELS: Record<ContactType, { singular: string; plural: string }> = {
@@ -59,6 +60,7 @@ function NewVisit() {
     meeting_at: new Date().toISOString().slice(0, 16),
     discussion_summary: "", next_action: "", next_meeting_at: "", remarks: "",
   });
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
   const { data: contacts = [] } = useQuery({
     queryKey: ["contacts-picker", companyId, contactType],
@@ -202,6 +204,7 @@ function NewVisit() {
       next_action: form.next_action.trim() || null,
       next_meeting_at: form.next_meeting_at ? new Date(form.next_meeting_at).toISOString() : null,
       remarks: form.remarks.trim() || null,
+      custom_fields: customFields as any,
     };
     const { error } = await supabase.from("customer_visits").insert({ ...payload, contact_type: contactType });
     setBusy(false);
@@ -357,6 +360,15 @@ function NewVisit() {
           >
             <Textarea id="remarks" rows={2} value={form.remarks} onChange={set("remarks")} placeholder="Important notes, observations, special requirements." />
           </Field>
+
+          {companyId && (
+            <CustomFieldsSection
+              companyId={companyId}
+              entity="visit"
+              values={customFields}
+              onChange={setCustomFields}
+            />
+          )}
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => nav({ to: "/visits" })}>Cancel</Button>
