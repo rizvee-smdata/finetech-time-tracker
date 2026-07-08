@@ -163,6 +163,7 @@ const navSections: NavSection[] = [
     items: [
       { to: "/chat", label: "Team Chat", icon: MessageSquare },
       { to: "/settings/whatsapp", label: "WhatsApp Bot", icon: MessageSquare },
+      { to: "/settings/integrations", label: "Gmail Integration", icon: MessageSquare },
       { to: "/reminders", label: "Reminders", icon: Bell },
     ],
   },
