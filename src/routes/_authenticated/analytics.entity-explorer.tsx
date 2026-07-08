@@ -273,6 +273,21 @@ function useAccounts(companyId: string | null) {
   });
 }
 
+// Expand an account entity so all duplicates sharing the same name are queried together.
+function expandAccountEntity(
+  accountsMap: Map<string, { id: string; customer_name: string; kind: string }> | undefined,
+  entity: Entity,
+): Entity {
+  if (!accountsMap || (entity.type !== "customer" && entity.type !== "partner")) return entity;
+  const key = entity.name.trim().toLowerCase();
+  const ids: string[] = [];
+  for (const v of accountsMap.values()) {
+    if (v.kind === entity.type && v.customer_name.trim().toLowerCase() === key) ids.push(v.id);
+  }
+  if (ids.length <= 1) return entity;
+  return { ...entity, id: ids[0], ids };
+}
+
 function VisitsPerWeekChart({ visits, tf }: { visits: any[]; tf: Timeframe }) {
   const data = useMemo(() => {
     const { start, end } = tfRange(tf);
