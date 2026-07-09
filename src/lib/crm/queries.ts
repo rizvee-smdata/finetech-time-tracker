@@ -133,17 +133,20 @@ export async function fetchLeadTasks(leadId: string) {
 }
 
 export async function fetchCompanyMembers(companyId: string) {
-  const { data: mem } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
+  const { data: mem, error: memberError } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
+  if (memberError) throw memberError;
   const ids = (mem ?? []).map((m: any) => m.user_id);
   if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
   // Exclude super-admins (platform-wide) so the assignee list only shows this company's own staff
-  const { data: profs } = await sb
+  const { data: profs, error: profileError } = await sb
     .from("profiles")
     .select("id, full_name, email, is_super_admin")
     .in("id", ids);
+  if (profileError) throw profileError;
   return (profs ?? [])
     .filter((p: any) => !p.is_super_admin)
-    .map(({ id, full_name, email }: any) => ({ id, full_name, email })) as { id: string; full_name: string | null; email: string | null }[];
+    .map(({ id, full_name, email }: any) => ({ id, full_name, email }))
+    .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
 }
 
 export async function convertVisitToLead(visit: any, userId: string): Promise<string> {
