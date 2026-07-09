@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/team")({
 });
 
 function TeamPage() {
-  const { isAdmin, companyId } = useAuth();
+  const { isAdmin, isSuperAdmin, companyId } = useAuth();
 
   const [range, setRange] = useState<DateRange | undefined>({
     from: startOfMonth(new Date()),
@@ -80,7 +80,7 @@ function TeamPage() {
           todayVisits,
           isCheckedIn: !!open,
         };
-      }).filter((m) => !m.roles.includes("admin"));
+      }).filter((m) => isSuperAdmin || !m.roles.includes("admin"));
     },
   });
 
@@ -179,18 +179,33 @@ function TeamPage() {
                 <div className="font-semibold">{m.totalVisits}</div>
               </button>
             </div>
-            {isAdmin && (
-              <div className="mt-4">
-                <Select onValueChange={(v) => setRole(m.id, v as any)} defaultValue={m.roles[0] ?? "employee"}>
-                  <SelectTrigger><SelectValue placeholder="Change role" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="employee">Employee</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {isAdmin && (() => {
+              const targetIsAdmin = m.roles.includes("admin");
+              // Only super admin can modify an admin user or grant/revoke admin role
+              const canEdit = isSuperAdmin || !targetIsAdmin;
+              if (!canEdit) {
+                return (
+                  <div className="mt-4 text-xs text-muted-foreground italic">
+                    Only a super admin can change an admin's role.
+                  </div>
+                );
+              }
+              return (
+                <div className="mt-4">
+                  <Select
+                    onValueChange={(v) => setRole(m.id, v as any)}
+                    defaultValue={m.roles[0] ?? "employee"}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Change role" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="employee">Employee</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      {isSuperAdmin && <SelectItem value="admin">Admin</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })()}
             <div className="mt-3 text-xs text-muted-foreground">Joined {format(new Date(m.created_at), "PP")}</div>
           </Card>
         ))}
