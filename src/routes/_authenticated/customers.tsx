@@ -225,7 +225,7 @@ function CustomersPage() {
               <Link to="/scan"><Camera className="mr-2 h-4 w-4" />Scan card</Link>
             </Button>
           )}
-          {isAdmin && (
+          {isStaff && (
             <Button variant="outline" onClick={() => setImporting(true)}>
               <Upload className="mr-2 h-4 w-4" />Import customers
             </Button>
