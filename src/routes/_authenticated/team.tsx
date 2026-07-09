@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/team")({
 });
 
 function TeamPage() {
-  const { isAdmin, companyId } = useAuth();
+  const { isAdmin, isSuperAdmin, companyId } = useAuth();
 
   const [range, setRange] = useState<DateRange | undefined>({
     from: startOfMonth(new Date()),
