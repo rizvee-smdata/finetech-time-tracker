@@ -36,6 +36,7 @@ const STORAGE_KEY = "lavisho.activeCompany";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
