@@ -3,14 +3,28 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+async function getCallerContext(supabase: any, userId: string) {
+  const [{ data: roles }, { data: profile }, { data: memberships }] = await Promise.all([
+    supabase.from("user_roles").select("role").eq("user_id", userId),
+    supabase.from("profiles").select("is_super_admin").eq("id", userId).maybeSingle(),
+    supabase.from("company_members").select("company_id").eq("user_id", userId),
+  ]);
+  const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
+  const isSuperAdmin = Boolean((profile as any)?.is_super_admin);
+  const companyIds = (memberships ?? []).map((m: any) => m.company_id as string);
+  return { isAdmin, isSuperAdmin, companyIds };
+}
+
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
-  if (error) throw new Error(error.message);
-  const isAdmin = (data ?? []).some((r: any) => r.role === "admin");
-  if (!isAdmin) throw new Error("Admin access required");
+  const ctx = await getCallerContext(supabase, userId);
+  if (!ctx.isAdmin && !ctx.isSuperAdmin) throw new Error("Admin access required");
+  return ctx;
+}
+
+async function assertSuperAdmin(supabase: any, userId: string) {
+  const ctx = await getCallerContext(supabase, userId);
+  if (!ctx.isSuperAdmin) throw new Error("Super admin access required");
+  return ctx;
 }
 
 const createUserSchema = z.object({
@@ -89,17 +103,23 @@ export const adminResetPassword = createServerFn({ method: "POST" })
 export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    const caller = await assertAdmin(context.supabase, context.userId);
     const [{ data: profiles }, { data: roles }, { data: members }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, email, created_at"),
+      supabaseAdmin.from("profiles").select("id, full_name, email, created_at, is_super_admin"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.from("company_members").select("user_id, company_id"),
     ]);
-    return (profiles ?? []).map((p) => ({
+    const allowed = new Set(caller.companyIds);
+    const rows = (profiles ?? []).map((p) => ({
       ...p,
       roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role),
       company_ids: (members ?? []).filter((m) => m.user_id === p.id).map((m) => m.company_id),
     }));
+    if (caller.isSuperAdmin) return rows;
+    // Non-super admins: only users who share at least one company with them, and hide super_admins
+    return rows.filter((r) =>
+      !r.is_super_admin && (r.id === context.userId || r.company_ids.some((cid) => allowed.has(cid))),
+    );
   });
 
 const customerRow = z.object({
@@ -149,7 +169,7 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { data: created, error } = await supabaseAdmin
       .from("companies")
       .insert({ name: data.name, slug: data.slug })
@@ -163,7 +183,7 @@ export const adminUpdateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { error } = await supabaseAdmin
       .from("companies")
       .update({ name: data.name, slug: data.slug })
@@ -176,7 +196,7 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -185,12 +205,16 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
 export const adminListCompanies = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    const caller = await assertAdmin(context.supabase, context.userId);
     const [{ data: companies }, { data: members }] = await Promise.all([
       supabaseAdmin.from("companies").select("*").order("name"),
       supabaseAdmin.from("company_members").select("company_id, user_id"),
     ]);
-    return (companies ?? []).map((c) => ({
+    const allowed = new Set(caller.companyIds);
+    const filtered = caller.isSuperAdmin
+      ? (companies ?? [])
+      : (companies ?? []).filter((c) => allowed.has(c.id));
+    return filtered.map((c) => ({
       ...c,
       member_count: (members ?? []).filter((m) => m.company_id === c.id).length,
     }));

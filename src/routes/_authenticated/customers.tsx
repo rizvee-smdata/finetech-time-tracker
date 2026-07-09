@@ -225,7 +225,7 @@ function CustomersPage() {
               <Link to="/scan"><Camera className="mr-2 h-4 w-4" />Scan card</Link>
             </Button>
           )}
-          {isAdmin && (
+          {isStaff && (
             <Button variant="outline" onClick={() => setImporting(true)}>
               <Upload className="mr-2 h-4 w-4" />Import customers
             </Button>
@@ -258,7 +258,7 @@ function CustomersPage() {
         ) : filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-muted-foreground">
             <Users className="mx-auto mb-2 h-8 w-8 opacity-50" />
-            No customers found.{isAdmin && " Import customers from Settings."}
+            No customers found.{isStaff && " Import customers from Settings."}
           </div>
         ) : (
           <Table>

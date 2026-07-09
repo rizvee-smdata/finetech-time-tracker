@@ -24,6 +24,7 @@ interface AuthCtx {
   ready: boolean;
   isStaff: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   setCompanyId: (id: string | null) => void;
   refreshCompanies: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -35,6 +36,7 @@ const STORAGE_KEY = "lavisho.activeCompany";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,9 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       console.error("Failed to load roles", error);
       setRoles([]);
-      return;
+    } else {
+      setRoles((data ?? []).map((r) => r.role as AppRole));
     }
-    setRoles((data ?? []).map((r) => r.role as AppRole));
+    const { data: prof } = await supabase.from("profiles").select("is_super_admin").eq("id", uid).maybeSingle();
+    setIsSuperAdmin(Boolean((prof as any)?.is_super_admin));
   }, []);
 
   useEffect(() => {
@@ -113,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }, 0);
       } else {
         setRoles([]);
+        setIsSuperAdmin(false);
         setCompanies([]);
         setCompanyId(null);
       }
@@ -136,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ready: !loading && !!session?.user,
     isStaff: roles.includes("admin") || roles.includes("manager"),
     isAdmin: roles.includes("admin"),
+    isSuperAdmin,
     setCompanyId,
     refreshCompanies: loadCompanies,
     signOut: async () => {
