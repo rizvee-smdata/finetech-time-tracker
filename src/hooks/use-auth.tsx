@@ -24,6 +24,7 @@ interface AuthCtx {
   ready: boolean;
   isStaff: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   setCompanyId: (id: string | null) => void;
   refreshCompanies: () => Promise<void>;
   signOut: () => Promise<void>;
