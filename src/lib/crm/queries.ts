@@ -136,13 +136,14 @@ export async function fetchCompanyMembers(companyId: string) {
   const { data: mem } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
   const ids = (mem ?? []).map((m: any) => m.user_id);
   if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
-  // Exclude cross-company admins so the assignee list only shows this company's staff/employees
-  const { data: roles } = await sb.from("user_roles").select("user_id, role").in("user_id", ids);
-  const adminIds = new Set((roles ?? []).filter((r: any) => r.role === "admin").map((r: any) => r.user_id));
-  const filtered = ids.filter((id: string) => !adminIds.has(id));
-  if (!filtered.length) return [] as { id: string; full_name: string | null; email: string | null }[];
-  const { data: profs } = await sb.from("profiles").select("id, full_name, email").in("id", filtered);
-  return (profs ?? []) as { id: string; full_name: string | null; email: string | null }[];
+  // Exclude super-admins (platform-wide) so the assignee list only shows this company's own staff
+  const { data: profs } = await sb
+    .from("profiles")
+    .select("id, full_name, email, is_super_admin")
+    .in("id", ids);
+  return (profs ?? [])
+    .filter((p: any) => !p.is_super_admin)
+    .map(({ id, full_name, email }: any) => ({ id, full_name, email })) as { id: string; full_name: string | null; email: string | null }[];
 }
 
 export async function convertVisitToLead(visit: any, userId: string): Promise<string> {
