@@ -137,17 +137,23 @@ export async function fetchCompanyMembers(companyId: string) {
   if (memberError) throw memberError;
   const ids = (mem ?? []).map((m: any) => m.user_id);
   if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
-  // Exclude super-admins (platform-wide) so the assignee list only shows this company's own staff
+  // Exclude admins & super-admins — the assignee list is for sales people (managers/employees) only
+  const { data: roles } = await sb
+    .from("user_roles")
+    .select("user_id, role")
+    .in("user_id", ids);
+  const adminIds = new Set((roles ?? []).filter((r: any) => r.role === "admin").map((r: any) => r.user_id));
   const { data: profs, error: profileError } = await sb
     .from("profiles")
     .select("id, full_name, email, is_super_admin")
     .in("id", ids);
   if (profileError) throw profileError;
   return (profs ?? [])
-    .filter((p: any) => !p.is_super_admin)
+    .filter((p: any) => !p.is_super_admin && !adminIds.has(p.id))
     .map(({ id, full_name, email }: any) => ({ id, full_name, email }))
     .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
 }
+
 
 export async function convertVisitToLead(visit: any, userId: string): Promise<string> {
   // Avoid duplicates
