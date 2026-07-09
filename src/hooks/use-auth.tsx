@@ -140,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ready: !loading && !!session?.user,
     isStaff: roles.includes("admin") || roles.includes("manager"),
     isAdmin: roles.includes("admin"),
+    isSuperAdmin,
     setCompanyId,
     refreshCompanies: loadCompanies,
     signOut: async () => {
