@@ -14,9 +14,10 @@ export function AssigneeFilter({
   className?: string;
 }) {
   const { data } = useQuery({
-    queryKey: ["crm-members", companyId],
+    queryKey: ["crm-members", companyId, "include-company-admins"],
     enabled: !!companyId,
     queryFn: () => fetchCompanyMembers(companyId!),
+    refetchOnMount: "always",
   });
   return (
     <Select value={value} onValueChange={onChange}>

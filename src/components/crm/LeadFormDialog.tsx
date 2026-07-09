@@ -28,9 +28,10 @@ export function LeadFormDialog({
   const [form, setForm] = useState<any>({});
 
   const members = useQuery({
-    queryKey: ["crm-members", companyId],
+    queryKey: ["crm-members", companyId, "include-company-admins"],
     enabled: !!companyId && open,
     queryFn: () => fetchCompanyMembers(companyId!),
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
