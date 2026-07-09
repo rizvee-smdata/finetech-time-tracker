@@ -103,17 +103,23 @@ export const adminResetPassword = createServerFn({ method: "POST" })
 export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    const caller = await assertAdmin(context.supabase, context.userId);
     const [{ data: profiles }, { data: roles }, { data: members }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, email, created_at"),
+      supabaseAdmin.from("profiles").select("id, full_name, email, created_at, is_super_admin"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.from("company_members").select("user_id, company_id"),
     ]);
-    return (profiles ?? []).map((p) => ({
+    const allowed = new Set(caller.companyIds);
+    const rows = (profiles ?? []).map((p) => ({
       ...p,
       roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role),
       company_ids: (members ?? []).filter((m) => m.user_id === p.id).map((m) => m.company_id),
     }));
+    if (caller.isSuperAdmin) return rows;
+    // Non-super admins: only users who share at least one company with them, and hide super_admins
+    return rows.filter((r) =>
+      !r.is_super_admin && (r.id === context.userId || r.company_ids.some((cid) => allowed.has(cid))),
+    );
   });
 
 const customerRow = z.object({
