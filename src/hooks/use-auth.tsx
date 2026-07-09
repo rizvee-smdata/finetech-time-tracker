@@ -76,9 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       console.error("Failed to load roles", error);
       setRoles([]);
-      return;
+    } else {
+      setRoles((data ?? []).map((r) => r.role as AppRole));
     }
-    setRoles((data ?? []).map((r) => r.role as AppRole));
+    const { data: prof } = await supabase.from("profiles").select("is_super_admin").eq("id", uid).maybeSingle();
+    setIsSuperAdmin(Boolean((prof as any)?.is_super_admin));
   }, []);
 
   useEffect(() => {
