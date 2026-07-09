@@ -80,7 +80,7 @@ function TeamPage() {
           todayVisits,
           isCheckedIn: !!open,
         };
-      }).filter((m) => !m.roles.includes("admin"));
+      }).filter((m) => isSuperAdmin || !m.roles.includes("admin"));
     },
   });
 
