@@ -169,7 +169,7 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { data: created, error } = await supabaseAdmin
       .from("companies")
       .insert({ name: data.name, slug: data.slug })
@@ -183,7 +183,7 @@ export const adminUpdateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { error } = await supabaseAdmin
       .from("companies")
       .update({ name: data.name, slug: data.slug })
@@ -196,7 +196,7 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -205,12 +205,16 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
 export const adminListCompanies = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    const caller = await assertAdmin(context.supabase, context.userId);
     const [{ data: companies }, { data: members }] = await Promise.all([
       supabaseAdmin.from("companies").select("*").order("name"),
       supabaseAdmin.from("company_members").select("company_id, user_id"),
     ]);
-    return (companies ?? []).map((c) => ({
+    const allowed = new Set(caller.companyIds);
+    const filtered = caller.isSuperAdmin
+      ? (companies ?? [])
+      : (companies ?? []).filter((c) => allowed.has(c.id));
+    return filtered.map((c) => ({
       ...c,
       member_count: (members ?? []).filter((m) => m.company_id === c.id).length,
     }));
