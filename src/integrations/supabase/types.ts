@@ -4490,6 +4490,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_super_admin: boolean
           manager_id: string | null
           must_change_password: boolean
           phone: string | null
@@ -4502,6 +4503,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
           phone?: string | null
@@ -4514,6 +4516,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
           phone?: string | null
@@ -7014,6 +7017,7 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin: { Args: { _uid: string }; Returns: boolean }
       kb_search: {
         Args: { _limit?: number; _q: string }
         Returns: {
