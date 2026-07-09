@@ -3,14 +3,28 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+async function getCallerContext(supabase: any, userId: string) {
+  const [{ data: roles }, { data: profile }, { data: memberships }] = await Promise.all([
+    supabase.from("user_roles").select("role").eq("user_id", userId),
+    supabase.from("profiles").select("is_super_admin").eq("id", userId).maybeSingle(),
+    supabase.from("company_members").select("company_id").eq("user_id", userId),
+  ]);
+  const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
+  const isSuperAdmin = Boolean((profile as any)?.is_super_admin);
+  const companyIds = (memberships ?? []).map((m: any) => m.company_id as string);
+  return { isAdmin, isSuperAdmin, companyIds };
+}
+
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
-  if (error) throw new Error(error.message);
-  const isAdmin = (data ?? []).some((r: any) => r.role === "admin");
-  if (!isAdmin) throw new Error("Admin access required");
+  const ctx = await getCallerContext(supabase, userId);
+  if (!ctx.isAdmin && !ctx.isSuperAdmin) throw new Error("Admin access required");
+  return ctx;
+}
+
+async function assertSuperAdmin(supabase: any, userId: string) {
+  const ctx = await getCallerContext(supabase, userId);
+  if (!ctx.isSuperAdmin) throw new Error("Super admin access required");
+  return ctx;
 }
 
 const createUserSchema = z.object({
