@@ -109,6 +109,14 @@ function TeamPage() {
     else { toast.success("Role updated"); refetch(); }
   }
 
+  async function setDepartment(userId: string, dept: string) {
+    const value = dept === "__none__" ? null : dept;
+    const { error } = await supabase.from("profiles").update({ department: value }).eq("id", userId);
+    if (error) toast.error(error.message);
+    else { toast.success("Department updated"); refetch(); }
+  }
+
+
   const pg = usePagination(members ?? [], 20);
 
   return (
@@ -206,10 +214,31 @@ function TeamPage() {
                 </div>
               );
             })()}
+            {isAdmin && (
+              <div className="mt-3">
+                <Select
+                  onValueChange={(v) => setDepartment(m.id, v)}
+                  defaultValue={(m as any).department || "__none__"}
+                >
+                  <SelectTrigger><SelectValue placeholder="Department" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— No department —</SelectItem>
+                    <SelectItem value="Sales">Sales</SelectItem>
+                    <SelectItem value="HR">HR</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Operations">Operations</SelectItem>
+                    <SelectItem value="Engineering">Engineering</SelectItem>
+                    <SelectItem value="Support">Support</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="mt-3 text-xs text-muted-foreground">Joined {format(new Date(m.created_at), "PP")}</div>
           </Card>
         ))}
       </div>
+
 
       <PaginationBar {...pg} label="members" />
 

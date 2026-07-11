@@ -145,14 +145,16 @@ export async function fetchCompanyMembers(companyId: string) {
   const adminIds = new Set((roles ?? []).filter((r: any) => r.role === "admin").map((r: any) => r.user_id));
   const { data: profs, error: profileError } = await sb
     .from("profiles")
-    .select("id, full_name, email, is_super_admin")
+    .select("id, full_name, email, is_super_admin, department")
     .in("id", ids);
   if (profileError) throw profileError;
   return (profs ?? [])
     .filter((p: any) => !p.is_super_admin && !adminIds.has(p.id))
+    .filter((p: any) => (p.department || "").trim().toLowerCase() === "sales")
     .map(({ id, full_name, email }: any) => ({ id, full_name, email }))
     .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
 }
+
 
 
 export async function convertVisitToLead(visit: any, userId: string): Promise<string> {
