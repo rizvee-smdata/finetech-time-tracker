@@ -109,6 +109,14 @@ function TeamPage() {
     else { toast.success("Role updated"); refetch(); }
   }
 
+  async function setDepartment(userId: string, dept: string) {
+    const value = dept === "__none__" ? null : dept;
+    const { error } = await supabase.from("profiles").update({ department: value }).eq("id", userId);
+    if (error) toast.error(error.message);
+    else { toast.success("Department updated"); refetch(); }
+  }
+
+
   const pg = usePagination(members ?? [], 20);
 
   return (
