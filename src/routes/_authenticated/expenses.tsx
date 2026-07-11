@@ -30,7 +30,7 @@ function ExpensesLayout() {
 
   const tabs: { to: string; label: string }[] = [
     { to: "/expenses", label: "My expenses" },
-    ...(isStaff ? [{ to: "/expenses/approvals", label: "Approvals" }] : []),
+    ...(canApprove ? [{ to: "/expenses/approvals", label: "Approvals" }] : []),
     { to: "/expenses/reports", label: "Reports" },
     ...(isAdmin || isStaff ? [{ to: "/expenses/settings", label: "Settings" }] : []),
   ];
