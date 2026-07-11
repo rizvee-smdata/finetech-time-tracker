@@ -1,4 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -9,11 +11,26 @@ export const Route = createFileRoute("/_authenticated/expenses")({
 function ExpensesLayout() {
   const router = useRouter();
   const path = router.state.location.pathname;
-  const { isStaff, isAdmin } = useAuth();
+  const { user, companyId, isStaff, isAdmin } = useAuth();
+
+  const { data: isApprover } = useQuery({
+    queryKey: ["is-expense-approver", user?.id, companyId],
+    enabled: !!user && !!companyId && !isStaff,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("expense_approver_assignments")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", companyId!)
+        .eq("approver_id", user!.id);
+      return (count ?? 0) > 0;
+    },
+  });
+
+  const canApprove = isAdmin || isStaff || !!isApprover;
 
   const tabs: { to: string; label: string }[] = [
     { to: "/expenses", label: "My expenses" },
-    ...(isStaff ? [{ to: "/expenses/approvals", label: "Approvals" }] : []),
+    ...(canApprove ? [{ to: "/expenses/approvals", label: "Approvals" }] : []),
     { to: "/expenses/reports", label: "Reports" },
     ...(isAdmin || isStaff ? [{ to: "/expenses/settings", label: "Settings" }] : []),
   ];

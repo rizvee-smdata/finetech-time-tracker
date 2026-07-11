@@ -7016,6 +7016,10 @@ export type Database = {
         Args: { _company_id: string; _user_id: string }
         Returns: boolean
       }
+      is_expense_approver_for: {
+        Args: { _approver: string; _rep: string }
+        Returns: boolean
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _uid: string }; Returns: boolean }
       kb_search: {

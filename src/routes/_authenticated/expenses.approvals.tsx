@@ -21,20 +21,45 @@ interface ExpenseRow extends Expense {
 }
 
 function ApprovalsPage() {
-  const { user, companyId, isStaff } = useAuth();
+  const { user, companyId, isStaff, isAdmin } = useAuth();
   const qc = useQueryClient();
   const [comments, setComments] = useState<Record<string, string>>({});
 
-  const { data: expenses, isLoading } = useQuery({
-    queryKey: ["expenses", "approvals", companyId],
-    enabled: !!user && !!companyId && isStaff,
+  // Reps assigned to this user as approver
+  const { data: myApproverReps } = useQuery({
+    queryKey: ["expense-approver-reps", user?.id, companyId],
+    enabled: !!user && !!companyId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
+        .from("expense_approver_assignments")
+        .select("rep_id")
+        .eq("company_id", companyId!)
+        .eq("approver_id", user!.id);
+      return (data ?? []).map((r) => r.rep_id as string);
+    },
+  });
+
+  const canApprove = isAdmin || isStaff || (myApproverReps?.length ?? 0) > 0;
+
+  const { data: expenses, isLoading } = useQuery({
+    queryKey: ["expenses", "approvals", companyId, user?.id, isAdmin, isStaff, myApproverReps],
+    enabled: !!user && !!companyId && canApprove,
+    queryFn: async () => {
+      let q = supabase
         .from("expenses")
         .select("*")
         .eq("company_id", companyId!)
         .eq("status", "submitted")
         .order("submitted_at", { ascending: true });
+
+      // Admin & staff (manager) see everything; assigned approvers only see their reps'
+      if (!isAdmin && !isStaff) {
+        const reps = myApproverReps ?? [];
+        if (reps.length === 0) return [] as ExpenseRow[];
+        q = q.in("user_id", reps);
+      }
+
+      const { data, error } = await q;
       if (error) throw error;
       const rows = (data ?? []) as Expense[];
       const ids = Array.from(new Set(rows.map((r) => r.user_id)));
@@ -71,7 +96,7 @@ function ApprovalsPage() {
     qc.invalidateQueries({ queryKey: ["expenses"] });
   }
 
-  if (!isStaff) return <div className="text-sm text-muted-foreground">Only managers and admins can review expenses.</div>;
+  if (!canApprove) return <div className="text-sm text-muted-foreground">Only admins, managers, and assigned approvers can review expenses.</div>;
 
   return (
     <div className="space-y-3">
