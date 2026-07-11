@@ -205,15 +205,22 @@ export function LeadFormDialog({
                 value={form.customer_name || ""}
                 onChange={(e) => {
                   const v = e.target.value;
-                  const match = (customers.data ?? []).find((c) => c.customer_name === v);
+                  // Datalist value is unique per contact so picking a specific
+                  // person (e.g. Agrani Bank + Mr. Reazul) loads their details,
+                  // not the first contact for that customer.
+                  const match = (customers.data ?? []).find((c) => {
+                    const key = [c.customer_name, c.contact_person || c.email || c.phone]
+                      .filter(Boolean).join(" — ");
+                    return key === v;
+                  });
                   if (match) {
                     setForm({
                       ...form,
                       customer_name: match.customer_name,
-                      contact_person: form.contact_person || match.contact_person || "",
-                      designation: form.designation || match.designation || "",
-                      email: form.email || match.email || "",
-                      phone: form.phone || match.phone || "",
+                      contact_person: match.contact_person || "",
+                      designation: match.designation || "",
+                      email: match.email || "",
+                      phone: match.phone || "",
                     });
                   } else {
                     setForm({ ...form, customer_name: v });
@@ -222,11 +229,15 @@ export function LeadFormDialog({
                 placeholder="Start typing — pick existing or add new"
               />
               <datalist id="lead-customer-suggestions">
-                {(customers.data ?? []).map((c) => (
-                  <option key={c.id} value={c.customer_name}>
-                    {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
-                  </option>
-                ))}
+                {(customers.data ?? []).map((c) => {
+                  const label = [c.customer_name, c.contact_person || c.email || c.phone]
+                    .filter(Boolean).join(" — ");
+                  return (
+                    <option key={c.id} value={label}>
+                      {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
+                    </option>
+                  );
+                })}
               </datalist>
             </Field>
             <Field label="Company">
