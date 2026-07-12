@@ -103,6 +103,21 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       return data ?? [];
     },
   });
+  const leads = useQuery({
+    queryKey: ["tms-form-leads", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("crm_leads")
+        .select("id, customer_name, company_name")
+        .eq("company_id", companyId!)
+        .is("deleted_at", null)
+        .order("last_activity_at", { ascending: false })
+        .limit(500);
+      return (data ?? []) as Array<{ id: string; customer_name: string; company_name: string | null }>;
+    },
+  });
+
 
   useEffect(() => {
     if (!statusId && statuses.data && statuses.data.length > 0) {
