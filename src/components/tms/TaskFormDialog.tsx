@@ -235,6 +235,27 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
             </div>
           </div>
 
+          <div className="grid gap-1.5">
+            <Label>Customer {projectId ? "(optional)" : "*"}</Label>
+            <Select value={leadId ?? "none"} onValueChange={(v) => setLeadId(v === "none" ? null : v)}>
+              <SelectTrigger>
+                <SelectValue placeholder={projectId ? "None" : "Select a customer"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No customer</SelectItem>
+                {(leads.data ?? []).map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.customer_name}{l.company_name ? ` — ${l.company_name}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!projectId && !leadId && (
+              <p className="text-xs text-muted-foreground">Tasks without a project must be linked to a customer.</p>
+            )}
+          </div>
+
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div className="grid gap-1.5">
               <Label>Project</Label>
