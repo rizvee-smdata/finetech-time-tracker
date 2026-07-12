@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download } from "lucide-react";
+import { Download, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
 import { format } from "date-fns";
 
@@ -18,12 +18,16 @@ export const Route = createFileRoute("/_authenticated/reports/leads")({
   component: LeadsReportPage,
 });
 
+type SortDirection = "asc" | "desc" | null;
+
 function LeadsReportPage() {
   const { companyId } = useAuth();
   const today = new Date();
   const first = new Date(today.getFullYear(), today.getMonth(), 1);
   const [from, setFrom] = useState(format(first, "yyyy-MM-dd"));
   const [to, setTo] = useState(format(today, "yyyy-MM-dd"));
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
   const defsQ = useQuery({
     queryKey: ["crm-custom-fields-active", companyId],
@@ -68,20 +72,20 @@ function LeadsReportPage() {
 
   const columns = useMemo(() => {
     const base = [
-      { key: "no", label: "No" },
-      { key: "created_at", label: "Date of Commencement" },
-      { key: "company_name", label: "Company Name" },
-      { key: "account_manager", label: "Account Manager Name" },
-      { key: "product_name", label: "Product" },
-      { key: "expected_value", label: "Deal Value ($)" },
-      { key: "expected_close_date", label: "Expected Closure by" },
-      { key: "stage", label: "WON / Lost" },
-      { key: "notes", label: "Remarks & update" },
-      { key: "contact_person", label: "Contact Name" },
-      { key: "phone", label: "Contact Number" },
-      { key: "email", label: "Contact Email" },
+      { key: "no", label: "No", sortable: false },
+      { key: "created_at", label: "Date of Commencement", sortable: true },
+      { key: "company_name", label: "Company Name", sortable: true },
+      { key: "account_manager", label: "Account Manager Name", sortable: true },
+      { key: "product_name", label: "Product", sortable: true },
+      { key: "expected_value", label: "Deal Value ($)", sortable: true },
+      { key: "expected_close_date", label: "Expected Closure by", sortable: true },
+      { key: "stage", label: "WON / Lost", sortable: true },
+      { key: "notes", label: "Remarks & update", sortable: true },
+      { key: "contact_person", label: "Contact Name", sortable: true },
+      { key: "phone", label: "Contact Number", sortable: true },
+      { key: "email", label: "Contact Email", sortable: true },
     ];
-    const custom = defs.map((d) => ({ key: `cf:${d.field_key}`, label: d.label }));
+    const custom = defs.map((d) => ({ key: `cf:${d.field_key}`, label: d.label, sortable: true }));
     return [...base, ...custom];
   }, [defs]);
 
@@ -107,9 +111,54 @@ function LeadsReportPage() {
     return v == null ? "" : String(v);
   }
 
+  function sortableValue(row: any, key: string): string | number | null {
+    if (key === "no") return row._index ?? 0;
+    if (key === "created_at" || key === "expected_close_date") {
+      const v = cellValue(row, key, 0);
+      return v ? new Date(v).getTime() : null;
+    }
+    if (key === "expected_value") {
+      const n = Number(row.expected_value ?? 0);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    return cellValue(row, key, 0);
+  }
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey || !sortDirection) return rows.map((r, i) => ({ ...r, _index: i }));
+    const dir = sortDirection === "asc" ? 1 : -1;
+    return [...rows]
+      .map((r, i) => ({ ...r, _index: i }))
+      .sort((a, b) => {
+        const av = sortableValue(a, sortKey);
+        const bv = sortableValue(b, sortKey);
+        if (av == null && bv == null) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        if (typeof av === "number" && typeof bv === "number") return (av - bv) * dir;
+        return String(av).localeCompare(String(bv), undefined, { numeric: true }) * dir;
+      });
+  }, [rows, sortKey, sortDirection]);
+
+  function handleSort(key: string) {
+    if (sortKey !== key) {
+      setSortKey(key);
+      setSortDirection("asc");
+      return;
+    }
+    if (sortDirection === "asc") {
+      setSortDirection("desc");
+    } else if (sortDirection === "desc") {
+      setSortKey(null);
+      setSortDirection(null);
+    } else {
+      setSortDirection("asc");
+    }
+  }
+
   function exportCsv() {
     const header = columns.map((c) => csvEscape(c.label)).join(",");
-    const body = rows
+    const body = sortedRows
       .map((r, i) => columns.map((c) => csvEscape(cellValue(r, c.key, i))).join(","))
       .join("\n");
     const csv = header + "\n" + body;
@@ -149,14 +198,37 @@ function LeadsReportPage() {
           <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} className="px-3 py-2 text-left font-medium whitespace-nowrap border-b">
-                  {c.label}
+                <th
+                  key={c.key}
+                  className="px-3 py-2 text-left font-medium whitespace-nowrap border-b"
+                >
+                  {c.sortable ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSort(c.key)}
+                      className="flex items-center gap-1 hover:text-foreground focus:outline-none"
+                      aria-label={`Sort by ${c.label}`}
+                    >
+                      <span>{c.label}</span>
+                      {sortKey === c.key ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-3 w-3" />
+                        ) : (
+                          <ArrowDown className="h-3 w-3" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3 opacity-50" />
+                      )}
+                    </button>
+                  ) : (
+                    c.label
+                  )}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {sortedRows.map((r, i) => (
               <tr key={r.id} className="border-b hover:bg-muted/20">
                 {columns.map((c) => (
                   <td key={c.key} className="px-3 py-2 align-top whitespace-nowrap">
@@ -165,7 +237,7 @@ function LeadsReportPage() {
                 ))}
               </tr>
             ))}
-            {rows.length === 0 && (
+            {sortedRows.length === 0 && (
               <tr>
                 <td colSpan={columns.length} className="px-3 py-8 text-center text-sm text-muted-foreground">
                   No leads in this date range.
