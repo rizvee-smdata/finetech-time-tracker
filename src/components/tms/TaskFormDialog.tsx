@@ -39,9 +39,11 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
   const [projectId, setProjectId] = useState<string | null>(defaultProjectId ?? null);
   const [sprintId, setSprintId] = useState<string | null>(defaultSprintId ?? null);
   const [statusId, setStatusId] = useState<string | null>(defaultStatusId ?? null);
+  const [leadId, setLeadId] = useState<string | null>(null);
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
+
 
   useEffect(() => {
     if (!open) return;
@@ -56,6 +58,8 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setSprintId(editing.sprint_id);
       setStatusId(editing.status_id);
       setAssigneeIds(editing.tms_task_assignees.map((a) => a.user_id));
+      setLeadId((editing as any).lead_id ?? null);
+
       setIsPrivate(editing.is_private);
       setCustomFields((((editing as any).custom_fields) ?? {}) as Record<string, unknown>);
     } else {
@@ -69,8 +73,10 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setSprintId(defaultSprintId ?? null);
       setStatusId(defaultStatusId ?? null);
       setAssigneeIds([]);
+      setLeadId(null);
       setIsPrivate(false);
       setCustomFields({});
+
     }
   }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId]);
 
@@ -97,6 +103,21 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       return data ?? [];
     },
   });
+  const leads = useQuery({
+    queryKey: ["tms-form-leads", companyId],
+    enabled: !!companyId && open,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("crm_leads")
+        .select("id, customer_name, company_name")
+        .eq("company_id", companyId!)
+        .is("deleted_at", null)
+        .order("last_activity_at", { ascending: false })
+        .limit(500);
+      return (data ?? []) as Array<{ id: string; customer_name: string; company_name: string | null }>;
+    },
+  });
+
 
   useEffect(() => {
     if (!statusId && statuses.data && statuses.data.length > 0) {
@@ -109,6 +130,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
     mutationFn: async () => {
       if (!title.trim()) throw new Error("Title required");
       if (!companyId || !user) throw new Error("No session");
+      if (!projectId && !leadId) throw new Error("Link this task to a Project or a Customer");
 
       const payload = {
         company_id: companyId,
@@ -121,10 +143,12 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
         project_id: projectId,
         sprint_id: sprintId,
         status_id: statusId,
+        lead_id: leadId,
         is_private: isPrivate,
         created_by: editing?.created_by ?? user.id,
         custom_fields: customFields as any,
-      };
+      } as any;
+
 
       let taskId: string;
       if (editing) {
@@ -210,6 +234,27 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
               </Select>
             </div>
           </div>
+
+          <div className="grid gap-1.5">
+            <Label>Customer {projectId ? "(optional)" : "*"}</Label>
+            <Select value={leadId ?? "none"} onValueChange={(v) => setLeadId(v === "none" ? null : v)}>
+              <SelectTrigger>
+                <SelectValue placeholder={projectId ? "None" : "Select a customer"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No customer</SelectItem>
+                {(leads.data ?? []).map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.customer_name}{l.company_name ? ` — ${l.company_name}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!projectId && !leadId && (
+              <p className="text-xs text-muted-foreground">Tasks without a project must be linked to a customer.</p>
+            )}
+          </div>
+
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div className="grid gap-1.5">
