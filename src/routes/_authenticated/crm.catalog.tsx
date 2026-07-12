@@ -81,7 +81,7 @@ function CatalogPage() {
         </div>
       )}
 
-      <ProductDialog open={open} onOpenChange={setOpen} companyId={cid} product={editing} onSaved={() => products.refetch()} />
+      <ProductDialog key={editing?.id ?? "new"} open={open} onOpenChange={setOpen} companyId={cid} product={editing} onSaved={() => products.refetch()} />
     </div>
   );
 }
