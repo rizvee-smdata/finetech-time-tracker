@@ -179,12 +179,13 @@ function ListPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
+                <SortableHead label="Title" k="title" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortableHead label="Project" k="project" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortableHead label="Customer" k="customer" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortableHead label="Status" k="status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortableHead label="Priority" k="priority" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <TableHead>Assignees</TableHead>
-                <TableHead>Due</TableHead>
+                <SortableHead label="Due" k="due" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <TableHead className="text-right">Hours</TableHead>
               </TableRow>
             </TableHeader>
@@ -193,6 +194,9 @@ function ListPage() {
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => setEditing(t)}>
                   <TableCell className="font-medium max-w-[280px] truncate">{t.title}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{t.tms_projects?.name ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                    {t.crm_leads?.customer_name || t.crm_leads?.company_name || "—"}
+                  </TableCell>
                   <TableCell>
                     <span className="inline-flex items-center gap-1.5 text-xs">
                       <span className="size-2 rounded-full" style={{ background: t.tms_task_statuses?.color ?? "#94a3b8" }} />
@@ -203,6 +207,7 @@ function ListPage() {
                   <TableCell>
                     <AssigneeAvatars size="xs" people={t.tms_task_assignees.map((a) => a.profiles!).filter(Boolean)} />
                   </TableCell>
+
                   <TableCell className={cn("text-sm", isOverdue(t) && "text-red-600 font-medium")}>
                     {t.due_date ? format(new Date(t.due_date), "MMM d, yyyy") : "—"}
                   </TableCell>
