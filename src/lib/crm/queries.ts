@@ -155,6 +155,25 @@ export async function fetchCompanyMembers(companyId: string) {
     .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
 }
 
+// Broader assignee list — includes all company members except super-admins.
+// Used by lead Create/Edit forms so leads can be assigned to anyone, not just
+// people whose department is set to "sales".
+export async function fetchAssignableMembers(companyId: string) {
+  const { data: mem, error: memberError } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
+  if (memberError) throw memberError;
+  const ids = (mem ?? []).map((m: any) => m.user_id);
+  if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
+  const { data: profs, error: profileError } = await sb
+    .from("profiles")
+    .select("id, full_name, email, is_super_admin")
+    .in("id", ids);
+  if (profileError) throw profileError;
+  return (profs ?? [])
+    .filter((p: any) => !p.is_super_admin)
+    .map(({ id, full_name, email }: any) => ({ id, full_name, email }))
+    .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
+}
+
 
 
 export async function convertVisitToLead(visit: any, userId: string): Promise<string> {
