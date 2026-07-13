@@ -23,10 +23,11 @@ type Props = {
   defaultProjectId?: string | null;
   defaultStatusId?: string | null;
   defaultSprintId?: string | null;
+  defaultLeadId?: string | null;
   onSaved?: (taskId: string) => void;
 };
 
-export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, defaultStatusId, defaultSprintId, onSaved }: Props) {
+export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, defaultStatusId, defaultSprintId, defaultLeadId, onSaved }: Props) {
   const { companyId, user } = useAuth();
   const qc = useQueryClient();
 
