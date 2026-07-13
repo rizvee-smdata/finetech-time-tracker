@@ -135,6 +135,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       if (!title.trim()) throw new Error("Title required");
       if (!companyId || !user) throw new Error("No session");
       if (!projectId && !leadId) throw new Error("Link this task to a Project or a Customer");
+      if (startDate && dueDate && startDate > dueDate) throw new Error("Start date must be on or before due date");
 
       const payload = {
         company_id: companyId,
