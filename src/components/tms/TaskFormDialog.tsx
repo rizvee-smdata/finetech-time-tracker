@@ -291,6 +291,14 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
 
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
+              <Label>Start date</Label>
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <p className="text-xs text-muted-foreground">Leave blank to start immediately. Use a future date to schedule.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
               <Label>Estimated hours</Label>
               <Input type="number" min="0" step="0.25" value={estHours} onChange={(e) => setEstHours(e.target.value)} />
             </div>
