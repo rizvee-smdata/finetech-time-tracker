@@ -23,10 +23,11 @@ type Props = {
   defaultProjectId?: string | null;
   defaultStatusId?: string | null;
   defaultSprintId?: string | null;
+  defaultLeadId?: string | null;
   onSaved?: (taskId: string) => void;
 };
 
-export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, defaultStatusId, defaultSprintId, onSaved }: Props) {
+export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, defaultStatusId, defaultSprintId, defaultLeadId, onSaved }: Props) {
   const { companyId, user } = useAuth();
   const qc = useQueryClient();
 
@@ -35,6 +36,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
   const [priority, setPriority] = useState<Priority>("medium");
   const [taskType, setTaskType] = useState<TaskType>("task");
   const [dueDate, setDueDate] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [estHours, setEstHours] = useState<string>("");
   const [projectId, setProjectId] = useState<string | null>(defaultProjectId ?? null);
   const [sprintId, setSprintId] = useState<string | null>(defaultSprintId ?? null);
@@ -53,6 +55,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setPriority(editing.priority);
       setTaskType(editing.task_type);
       setDueDate(editing.due_date ?? "");
+      setStartDate(((editing as any).start_date) ?? "");
       setEstHours(editing.estimated_hours?.toString() ?? "");
       setProjectId(editing.project_id);
       setSprintId(editing.sprint_id);
@@ -68,17 +71,18 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setPriority("medium");
       setTaskType("task");
       setDueDate("");
+      setStartDate("");
       setEstHours("");
       setProjectId(defaultProjectId ?? null);
       setSprintId(defaultSprintId ?? null);
       setStatusId(defaultStatusId ?? null);
       setAssigneeIds([]);
-      setLeadId(null);
+      setLeadId(defaultLeadId ?? null);
       setIsPrivate(false);
       setCustomFields({});
 
     }
-  }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId]);
+  }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId, defaultLeadId]);
 
   const projects = useQuery({
     queryKey: ["tms-projects", companyId],
@@ -131,6 +135,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       if (!title.trim()) throw new Error("Title required");
       if (!companyId || !user) throw new Error("No session");
       if (!projectId && !leadId) throw new Error("Link this task to a Project or a Customer");
+      if (startDate && dueDate && startDate > dueDate) throw new Error("Start date must be on or before due date");
 
       const payload = {
         company_id: companyId,
@@ -139,6 +144,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
         priority,
         task_type: taskType,
         due_date: dueDate || null,
+        start_date: startDate || null,
         estimated_hours: estHours ? Number(estHours) : null,
         project_id: projectId,
         sprint_id: sprintId,
@@ -280,6 +286,14 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
             <div className="grid gap-1.5">
               <Label>Due date</Label>
               <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label>Start date</Label>
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <p className="text-xs text-muted-foreground">Leave blank to start immediately. Use a future date to schedule.</p>
             </div>
           </div>
 
