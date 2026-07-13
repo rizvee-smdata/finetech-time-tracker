@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Search, ListTodo, Bookmark, BookmarkPlus, X, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PriorityBadge } from "@/components/tms/PriorityBadge";
 import { AssigneeAvatars } from "@/components/tms/AssigneeAvatars";
@@ -205,11 +205,33 @@ function ListPage() {
                   </TableCell>
                   <TableCell><PriorityBadge priority={t.priority} /></TableCell>
                   <TableCell>
-                    <AssigneeAvatars size="xs" people={t.tms_task_assignees.map((a) => a.profiles!).filter(Boolean)} />
+                    {(() => {
+                      const people = t.tms_task_assignees.map((a) => a.profiles!).filter(Boolean);
+                      if (people.length === 0) return <span className="text-xs text-muted-foreground">Unassigned</span>;
+                      const names = people.map((p) => p.full_name || "—");
+                      return (
+                        <div className="flex items-center gap-2 min-w-0">
+                          <AssigneeAvatars size="xs" people={people} />
+                          <span className="text-xs truncate max-w-[160px]" title={names.join(", ")}>
+                            {names.join(", ")}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </TableCell>
 
                   <TableCell className={cn("text-sm", isOverdue(t) && "text-red-600 font-medium")}>
-                    {t.due_date ? format(new Date(t.due_date), "MMM d, yyyy") : "—"}
+                    {t.due_date ? (
+                      <div className="flex flex-col leading-tight">
+                        <span>{format(new Date(t.due_date), "MMM d, yyyy")}</span>
+                        {(() => {
+                          const d = differenceInCalendarDays(new Date(), new Date(t.due_date));
+                          if (d > 0) return <span className="text-[11px] text-red-600">{d} day{d === 1 ? "" : "s"} overdue</span>;
+                          if (d === 0) return <span className="text-[11px] text-amber-600">Due today</span>;
+                          return <span className="text-[11px] text-muted-foreground">in {-d} day{-d === 1 ? "" : "s"}</span>;
+                        })()}
+                      </div>
+                    ) : "—"}
                   </TableCell>
                   <TableCell className="text-right text-sm">
                     {t.logged_hours}{t.estimated_hours ? `/${t.estimated_hours}` : ""}
