@@ -334,6 +334,7 @@ function Timeline({ items }: { items: any[] }) {
 function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: string; userId: string }) {
   const qc = useQueryClient();
   const [title, setTitle] = useState("");
+  const [start, setStart] = useState("");
   const [due, setDue] = useState("");
   const [assignee, setAssignee] = useState<string>("none");
   const [busy, setBusy] = useState(false);
@@ -345,11 +346,13 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
 
   async function submit() {
     if (!title.trim()) return toast.error("Title required");
+    if (start && due && start > due) return toast.error("Start date must be on or before due date");
     setBusy(true);
     const { data: task, error } = await sb.from("tms_tasks").insert({
       company_id: companyId,
       created_by: userId,
       title: title.trim(),
+      start_date: start || null,
       due_date: due || null,
       lead_id: leadId,
     }).select("id").single();
@@ -369,7 +372,7 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
       }
     }
     setBusy(false);
-    setTitle(""); setDue(""); setAssignee("none");
+    setTitle(""); setStart(""); setDue(""); setAssignee("none");
     qc.invalidateQueries({ queryKey: ["crm-tasks", leadId] });
     toast.success("Task added");
   }
@@ -391,6 +394,10 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="grid gap-1">
+        <Label className="text-xs">Start</Label>
+        <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
       </div>
       <div className="grid gap-1">
         <Label className="text-xs">Due</Label>
