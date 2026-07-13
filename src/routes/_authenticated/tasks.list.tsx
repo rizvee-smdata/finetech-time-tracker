@@ -208,7 +208,7 @@ function ListPage() {
                     {(() => {
                       const people = t.tms_task_assignees.map((a) => a.profiles!).filter(Boolean);
                       if (people.length === 0) return <span className="text-xs text-muted-foreground">Unassigned</span>;
-                      const names = people.map((p) => p.full_name || p.email || "—");
+                      const names = people.map((p) => p.full_name || "—");
                       return (
                         <div className="flex items-center gap-2 min-w-0">
                           <AssigneeAvatars size="xs" people={people} />
