@@ -33,6 +33,7 @@ export type AssigneeProfile = {
 export type TaskWithRels = TmsTask & {
   tms_task_statuses: { id: string; name: string; color: string; is_terminal: boolean } | null;
   tms_projects: { id: string; name: string; color: string | null } | null;
+  crm_leads: { id: string; customer_name: string | null; company_name: string | null } | null;
   tms_task_assignees: Array<{
     user_id: string;
     role: Database["public"]["Enums"]["tms_assignee_role"];
