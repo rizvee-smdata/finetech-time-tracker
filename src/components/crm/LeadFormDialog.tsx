@@ -171,9 +171,18 @@ export function LeadFormDialog({
       competitor_notes: form.competitor_notes || null,
       renewal_kind: form.renewal_kind,
       renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
-      product_name: form.product_name?.trim() || null,
+      product_name: (() => {
+        const ids: string[] = form.product_ids ?? [];
+        const list = products.data ?? [];
+        const names = ids
+          .map((id) => list.find((p: any) => p.id === id)?.name)
+          .filter(Boolean) as string[];
+        if (names.length) return names.join(", ");
+        return form.product_name?.trim() || null;
+      })(),
       oem_id: form.oem_id || null,
-      product_id: form.product_id || null,
+      product_id: (form.product_ids && form.product_ids[0]) || form.product_id || null,
+      product_ids: form.product_ids ?? [],
       partner_id: form.partner_id || null,
       vendor_quotes: (form.vendor_quotes ?? [])
         .filter((v: VendorQuote) => v.vendor?.trim())
