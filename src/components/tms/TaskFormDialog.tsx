@@ -36,6 +36,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
   const [priority, setPriority] = useState<Priority>("medium");
   const [taskType, setTaskType] = useState<TaskType>("task");
   const [dueDate, setDueDate] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [estHours, setEstHours] = useState<string>("");
   const [projectId, setProjectId] = useState<string | null>(defaultProjectId ?? null);
   const [sprintId, setSprintId] = useState<string | null>(defaultSprintId ?? null);
