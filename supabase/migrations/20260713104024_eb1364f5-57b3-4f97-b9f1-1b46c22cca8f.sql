@@ -1,0 +1,1 @@
+ALTER TABLE public.crm_leads ADD COLUMN IF NOT EXISTS product_ids uuid[] NOT NULL DEFAULT '{}'::uuid[];

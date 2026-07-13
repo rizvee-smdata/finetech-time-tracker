@@ -1783,6 +1783,7 @@ export type Database = {
           priority: Database["public"]["Enums"]["crm_priority"]
           probability: number
           product_id: string | null
+          product_ids: string[]
           product_name: string | null
           renewal_date: string | null
           renewal_kind: Database["public"]["Enums"]["crm_renewal_kind"]
@@ -1834,6 +1835,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
           product_id?: string | null
+          product_ids?: string[]
           product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]
@@ -1885,6 +1887,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["crm_priority"]
           probability?: number
           product_id?: string | null
+          product_ids?: string[]
           product_name?: string | null
           renewal_date?: string | null
           renewal_kind?: Database["public"]["Enums"]["crm_renewal_kind"]

@@ -6,6 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { ChevronDown, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -61,6 +65,9 @@ export function LeadFormDialog({
       product_name: lead?.product_name ?? "",
       oem_id: (lead as any)?.oem_id ?? "",
       product_id: (lead as any)?.product_id ?? "",
+      product_ids: Array.isArray((lead as any)?.product_ids) && (lead as any).product_ids.length
+        ? (lead as any).product_ids as string[]
+        : ((lead as any)?.product_id ? [(lead as any).product_id as string] : []),
       partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
       custom_fields: ((lead as any)?.custom_fields ?? {}) as Record<string, unknown>,
@@ -164,9 +171,18 @@ export function LeadFormDialog({
       competitor_notes: form.competitor_notes || null,
       renewal_kind: form.renewal_kind,
       renewal_date: form.renewal_kind !== "one_time" ? form.renewal_date || null : null,
-      product_name: form.product_name?.trim() || null,
+      product_name: (() => {
+        const ids: string[] = form.product_ids ?? [];
+        const list = products.data ?? [];
+        const names = ids
+          .map((id) => list.find((p: any) => p.id === id)?.name)
+          .filter(Boolean) as string[];
+        if (names.length) return names.join(", ");
+        return form.product_name?.trim() || null;
+      })(),
       oem_id: form.oem_id || null,
-      product_id: form.product_id || null,
+      product_id: (form.product_ids && form.product_ids[0]) || form.product_id || null,
+      product_ids: form.product_ids ?? [],
       partner_id: form.partner_id || null,
       vendor_quotes: (form.vendor_quotes ?? [])
         .filter((v: VendorQuote) => v.vendor?.trim())
@@ -256,7 +272,7 @@ export function LeadFormDialog({
             <Field label="OEM / Vendor">
               <Select
                 value={form.oem_id || "__none"}
-                onValueChange={(v) => setForm({ ...form, oem_id: v === "__none" ? "" : v, product_id: "", product_name: "" })}
+                onValueChange={(v) => setForm({ ...form, oem_id: v === "__none" ? "" : v, product_id: "", product_ids: [], product_name: "" })}
               >
                 <SelectTrigger><SelectValue placeholder="Select OEM" /></SelectTrigger>
                 <SelectContent>
@@ -267,23 +283,65 @@ export function LeadFormDialog({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Product">
-              <Select
-                value={form.product_id || "__none"}
-                onValueChange={(v) => {
-                  if (v === "__none") return setForm({ ...form, product_id: "", product_name: "" });
-                  const p = (products.data ?? []).find((x) => x.id === v);
-                  setForm({ ...form, product_id: v, product_name: p?.name ?? "" });
-                }}
-              >
-                <SelectTrigger><SelectValue placeholder={form.oem_id ? "Select product" : "Select OEM first or any product"} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none">— None —</SelectItem>
-                  {(products.data ?? []).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Field label="Products">
+              {(() => {
+                const selected: string[] = form.product_ids ?? [];
+                const list = (products.data ?? []) as Array<{ id: string; name: string }>;
+                const selectedItems = selected
+                  .map((id) => list.find((p) => p.id === id))
+                  .filter(Boolean) as Array<{ id: string; name: string }>;
+                function toggle(id: string) {
+                  const next = selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id];
+                  setForm({ ...form, product_ids: next, product_id: next[0] ?? "" });
+                }
+                return (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex min-h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm text-left hover:bg-accent/40"
+                      >
+                        <div className="flex flex-wrap gap-1">
+                          {selectedItems.length === 0 ? (
+                            <span className="text-muted-foreground">
+                              {form.oem_id ? "Select products (one or more)" : "Select OEM first or any product"}
+                            </span>
+                          ) : (
+                            selectedItems.map((p) => (
+                              <Badge key={p.id} variant="secondary" className="gap-1">
+                                {p.name}
+                                <X
+                                  className="h-3 w-3 cursor-pointer"
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggle(p.id); }}
+                                />
+                              </Badge>
+                            ))
+                          )}
+                        </div>
+                        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-1 max-h-64 overflow-auto">
+                      {list.length === 0 && (
+                        <div className="px-2 py-1.5 text-xs text-muted-foreground">No products.</div>
+                      )}
+                      {list.map((p) => (
+                        <label
+                          key={p.id}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm"
+                        >
+                          <Checkbox
+                            checked={selected.includes(p.id)}
+                            onCheckedChange={() => toggle(p.id)}
+                          />
+                          <span>{p.name}</span>
+                        </label>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                );
+              })()}
+              <div className="text-[11px] text-muted-foreground mt-1">Tip: pick multiple to bundle (e.g. GWS Business Starter + Gemini Enterprise).</div>
             </Field>
             <Field label="Partner (optional)">
               <Select
