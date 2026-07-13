@@ -80,15 +80,25 @@ export async function fetchProjects(companyId: string, includeArchived = false) 
   return data ?? [];
 }
 
-/** Members of the active company, queried via company_members → profiles. */
+/** Members of the active company, queried via company_members → profiles.
+ *  Fetches profiles in a second query (rather than an embedded join) so RLS
+ *  on `profiles` cannot silently collapse the join to null rows and leave the
+ *  Assignee picker empty. */
 export async function fetchCompanyMembers(companyId: string) {
-  const { data, error } = await supabase
+  const { data: mem, error } = await supabase
     .from("company_members")
-    .select("user_id, profiles:user_id(id, full_name, avatar_url, email)")
+    .select("user_id")
     .eq("company_id", companyId);
   if (error) throw error;
-  return (data ?? [])
-    .map((r) => r.profiles)
-    .filter((p): p is { id: string; full_name: string | null; avatar_url: string | null; email: string | null } => !!p)
-    .sort((a, b) => (a.full_name ?? "").localeCompare(b.full_name ?? ""));
+  const ids = (mem ?? []).map((m) => m.user_id).filter(Boolean) as string[];
+  if (!ids.length) return [] as { id: string; full_name: string | null; avatar_url: string | null; email: string | null }[];
+  const { data: profs, error: profErr } = await supabase
+    .from("profiles")
+    .select("id, full_name, avatar_url, email, is_super_admin")
+    .in("id", ids);
+  if (profErr) throw profErr;
+  return (profs ?? [])
+    .filter((p: any) => !p.is_super_admin)
+    .map(({ id, full_name, avatar_url, email }: any) => ({ id, full_name, avatar_url, email }))
+    .sort((a, b) => (a.full_name ?? a.email ?? "").localeCompare(b.full_name ?? b.email ?? ""));
 }
