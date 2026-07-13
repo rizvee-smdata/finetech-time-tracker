@@ -5,11 +5,13 @@ const TASK_SELECT = `
   *,
   tms_task_statuses(id, name, color, is_terminal),
   tms_projects(id, name, color),
+  crm_leads(id, customer_name, company_name),
   tms_task_assignees(
     user_id, role,
     profiles:user_id(id, full_name, avatar_url)
   )
 `;
+
 
 export async function fetchTasks(params: {
   companyId: string;
