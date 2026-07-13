@@ -55,6 +55,7 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setPriority(editing.priority);
       setTaskType(editing.task_type);
       setDueDate(editing.due_date ?? "");
+      setStartDate(((editing as any).start_date) ?? "");
       setEstHours(editing.estimated_hours?.toString() ?? "");
       setProjectId(editing.project_id);
       setSprintId(editing.sprint_id);
@@ -70,17 +71,18 @@ export function TaskFormDialog({ open, onOpenChange, editing, defaultProjectId, 
       setPriority("medium");
       setTaskType("task");
       setDueDate("");
+      setStartDate("");
       setEstHours("");
       setProjectId(defaultProjectId ?? null);
       setSprintId(defaultSprintId ?? null);
       setStatusId(defaultStatusId ?? null);
       setAssigneeIds([]);
-      setLeadId(null);
+      setLeadId(defaultLeadId ?? null);
       setIsPrivate(false);
       setCustomFields({});
 
     }
-  }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId]);
+  }, [open, editing, defaultProjectId, defaultStatusId, defaultSprintId, defaultLeadId]);
 
   const projects = useQuery({
     queryKey: ["tms-projects", companyId],
