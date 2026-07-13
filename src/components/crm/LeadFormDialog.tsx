@@ -65,6 +65,9 @@ export function LeadFormDialog({
       product_name: lead?.product_name ?? "",
       oem_id: (lead as any)?.oem_id ?? "",
       product_id: (lead as any)?.product_id ?? "",
+      product_ids: Array.isArray((lead as any)?.product_ids) && (lead as any).product_ids.length
+        ? (lead as any).product_ids as string[]
+        : ((lead as any)?.product_id ? [(lead as any).product_id as string] : []),
       partner_id: (lead as any)?.partner_id ?? "",
       vendor_quotes: (lead?.vendor_quotes ?? []) as VendorQuote[],
       custom_fields: ((lead as any)?.custom_fields ?? {}) as Record<string, unknown>,
