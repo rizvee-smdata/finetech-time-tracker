@@ -27,6 +27,9 @@ export const Route = createFileRoute("/_authenticated/tasks/list")({
   component: ListPage,
 });
 
+type SortKey = "title" | "project" | "customer" | "status" | "priority" | "due";
+type SortDir = "asc" | "desc";
+
 function ListPage() {
   const { companyId, ready } = useAuth();
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -35,7 +38,14 @@ function ListPage() {
   const [search, setSearch] = useState("");
   const [includeDone, setIncludeDone] = useState(false);
   const [editing, setEditing] = useState<TaskWithRels | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>("due");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
   const { views, save, remove } = useSavedViews("list");
+
+  function toggleSort(k: SortKey) {
+    if (sortKey === k) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(k); setSortDir("asc"); }
+  }
 
   function applyView(name: string) {
     const v = views.find((x) => x.name === name);
@@ -76,7 +86,36 @@ function ListPage() {
     }),
   });
 
-  const pg = usePagination(tasks.data ?? [], 20);
+  const priorityRank: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+  const sorted = [...(tasks.data ?? [])].sort((a, b) => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    const av = (() => {
+      switch (sortKey) {
+        case "title": return (a.title || "").toLowerCase();
+        case "project": return (a.tms_projects?.name || "").toLowerCase();
+        case "customer": return (a.crm_leads?.customer_name || a.crm_leads?.company_name || "").toLowerCase();
+        case "status": return (a.tms_task_statuses?.name || "").toLowerCase();
+        case "priority": return priorityRank[a.priority] ?? 99;
+        case "due": return a.due_date ? new Date(a.due_date).getTime() : Number.POSITIVE_INFINITY;
+      }
+    })();
+    const bv = (() => {
+      switch (sortKey) {
+        case "title": return (b.title || "").toLowerCase();
+        case "project": return (b.tms_projects?.name || "").toLowerCase();
+        case "customer": return (b.crm_leads?.customer_name || b.crm_leads?.company_name || "").toLowerCase();
+        case "status": return (b.tms_task_statuses?.name || "").toLowerCase();
+        case "priority": return priorityRank[b.priority] ?? 99;
+        case "due": return b.due_date ? new Date(b.due_date).getTime() : Number.POSITIVE_INFINITY;
+      }
+    })();
+    if (av! < bv!) return -1 * dir;
+    if (av! > bv!) return 1 * dir;
+    return 0;
+  });
+
+  const pg = usePagination(sorted, 20);
+
 
   return (
     <div className="space-y-3">
