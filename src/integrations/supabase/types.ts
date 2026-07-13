@@ -5998,6 +5998,7 @@ export type Database = {
           scheduled_time: string | null
           sort_order: number
           sprint_id: string | null
+          start_date: string | null
           status_id: string | null
           task_type: Database["public"]["Enums"]["tms_task_type"]
           title: string
@@ -6030,6 +6031,7 @@ export type Database = {
           scheduled_time?: string | null
           sort_order?: number
           sprint_id?: string | null
+          start_date?: string | null
           status_id?: string | null
           task_type?: Database["public"]["Enums"]["tms_task_type"]
           title: string
@@ -6062,6 +6064,7 @@ export type Database = {
           scheduled_time?: string | null
           sort_order?: number
           sprint_id?: string | null
+          start_date?: string | null
           status_id?: string | null
           task_type?: Database["public"]["Enums"]["tms_task_type"]
           title?: string
