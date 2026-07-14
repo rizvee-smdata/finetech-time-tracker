@@ -143,7 +143,7 @@ async function dumpTables(tables: readonly string[]) {
 export const backupConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { tables, errors } = await dumpTables(CONFIG_TABLES);
     return {
       kind: "configuration" as const,
@@ -157,7 +157,7 @@ export const backupConfig = createServerFn({ method: "POST" })
 export const backupData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { tables, errors } = await dumpTables(DATA_TABLES);
     return {
       kind: "data" as const,
@@ -178,7 +178,7 @@ export const restoreBackup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => restoreSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const allowed = new Set<string>(
       data.kind === "configuration" ? CONFIG_TABLES : DATA_TABLES,
     );
