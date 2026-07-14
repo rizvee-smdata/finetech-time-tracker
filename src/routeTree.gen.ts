@@ -109,6 +109,7 @@ import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
+import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
@@ -780,6 +781,12 @@ const AuthenticatedSettingsFormBuilderRoute =
   AuthenticatedSettingsFormBuilderRouteImport.update({
     id: '/form-builder',
     path: '/form-builder',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsCurrencyRoute =
+  AuthenticatedSettingsCurrencyRouteImport.update({
+    id: '/currency',
+    path: '/currency',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedScorecardTeamRoute =
@@ -1642,6 +1649,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -1855,6 +1863,7 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -2083,6 +2092,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -2311,6 +2321,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/currency'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2524,6 +2535,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/currency'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2751,6 +2763,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
+    | '/_authenticated/settings/currency'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/whatsapp'
@@ -3573,6 +3586,13 @@ declare module '@tanstack/react-router' {
       path: '/form-builder'
       fullPath: '/settings/form-builder'
       preLoaderRoute: typeof AuthenticatedSettingsFormBuilderRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/currency': {
+      id: '/_authenticated/settings/currency'
+      path: '/currency'
+      fullPath: '/settings/currency'
+      preLoaderRoute: typeof AuthenticatedSettingsCurrencyRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/scorecard/team': {
@@ -4782,6 +4802,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
   )
 
 interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -4789,6 +4810,7 @@ interface AuthenticatedSettingsRouteChildren {
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
   AuthenticatedSettingsFormBuilderRoute: AuthenticatedSettingsFormBuilderRoute,
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,

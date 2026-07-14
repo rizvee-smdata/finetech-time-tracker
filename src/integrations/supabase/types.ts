@@ -965,6 +965,7 @@ export type Database = {
       }
       companies: {
         Row: {
+          base_currency: string
           created_at: string
           id: string
           maintenance_mode: boolean
@@ -976,6 +977,7 @@ export type Database = {
           weekend_days: number[]
         }
         Insert: {
+          base_currency?: string
           created_at?: string
           id?: string
           maintenance_mode?: boolean
@@ -987,6 +989,7 @@ export type Database = {
           weekend_days?: number[]
         }
         Update: {
+          base_currency?: string
           created_at?: string
           id?: string
           maintenance_mode?: boolean
@@ -997,7 +1000,15 @@ export type Database = {
           visit_backdate_days?: number
           weekend_days?: number[]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "companies_base_currency_fkey"
+            columns: ["base_currency"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       company_gmail_config: {
         Row: {
@@ -1127,6 +1138,7 @@ export type Database = {
           amount: number
           contract_id: string
           created_at: string
+          currency_code: string | null
           due_date: string
           id: string
           invoice_number: string | null
@@ -1141,6 +1153,7 @@ export type Database = {
           amount?: number
           contract_id: string
           created_at?: string
+          currency_code?: string | null
           due_date: string
           id?: string
           invoice_number?: string | null
@@ -1155,6 +1168,7 @@ export type Database = {
           amount?: number
           contract_id?: string
           created_at?: string
+          currency_code?: string | null
           due_date?: string
           id?: string
           invoice_number?: string | null
@@ -1173,6 +1187,13 @@ export type Database = {
             referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contract_payments_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
         ]
       }
       contracts: {
@@ -1184,6 +1205,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          currency_code: string | null
           custom_fields: Json
           end_date: string | null
           file_name: string | null
@@ -1207,6 +1229,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           end_date?: string | null
           file_name?: string | null
@@ -1230,6 +1253,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           end_date?: string | null
           file_name?: string | null
@@ -1246,6 +1270,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "contracts_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
           {
             foreignKeyName: "contracts_lead_id_fkey"
             columns: ["lead_id"]
@@ -1822,6 +1853,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          currency_code: string | null
           custom_fields: Json
           customer_id: string | null
           customer_name: string
@@ -1874,6 +1906,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           customer_id?: string | null
           customer_name: string
@@ -1926,6 +1959,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           customer_id?: string | null
           customer_name?: string
@@ -1970,6 +2004,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "crm_accounts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_leads_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
           },
           {
             foreignKeyName: "crm_leads_oem_id_fkey"
@@ -2156,6 +2197,7 @@ export type Database = {
       crm_quote_line_items: {
         Row: {
           created_at: string
+          currency_code: string | null
           discount_pct: number
           id: string
           name: string
@@ -2168,6 +2210,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          currency_code?: string | null
           discount_pct?: number
           id?: string
           name: string
@@ -2180,6 +2223,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          currency_code?: string | null
           discount_pct?: number
           id?: string
           name?: string
@@ -2191,6 +2235,13 @@ export type Database = {
           unit_price?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "crm_quote_line_items_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
           {
             foreignKeyName: "crm_quote_line_items_product_id_fkey"
             columns: ["product_id"]
@@ -2311,6 +2362,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
+          currency_code: string | null
           decided_at: string | null
           deleted_at: string | null
           deleted_by: string | null
@@ -2341,6 +2393,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          currency_code?: string | null
           decided_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -2371,6 +2424,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          currency_code?: string | null
           decided_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -2390,6 +2444,13 @@ export type Database = {
           version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "crm_quotes_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
           {
             foreignKeyName: "crm_quotes_lead_id_fkey"
             columns: ["lead_id"]
@@ -2563,6 +2624,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
+          currency_code: string | null
           deals_target: number
           id: string
           period_month: string
@@ -2576,6 +2638,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          currency_code?: string | null
           deals_target?: number
           id?: string
           period_month: string
@@ -2589,6 +2652,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          currency_code?: string | null
           deals_target?: number
           id?: string
           period_month?: string
@@ -2597,7 +2661,15 @@ export type Database = {
           user_id?: string
           visits_target?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "crm_targets_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       crm_territories: {
         Row: {
@@ -2623,6 +2695,33 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      currencies: {
+        Row: {
+          code: string
+          created_at: string
+          decimals: number
+          is_active: boolean
+          name: string
+          symbol: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          decimals?: number
+          is_active?: boolean
+          name: string
+          symbol: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          decimals?: number
+          is_active?: boolean
+          name?: string
+          symbol?: string
         }
         Relationships: []
       }
@@ -3015,6 +3114,51 @@ export type Database = {
           },
         ]
       }
+      exchange_rates: {
+        Row: {
+          as_of: string
+          created_at: string
+          from_code: string
+          id: string
+          rate: number
+          source: string
+          to_code: string
+        }
+        Insert: {
+          as_of?: string
+          created_at?: string
+          from_code: string
+          id?: string
+          rate: number
+          source?: string
+          to_code: string
+        }
+        Update: {
+          as_of?: string
+          created_at?: string
+          from_code?: string
+          id?: string
+          rate?: number
+          source?: string
+          to_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exchange_rates_from_code_fkey"
+            columns: ["from_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "exchange_rates_to_code_fkey"
+            columns: ["to_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       expense_approver_assignments: {
         Row: {
           approver_id: string
@@ -3080,6 +3224,7 @@ export type Database = {
           company_id: string
           created_at: string
           currency: string
+          currency_code: string | null
           custom_fields: Json
           description: string | null
           expense_date: string
@@ -3103,6 +3248,7 @@ export type Database = {
           company_id: string
           created_at?: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           description?: string | null
           expense_date?: string
@@ -3126,6 +3272,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           currency?: string
+          currency_code?: string | null
           custom_fields?: Json
           description?: string | null
           expense_date?: string
@@ -3142,7 +3289,15 @@ export type Database = {
           user_id?: string
           visit_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       followup_sends: {
         Row: {
@@ -7420,6 +7575,10 @@ export type Database = {
         Returns: number
       }
       evaluate_lead_routing: { Args: { _lead_id: string }; Returns: string }
+      fx_convert: {
+        Args: { _amount: number; _as_of?: string; _from: string; _to: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
