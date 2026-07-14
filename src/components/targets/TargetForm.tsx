@@ -171,7 +171,7 @@ export function NewTargetButton() {
           </div>
           <div className="col-span-2 space-y-1">
             <Label>Notes</Label>
-            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional context for the rep" />
+            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional context for the account manager" />
           </div>
         </div>
         <DialogFooter>
