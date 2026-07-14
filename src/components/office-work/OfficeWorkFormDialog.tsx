@@ -301,14 +301,14 @@ function TaskRow({
               </Badge>
             )}
           </div>
-          <div className="grid gap-1">
-            <Label className="text-xs">Project / customer (optional)</Label>
+          <div className="grid gap-1 sm:col-span-2">
             <ProjectCustomerPicker
               projectName={row.project_name}
               customerId={row.customer_id}
               onPick={(v) => onChange({ project_name: v.projectName, customer_id: v.customerId })}
             />
           </div>
+
           <div className="grid gap-1 sm:col-span-2">
             <Label className="text-xs">Description</Label>
             <Textarea
