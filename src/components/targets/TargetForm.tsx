@@ -122,9 +122,9 @@ export function NewTargetButton() {
           </div>
           {scope === "user" && (
             <div className="col-span-2 space-y-1">
-              <Label>Rep</Label>
+              <Label>Account Manager</Label>
               <Select value={userId} onValueChange={setUserId}>
-                <SelectTrigger><SelectValue placeholder="Choose rep" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Choose account manager" /></SelectTrigger>
                 <SelectContent>
                   {(members.data ?? []).map((m: any) => (
                     <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email}</SelectItem>
