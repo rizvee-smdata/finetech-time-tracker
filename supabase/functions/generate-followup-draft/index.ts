@@ -1,9 +1,10 @@
 // Generate WhatsApp/email follow-up draft via Anthropic Claude.
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { requireCronOrUser, unauthorized } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -23,6 +24,10 @@ serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
   }
+
+  const guard = await requireCronOrUser(req);
+  if (!guard.ok) return unauthorized(corsHeaders, guard.reason);
+
 
   try {
     const body = (await req.json()) as Body;

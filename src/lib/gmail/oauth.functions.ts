@@ -99,6 +99,13 @@ export const getCompanyGmailConfig = createServerFn({ method: "GET" })
       .eq("user_id", context.userId);
     const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
     if (!isAdmin) throw new Error("Only admins can view Gmail config.");
+    const { data: member } = await supabaseAdmin
+      .from("company_members")
+      .select("company_id")
+      .eq("user_id", context.userId)
+      .eq("company_id", data.companyId)
+      .maybeSingle();
+    if (!member) throw new Error("You are not a member of that company.");
     const { data: cfg } = await supabaseAdmin
       .from("company_gmail_config")
       .select("client_id,workspace_domain,enabled,updated_at")
@@ -106,6 +113,7 @@ export const getCompanyGmailConfig = createServerFn({ method: "GET" })
       .maybeSingle();
     return cfg;
   });
+
 
 export const saveCompanyGmailConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
