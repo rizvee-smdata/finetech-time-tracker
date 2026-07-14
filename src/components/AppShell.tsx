@@ -33,6 +33,7 @@ import {
   TrendingUp,
   HeartPulse,
   Search,
+  GitBranch,
 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -201,9 +202,11 @@ const adminSection: NavSection = {
   label: "Administration",
   items: [
     { to: "/admin/trial-requests", label: "Trial requests", icon: ScrollText },
+    { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
     { to: "/settings", label: "Settings", icon: Settings },
   ],
+
 };
 
 
