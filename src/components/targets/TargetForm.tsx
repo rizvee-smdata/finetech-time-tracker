@@ -61,7 +61,7 @@ export function NewTargetButton() {
     if (!companyId) return;
     const num = Number(value);
     if (!num || num <= 0) { toast.error("Target value must be greater than 0"); return; }
-    if (scope === "user" && !userId) { toast.error("Pick a rep"); return; }
+    if (scope === "user" && !userId) { toast.error("Pick an account manager"); return; }
     if (scope === "territory" && !territoryId) { toast.error("Pick a territory"); return; }
     setSubmitting(true);
     try {
