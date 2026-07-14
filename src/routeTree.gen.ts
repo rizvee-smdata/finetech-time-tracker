@@ -119,6 +119,7 @@ import { Route as AuthenticatedReportsTeamRouteImport } from './routes/_authenti
 import { Route as AuthenticatedReportsSalesRouteImport } from './routes/_authenticated/reports.sales'
 import { Route as AuthenticatedReportsOfficeWorkRouteImport } from './routes/_authenticated/reports.office-work'
 import { Route as AuthenticatedReportsLeadsRouteImport } from './routes/_authenticated/reports.leads'
+import { Route as AuthenticatedReportsAttributionRouteImport } from './routes/_authenticated/reports.attribution'
 import { Route as AuthenticatedRemindersPreferencesRouteImport } from './routes/_authenticated/reminders.preferences'
 import { Route as AuthenticatedProposalsTemplatesRouteImport } from './routes/_authenticated/proposals.templates'
 import { Route as AuthenticatedProposalsNewRouteImport } from './routes/_authenticated/proposals.new'
@@ -839,6 +840,12 @@ const AuthenticatedReportsLeadsRoute =
   AuthenticatedReportsLeadsRouteImport.update({
     id: '/leads',
     path: '/leads',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedReportsAttributionRoute =
+  AuthenticatedReportsAttributionRouteImport.update({
+    id: '/attribution',
+    path: '/attribution',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
 const AuthenticatedRemindersPreferencesRoute =
@@ -1624,6 +1631,7 @@ export interface FileRoutesByFullPath {
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/reports/attribution': typeof AuthenticatedReportsAttributionRoute
   '/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
@@ -1836,6 +1844,7 @@ export interface FileRoutesByTo {
   '/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/reports/attribution': typeof AuthenticatedReportsAttributionRoute
   '/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/reports/sales': typeof AuthenticatedReportsSalesRoute
@@ -2063,6 +2072,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals/new': typeof AuthenticatedProposalsNewRoute
   '/_authenticated/proposals/templates': typeof AuthenticatedProposalsTemplatesRoute
   '/_authenticated/reminders/preferences': typeof AuthenticatedRemindersPreferencesRoute
+  '/_authenticated/reports/attribution': typeof AuthenticatedReportsAttributionRoute
   '/_authenticated/reports/leads': typeof AuthenticatedReportsLeadsRoute
   '/_authenticated/reports/office-work': typeof AuthenticatedReportsOfficeWorkRoute
   '/_authenticated/reports/sales': typeof AuthenticatedReportsSalesRoute
@@ -2290,6 +2300,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/proposals/templates'
     | '/reminders/preferences'
+    | '/reports/attribution'
     | '/reports/leads'
     | '/reports/office-work'
     | '/reports/sales'
@@ -2502,6 +2513,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/proposals/templates'
     | '/reminders/preferences'
+    | '/reports/attribution'
     | '/reports/leads'
     | '/reports/office-work'
     | '/reports/sales'
@@ -2728,6 +2740,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals/new'
     | '/_authenticated/proposals/templates'
     | '/_authenticated/reminders/preferences'
+    | '/_authenticated/reports/attribution'
     | '/_authenticated/reports/leads'
     | '/_authenticated/reports/office-work'
     | '/_authenticated/reports/sales'
@@ -3630,6 +3643,13 @@ declare module '@tanstack/react-router' {
       path: '/leads'
       fullPath: '/reports/leads'
       preLoaderRoute: typeof AuthenticatedReportsLeadsRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reports/attribution': {
+      id: '/_authenticated/reports/attribution'
+      path: '/attribution'
+      fullPath: '/reports/attribution'
+      preLoaderRoute: typeof AuthenticatedReportsAttributionRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
     '/_authenticated/reminders/preferences': {
@@ -4693,6 +4713,7 @@ const AuthenticatedRemindersRouteWithChildren =
   )
 
 interface AuthenticatedReportsRouteChildren {
+  AuthenticatedReportsAttributionRoute: typeof AuthenticatedReportsAttributionRoute
   AuthenticatedReportsLeadsRoute: typeof AuthenticatedReportsLeadsRoute
   AuthenticatedReportsOfficeWorkRoute: typeof AuthenticatedReportsOfficeWorkRoute
   AuthenticatedReportsSalesRoute: typeof AuthenticatedReportsSalesRoute
@@ -4702,6 +4723,7 @@ interface AuthenticatedReportsRouteChildren {
 }
 
 const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
+  AuthenticatedReportsAttributionRoute: AuthenticatedReportsAttributionRoute,
   AuthenticatedReportsLeadsRoute: AuthenticatedReportsLeadsRoute,
   AuthenticatedReportsOfficeWorkRoute: AuthenticatedReportsOfficeWorkRoute,
   AuthenticatedReportsSalesRoute: AuthenticatedReportsSalesRoute,
