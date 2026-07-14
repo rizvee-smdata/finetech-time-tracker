@@ -116,7 +116,8 @@ function CheckinPage() {
     mutationFn: async () => {
       if (!user || !companyId) throw new Error("Not ready");
       if (!pos) throw new Error("Waiting for GPS");
-      if (!lead) throw new Error("Pick a client");
+      if (mode === "customer" && !customer) throw new Error("Pick a customer");
+      if (mode === "other" && !otherName.trim()) throw new Error("Enter a name for the visit");
       if (withinFence === false && !override.trim()) {
         throw new Error(`You are ${Math.round(distance!)} m away — provide an override reason or move closer.`);
       }
@@ -129,24 +130,13 @@ function CheckinPage() {
       if (closeError) throw closeError;
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
-      // Best-effort link to customers.id by exact-name match for this company
-      let accountId: string | null = null;
-      if (lead.customer_name) {
-        const { data: matched } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("company_id", companyId)
-          .ilike("customer_name", lead.customer_name)
-          .is("deleted_at", null)
-          .limit(1)
-          .maybeSingle();
-        accountId = matched?.id ?? null;
-      }
+      const clientName = mode === "customer" ? (customer!.customer_name ?? "") : otherName.trim();
+      const accountId = mode === "customer" ? customer!.id : null;
       const { error } = await supabase.from("visit_checkins").insert({
-        user_id: user.id, company_id: companyId, lead_id: lead.id, client_name: lead.customer_name,
+        user_id: user.id, company_id: companyId, lead_id: null, client_name: clientName,
         account_id: accountId,
         checkin_lat: pos.lat, checkin_lng: pos.lng, checkin_time: checkinTime,
-        distance_from_client_m: distance, is_geofence_valid: !!withinFence,
+        distance_from_client_m: distance, is_geofence_valid: mode === "other" ? true : !!withinFence,
         override_reason: override || null, selfie_url, voice_url, notes: notes || null,
       });
       if (error) throw error;
