@@ -2,16 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+async function assertSuperAdmin(supabase: any, userId: string) {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("is_super_admin")
+    .eq("id", userId)
+    .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!(data ?? []).some((r: any) => r.role === "admin")) {
-    throw new Error("Admin access required");
+  if (!(profile as any)?.is_super_admin) {
+    throw new Error("Super admin access required");
   }
 }
+
 
 // ---------- Recycle Bin ----------
 
@@ -19,7 +21,7 @@ export const listRecycleBin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { entity_type?: string } | undefined) => d ?? {})
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = (supabaseAdmin as any)
       .from("audit_logs")
@@ -52,7 +54,7 @@ export const restoreDeleted = createServerFn({ method: "POST" })
     z.object({ entity_type: z.string(), entity_id: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await (supabaseAdmin as any).rpc("restore_deleted_entity", {
       _entity_type: data.entity_type,
@@ -68,7 +70,7 @@ export const listAuditLog = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { entity_type?: string; action?: string; limit?: number } | undefined) => d ?? {})
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = (supabaseAdmin as any)
       .from("audit_logs")
@@ -87,7 +89,7 @@ export const listAuditLog = createServerFn({ method: "GET" })
 export const listCompaniesMaintenance = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await (supabaseAdmin as any)
       .from("companies")
@@ -103,7 +105,7 @@ export const setMaintenanceMode = createServerFn({ method: "POST" })
     z.object({ company_id: z.string().uuid(), enabled: z.boolean() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await (supabaseAdmin as any)
       .from("companies")
@@ -118,7 +120,7 @@ export const setMaintenanceMode = createServerFn({ method: "POST" })
 export const snapshotToStorage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     return await runSnapshot();
   });
 
@@ -192,7 +194,7 @@ export async function runSnapshot() {
 export const listSnapshots = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await (supabaseAdmin as any).storage
       .from("backups")
@@ -205,7 +207,7 @@ export const getSnapshotUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ path: z.string() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: signed, error } = await (supabaseAdmin as any).storage
       .from("backups")

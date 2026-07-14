@@ -12,11 +12,17 @@ import { createClient } from "@supabase/supabase-js";
 export const Route = createFileRoute("/api/public/hooks/visit-analytics-alerts")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const cronSecret = process.env.CRON_SECRET;
+        const provided = request.headers.get("x-cron-secret");
+        if (!cronSecret || provided !== cronSecret) {
+          return new Response("Unauthorized", { status: 401 });
+        }
         const url = process.env.SUPABASE_URL;
         const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
         if (!url || !key) return Response.json({ error: "Missing supabase env" }, { status: 500 });
         const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+
 
         const now = new Date();
         // Weekly summary fires on Saturday (business week starts Sat; Friday is the weekly holiday).

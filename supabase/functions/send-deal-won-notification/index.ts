@@ -1,7 +1,11 @@
 import { admin, sendWhatsApp, corsHeaders } from "../_shared/wati.ts";
+import { requireCronOnly, unauthorized } from "../_shared/auth-guard.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const guard = requireCronOnly(req);
+  if (!guard.ok) return unauthorized(corsHeaders, guard.reason);
+
   const sb = admin();
   let lead_id: string | undefined;
   try { const body = await req.json(); lead_id = body.lead_id; } catch { /* ignore */ }

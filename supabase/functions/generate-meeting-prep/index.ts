@@ -4,6 +4,8 @@
 // a structured briefing stored on public.meeting_prep_briefs.
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { requireCronOrUser, unauthorized } from "../_shared/auth-guard.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -165,6 +167,10 @@ async function callAi(payload: unknown, lovableKey: string) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+
+  const guard = await requireCronOrUser(req);
+  if (!guard.ok) return unauthorized(corsHeaders, guard.reason);
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -175,6 +181,7 @@ serve(async (req) => {
     const taskId = body?.task_id ?? body?.visit_task_id;
     const force = body?.force === true;
     if (!taskId) return json(400, { error: "task_id required" });
+
 
     // Skip if a brief already exists and not forcing
     const { data: existing } = await admin
@@ -188,6 +195,18 @@ serve(async (req) => {
 
     const agg = await aggregate(admin, taskId);
     if (!agg.rep_id) return json(400, { error: "Task has no creator (rep)" });
+
+    // If called by a user (not cron), verify the caller belongs to the task's company.
+    if (!guard.viaCron && guard.userId) {
+      const { data: member } = await admin
+        .from("company_members")
+        .select("user_id")
+        .eq("user_id", guard.userId)
+        .eq("company_id", agg.company_id)
+        .maybeSingle();
+      if (!member) return unauthorized(corsHeaders, "Not a member of this company");
+    }
+
 
     // Upsert pending row
     const { data: row, error: rowErr } = await admin

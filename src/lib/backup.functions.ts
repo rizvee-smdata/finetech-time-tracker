@@ -3,16 +3,18 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+async function assertSuperAdmin(supabase: any, userId: string) {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("is_super_admin")
+    .eq("id", userId)
+    .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!(data ?? []).some((r: any) => r.role === "admin")) {
-    throw new Error("Admin access required");
+  if (!(profile as any)?.is_super_admin) {
+    throw new Error("Super admin access required");
   }
 }
+
 
 // Configuration = structural / setup data (settings, templates, products, etc.)
 export const CONFIG_TABLES = [
@@ -141,7 +143,7 @@ async function dumpTables(tables: readonly string[]) {
 export const backupConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { tables, errors } = await dumpTables(CONFIG_TABLES);
     return {
       kind: "configuration" as const,
@@ -155,7 +157,7 @@ export const backupConfig = createServerFn({ method: "POST" })
 export const backupData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const { tables, errors } = await dumpTables(DATA_TABLES);
     return {
       kind: "data" as const,
@@ -176,7 +178,7 @@ export const restoreBackup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => restoreSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertSuperAdmin(context.supabase, context.userId);
     const allowed = new Set<string>(
       data.kind === "configuration" ? CONFIG_TABLES : DATA_TABLES,
     );
