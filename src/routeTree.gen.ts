@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as TrialRouteImport } from './routes/trial'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrialVerifyRouteImport } from './routes/trial.verify'
 import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
@@ -195,6 +197,7 @@ import { Route as AuthenticatedAnalyticsEntityExplorerRouteImport } from './rout
 import { Route as AuthenticatedAiVisitsNewRouteImport } from './routes/_authenticated/ai-visits.new'
 import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_authenticated/ai-visits.history'
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
+import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_authenticated/admin.trial-requests'
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
@@ -233,6 +236,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrialRoute = TrialRouteImport.update({
+  id: '/trial',
+  path: '/trial',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -251,6 +259,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const TrialVerifyRoute = TrialVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => TrialRoute,
 } as any)
 const QTokenRoute = QTokenRouteImport.update({
   id: '/q/$token',
@@ -1273,6 +1286,12 @@ const AuthenticatedAiVisitsIdRoute = AuthenticatedAiVisitsIdRouteImport.update({
   path: '/ai-visits/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminTrialRequestsRoute =
+  AuthenticatedAdminTrialRequestsRouteImport.update({
+    id: '/admin/trial-requests',
+    path: '/admin/trial-requests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRoutesRoute =
   AuthenticatedAdminRoutesRouteImport.update({
     id: '/admin/routes',
@@ -1463,6 +1482,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
   '/attendance': typeof AuthenticatedAttendanceRouteWithChildren
@@ -1497,11 +1517,13 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/trial/verify': typeof TrialVerifyRoute
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
+  '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -1682,6 +1704,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
   '/audit': typeof AuthenticatedAuditRoute
@@ -1703,11 +1726,13 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/trial/verify': typeof TrialVerifyRoute
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
+  '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -1890,6 +1915,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRouteWithChildren
@@ -1924,11 +1950,13 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/q/$token': typeof QTokenRoute
+  '/trial/verify': typeof TrialVerifyRoute
   '/_authenticated/route/live': typeof AuthenticatedRouteLiveRoute
   '/_authenticated/route/plan': typeof AuthenticatedRoutePlanRoute
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
+  '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
   '/_authenticated/ai-visits/history': typeof AuthenticatedAiVisitsHistoryRoute
   '/_authenticated/ai-visits/new': typeof AuthenticatedAiVisitsNewRoute
@@ -2111,6 +2139,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/sitemap.xml'
+    | '/trial'
     | '/unsubscribe'
     | '/ai'
     | '/attendance'
@@ -2145,11 +2174,13 @@ export interface FileRouteTypes {
     | '/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/trial/verify'
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
     | '/admin/map'
     | '/admin/routes'
+    | '/admin/trial-requests'
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
@@ -2330,6 +2361,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/sitemap.xml'
+    | '/trial'
     | '/unsubscribe'
     | '/ai'
     | '/audit'
@@ -2351,11 +2383,13 @@ export interface FileRouteTypes {
     | '/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/trial/verify'
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
     | '/admin/map'
     | '/admin/routes'
+    | '/admin/trial-requests'
     | '/ai-visits/$id'
     | '/ai-visits/history'
     | '/ai-visits/new'
@@ -2537,6 +2571,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/sitemap.xml'
+    | '/trial'
     | '/unsubscribe'
     | '/_authenticated/ai'
     | '/_authenticated/attendance'
@@ -2571,11 +2606,13 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/email/unsubscribe'
     | '/q/$token'
+    | '/trial/verify'
     | '/_authenticated/route/live'
     | '/_authenticated/route/plan'
     | '/_authenticated/admin/account-review'
     | '/_authenticated/admin/map'
     | '/_authenticated/admin/routes'
+    | '/_authenticated/admin/trial-requests'
     | '/_authenticated/ai-visits/$id'
     | '/_authenticated/ai-visits/history'
     | '/_authenticated/ai-visits/new'
@@ -2758,6 +2795,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrialRoute: typeof TrialRouteWithChildren
   UnsubscribeRoute: typeof UnsubscribeRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   QTokenRoute: typeof QTokenRoute
@@ -2793,6 +2831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trial': {
+      id: '/trial'
+      path: '/trial'
+      fullPath: '/trial'
+      preLoaderRoute: typeof TrialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -2820,6 +2865,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/trial/verify': {
+      id: '/trial/verify'
+      path: '/verify'
+      fullPath: '/trial/verify'
+      preLoaderRoute: typeof TrialVerifyRouteImport
+      parentRoute: typeof TrialRoute
     }
     '/q/$token': {
       id: '/q/$token'
@@ -4088,6 +4140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiVisitsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/trial-requests': {
+      id: '/_authenticated/admin/trial-requests'
+      path: '/admin/trial-requests'
+      fullPath: '/admin/trial-requests'
+      preLoaderRoute: typeof AuthenticatedAdminTrialRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/routes': {
       id: '/_authenticated/admin/routes'
       path: '/admin/routes'
@@ -4792,6 +4851,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
+  AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
   AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
   AuthenticatedAiVisitsHistoryRoute: typeof AuthenticatedAiVisitsHistoryRoute
   AuthenticatedAiVisitsNewRoute: typeof AuthenticatedAiVisitsNewRoute
@@ -4881,6 +4941,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAccountReviewRoute: AuthenticatedAdminAccountReviewRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
+  AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
   AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
   AuthenticatedAiVisitsHistoryRoute: AuthenticatedAiVisitsHistoryRoute,
   AuthenticatedAiVisitsNewRoute: AuthenticatedAiVisitsNewRoute,
@@ -4940,11 +5001,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface TrialRouteChildren {
+  TrialVerifyRoute: typeof TrialVerifyRoute
+}
+
+const TrialRouteChildren: TrialRouteChildren = {
+  TrialVerifyRoute: TrialVerifyRoute,
+}
+
+const TrialRouteWithChildren = TrialRoute._addFileChildren(TrialRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrialRoute: TrialRouteWithChildren,
   UnsubscribeRoute: UnsubscribeRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   QTokenRoute: QTokenRoute,
