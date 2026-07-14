@@ -196,6 +196,18 @@ serve(async (req) => {
     const agg = await aggregate(admin, taskId);
     if (!agg.rep_id) return json(400, { error: "Task has no creator (rep)" });
 
+    // If called by a user (not cron), verify the caller belongs to the task's company.
+    if (!guard.viaCron && guard.userId) {
+      const { data: member } = await admin
+        .from("company_members")
+        .select("user_id")
+        .eq("user_id", guard.userId)
+        .eq("company_id", agg.company_id)
+        .maybeSingle();
+      if (!member) return unauthorized(corsHeaders, "Not a member of this company");
+    }
+
+
     // Upsert pending row
     const { data: row, error: rowErr } = await admin
       .from("meeting_prep_briefs")
