@@ -303,10 +303,10 @@ function TaskRow({
           </div>
           <div className="grid gap-1">
             <Label className="text-xs">Project / customer (optional)</Label>
-            <CustomerCombo
-              value={row.project_name ?? ""}
+            <ProjectCustomerPicker
+              projectName={row.project_name}
               customerId={row.customer_id}
-              onPick={(v) => onChange({ project_name: v.label || null, customer_id: v.customerId })}
+              onPick={(v) => onChange({ project_name: v.projectName, customer_id: v.customerId })}
             />
           </div>
           <div className="grid gap-1 sm:col-span-2">
