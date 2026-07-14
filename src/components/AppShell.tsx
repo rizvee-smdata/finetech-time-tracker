@@ -34,6 +34,8 @@ import {
   HeartPulse,
   Search,
   GitBranch,
+  Boxes,
+
 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -206,10 +208,12 @@ const adminSection: NavSection = {
     { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
     { to: "/settings/currency", label: "Currency & FX", icon: Settings },
+    { to: "/settings/custom-objects", label: "Custom Objects", icon: Boxes },
     { to: "/settings", label: "Settings", icon: Settings },
   ],
 
 };
+
 
 
 export function AppShell() {
