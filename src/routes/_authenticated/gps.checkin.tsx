@@ -217,15 +217,59 @@ function CheckinPage() {
       )}
 
       <Card className="space-y-4 p-4">
-        <div className="space-y-1.5">
-          <Label>Client</Label>
-          <Select value={leadId ?? ""} onValueChange={(v) => setLeadId(v)}>
-            <SelectTrigger><SelectValue placeholder="Select a client with a saved address" /></SelectTrigger>
-            <SelectContent>
-              {leads.map((l) => <SelectItem key={l.id} value={l.id}>{l.customer_name}</SelectItem>)}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "customer" ? "default" : "outline"}
+            className="flex-1"
+            onClick={() => setMode("customer")}
+          >
+            Existing customer
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "other" ? "default" : "outline"}
+            className="flex-1"
+            onClick={() => setMode("other")}
+          >
+            Other visit
+          </Button>
         </div>
+
+        {mode === "customer" ? (
+          <div className="space-y-1.5">
+            <Label>Customer</Label>
+            <Select value={customerId ?? ""} onValueChange={(v) => setCustomerId(v)}>
+              <SelectTrigger><SelectValue placeholder="Select a customer from CRM" /></SelectTrigger>
+              <SelectContent>
+                {customers.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.customer_name}{c.gps_lat == null ? " — no saved location" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {customer && customer.gps_lat == null && (
+              <p className="text-xs text-muted-foreground">
+                No saved location for this customer — geofence check will be skipped.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <Label>Visit name</Label>
+            <Input
+              value={otherName}
+              onChange={(e) => setOtherName(e.target.value)}
+              placeholder="e.g. Prospect meeting, event, walk-in"
+            />
+            <p className="text-xs text-muted-foreground">
+              Non-customer visit — won't be tied to a CRM account.
+            </p>
+          </div>
+        )}
 
         <div className="rounded-lg border bg-muted/40 p-3 text-sm">
           <div className="flex items-center gap-2 font-medium"><MapPin className="h-4 w-4" />Your location</div>
