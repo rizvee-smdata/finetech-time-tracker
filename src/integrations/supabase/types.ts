@@ -910,6 +910,7 @@ export type Database = {
           maintenance_mode: boolean
           name: string
           slug: string
+          trial_ends_at: string | null
           updated_at: string
           visit_backdate_days: number
           weekend_days: number[]
@@ -920,6 +921,7 @@ export type Database = {
           maintenance_mode?: boolean
           name: string
           slug: string
+          trial_ends_at?: string | null
           updated_at?: string
           visit_backdate_days?: number
           weekend_days?: number[]
@@ -930,6 +932,7 @@ export type Database = {
           maintenance_mode?: boolean
           name?: string
           slug?: string
+          trial_ends_at?: string | null
           updated_at?: string
           visit_backdate_days?: number
           weekend_days?: number[]
@@ -6191,6 +6194,83 @@ export type Database = {
           },
         ]
       }
+      trial_requests: {
+        Row: {
+          company_name: string
+          country: string | null
+          created_at: string
+          created_company_id: string | null
+          created_user_id: string | null
+          email_verified_at: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["trial_request_status"]
+          submitted_ip: string | null
+          team_size: string | null
+          trial_ends_at: string | null
+          updated_at: string
+          verification_token: string | null
+          work_email: string
+        }
+        Insert: {
+          company_name: string
+          country?: string | null
+          created_at?: string
+          created_company_id?: string | null
+          created_user_id?: string | null
+          email_verified_at?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["trial_request_status"]
+          submitted_ip?: string | null
+          team_size?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string
+          verification_token?: string | null
+          work_email: string
+        }
+        Update: {
+          company_name?: string
+          country?: string | null
+          created_at?: string
+          created_company_id?: string | null
+          created_user_id?: string | null
+          email_verified_at?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["trial_request_status"]
+          submitted_ip?: string | null
+          team_size?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string
+          verification_token?: string | null
+          work_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_requests_created_company_id_fkey"
+            columns: ["created_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -7205,6 +7285,11 @@ export type Database = {
         | "archived"
       tms_project_visibility: "public" | "restricted" | "private"
       tms_task_type: "task" | "bug" | "story" | "milestone"
+      trial_request_status:
+        | "pending_email_verification"
+        | "pending_approval"
+        | "approved"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -7450,6 +7535,12 @@ export const Constants = {
       ],
       tms_project_visibility: ["public", "restricted", "private"],
       tms_task_type: ["task", "bug", "story", "milestone"],
+      trial_request_status: [
+        "pending_email_verification",
+        "pending_approval",
+        "approved",
+        "rejected",
+      ],
     },
   },
 } as const
