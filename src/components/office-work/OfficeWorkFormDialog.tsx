@@ -303,10 +303,10 @@ function TaskRow({
           </div>
           <div className="grid gap-1">
             <Label className="text-xs">Project / customer (optional)</Label>
-            <CustomerCombo
-              value={row.project_name ?? ""}
+            <ProjectCustomerPicker
+              projectName={row.project_name}
               customerId={row.customer_id}
-              onPick={(v) => onChange({ project_name: v.label || null, customer_id: v.customerId })}
+              onPick={(v) => onChange({ project_name: v.projectName, customer_id: v.customerId })}
             />
           </div>
           <div className="grid gap-1 sm:col-span-2">
@@ -434,58 +434,165 @@ function TaskRow({
   );
 }
 
-function CustomerCombo({
-  value, customerId, onPick,
-}: {
-  value: string;
-  customerId: string | null;
-  onPick: (v: { label: string; customerId: string | null }) => void;
-}) {
-  const [text, setText] = useState(value);
-  const [focused, setFocused] = useState(false);
-  const [results, setResults] = useState<Array<{ id: string; customer_name: string }>>([]);
+type PickerValue = { projectName: string | null; customerId: string | null };
 
-  useEffect(() => { setText(value); }, [value]);
+function ProjectCustomerPicker({
+  projectName,
+  customerId,
+  onPick,
+}: {
+  projectName: string | null;
+  customerId: string | null;
+  onPick: (v: PickerValue) => void;
+}) {
+  const initialMode: "project" | "customer" = customerId ? "customer" : "project";
+  const [mode, setMode] = useState<"project" | "customer">(initialMode);
+  const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [projectResults, setProjectResults] = useState<Array<{ id: string; name: string }>>([]);
+  const [customerResults, setCustomerResults] = useState<Array<{ id: string; customer_name: string }>>([]);
+
+  // Fetch linked customer name for display when only customerId is set
+  const linkedCustomer = useQuery({
+    queryKey: ["ow-picker-customer", customerId],
+    enabled: !!customerId,
+    queryFn: async () => {
+      const { data } = await sb.from("customers").select("id, customer_name").eq("id", customerId).maybeSingle();
+      return data as { id: string; customer_name: string } | null;
+    },
+  });
+
+  const selectedLabel =
+    mode === "customer"
+      ? linkedCustomer.data?.customer_name ?? (customerId ? "Loading…" : "")
+      : projectName ?? "";
 
   useEffect(() => {
-    if (!focused || !text || text.length < 2) { setResults([]); return; }
+    if (!focused || query.trim().length < 1) {
+      setProjectResults([]);
+      setCustomerResults([]);
+      return;
+    }
     const h = setTimeout(async () => {
-      const { data } = await sb
-        .from("customers")
-        .select("id, customer_name")
-        .ilike("customer_name", `%${text}%`)
-        .limit(6);
-      setResults(data ?? []);
-    }, 200);
+      if (mode === "project") {
+        const { data } = await sb
+          .from("tms_projects")
+          .select("id, name")
+          .ilike("name", `%${query}%`)
+          .order("name")
+          .limit(8);
+        setProjectResults((data ?? []) as Array<{ id: string; name: string }>);
+      } else {
+        const { data } = await sb
+          .from("customers")
+          .select("id, customer_name")
+          .ilike("customer_name", `%${query}%`)
+          .order("customer_name")
+          .limit(8);
+        setCustomerResults((data ?? []) as Array<{ id: string; customer_name: string }>);
+      }
+    }, 180);
     return () => clearTimeout(h);
-  }, [text, focused]);
+  }, [query, focused, mode]);
+
+  function switchMode(m: "project" | "customer") {
+    setMode(m);
+    setQuery("");
+    setProjectResults([]);
+    setCustomerResults([]);
+    onPick({ projectName: null, customerId: null });
+  }
+
+  function clear() {
+    setQuery("");
+    onPick({ projectName: null, customerId: null });
+  }
+
+  const hasSelection = mode === "project" ? !!projectName : !!customerId;
 
   return (
-    <div className="relative">
-      <Input
-        value={text}
-        onChange={(e) => { setText(e.target.value); onPick({ label: e.target.value, customerId: null }); }}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setTimeout(() => setFocused(false), 150)}
-        placeholder="e.g. BPDB Network Project"
-      />
-      {focused && results.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
-          {results.map((r) => (
-            <button
-              key={r.id}
-              type="button"
-              className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
-              onMouseDown={(e) => { e.preventDefault(); setText(r.customer_name); onPick({ label: r.customer_name, customerId: r.id }); setFocused(false); }}
-            >
-              {r.customer_name}
-            </button>
-          ))}
+    <div className="space-y-1">
+      <div className="inline-flex rounded-md border p-0.5 w-fit">
+        <button
+          type="button"
+          onClick={() => switchMode("project")}
+          className={`px-2.5 py-0.5 text-xs rounded ${
+            mode === "project" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Project
+        </button>
+        <button
+          type="button"
+          onClick={() => switchMode("customer")}
+          className={`px-2.5 py-0.5 text-xs rounded ${
+            mode === "customer" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Customer
+        </button>
+      </div>
+
+      {hasSelection ? (
+        <div className="flex items-center gap-2">
+          <div className="flex-1 rounded-md border bg-muted/40 px-2.5 py-1.5 text-sm truncate">
+            {selectedLabel || "—"}
+          </div>
+          <Button type="button" size="sm" variant="ghost" onClick={clear}>
+            Change
+          </Button>
         </div>
-      )}
-      {customerId && (
-        <div className="mt-1 text-xs text-muted-foreground">Linked to customer</div>
+      ) : (
+        <div className="relative">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setTimeout(() => setFocused(false), 150)}
+            placeholder={mode === "project" ? "Search projects…" : "Search customers…"}
+          />
+          {focused && (projectResults.length > 0 || customerResults.length > 0) && (
+            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md max-h-56 overflow-y-auto">
+              {mode === "project" &&
+                projectResults.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      onPick({ projectName: p.name, customerId: null });
+                      setFocused(false);
+                    }}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              {mode === "customer" &&
+                customerResults.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      onPick({ projectName: null, customerId: c.id });
+                      setFocused(false);
+                    }}
+                  >
+                    {c.customer_name}
+                  </button>
+                ))}
+            </div>
+          )}
+          {focused && query.trim().length >= 1 && projectResults.length === 0 && customerResults.length === 0 && (
+            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover px-3 py-2 text-xs text-muted-foreground shadow-md">
+              No {mode === "project" ? "projects" : "customers"} match “{query}”. Add one from the {mode === "project" ? "Projects" : "Customers"} page.
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
 }
+
