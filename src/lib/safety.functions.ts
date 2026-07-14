@@ -3,15 +3,17 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 async function assertSuperAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("is_super_admin")
+    .eq("id", userId)
+    .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!(data ?? []).some((r: any) => r.role === "admin")) {
-    throw new Error("Admin access required");
+  if (!(profile as any)?.is_super_admin) {
+    throw new Error("Super admin access required");
   }
 }
+
 
 // ---------- Recycle Bin ----------
 
