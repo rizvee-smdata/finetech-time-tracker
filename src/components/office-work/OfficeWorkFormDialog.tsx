@@ -445,14 +445,24 @@ function ProjectCustomerPicker({
   customerId: string | null;
   onPick: (v: PickerValue) => void;
 }) {
-  const initialMode: "project" | "customer" = customerId ? "customer" : "project";
-  const [mode, setMode] = useState<"project" | "customer">(initialMode);
-  const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
-  const [projectResults, setProjectResults] = useState<Array<{ id: string; name: string }>>([]);
-  const [customerResults, setCustomerResults] = useState<Array<{ id: string; customer_name: string }>>([]);
+  // Load full project list once (dropdown select)
+  const projects = useQuery({
+    queryKey: ["ow-picker-projects"],
+    queryFn: async () => {
+      const { data } = await sb
+        .from("tms_projects")
+        .select("id, name")
+        .order("name")
+        .limit(500);
+      return (data ?? []) as Array<{ id: string; name: string }>;
+    },
+  });
 
-  // Fetch linked customer name for display when only customerId is set
+  // Customer search (only used when no project is picked)
+  const [custQuery, setCustQuery] = useState("");
+  const [custFocused, setCustFocused] = useState(false);
+  const [custResults, setCustResults] = useState<Array<{ id: string; customer_name: string }>>([]);
+
   const linkedCustomer = useQuery({
     queryKey: ["ow-picker-customer", customerId],
     enabled: !!customerId,
@@ -462,114 +472,85 @@ function ProjectCustomerPicker({
     },
   });
 
-  const selectedLabel =
-    mode === "customer"
-      ? linkedCustomer.data?.customer_name ?? (customerId ? "Loading…" : "")
-      : projectName ?? "";
-
   useEffect(() => {
-    if (!focused || query.trim().length < 1) {
-      setProjectResults([]);
-      setCustomerResults([]);
+    if (!custFocused || custQuery.trim().length < 1) {
+      setCustResults([]);
       return;
     }
     const h = setTimeout(async () => {
-      if (mode === "project") {
-        const { data } = await sb
-          .from("tms_projects")
-          .select("id, name")
-          .ilike("name", `%${query}%`)
-          .order("name")
-          .limit(8);
-        setProjectResults((data ?? []) as Array<{ id: string; name: string }>);
-      } else {
-        const { data } = await sb
-          .from("customers")
-          .select("id, customer_name")
-          .ilike("customer_name", `%${query}%`)
-          .order("customer_name")
-          .limit(8);
-        setCustomerResults((data ?? []) as Array<{ id: string; customer_name: string }>);
-      }
+      const { data } = await sb
+        .from("customers")
+        .select("id, customer_name")
+        .ilike("customer_name", `%${custQuery}%`)
+        .order("customer_name")
+        .limit(8);
+      setCustResults((data ?? []) as Array<{ id: string; customer_name: string }>);
     }, 180);
     return () => clearTimeout(h);
-  }, [query, focused, mode]);
+  }, [custQuery, custFocused]);
 
-  function switchMode(m: "project" | "customer") {
-    setMode(m);
-    setQuery("");
-    setProjectResults([]);
-    setCustomerResults([]);
-    onPick({ projectName: null, customerId: null });
-  }
-
-  function clear() {
-    setQuery("");
-    onPick({ projectName: null, customerId: null });
-  }
-
-  const hasSelection = mode === "project" ? !!projectName : !!customerId;
+  const projectPicked = !!projectName;
+  const customerDisabled = projectPicked;
 
   return (
-    <div className="space-y-1">
-      <div className="inline-flex rounded-md border p-0.5 w-fit">
-        <button
-          type="button"
-          onClick={() => switchMode("project")}
-          className={`px-2.5 py-0.5 text-xs rounded ${
-            mode === "project" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"
-          }`}
-        >
-          Project
-        </button>
-        <button
-          type="button"
-          onClick={() => switchMode("customer")}
-          className={`px-2.5 py-0.5 text-xs rounded ${
-            mode === "customer" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"
-          }`}
-        >
-          Customer
-        </button>
+    <div className="space-y-2">
+      {/* Line 1: Project select */}
+      <div className="grid gap-1">
+        <Label className="text-xs">Project (optional)</Label>
+        <div className="flex items-center gap-2">
+          <select
+            className="h-9 flex-1 rounded-md border bg-background px-2 text-sm"
+            value={projectName ?? ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              onPick({ projectName: v || null, customerId: v ? null : customerId });
+            }}
+          >
+            <option value="">— Select a project —</option>
+            {projects.data?.map((p) => (
+              <option key={p.id} value={p.name}>{p.name}</option>
+            ))}
+            {projectName && !projects.data?.some((p) => p.name === projectName) && (
+              <option value={projectName}>{projectName}</option>
+            )}
+          </select>
+          {projectPicked && (
+            <Button type="button" size="sm" variant="ghost"
+              onClick={() => onPick({ projectName: null, customerId: null })}>
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
 
-      {hasSelection ? (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 rounded-md border bg-muted/40 px-2.5 py-1.5 text-sm truncate">
-            {selectedLabel || "—"}
+      {/* Line 2: Customer picker — only if project is blank */}
+      <div className="grid gap-1">
+        <Label className="text-xs">
+          Customer {projectPicked ? "(not needed — project selected)" : "(optional)"}
+        </Label>
+        {customerId ? (
+          <div className="flex items-center gap-2">
+            <div className="flex-1 rounded-md border bg-muted/40 px-2.5 py-1.5 text-sm truncate">
+              {linkedCustomer.data?.customer_name ?? "Loading…"}
+            </div>
+            <Button type="button" size="sm" variant="ghost"
+              onClick={() => onPick({ projectName: null, customerId: null })}>
+              Change
+            </Button>
           </div>
-          <Button type="button" size="sm" variant="ghost" onClick={clear}>
-            Change
-          </Button>
-        </div>
-      ) : (
-        <div className="relative">
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setTimeout(() => setFocused(false), 150)}
-            placeholder={mode === "project" ? "Search projects…" : "Search customers…"}
-          />
-          {focused && (projectResults.length > 0 || customerResults.length > 0) && (
-            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md max-h-56 overflow-y-auto">
-              {mode === "project" &&
-                projectResults.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      onPick({ projectName: p.name, customerId: null });
-                      setFocused(false);
-                    }}
-                  >
-                    {p.name}
-                  </button>
-                ))}
-              {mode === "customer" &&
-                customerResults.map((c) => (
+        ) : (
+          <div className="relative">
+            <Input
+              value={custQuery}
+              disabled={customerDisabled}
+              onChange={(e) => setCustQuery(e.target.value)}
+              onFocus={() => setCustFocused(true)}
+              onBlur={() => setTimeout(() => setCustFocused(false), 150)}
+              placeholder={customerDisabled ? "Clear project to pick a customer" : "Search customers…"}
+            />
+            {custFocused && !customerDisabled && custResults.length > 0 && (
+              <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md max-h-56 overflow-y-auto">
+                {custResults.map((c) => (
                   <button
                     key={c.id}
                     type="button"
@@ -577,22 +558,25 @@ function ProjectCustomerPicker({
                     onMouseDown={(e) => {
                       e.preventDefault();
                       onPick({ projectName: null, customerId: c.id });
-                      setFocused(false);
+                      setCustFocused(false);
+                      setCustQuery("");
                     }}
                   >
                     {c.customer_name}
                   </button>
                 ))}
-            </div>
-          )}
-          {focused && query.trim().length >= 1 && projectResults.length === 0 && customerResults.length === 0 && (
-            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover px-3 py-2 text-xs text-muted-foreground shadow-md">
-              No {mode === "project" ? "projects" : "customers"} match “{query}”. Add one from the {mode === "project" ? "Projects" : "Customers"} page.
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
+            {custFocused && !customerDisabled && custQuery.trim().length >= 1 && custResults.length === 0 && (
+              <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover px-3 py-2 text-xs text-muted-foreground shadow-md">
+                No customers match “{custQuery}”. Add one from the Customers page.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
 
