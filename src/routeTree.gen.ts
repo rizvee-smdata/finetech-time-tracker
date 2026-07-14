@@ -109,6 +109,7 @@ import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
+import { Route as AuthenticatedSettingsCustomObjectsRouteImport } from './routes/_authenticated/settings.custom-objects'
 import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
@@ -136,6 +137,7 @@ import { Route as AuthenticatedPlanningUpcomingRouteImport } from './routes/_aut
 import { Route as AuthenticatedPlanningTeamRouteImport } from './routes/_authenticated/planning.team'
 import { Route as AuthenticatedPlanningNewRouteImport } from './routes/_authenticated/planning.new'
 import { Route as AuthenticatedPlanningPlanIdRouteImport } from './routes/_authenticated/planning.$planId'
+import { Route as AuthenticatedObjectsApiNameRouteImport } from './routes/_authenticated/objects.$apiName'
 import { Route as AuthenticatedNarrativesSettingsRouteImport } from './routes/_authenticated/narratives.settings'
 import { Route as AuthenticatedNarrativesIdRouteImport } from './routes/_authenticated/narratives.$id'
 import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
@@ -228,6 +230,7 @@ import { Route as ApiPublicHooksComputeVisitGapsRouteImport } from './routes/api
 import { Route as ApiPublicGmailCallbackRouteImport } from './routes/api/public/gmail/callback'
 import { Route as AuthenticatedTasksProjectsProjectIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId'
 import { Route as AuthenticatedSettingsWhatsappLogsRouteImport } from './routes/_authenticated/settings.whatsapp.logs'
+import { Route as AuthenticatedSettingsCustomObjectsIdRouteImport } from './routes/_authenticated/settings.custom-objects.$id'
 import { Route as AuthenticatedManagerApprovalsVisitsRouteImport } from './routes/_authenticated/manager.approvals.visits'
 import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './routes/_authenticated/manager.approvals.expenses'
 import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
@@ -783,6 +786,12 @@ const AuthenticatedSettingsFormBuilderRoute =
     path: '/form-builder',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
+const AuthenticatedSettingsCustomObjectsRoute =
+  AuthenticatedSettingsCustomObjectsRouteImport.update({
+    id: '/custom-objects',
+    path: '/custom-objects',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const AuthenticatedSettingsCurrencyRoute =
   AuthenticatedSettingsCurrencyRouteImport.update({
     id: '/currency',
@@ -943,6 +952,12 @@ const AuthenticatedPlanningPlanIdRoute =
     id: '/$planId',
     path: '/$planId',
     getParentRoute: () => AuthenticatedPlanningRoute,
+  } as any)
+const AuthenticatedObjectsApiNameRoute =
+  AuthenticatedObjectsApiNameRouteImport.update({
+    id: '/objects/$apiName',
+    path: '/objects/$apiName',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedNarrativesSettingsRoute =
   AuthenticatedNarrativesSettingsRouteImport.update({
@@ -1469,6 +1484,12 @@ const AuthenticatedSettingsWhatsappLogsRoute =
     path: '/logs',
     getParentRoute: () => AuthenticatedSettingsWhatsappRoute,
   } as any)
+const AuthenticatedSettingsCustomObjectsIdRoute =
+  AuthenticatedSettingsCustomObjectsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedSettingsCustomObjectsRoute,
+  } as any)
 const AuthenticatedManagerApprovalsVisitsRoute =
   AuthenticatedManagerApprovalsVisitsRouteImport.update({
     id: '/approvals/visits',
@@ -1623,6 +1644,7 @@ export interface FileRoutesByFullPath {
   '/manager/team': typeof AuthenticatedManagerTeamRoute
   '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
   '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
+  '/objects/$apiName': typeof AuthenticatedObjectsApiNameRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1650,6 +1672,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
+  '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -1715,6 +1738,7 @@ export interface FileRoutesByFullPath {
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/settings/custom-objects/$id': typeof AuthenticatedSettingsCustomObjectsIdRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
@@ -1837,6 +1861,7 @@ export interface FileRoutesByTo {
   '/manager/team': typeof AuthenticatedManagerTeamRoute
   '/narratives/$id': typeof AuthenticatedNarrativesIdRoute
   '/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
+  '/objects/$apiName': typeof AuthenticatedObjectsApiNameRoute
   '/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/planning/new': typeof AuthenticatedPlanningNewRoute
   '/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -1864,6 +1889,7 @@ export interface FileRoutesByTo {
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
+  '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -1929,6 +1955,7 @@ export interface FileRoutesByTo {
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/settings/custom-objects/$id': typeof AuthenticatedSettingsCustomObjectsIdRoute
   '/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
@@ -2066,6 +2093,7 @@ export interface FileRoutesById {
   '/_authenticated/manager/team': typeof AuthenticatedManagerTeamRoute
   '/_authenticated/narratives/$id': typeof AuthenticatedNarrativesIdRoute
   '/_authenticated/narratives/settings': typeof AuthenticatedNarrativesSettingsRoute
+  '/_authenticated/objects/$apiName': typeof AuthenticatedObjectsApiNameRoute
   '/_authenticated/planning/$planId': typeof AuthenticatedPlanningPlanIdRoute
   '/_authenticated/planning/new': typeof AuthenticatedPlanningNewRoute
   '/_authenticated/planning/team': typeof AuthenticatedPlanningTeamRoute
@@ -2093,6 +2121,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
+  '/_authenticated/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -2158,6 +2187,7 @@ export interface FileRoutesById {
   '/_authenticated/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
   '/_authenticated/manager/approvals/expenses': typeof AuthenticatedManagerApprovalsExpensesRoute
   '/_authenticated/manager/approvals/visits': typeof AuthenticatedManagerApprovalsVisitsRoute
+  '/_authenticated/settings/custom-objects/$id': typeof AuthenticatedSettingsCustomObjectsIdRoute
   '/_authenticated/settings/whatsapp/logs': typeof AuthenticatedSettingsWhatsappLogsRoute
   '/_authenticated/tasks/projects/$projectId': typeof AuthenticatedTasksProjectsProjectIdRouteWithChildren
   '/api/public/gmail/callback': typeof ApiPublicGmailCallbackRoute
@@ -2295,6 +2325,7 @@ export interface FileRouteTypes {
     | '/manager/team'
     | '/narratives/$id'
     | '/narratives/settings'
+    | '/objects/$apiName'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -2322,6 +2353,7 @@ export interface FileRouteTypes {
     | '/scorecard/me'
     | '/scorecard/team'
     | '/settings/currency'
+    | '/settings/custom-objects'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2387,6 +2419,7 @@ export interface FileRouteTypes {
     | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
+    | '/settings/custom-objects/$id'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
     | '/api/public/gmail/callback'
@@ -2509,6 +2542,7 @@ export interface FileRouteTypes {
     | '/manager/team'
     | '/narratives/$id'
     | '/narratives/settings'
+    | '/objects/$apiName'
     | '/planning/$planId'
     | '/planning/new'
     | '/planning/team'
@@ -2536,6 +2570,7 @@ export interface FileRouteTypes {
     | '/scorecard/me'
     | '/scorecard/team'
     | '/settings/currency'
+    | '/settings/custom-objects'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2601,6 +2636,7 @@ export interface FileRouteTypes {
     | '/kb/article/$id'
     | '/manager/approvals/expenses'
     | '/manager/approvals/visits'
+    | '/settings/custom-objects/$id'
     | '/settings/whatsapp/logs'
     | '/tasks/projects/$projectId'
     | '/api/public/gmail/callback'
@@ -2737,6 +2773,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manager/team'
     | '/_authenticated/narratives/$id'
     | '/_authenticated/narratives/settings'
+    | '/_authenticated/objects/$apiName'
     | '/_authenticated/planning/$planId'
     | '/_authenticated/planning/new'
     | '/_authenticated/planning/team'
@@ -2764,6 +2801,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
     | '/_authenticated/settings/currency'
+    | '/_authenticated/settings/custom-objects'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/whatsapp'
@@ -2829,6 +2867,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kb/article/$id'
     | '/_authenticated/manager/approvals/expenses'
     | '/_authenticated/manager/approvals/visits'
+    | '/_authenticated/settings/custom-objects/$id'
     | '/_authenticated/settings/whatsapp/logs'
     | '/_authenticated/tasks/projects/$projectId'
     | '/api/public/gmail/callback'
@@ -3588,6 +3627,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsFormBuilderRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/custom-objects': {
+      id: '/_authenticated/settings/custom-objects'
+      path: '/custom-objects'
+      fullPath: '/settings/custom-objects'
+      preLoaderRoute: typeof AuthenticatedSettingsCustomObjectsRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/settings/currency': {
       id: '/_authenticated/settings/currency'
       path: '/currency'
@@ -3776,6 +3822,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/$planId'
       preLoaderRoute: typeof AuthenticatedPlanningPlanIdRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/objects/$apiName': {
+      id: '/_authenticated/objects/$apiName'
+      path: '/objects/$apiName'
+      fullPath: '/objects/$apiName'
+      preLoaderRoute: typeof AuthenticatedObjectsApiNameRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/narratives/settings': {
       id: '/_authenticated/narratives/settings'
@@ -4421,6 +4474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsWhatsappLogsRouteImport
       parentRoute: typeof AuthenticatedSettingsWhatsappRoute
     }
+    '/_authenticated/settings/custom-objects/$id': {
+      id: '/_authenticated/settings/custom-objects/$id'
+      path: '/$id'
+      fullPath: '/settings/custom-objects/$id'
+      preLoaderRoute: typeof AuthenticatedSettingsCustomObjectsIdRouteImport
+      parentRoute: typeof AuthenticatedSettingsCustomObjectsRoute
+    }
     '/_authenticated/manager/approvals/visits': {
       id: '/_authenticated/manager/approvals/visits'
       path: '/approvals/visits'
@@ -4786,6 +4846,21 @@ const AuthenticatedScorecardRouteWithChildren =
     AuthenticatedScorecardRouteChildren,
   )
 
+interface AuthenticatedSettingsCustomObjectsRouteChildren {
+  AuthenticatedSettingsCustomObjectsIdRoute: typeof AuthenticatedSettingsCustomObjectsIdRoute
+}
+
+const AuthenticatedSettingsCustomObjectsRouteChildren: AuthenticatedSettingsCustomObjectsRouteChildren =
+  {
+    AuthenticatedSettingsCustomObjectsIdRoute:
+      AuthenticatedSettingsCustomObjectsIdRoute,
+  }
+
+const AuthenticatedSettingsCustomObjectsRouteWithChildren =
+  AuthenticatedSettingsCustomObjectsRoute._addFileChildren(
+    AuthenticatedSettingsCustomObjectsRouteChildren,
+  )
+
 interface AuthenticatedSettingsWhatsappRouteChildren {
   AuthenticatedSettingsWhatsappLogsRoute: typeof AuthenticatedSettingsWhatsappLogsRoute
 }
@@ -4803,6 +4878,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
 
 interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
+  AuthenticatedSettingsCustomObjectsRoute: typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -4811,6 +4887,8 @@ interface AuthenticatedSettingsRouteChildren {
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
+  AuthenticatedSettingsCustomObjectsRoute:
+    AuthenticatedSettingsCustomObjectsRouteWithChildren,
   AuthenticatedSettingsFormBuilderRoute: AuthenticatedSettingsFormBuilderRoute,
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,
@@ -4988,6 +5066,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
+  AuthenticatedObjectsApiNameRoute: typeof AuthenticatedObjectsApiNameRoute
   AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
   AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
   AuthenticatedPredictorTeamRoute: typeof AuthenticatedPredictorTeamRoute
@@ -5082,6 +5161,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
+  AuthenticatedObjectsApiNameRoute: AuthenticatedObjectsApiNameRoute,
   AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
   AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
   AuthenticatedPredictorTeamRoute: AuthenticatedPredictorTeamRoute,
