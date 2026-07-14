@@ -192,6 +192,7 @@ const staffSection: NavSection = {
     { to: "/copilot", label: "AI Copilot", icon: Sparkles },
     { to: "/copilot/anomalies", label: "Anomaly Feed", icon: AlertTriangle },
     { to: "/narratives", label: "Exec Narratives", icon: ScrollText },
+    { to: "/reports/attribution", label: "Revenue Attribution", icon: TrendingUp },
     { to: "/ai", label: "Ask AI", icon: Sparkles },
     { to: "/visits/settings", label: "Visit Settings", icon: Settings },
   ],

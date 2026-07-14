@@ -307,6 +307,66 @@ export type Database = {
           },
         ]
       }
+      attribution_touchpoints: {
+        Row: {
+          campaign: string | null
+          channel: string | null
+          company_id: string
+          created_at: string
+          currency: string | null
+          id: string
+          lead_id: string | null
+          metadata: Json
+          occurred_at: string
+          revenue_value: number | null
+          source: string
+          touch_kind: string
+        }
+        Insert: {
+          campaign?: string | null
+          channel?: string | null
+          company_id: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          revenue_value?: number | null
+          source: string
+          touch_kind?: string
+        }
+        Update: {
+          campaign?: string | null
+          channel?: string | null
+          company_id?: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          revenue_value?: number | null
+          source?: string
+          touch_kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attribution_touchpoints_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attribution_touchpoints_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
