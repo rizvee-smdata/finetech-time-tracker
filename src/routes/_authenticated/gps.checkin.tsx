@@ -26,7 +26,9 @@ function CheckinPage() {
   const { user, companyId } = useAuth();
   const qc = useQueryClient();
   const { leadId: initialLeadId } = useSearch({ from: "/_authenticated/gps/checkin" });
-  const [leadId, setLeadId] = useState<string | undefined>(initialLeadId);
+  const [mode, setMode] = useState<"customer" | "other">("customer");
+  const [customerId, setCustomerId] = useState<string | undefined>(undefined);
+  const [otherName, setOtherName] = useState("");
   const [pos, setPos] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
   const [posError, setPosError] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
@@ -56,21 +58,35 @@ function CheckinPage() {
     return () => navigator.geolocation.clearWatch(watch);
   }, []);
 
-  const { data: leads = [] } = useQuery({
-    queryKey: ["checkin-leads", companyId],
+  const { data: customers = [] } = useQuery({
+    queryKey: ["checkin-customers", companyId],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await supabase
-        .from("crm_leads")
-        .select("id, customer_name, address_lat, address_lng, address_text")
+        .from("customers")
+        .select("id, customer_name, gps_lat, gps_lng, address")
         .eq("company_id", companyId!)
-        .not("address_lat", "is", null)
+        .is("deleted_at", null)
         .order("customer_name");
       return data ?? [];
     },
   });
 
-  const lead = leads.find((l) => l.id === leadId);
+  // If we arrived with ?leadId=..., preselect matching customer by name from the lead
+  useEffect(() => {
+    if (!initialLeadId || customerId || !companyId) return;
+    (async () => {
+      const { data: lead } = await supabase
+        .from("crm_leads").select("customer_name").eq("id", initialLeadId).maybeSingle();
+      if (!lead?.customer_name) return;
+      const match = customers.find(
+        (c) => (c.customer_name ?? "").trim().toLowerCase() === lead.customer_name.trim().toLowerCase(),
+      );
+      if (match) { setMode("customer"); setCustomerId(match.id); }
+    })();
+  }, [initialLeadId, customers, companyId, customerId]);
+
+  const customer = customers.find((c) => c.id === customerId);
 
   const { data: openCheckin } = useQuery({
     queryKey: ["open-checkin", user?.id],
@@ -83,8 +99,8 @@ function CheckinPage() {
     },
   });
 
-  const distance = lead?.address_lat != null && pos
-    ? haversineMeters(pos, { lat: Number(lead.address_lat), lng: Number(lead.address_lng) })
+  const distance = mode === "customer" && customer?.gps_lat != null && pos
+    ? haversineMeters(pos, { lat: Number(customer.gps_lat), lng: Number(customer.gps_lng) })
     : null;
   const withinFence = distance != null ? distance <= GEOFENCE_M : null;
 
@@ -100,7 +116,8 @@ function CheckinPage() {
     mutationFn: async () => {
       if (!user || !companyId) throw new Error("Not ready");
       if (!pos) throw new Error("Waiting for GPS");
-      if (!lead) throw new Error("Pick a client");
+      if (mode === "customer" && !customer) throw new Error("Pick a customer");
+      if (mode === "other" && !otherName.trim()) throw new Error("Enter a name for the visit");
       if (withinFence === false && !override.trim()) {
         throw new Error(`You are ${Math.round(distance!)} m away — provide an override reason or move closer.`);
       }
@@ -113,24 +130,13 @@ function CheckinPage() {
       if (closeError) throw closeError;
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
-      // Best-effort link to customers.id by exact-name match for this company
-      let accountId: string | null = null;
-      if (lead.customer_name) {
-        const { data: matched } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("company_id", companyId)
-          .ilike("customer_name", lead.customer_name)
-          .is("deleted_at", null)
-          .limit(1)
-          .maybeSingle();
-        accountId = matched?.id ?? null;
-      }
+      const clientName = mode === "customer" ? (customer!.customer_name ?? "") : otherName.trim();
+      const accountId = mode === "customer" ? customer!.id : null;
       const { error } = await supabase.from("visit_checkins").insert({
-        user_id: user.id, company_id: companyId, lead_id: lead.id, client_name: lead.customer_name,
+        user_id: user.id, company_id: companyId, lead_id: null, client_name: clientName,
         account_id: accountId,
         checkin_lat: pos.lat, checkin_lng: pos.lng, checkin_time: checkinTime,
-        distance_from_client_m: distance, is_geofence_valid: !!withinFence,
+        distance_from_client_m: distance, is_geofence_valid: mode === "other" ? true : !!withinFence,
         override_reason: override || null, selfie_url, voice_url, notes: notes || null,
       });
       if (error) throw error;
@@ -211,15 +217,59 @@ function CheckinPage() {
       )}
 
       <Card className="space-y-4 p-4">
-        <div className="space-y-1.5">
-          <Label>Client</Label>
-          <Select value={leadId ?? ""} onValueChange={(v) => setLeadId(v)}>
-            <SelectTrigger><SelectValue placeholder="Select a client with a saved address" /></SelectTrigger>
-            <SelectContent>
-              {leads.map((l) => <SelectItem key={l.id} value={l.id}>{l.customer_name}</SelectItem>)}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "customer" ? "default" : "outline"}
+            className="flex-1"
+            onClick={() => setMode("customer")}
+          >
+            Existing customer
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "other" ? "default" : "outline"}
+            className="flex-1"
+            onClick={() => setMode("other")}
+          >
+            Other visit
+          </Button>
         </div>
+
+        {mode === "customer" ? (
+          <div className="space-y-1.5">
+            <Label>Customer</Label>
+            <Select value={customerId ?? ""} onValueChange={(v) => setCustomerId(v)}>
+              <SelectTrigger><SelectValue placeholder="Select a customer from CRM" /></SelectTrigger>
+              <SelectContent>
+                {customers.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.customer_name}{c.gps_lat == null ? " — no saved location" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {customer && customer.gps_lat == null && (
+              <p className="text-xs text-muted-foreground">
+                No saved location for this customer — geofence check will be skipped.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <Label>Visit name</Label>
+            <Input
+              value={otherName}
+              onChange={(e) => setOtherName(e.target.value)}
+              placeholder="e.g. Prospect meeting, event, walk-in"
+            />
+            <p className="text-xs text-muted-foreground">
+              Non-customer visit — won't be tied to a CRM account.
+            </p>
+          </div>
+        )}
 
         <div className="rounded-lg border bg-muted/40 p-3 text-sm">
           <div className="flex items-center gap-2 font-medium"><MapPin className="h-4 w-4" />Your location</div>
@@ -264,7 +314,7 @@ function CheckinPage() {
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
         </div>
 
-        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !lead || !online || checkInMut.isPending}>
+        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !online || checkInMut.isPending || (mode === "customer" ? !customer : !otherName.trim())}>
           <CheckCircle2 className="mr-2 h-5 w-5" />{openCheckin ? "CHECK IN AT NEXT VISIT" : "CHECK IN"}
         </Button>
       </Card>
