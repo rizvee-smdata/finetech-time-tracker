@@ -3970,6 +3970,82 @@ export type Database = {
           },
         ]
       }
+      lead_routing_rules: {
+        Row: {
+          assignee_pool: string[]
+          company_id: string
+          conditions: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          strategy: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_pool?: string[]
+          company_id: string
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          strategy: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_pool?: string[]
+          company_id?: string
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          strategy?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_routing_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_routing_state: {
+        Row: {
+          rr_cursor: number
+          rule_id: string
+          updated_at: string
+        }
+        Insert: {
+          rr_cursor?: number
+          rule_id: string
+          updated_at?: string
+        }
+        Update: {
+          rr_cursor?: number
+          rule_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_routing_state_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: true
+            referencedRelation: "lead_routing_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_prep_briefs: {
         Row: {
           account_id: string | null
@@ -6996,6 +7072,195 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_run_steps: {
+        Row: {
+          created_at: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          result: Json | null
+          run_id: string
+          scheduled_for: string | null
+          started_at: string | null
+          status: string
+          step_id: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          result?: Json | null
+          run_id: string
+          scheduled_for?: string | null
+          started_at?: string | null
+          status: string
+          step_id: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          result?: Json | null
+          run_id?: string
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string
+          step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_run_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_run_steps_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_runs: {
+        Row: {
+          company_id: string
+          context: Json
+          entity_id: string | null
+          entity_type: string | null
+          error: string | null
+          finished_at: string | null
+          id: string
+          started_at: string
+          status: string
+          workflow_id: string
+        }
+        Insert: {
+          company_id: string
+          context?: Json
+          entity_id?: string | null
+          entity_type?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          workflow_id: string
+        }
+        Update: {
+          company_id?: string
+          context?: Json
+          entity_id?: string | null
+          entity_type?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_runs_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_steps: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          next_on_false: string | null
+          next_on_true: string | null
+          sort_order: number
+          step_type: string
+          workflow_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          next_on_false?: string | null
+          next_on_true?: string | null
+          sort_order?: number
+          step_type: string
+          workflow_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          next_on_false?: string | null
+          next_on_true?: string | null
+          sort_order?: number
+          step_type?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_steps_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflows_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       profiles_public: {
@@ -7094,6 +7359,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      evaluate_lead_routing: { Args: { _lead_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
