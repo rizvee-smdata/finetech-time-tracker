@@ -2725,6 +2725,170 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_object_defs: {
+        Row: {
+          api_name: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          label: string
+          plural_label: string
+          updated_at: string
+        }
+        Insert: {
+          api_name: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          plural_label: string
+          updated_at?: string
+        }
+        Update: {
+          api_name?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          plural_label?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_object_defs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_object_field_defs: {
+        Row: {
+          api_name: string
+          created_at: string
+          help_text: string | null
+          id: string
+          is_name_field: boolean
+          kind: Database["public"]["Enums"]["custom_object_field_kind"]
+          label: string
+          object_id: string
+          options: Json
+          order_index: number
+          reference_object_id: string | null
+          required: boolean
+          updated_at: string
+        }
+        Insert: {
+          api_name: string
+          created_at?: string
+          help_text?: string | null
+          id?: string
+          is_name_field?: boolean
+          kind: Database["public"]["Enums"]["custom_object_field_kind"]
+          label: string
+          object_id: string
+          options?: Json
+          order_index?: number
+          reference_object_id?: string | null
+          required?: boolean
+          updated_at?: string
+        }
+        Update: {
+          api_name?: string
+          created_at?: string
+          help_text?: string | null
+          id?: string
+          is_name_field?: boolean
+          kind?: Database["public"]["Enums"]["custom_object_field_kind"]
+          label?: string
+          object_id?: string
+          options?: Json
+          order_index?: number
+          reference_object_id?: string | null
+          required?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_object_field_defs_object_id_fkey"
+            columns: ["object_id"]
+            isOneToOne: false
+            referencedRelation: "custom_object_defs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_object_field_defs_reference_object_id_fkey"
+            columns: ["reference_object_id"]
+            isOneToOne: false
+            referencedRelation: "custom_object_defs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_object_records: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          data: Json
+          id: string
+          name: string | null
+          object_id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          name?: string | null
+          object_id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          name?: string | null
+          object_id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_object_records_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_object_records_object_id_fkey"
+            columns: ["object_id"]
+            isOneToOne: false
+            referencedRelation: "custom_object_defs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_visits: {
         Row: {
           account_id: string | null
@@ -7698,6 +7862,19 @@ export type Database = {
       crm_priority: "low" | "medium" | "high"
       crm_quote_status: "draft" | "sent" | "accepted" | "rejected"
       crm_renewal_kind: "one_time" | "amc" | "subscription" | "retainer"
+      custom_object_field_kind:
+        | "text"
+        | "textarea"
+        | "number"
+        | "date"
+        | "datetime"
+        | "boolean"
+        | "select"
+        | "multiselect"
+        | "url"
+        | "email"
+        | "phone"
+        | "reference"
       customer_tier: "strategic" | "standard" | "low_priority"
       expense_status: "draft" | "submitted" | "approved" | "rejected"
       form_entity:
@@ -7948,6 +8125,20 @@ export const Constants = {
       crm_priority: ["low", "medium", "high"],
       crm_quote_status: ["draft", "sent", "accepted", "rejected"],
       crm_renewal_kind: ["one_time", "amc", "subscription", "retainer"],
+      custom_object_field_kind: [
+        "text",
+        "textarea",
+        "number",
+        "date",
+        "datetime",
+        "boolean",
+        "select",
+        "multiselect",
+        "url",
+        "email",
+        "phone",
+        "reference",
+      ],
       customer_tier: ["strategic", "standard", "low_priority"],
       expense_status: ["draft", "submitted", "approved", "rejected"],
       form_entity: ["lead", "customer", "visit", "expense", "task", "contract"],
