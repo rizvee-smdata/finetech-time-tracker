@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -441,6 +441,9 @@ function WorkflowsTab({ companyId }: { companyId: string }) {
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={w.is_active} onCheckedChange={() => toggle(w)} />
+              <Link to="/admin/automations/workflows/$id" params={{ id: w.id }}>
+                <Button size="sm" variant="outline">Edit steps</Button>
+              </Link>
               <Button size="icon" variant="ghost" onClick={() => remove(w.id)}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
@@ -448,9 +451,10 @@ function WorkflowsTab({ companyId }: { companyId: string }) {
           </Card>
         ))}
         {(list.data ?? []).length === 0 && (
-          <p className="text-sm text-muted-foreground p-4">No workflows yet. The visual step canvas ships next — for now, workflows are placeholders.</p>
+          <p className="text-sm text-muted-foreground p-4">No workflows yet. Create one and open it to build the step sequence.</p>
         )}
       </div>
+
     </>
   );
 }

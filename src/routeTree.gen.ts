@@ -231,6 +231,7 @@ import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './rou
 import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
+import { Route as AuthenticatedAdminAutomationsWorkflowsIdRouteImport } from './routes/_authenticated/admin.automations.workflows.$id'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
@@ -1484,6 +1485,12 @@ const AuthenticatedClientsClientIdHealthRoute =
     path: '/clients/$clientId/health',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAutomationsWorkflowsIdRoute =
+  AuthenticatedAdminAutomationsWorkflowsIdRouteImport.update({
+    id: '/workflows/$id',
+    path: '/workflows/$id',
+    getParentRoute: () => AuthenticatedAdminAutomationsRoute,
+  } as any)
 const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
   AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport.update({
     id: '/sprints/$sprintId',
@@ -1534,7 +1541,7 @@ export interface FileRoutesByFullPath {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
-  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -1713,6 +1720,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesByTo {
@@ -1745,7 +1753,7 @@ export interface FileRoutesByTo {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
-  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -1924,6 +1932,7 @@ export interface FileRoutesByTo {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRoutesById {
@@ -1971,7 +1980,7 @@ export interface FileRoutesById {
   '/_authenticated/route/live': typeof AuthenticatedRouteLiveRoute
   '/_authenticated/route/plan': typeof AuthenticatedRoutePlanRoute
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
-  '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
+  '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -2150,6 +2159,7 @@ export interface FileRoutesById {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/_authenticated/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
 export interface FileRouteTypes {
@@ -2376,6 +2386,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/automations/workflows/$id'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -2587,6 +2598,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/automations/workflows/$id'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
     | '__root__'
@@ -2812,6 +2824,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/_authenticated/admin/automations/workflows/$id'
     | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
 }
@@ -4403,6 +4416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientsClientIdHealthRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/automations/workflows/$id': {
+      id: '/_authenticated/admin/automations/workflows/$id'
+      path: '/workflows/$id'
+      fullPath: '/admin/automations/workflows/$id'
+      preLoaderRoute: typeof AuthenticatedAdminAutomationsWorkflowsIdRouteImport
+      parentRoute: typeof AuthenticatedAdminAutomationsRoute
+    }
     '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': {
       id: '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
       path: '/sprints/$sprintId'
@@ -4853,6 +4873,21 @@ const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
 const AuthenticatedTasksRouteWithChildren =
   AuthenticatedTasksRoute._addFileChildren(AuthenticatedTasksRouteChildren)
 
+interface AuthenticatedAdminAutomationsRouteChildren {
+  AuthenticatedAdminAutomationsWorkflowsIdRoute: typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
+}
+
+const AuthenticatedAdminAutomationsRouteChildren: AuthenticatedAdminAutomationsRouteChildren =
+  {
+    AuthenticatedAdminAutomationsWorkflowsIdRoute:
+      AuthenticatedAdminAutomationsWorkflowsIdRoute,
+  }
+
+const AuthenticatedAdminAutomationsRouteWithChildren =
+  AuthenticatedAdminAutomationsRoute._addFileChildren(
+    AuthenticatedAdminAutomationsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
@@ -4888,7 +4923,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRouteLiveRoute: typeof AuthenticatedRouteLiveRoute
   AuthenticatedRoutePlanRoute: typeof AuthenticatedRoutePlanRoute
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
-  AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRoute
+  AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
@@ -4980,7 +5015,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRouteLiveRoute: AuthenticatedRouteLiveRoute,
   AuthenticatedRoutePlanRoute: AuthenticatedRoutePlanRoute,
   AuthenticatedAdminAccountReviewRoute: AuthenticatedAdminAccountReviewRoute,
-  AuthenticatedAdminAutomationsRoute: AuthenticatedAdminAutomationsRoute,
+  AuthenticatedAdminAutomationsRoute:
+    AuthenticatedAdminAutomationsRouteWithChildren,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
