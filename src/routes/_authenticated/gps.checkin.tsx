@@ -26,7 +26,9 @@ function CheckinPage() {
   const { user, companyId } = useAuth();
   const qc = useQueryClient();
   const { leadId: initialLeadId } = useSearch({ from: "/_authenticated/gps/checkin" });
-  const [leadId, setLeadId] = useState<string | undefined>(initialLeadId);
+  const [mode, setMode] = useState<"customer" | "other">("customer");
+  const [customerId, setCustomerId] = useState<string | undefined>(undefined);
+  const [otherName, setOtherName] = useState("");
   const [pos, setPos] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
   const [posError, setPosError] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
@@ -56,21 +58,35 @@ function CheckinPage() {
     return () => navigator.geolocation.clearWatch(watch);
   }, []);
 
-  const { data: leads = [] } = useQuery({
-    queryKey: ["checkin-leads", companyId],
+  const { data: customers = [] } = useQuery({
+    queryKey: ["checkin-customers", companyId],
     enabled: !!companyId,
     queryFn: async () => {
       const { data } = await supabase
-        .from("crm_leads")
-        .select("id, customer_name, address_lat, address_lng, address_text")
+        .from("customers")
+        .select("id, customer_name, gps_lat, gps_lng, address")
         .eq("company_id", companyId!)
-        .not("address_lat", "is", null)
+        .is("deleted_at", null)
         .order("customer_name");
       return data ?? [];
     },
   });
 
-  const lead = leads.find((l) => l.id === leadId);
+  // If we arrived with ?leadId=..., preselect matching customer by name from the lead
+  useEffect(() => {
+    if (!initialLeadId || customerId || !companyId) return;
+    (async () => {
+      const { data: lead } = await supabase
+        .from("crm_leads").select("customer_name").eq("id", initialLeadId).maybeSingle();
+      if (!lead?.customer_name) return;
+      const match = customers.find(
+        (c) => (c.customer_name ?? "").trim().toLowerCase() === lead.customer_name.trim().toLowerCase(),
+      );
+      if (match) { setMode("customer"); setCustomerId(match.id); }
+    })();
+  }, [initialLeadId, customers, companyId, customerId]);
+
+  const customer = customers.find((c) => c.id === customerId);
 
   const { data: openCheckin } = useQuery({
     queryKey: ["open-checkin", user?.id],
@@ -83,8 +99,8 @@ function CheckinPage() {
     },
   });
 
-  const distance = lead?.address_lat != null && pos
-    ? haversineMeters(pos, { lat: Number(lead.address_lat), lng: Number(lead.address_lng) })
+  const distance = mode === "customer" && customer?.gps_lat != null && pos
+    ? haversineMeters(pos, { lat: Number(customer.gps_lat), lng: Number(customer.gps_lng) })
     : null;
   const withinFence = distance != null ? distance <= GEOFENCE_M : null;
 
