@@ -61,7 +61,7 @@ export function NewTargetButton() {
     if (!companyId) return;
     const num = Number(value);
     if (!num || num <= 0) { toast.error("Target value must be greater than 0"); return; }
-    if (scope === "user" && !userId) { toast.error("Pick a rep"); return; }
+    if (scope === "user" && !userId) { toast.error("Pick an account manager"); return; }
     if (scope === "territory" && !territoryId) { toast.error("Pick a territory"); return; }
     setSubmitting(true);
     try {
@@ -122,9 +122,9 @@ export function NewTargetButton() {
           </div>
           {scope === "user" && (
             <div className="col-span-2 space-y-1">
-              <Label>Rep</Label>
+              <Label>Account Manager</Label>
               <Select value={userId} onValueChange={setUserId}>
-                <SelectTrigger><SelectValue placeholder="Choose rep" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Choose account manager" /></SelectTrigger>
                 <SelectContent>
                   {(members.data ?? []).map((m: any) => (
                     <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email}</SelectItem>
@@ -171,7 +171,7 @@ export function NewTargetButton() {
           </div>
           <div className="col-span-2 space-y-1">
             <Label>Notes</Label>
-            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional context for the rep" />
+            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional context for the account manager" />
           </div>
         </div>
         <DialogFooter>

@@ -39,7 +39,7 @@ export const METRIC_UNIT: Record<TargetMetric, "money" | "count"> = {
 };
 
 export const SCOPE_LABEL: Record<TargetScope, string> = {
-  user: "Rep",
+  user: "Account Manager",
   territory: "Territory",
   company: "Company-wide",
 };
