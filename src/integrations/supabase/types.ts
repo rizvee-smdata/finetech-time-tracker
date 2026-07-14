@@ -7804,6 +7804,10 @@ export type Database = {
         Args: { _entity_id: string; _entity_type: string }
         Returns: Json
       }
+      shares_company_with: {
+        Args: { _target: string; _viewer: string }
+        Returns: boolean
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       tms_can_manage_project: {
