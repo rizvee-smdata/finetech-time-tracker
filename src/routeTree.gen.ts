@@ -201,6 +201,7 @@ import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_authenticated/admin.trial-requests'
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
+import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
 import { Route as AuthenticatedRoutePlanRouteImport } from './routes/_authenticated/route.plan'
 import { Route as AuthenticatedRouteLiveRouteImport } from './routes/_authenticated/route.live'
@@ -1309,6 +1310,12 @@ const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   path: '/admin/map',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAutomationsRoute =
+  AuthenticatedAdminAutomationsRouteImport.update({
+    id: '/admin/automations',
+    path: '/admin/automations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminAccountReviewRoute =
   AuthenticatedAdminAccountReviewRouteImport.update({
     id: '/admin/account-review',
@@ -1527,6 +1534,7 @@ export interface FileRoutesByFullPath {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -1737,6 +1745,7 @@ export interface FileRoutesByTo {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -1962,6 +1971,7 @@ export interface FileRoutesById {
   '/_authenticated/route/live': typeof AuthenticatedRouteLiveRoute
   '/_authenticated/route/plan': typeof AuthenticatedRoutePlanRoute
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -2187,6 +2197,7 @@ export interface FileRouteTypes {
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
+    | '/admin/automations'
     | '/admin/map'
     | '/admin/routes'
     | '/admin/trial-requests'
@@ -2397,6 +2408,7 @@ export interface FileRouteTypes {
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
+    | '/admin/automations'
     | '/admin/map'
     | '/admin/routes'
     | '/admin/trial-requests'
@@ -2621,6 +2633,7 @@ export interface FileRouteTypes {
     | '/_authenticated/route/live'
     | '/_authenticated/route/plan'
     | '/_authenticated/admin/account-review'
+    | '/_authenticated/admin/automations'
     | '/_authenticated/admin/map'
     | '/_authenticated/admin/routes'
     | '/_authenticated/admin/trial-requests'
@@ -4180,6 +4193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/automations': {
+      id: '/_authenticated/admin/automations'
+      path: '/admin/automations'
+      fullPath: '/admin/automations'
+      preLoaderRoute: typeof AuthenticatedAdminAutomationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/account-review': {
       id: '/_authenticated/admin/account-review'
       path: '/admin/account-review'
@@ -4868,6 +4888,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRouteLiveRoute: typeof AuthenticatedRouteLiveRoute
   AuthenticatedRoutePlanRoute: typeof AuthenticatedRoutePlanRoute
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
+  AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
@@ -4959,6 +4980,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRouteLiveRoute: AuthenticatedRouteLiveRoute,
   AuthenticatedRoutePlanRoute: AuthenticatedRoutePlanRoute,
   AuthenticatedAdminAccountReviewRoute: AuthenticatedAdminAccountReviewRoute,
+  AuthenticatedAdminAutomationsRoute: AuthenticatedAdminAutomationsRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
