@@ -167,6 +167,10 @@ async function callAi(payload: unknown, lovableKey: string) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+
+  const guard = await requireCronOrUser(req);
+  if (!guard.ok) return unauthorized(corsHeaders, guard.reason);
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -177,6 +181,7 @@ serve(async (req) => {
     const taskId = body?.task_id ?? body?.visit_task_id;
     const force = body?.force === true;
     if (!taskId) return json(400, { error: "task_id required" });
+
 
     // Skip if a brief already exists and not forcing
     const { data: existing } = await admin
