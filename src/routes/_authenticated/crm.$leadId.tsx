@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchLead, fetchActivities, fetchQuotes, fetchAttachments, fetchLeadTasks,
-  updateLeadStage, addActivity, fetchCompanyMembers, fetchRelatedVisits,
+  updateLeadStage, addActivity, fetchCompanyMembers, fetchAssignableMembers, fetchRelatedVisits,
 } from "@/lib/crm/queries";
 import { STAGES, stageMeta, formatMoney, ACTIVE_STAGES, type CrmStage } from "@/lib/crm/types";
 import { Card } from "@/components/ui/card";
@@ -340,8 +340,8 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
   const [busy, setBusy] = useState(false);
 
   const members = useQuery({
-    queryKey: ["crm-company-members", companyId],
-    queryFn: () => fetchCompanyMembers(companyId),
+    queryKey: ["crm-assignable-members", companyId],
+    queryFn: () => fetchAssignableMembers(companyId),
   });
 
   async function submit() {
