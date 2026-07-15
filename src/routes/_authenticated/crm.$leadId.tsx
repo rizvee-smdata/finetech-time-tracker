@@ -340,8 +340,8 @@ function AddTask({ leadId, companyId, userId }: { leadId: string; companyId: str
   const [busy, setBusy] = useState(false);
 
   const members = useQuery({
-    queryKey: ["crm-company-members", companyId],
-    queryFn: () => fetchCompanyMembers(companyId),
+    queryKey: ["crm-assignable-members", companyId],
+    queryFn: () => fetchAssignableMembers(companyId),
   });
 
   async function submit() {
