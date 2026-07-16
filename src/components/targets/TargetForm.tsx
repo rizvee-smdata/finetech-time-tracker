@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { fetchCompanyMembers } from "@/lib/crm/queries";
+import { fetchAssignableMembers } from "@/lib/crm/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { createTarget } from "@/lib/targets/queries";
 import { METRIC_LABEL, METRIC_UNIT, PERIOD_LABEL, SCOPE_LABEL, periodRangeFor, type TargetMetric, type TargetPeriodKind, type TargetScope } from "@/lib/targets/types";
