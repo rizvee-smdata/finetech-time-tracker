@@ -33,9 +33,9 @@ export function NewTargetButton() {
   const [submitting, setSubmitting] = useState(false);
 
   const members = useQuery({
-    queryKey: ["company-members", companyId],
+    queryKey: ["assignable-members", companyId],
     enabled: !!companyId && open,
-    queryFn: () => fetchCompanyMembers(companyId!),
+    queryFn: () => fetchAssignableMembers(companyId!),
   });
   const territories = useQuery({
     queryKey: ["crm-territories", companyId],
