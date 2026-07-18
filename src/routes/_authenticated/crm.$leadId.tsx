@@ -74,6 +74,27 @@ function LeadDetail() {
     }),
   });
 
+  const leadProducts = useQuery({
+    queryKey: ["crm-lead-products", leadId, lead?.product_ids, lead?.product_id, lead?.oem_id],
+    enabled: !!lead,
+    queryFn: async () => {
+      const ids: string[] = Array.isArray((lead as any)?.product_ids) && (lead as any).product_ids.length
+        ? ((lead as any).product_ids as string[])
+        : ((lead as any)?.product_id ? [(lead as any).product_id as string] : []);
+      let products: any[] = [];
+      if (ids.length) {
+        const { data } = await sb.from("crm_products").select("id, name, sku, oem_id").in("id", ids);
+        products = data ?? [];
+      }
+      let oem: any = null;
+      if ((lead as any)?.oem_id) {
+        const { data } = await sb.from("crm_oems").select("id, name").eq("id", (lead as any).oem_id).maybeSingle();
+        oem = data;
+      }
+      return { products, oem };
+    },
+  });
+
   if (leadQ.isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!lead) return <div className="text-sm text-muted-foreground">Lead not found.</div>;
 
