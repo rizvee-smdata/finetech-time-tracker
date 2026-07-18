@@ -75,7 +75,7 @@ function LeadDetail() {
   });
 
   const leadProducts = useQuery({
-    queryKey: ["crm-lead-products", leadId, lead?.product_ids, lead?.product_id, lead?.oem_id],
+    queryKey: ["crm-lead-products", leadId, (lead as any)?.product_ids, (lead as any)?.product_id, (lead as any)?.oem_id],
     enabled: !!lead,
     queryFn: async () => {
       const ids: string[] = Array.isArray((lead as any)?.product_ids) && (lead as any).product_ids.length
