@@ -211,6 +211,27 @@ function LeadDetail() {
         )}
       </Card>
 
+      {(leadProducts.data?.products.length || leadProducts.data?.oem || (lead as any).product_name) && (
+        <Card className="p-4">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <FileText className="h-3.5 w-3.5" /> Products & OEM
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {leadProducts.data?.oem && (
+              <Badge variant="outline" className="bg-primary/5">OEM: {leadProducts.data.oem.name}</Badge>
+            )}
+            {(leadProducts.data?.products ?? []).map((p: any) => (
+              <Badge key={p.id} variant="secondary">
+                {p.name}{p.sku ? ` · ${p.sku}` : ""}
+              </Badge>
+            ))}
+            {(!leadProducts.data?.products?.length) && (lead as any).product_name && (
+              <Badge variant="secondary">{(lead as any).product_name}</Badge>
+            )}
+          </div>
+        </Card>
+      )}
+
       <LeadScoreCard lead={lead as any} activityCount={activities.data?.length ?? 0} />
 
       <Tabs defaultValue="timeline">
