@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TrialRouteImport } from './routes/trial'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -109,6 +112,7 @@ import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
+import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
 import { Route as AuthenticatedSettingsCustomObjectsRouteImport } from './routes/_authenticated/settings.custom-objects'
 import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
@@ -206,6 +210,7 @@ import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
+import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
 import { Route as AuthenticatedRoutePlanRouteImport } from './routes/_authenticated/route.plan'
 import { Route as AuthenticatedRouteLiveRouteImport } from './routes/_authenticated/route.live'
@@ -249,9 +254,24 @@ const TrialRoute = TrialRouteImport.update({
   path: '/trial',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DpaRoute = DpaRouteImport.update({
+  id: '/dpa',
+  path: '/dpa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -784,6 +804,12 @@ const AuthenticatedSettingsFormBuilderRoute =
   AuthenticatedSettingsFormBuilderRouteImport.update({
     id: '/form-builder',
     path: '/form-builder',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsExportRoute =
+  AuthenticatedSettingsExportRouteImport.update({
+    id: '/export',
+    path: '/export',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedSettingsCustomObjectsRoute =
@@ -1346,6 +1372,11 @@ const AuthenticatedAdminAutomationsRoute =
     path: '/admin/automations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminAccountReviewRoute =
   AuthenticatedAdminAccountReviewRouteImport.update({
     id: '/admin/account-review',
@@ -1536,7 +1567,10 @@ const AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dpa': typeof DpaRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
@@ -1576,6 +1610,7 @@ export interface FileRoutesByFullPath {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -1673,6 +1708,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
+  '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -1766,7 +1802,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dpa': typeof DpaRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/ai': typeof AuthenticatedAiRoute
@@ -1793,6 +1832,7 @@ export interface FileRoutesByTo {
   '/route/live': typeof AuthenticatedRouteLiveRoute
   '/route/plan': typeof AuthenticatedRoutePlanRoute
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -1890,6 +1930,7 @@ export interface FileRoutesByTo {
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
+  '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -1985,7 +2026,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/dpa': typeof DpaRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trial': typeof TrialRouteWithChildren
   '/unsubscribe': typeof UnsubscribeRoute
   '/_authenticated/ai': typeof AuthenticatedAiRoute
@@ -2025,6 +2069,7 @@ export interface FileRoutesById {
   '/_authenticated/route/live': typeof AuthenticatedRouteLiveRoute
   '/_authenticated/route/plan': typeof AuthenticatedRoutePlanRoute
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
+  '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -2122,6 +2167,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
   '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/_authenticated/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
+  '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -2217,7 +2263,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dpa'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/trial'
     | '/unsubscribe'
     | '/ai'
@@ -2257,6 +2306,7 @@ export interface FileRouteTypes {
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
+    | '/admin/audit'
     | '/admin/automations'
     | '/admin/map'
     | '/admin/routes'
@@ -2354,6 +2404,7 @@ export interface FileRouteTypes {
     | '/scorecard/team'
     | '/settings/currency'
     | '/settings/custom-objects'
+    | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2447,7 +2498,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dpa'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/trial'
     | '/unsubscribe'
     | '/ai'
@@ -2474,6 +2528,7 @@ export interface FileRouteTypes {
     | '/route/live'
     | '/route/plan'
     | '/admin/account-review'
+    | '/admin/audit'
     | '/admin/automations'
     | '/admin/map'
     | '/admin/routes'
@@ -2571,6 +2626,7 @@ export interface FileRouteTypes {
     | '/scorecard/team'
     | '/settings/currency'
     | '/settings/custom-objects'
+    | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/whatsapp'
@@ -2665,7 +2721,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/dpa'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/trial'
     | '/unsubscribe'
     | '/_authenticated/ai'
@@ -2705,6 +2764,7 @@ export interface FileRouteTypes {
     | '/_authenticated/route/live'
     | '/_authenticated/route/plan'
     | '/_authenticated/admin/account-review'
+    | '/_authenticated/admin/audit'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/map'
     | '/_authenticated/admin/routes'
@@ -2802,6 +2862,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/team'
     | '/_authenticated/settings/currency'
     | '/_authenticated/settings/custom-objects'
+    | '/_authenticated/settings/export'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/whatsapp'
@@ -2897,7 +2958,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  DpaRoute: typeof DpaRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrialRoute: typeof TrialRouteWithChildren
   UnsubscribeRoute: typeof UnsubscribeRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -2941,11 +3005,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrialRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dpa': {
+      id: '/dpa'
+      path: '/dpa'
+      fullPath: '/dpa'
+      preLoaderRoute: typeof DpaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -3627,6 +3712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsFormBuilderRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/export': {
+      id: '/_authenticated/settings/export'
+      path: '/export'
+      fullPath: '/settings/export'
+      preLoaderRoute: typeof AuthenticatedSettingsExportRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/settings/custom-objects': {
       id: '/_authenticated/settings/custom-objects'
       path: '/custom-objects'
@@ -4306,6 +4398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAutomationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/account-review': {
       id: '/_authenticated/admin/account-review'
       path: '/admin/account-review'
@@ -4879,6 +4978,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
 interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
   AuthenticatedSettingsCustomObjectsRoute: typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
+  AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
@@ -4889,6 +4989,7 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
   AuthenticatedSettingsCustomObjectsRoute:
     AuthenticatedSettingsCustomObjectsRouteWithChildren,
+  AuthenticatedSettingsExportRoute: AuthenticatedSettingsExportRoute,
   AuthenticatedSettingsFormBuilderRoute: AuthenticatedSettingsFormBuilderRoute,
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,
@@ -5045,6 +5146,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRouteLiveRoute: typeof AuthenticatedRouteLiveRoute
   AuthenticatedRoutePlanRoute: typeof AuthenticatedRoutePlanRoute
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
+  AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
@@ -5138,6 +5240,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRouteLiveRoute: AuthenticatedRouteLiveRoute,
   AuthenticatedRoutePlanRoute: AuthenticatedRoutePlanRoute,
   AuthenticatedAdminAccountReviewRoute: AuthenticatedAdminAccountReviewRoute,
+  AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminAutomationsRoute:
     AuthenticatedAdminAutomationsRouteWithChildren,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
@@ -5218,7 +5321,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  DpaRoute: DpaRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrialRoute: TrialRouteWithChildren,
   UnsubscribeRoute: UnsubscribeRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,

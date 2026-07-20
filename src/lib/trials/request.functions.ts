@@ -28,8 +28,13 @@ export const submitTrialRequest = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { sendTrialNotice } = await import('./emails.server')
+    const { assertTrialRateLimit, hashIp } = await import('./rate-limit')
 
     const email = data.work_email.toLowerCase()
+
+    // Rate limit: IP + email. Use origin as weak IP proxy in Worker context.
+    const ipHash = await hashIp(data.origin)
+    await assertTrialRateLimit(supabaseAdmin as any, { ipHash, email })
 
     // Basic dedupe: block if a non-rejected recent request exists
     const { data: recent } = await supabaseAdmin

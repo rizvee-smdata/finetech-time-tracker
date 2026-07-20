@@ -36,10 +36,11 @@ export const exportTenantData = createServerFn({ method: "POST" })
     z.object({ companyId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const mod = await import("@/integrations/supabase/client.server");
+    const admin = mod.supabaseAdmin as any;
 
     // Authorize: caller must be admin of that company.
-    const { data: member } = await supabaseAdmin
+    const { data: member } = await admin
       .from("company_members")
       .select("company_id")
       .eq("company_id", data.companyId)
@@ -47,23 +48,21 @@ export const exportTenantData = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!member) throw new Error("You are not a member of that company.");
 
-    const { data: roles } = await supabaseAdmin
+    const { data: roles } = await admin
       .from("user_roles")
       .select("role")
       .eq("user_id", context.userId);
     const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
     if (!isAdmin) throw new Error("Only admins can export tenant data.");
 
-    const dump: Record<string, unknown> = {
+    const dump: Record<string, any> = {
       exported_at: new Date().toISOString(),
       company_id: data.companyId,
     };
     for (const table of EXPORT_TABLES) {
       try {
-        const q = supabaseAdmin.from(table).select("*");
-        // Most tables have company_id; profiles / user_roles are user-scoped.
         if (table === "profiles" || table === "user_roles") {
-          const { data: members } = await supabaseAdmin
+          const { data: members } = await admin
             .from("company_members")
             .select("user_id")
             .eq("company_id", data.companyId);
@@ -73,20 +72,20 @@ export const exportTenantData = createServerFn({ method: "POST" })
             continue;
           }
           const col = table === "profiles" ? "id" : "user_id";
-          const { data: rows } = await supabaseAdmin.from(table).select("*").in(col, ids);
+          const { data: rows } = await admin.from(table).select("*").in(col, ids);
           dump[table] = rows ?? [];
         } else if (table === "companies") {
-          const { data: rows } = await q.eq("id", data.companyId);
+          const { data: rows } = await admin.from(table).select("*").eq("id", data.companyId);
           dump[table] = rows ?? [];
         } else {
-          const { data: rows } = await q.eq("company_id", data.companyId);
+          const { data: rows } = await admin.from(table).select("*").eq("company_id", data.companyId);
           dump[table] = rows ?? [];
         }
       } catch (e) {
         dump[table] = { error: (e as Error).message };
       }
     }
-    return dump;
+    return dump as any;
   });
 
 export const deleteTenantData = createServerFn({ method: "POST" })
@@ -95,18 +94,18 @@ export const deleteTenantData = createServerFn({ method: "POST" })
     z.object({ companyId: z.string().uuid(), confirmName: z.string().min(1) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: prof } = await supabaseAdmin
+    const mod = await import("@/integrations/supabase/client.server");
+    const admin = mod.supabaseAdmin as any;
+    const { data: prof } = await admin
       .from("profiles").select("is_super_admin").eq("id", context.userId).maybeSingle();
     if (!prof?.is_super_admin) throw new Error("Only super-admins can permanently delete a tenant.");
 
-    const { data: co } = await supabaseAdmin
+    const { data: co } = await admin
       .from("companies").select("id, name").eq("id", data.companyId).maybeSingle();
     if (!co) throw new Error("Company not found.");
     if (co.name !== data.confirmName) throw new Error("Confirmation name does not match.");
 
-    // Cascade delete via companies (all business tables FK to company_id with cascade).
-    const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.companyId);
+    const { error } = await admin.from("companies").delete().eq("id", data.companyId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
