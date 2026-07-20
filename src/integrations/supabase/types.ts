@@ -133,6 +133,33 @@ export type Database = {
           },
         ]
       }
+      app_config: {
+        Row: {
+          app_name: string
+          base_url: string
+          id: boolean
+          supabase_anon_key: string
+          supabase_functions_url: string
+          updated_at: string
+        }
+        Insert: {
+          app_name?: string
+          base_url?: string
+          id?: boolean
+          supabase_anon_key?: string
+          supabase_functions_url?: string
+          updated_at?: string
+        }
+        Update: {
+          app_name?: string
+          base_url?: string
+          id?: boolean
+          supabase_anon_key?: string
+          supabase_functions_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       approval_logs: {
         Row: {
           action: string
@@ -970,6 +997,8 @@ export type Database = {
           id: string
           maintenance_mode: boolean
           name: string
+          plan: string
+          plan_started_at: string | null
           slug: string
           trial_ends_at: string | null
           updated_at: string
@@ -982,6 +1011,8 @@ export type Database = {
           id?: string
           maintenance_mode?: boolean
           name: string
+          plan?: string
+          plan_started_at?: string | null
           slug: string
           trial_ends_at?: string | null
           updated_at?: string
@@ -994,6 +1025,8 @@ export type Database = {
           id?: string
           maintenance_mode?: boolean
           name?: string
+          plan?: string
+          plan_started_at?: string | null
           slug?: string
           trial_ends_at?: string | null
           updated_at?: string
@@ -4857,6 +4890,36 @@ export type Database = {
         }
         Relationships: []
       }
+      plan_limits: {
+        Row: {
+          ai_calls_per_month: number
+          features: Json
+          max_leads: number
+          max_storage_mb: number
+          max_users: number
+          plan: string
+          updated_at: string
+        }
+        Insert: {
+          ai_calls_per_month: number
+          features?: Json
+          max_leads: number
+          max_storage_mb: number
+          max_users: number
+          plan: string
+          updated_at?: string
+        }
+        Update: {
+          ai_calls_per_month?: number
+          features?: Json
+          max_leads?: number
+          max_storage_mb?: number
+          max_users?: number
+          plan?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prediction_runs: {
         Row: {
           achieved_value: number
@@ -6726,6 +6789,27 @@ export type Database = {
           },
         ]
       }
+      trial_signup_attempts: {
+        Row: {
+          attempted_at: string
+          email: string | null
+          id: string
+          ip_hash: string | null
+        }
+        Insert: {
+          attempted_at?: string
+          email?: string | null
+          id?: string
+          ip_hash?: string | null
+        }
+        Update: {
+          attempted_at?: string
+          email?: string | null
+          id?: string
+          ip_hash?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -7694,6 +7778,10 @@ export type Database = {
       chat_is_channel_member: {
         Args: { _channel: string; _user: string }
         Returns: boolean
+      }
+      check_plan_limit: {
+        Args: { _company: string; _resource: string }
+        Returns: Json
       }
       compute_client_health: {
         Args: { _account: string }

@@ -39,6 +39,7 @@ import {
 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { APP_NAME } from "@/lib/branding";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -276,7 +277,7 @@ export function AppShell() {
           <Menu className="h-5 w-5" />
         </button>
         <div className="truncate font-semibold tracking-tight text-primary">
-          {company?.name ?? "Lavisho Tracker"}
+          {company?.name ?? APP_NAME}
         </div>
         <div className="flex items-center gap-1">
           <Suspense fallback={null}>
@@ -312,10 +313,10 @@ export function AppShell() {
         >
           <div className="flex h-16 items-center gap-2 border-b border-border px-6">
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-[var(--gradient-primary)] text-primary-foreground font-bold shadow-[var(--shadow-elegant)]">
-              L
+              {APP_NAME.charAt(0)}
             </div>
             <div className="min-w-0">
-              <div className="truncate text-sm font-semibold">Lavisho Group</div>
+              <div className="truncate text-sm font-semibold">{APP_NAME}</div>
               <div className="truncate text-xs text-muted-foreground">{company?.name ?? "Workspace"}</div>
             </div>
           </div>
@@ -371,13 +372,13 @@ export function AppShell() {
             <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-warning/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
               {isAdmin ? (
                 <>
-                  <span>No companies exist yet. Create your first Lavisho Group company to get started.</span>
+                  <span>No workspaces exist yet. Create your first workspace to get started.</span>
                   <Button asChild size="sm">
                     <Link to="/settings">Open Settings</Link>
                   </Button>
                 </>
               ) : (
-                <span>You're not assigned to any company yet. Ask an admin to add you to a Lavisho Group company.</span>
+                <span>You're not assigned to any workspace yet. Ask an admin to add you.</span>
               )}
             </div>
           )}
