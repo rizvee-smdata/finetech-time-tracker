@@ -268,7 +268,7 @@ function LeadDetail() {
 
         <TabsContent value="tasks" className="space-y-4">
           <AddTask leadId={leadId} companyId={lead.company_id} userId={user!.id} />
-          <TaskList items={tasks.data ?? []} />
+          <TaskList items={tasks.data ?? []} leadId={leadId} userId={user!.id} />
         </TabsContent>
 
         <TabsContent value="quotes" className="space-y-4">
