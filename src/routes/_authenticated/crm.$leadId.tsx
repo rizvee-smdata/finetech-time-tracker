@@ -21,7 +21,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Pencil, Plus, Paperclip, Trash2, Upload, FileText } from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, Pencil, Plus, Paperclip, Trash2, Upload, FileText, MessageSquare, ExternalLink } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
