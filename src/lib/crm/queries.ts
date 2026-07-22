@@ -124,13 +124,14 @@ export async function fetchAttachments(leadId: string) {
 export async function fetchLeadTasks(leadId: string) {
   const { data, error } = await sb
     .from("tms_tasks")
-    .select("*, tms_task_statuses(name, color, is_terminal)")
+    .select("*, tms_task_statuses(name, color, is_terminal), tms_task_comments(count), tms_task_assignees(user_id)")
     .eq("lead_id", leadId)
     .is("deleted_at", null)
     .order("due_date", { ascending: true, nullsFirst: false });
   if (error) throw error;
   return data ?? [];
 }
+
 
 export async function fetchCompanyMembers(companyId: string) {
   const { data: mem, error: memberError } = await sb.from("company_members").select("user_id").eq("company_id", companyId);
