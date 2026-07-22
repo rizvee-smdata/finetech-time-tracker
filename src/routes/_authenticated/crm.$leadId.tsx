@@ -470,29 +470,68 @@ function RelatedVisits({ items }: { items: any[] }) {
   );
 }
 
-function TaskList({ items }: { items: any[] }) {
+function TaskList({ items, leadId, userId }: { items: any[]; leadId: string; userId: string }) {
+  const qc = useQueryClient();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">No tasks yet.</p>;
   const now = new Date();
+
+  async function remove(id: string) {
+    const { error } = await sb.from("tms_tasks").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Task deleted");
+    qc.invalidateQueries({ queryKey: ["crm-tasks", leadId] });
+  }
+
   return (
     <div className="space-y-2">
       {items.map((t) => {
         const overdue = t.due_date && !t.tms_task_statuses?.is_terminal && new Date(t.due_date) < now;
+        const commentCount = t.tms_task_comments?.[0]?.count ?? 0;
+        const canManage = t.created_by === userId;
         return (
-          <Card key={t.id} className="p-3 flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">{t.title}</div>
-              <div className="text-xs text-muted-foreground">
-                {t.tms_task_statuses?.name ?? "—"}
-                {t.due_date && <> · due {format(new Date(t.due_date), "MMM d")}</>}
+          <Card key={t.id} className="p-3 flex items-center justify-between gap-3">
+            <Link to="/tasks/$taskId" params={{ taskId: t.id }} className="flex-1 min-w-0 hover:underline">
+              <div className="font-medium text-sm truncate">{t.title}</div>
+              <div className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+                <span>{t.tms_task_statuses?.name ?? "—"}</span>
+                {t.due_date && <span>· due {format(new Date(t.due_date), "MMM d")}</span>}
+                {commentCount > 0 && (
+                  <span className="inline-flex items-center gap-1">
+                    · <MessageSquare className="h-3 w-3" />{commentCount}
+                  </span>
+                )}
               </div>
+            </Link>
+            <div className="flex items-center gap-1 shrink-0">
+              {overdue && <Badge variant="destructive">Overdue</Badge>}
+              <Button asChild size="icon" variant="ghost" title="Open task">
+                <Link to="/tasks/$taskId" params={{ taskId: t.id }}><ExternalLink className="h-4 w-4" /></Link>
+              </Button>
+              {canManage && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="icon" variant="ghost" title="Delete task"><Trash2 className="h-4 w-4" /></Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete this task?</AlertDialogTitle>
+                      <AlertDialogDescription>This removes the task from the lead. This can't be undone.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => remove(t.id)}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
-            {overdue && <Badge variant="destructive">Overdue</Badge>}
           </Card>
         );
       })}
     </div>
   );
 }
+
 
 // =========================================================
 // Quotes
