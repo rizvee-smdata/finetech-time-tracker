@@ -78,6 +78,7 @@ const navSections: NavSection[] = [
     label: "Sales & Pipeline",
     items: [
       { to: "/crm", label: "CRM", icon: Target },
+      { to: "/crm/analytics", label: "CRM Analytics", icon: BarChart3 },
       { to: "/deals", label: "Deal Health", icon: TrendingUp },
       { to: "/proposals", label: "Proposals", icon: FileText },
       { to: "/proposals/brief", label: "AI Proposal Brief", icon: Sparkles },
