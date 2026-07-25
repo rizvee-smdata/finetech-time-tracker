@@ -257,7 +257,7 @@ function AnalyticsPage() {
     rows.push(["KPI", "Value"]);
     for (const k of kpis) rows.push([k.label, k.value]);
     rows.push([]);
-    rows.push(["Pipeline stage", "Count", "Value (BDT)"]);
+    rows.push(["Pipeline stage", "Count", "Value (USD)"]);
     for (const p of pipeline) rows.push([p.label, String(p.count), String(p.total)]);
     rows.push([]);
     rows.push(["Month", "Won count", "Lost count", "Won amount", "Lost amount"]);
