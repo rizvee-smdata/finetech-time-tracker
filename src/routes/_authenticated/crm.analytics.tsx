@@ -4,7 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeads } from "@/lib/crm/queries";
-import { STAGES, ACTIVE_STAGES, LEAD_SOURCES, formatBDT, type CrmStage, type CrmLeadSource } from "@/lib/crm/types";
+import { STAGES, ACTIVE_STAGES, LEAD_SOURCES, type CrmStage, type CrmLeadSource } from "@/lib/crm/types";
+
+// USD formatter with K/M/B compact notation.
+function formatBDT(value: number | null | undefined) {
+  if (value == null || !isFinite(Number(value))) return "$0";
+  const v = Number(value);
+  const abs = Math.abs(v);
+  const sign = v < 0 ? "-" : "";
+  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2).replace(/\.?0+$/, "")}B`;
+  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(2).replace(/\.?0+$/, "")}M`;
+  if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(1).replace(/\.?0+$/, "")}K`;
+  return `${sign}$${Math.round(abs).toLocaleString("en-US")}`;
+}
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
