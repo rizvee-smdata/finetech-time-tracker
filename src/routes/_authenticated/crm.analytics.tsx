@@ -263,7 +263,7 @@ function AnalyticsPage() {
     rows.push(["Month", "Won count", "Lost count", "Won amount", "Lost amount"]);
     for (const m of months) rows.push([m.month, String(m.won_count), String(m.lost_count), String(m.won_amount), String(m.lost_amount)]);
     rows.push([]);
-    rows.push(["Product", "Total sales (BDT)"]);
+    rows.push(["Product", "Total sales (USD)"]);
     for (const p of productSales) rows.push([p.name, String(p.total)]);
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
