@@ -436,3 +436,39 @@ export const licenseReports = createServerFn({ method: "GET" })
       .limit(500);
     return { licenses: enriched, events: events ?? [] };
   });
+
+export const resendLicenseEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: lic } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("customer_name, customer_email, edition, max_users, expires_at, status, key_prefix")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!lic) throw new Error("License not found");
+
+    await h.sendLicenseNotice({
+      to: lic.customer_email,
+      subject: "Your Lavisho license details",
+      title: "License details",
+      bodyText: [
+        `Hello ${lic.customer_name},`,
+        "",
+        "Here are your current Lavisho license details:",
+        `Edition: ${lic.edition}`,
+        `Seats: ${lic.max_users ?? "Unlimited"}`,
+        `Valid until: ${lic.expires_at ?? "Perpetual"}`,
+        `Status: ${lic.status}`,
+        `Key reference: ${lic.key_prefix ?? "—"}…`,
+        "",
+        "To activate, sign in as your organization administrator and go to Settings → License.",
+        "For security your full key is stored hashed and cannot be re-sent. If you have lost it, reply to this email and we will issue a replacement key.",
+      ].join("\n"),
+    });
+    await h.logEvent(data.id, "details_resent", { to: lic.customer_email }, context.userId);
+    return { ok: true, to: lic.customer_email as string };
+  });
