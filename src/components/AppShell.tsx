@@ -27,6 +27,7 @@ import {
   Navigation as NavigationIcon,
   MessageSquare,
   ScrollText,
+  ShieldCheck,
   AlertTriangle,
   ShieldAlert,
   
