@@ -391,7 +391,9 @@ export function AppShell() {
             <LicenseBanner />
           </div>
           <VisitEntryAlertBanner />
-          <Outlet />
+          <LicenseGate path={path}>
+            <Outlet />
+          </LicenseGate>
         </main>
       </div>
 
