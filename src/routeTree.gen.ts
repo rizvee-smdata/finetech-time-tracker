@@ -243,6 +243,7 @@ import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './rou
 import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
+import { Route as AuthenticatedAdminLicensingIdRouteImport } from './routes/_authenticated/admin.licensing.$id'
 import { Route as AuthenticatedAdminAutomationsWorkflowsIdRouteImport } from './routes/_authenticated/admin.automations.workflows.$id'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
@@ -1565,6 +1566,12 @@ const AuthenticatedClientsClientIdHealthRoute =
     path: '/clients/$clientId/health',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminLicensingIdRoute =
+  AuthenticatedAdminLicensingIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminLicensingRoute,
+  } as any)
 const AuthenticatedAdminAutomationsWorkflowsIdRoute =
   AuthenticatedAdminAutomationsWorkflowsIdRouteImport.update({
     id: '/workflows/$id',
@@ -1626,7 +1633,7 @@ export interface FileRoutesByFullPath {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/admin/licensing': typeof AuthenticatedAdminLicensingRoute
+  '/admin/licensing': typeof AuthenticatedAdminLicensingRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -1785,6 +1792,7 @@ export interface FileRoutesByFullPath {
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -1850,7 +1858,7 @@ export interface FileRoutesByTo {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/admin/licensing': typeof AuthenticatedAdminLicensingRoute
+  '/admin/licensing': typeof AuthenticatedAdminLicensingRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -2009,6 +2017,7 @@ export interface FileRoutesByTo {
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -2089,7 +2098,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/_authenticated/admin/licensing': typeof AuthenticatedAdminLicensingRoute
+  '/_authenticated/admin/licensing': typeof AuthenticatedAdminLicensingRouteWithChildren
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
@@ -2248,6 +2257,7 @@ export interface FileRoutesById {
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/_authenticated/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/_authenticated/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -2487,6 +2497,7 @@ export interface FileRouteTypes {
     | '/targets/'
     | '/tasks/'
     | '/visits/'
+    | '/admin/licensing/$id'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/kb/article/$id'
@@ -2711,6 +2722,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/visits'
+    | '/admin/licensing/$id'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/kb/article/$id'
@@ -2949,6 +2961,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
+    | '/_authenticated/admin/licensing/$id'
     | '/_authenticated/clients/$clientId/health'
     | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/kb/article/$id'
@@ -4655,6 +4668,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientsClientIdHealthRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/licensing/$id': {
+      id: '/_authenticated/admin/licensing/$id'
+      path: '/$id'
+      fullPath: '/admin/licensing/$id'
+      preLoaderRoute: typeof AuthenticatedAdminLicensingIdRouteImport
+      parentRoute: typeof AuthenticatedAdminLicensingRoute
+    }
     '/_authenticated/admin/automations/workflows/$id': {
       id: '/_authenticated/admin/automations/workflows/$id'
       path: '/workflows/$id'
@@ -5153,6 +5173,20 @@ const AuthenticatedAdminAutomationsRouteWithChildren =
     AuthenticatedAdminAutomationsRouteChildren,
   )
 
+interface AuthenticatedAdminLicensingRouteChildren {
+  AuthenticatedAdminLicensingIdRoute: typeof AuthenticatedAdminLicensingIdRoute
+}
+
+const AuthenticatedAdminLicensingRouteChildren: AuthenticatedAdminLicensingRouteChildren =
+  {
+    AuthenticatedAdminLicensingIdRoute: AuthenticatedAdminLicensingIdRoute,
+  }
+
+const AuthenticatedAdminLicensingRouteWithChildren =
+  AuthenticatedAdminLicensingRoute._addFileChildren(
+    AuthenticatedAdminLicensingRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRouteWithChildren
@@ -5190,7 +5224,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
-  AuthenticatedAdminLicensingRoute: typeof AuthenticatedAdminLicensingRoute
+  AuthenticatedAdminLicensingRoute: typeof AuthenticatedAdminLicensingRouteWithChildren
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
@@ -5286,7 +5320,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminAutomationsRoute:
     AuthenticatedAdminAutomationsRouteWithChildren,
-  AuthenticatedAdminLicensingRoute: AuthenticatedAdminLicensingRoute,
+  AuthenticatedAdminLicensingRoute:
+    AuthenticatedAdminLicensingRouteWithChildren,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
