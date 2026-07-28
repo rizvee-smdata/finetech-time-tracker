@@ -47,6 +47,7 @@ import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { VisitEntryAlertBanner } from "@/components/visits/VisitEntryAlertBanner";
 import { LicenseBanner } from "@/components/licensing/LicenseBanner";
+import { LicenseGate } from "@/components/licensing/LicenseGate";
 import { FloatingVoiceButton } from "@/components/voice/FloatingVoiceButton";
 
 // Lazy-load heavy popover widgets — they only render content on click
