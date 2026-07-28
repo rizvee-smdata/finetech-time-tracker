@@ -27,6 +27,7 @@ import {
   Navigation as NavigationIcon,
   MessageSquare,
   ScrollText,
+  ShieldCheck,
   AlertTriangle,
   ShieldAlert,
   
@@ -45,6 +46,8 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { VisitEntryAlertBanner } from "@/components/visits/VisitEntryAlertBanner";
+import { LicenseBanner } from "@/components/licensing/LicenseBanner";
+import { LicenseGate } from "@/components/licensing/LicenseGate";
 import { FloatingVoiceButton } from "@/components/voice/FloatingVoiceButton";
 
 // Lazy-load heavy popover widgets — they only render content on click
@@ -207,6 +210,8 @@ const adminSection: NavSection = {
   label: "Administration",
   items: [
     { to: "/admin/trial-requests", label: "Trial requests", icon: ScrollText },
+    { to: "/admin/licensing", label: "Licensing", icon: ShieldCheck },
+    { to: "/settings/license", label: "License & seats", icon: ShieldCheck },
     { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
     { to: "/settings/currency", label: "Currency & FX", icon: Settings },
@@ -383,8 +388,13 @@ export function AppShell() {
               )}
             </div>
           )}
+          <div className="mb-3 space-y-2">
+            <LicenseBanner />
+          </div>
           <VisitEntryAlertBanner />
-          <Outlet />
+          <LicenseGate path={path}>
+            <Outlet />
+          </LicenseGate>
         </main>
       </div>
 

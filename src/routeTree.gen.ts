@@ -110,6 +110,7 @@ import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
+import { Route as AuthenticatedSettingsLicenseRouteImport } from './routes/_authenticated/settings.license'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
 import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
@@ -215,6 +216,7 @@ import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
 import { Route as AuthenticatedRoutePlanRouteImport } from './routes/_authenticated/route.plan'
 import { Route as AuthenticatedRouteLiveRouteImport } from './routes/_authenticated/route.live'
+import { Route as AuthenticatedAdminLicensingIndexRouteImport } from './routes/_authenticated/admin.licensing.index'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -226,6 +228,7 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
+import { Route as ApiPublicHooksLicenseDailyRouteImport } from './routes/api/public/hooks/license-daily'
 import { Route as ApiPublicHooksGmailSyncRouteImport } from './routes/api/public/hooks/gmail-sync'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
@@ -242,6 +245,7 @@ import { Route as AuthenticatedManagerApprovalsExpensesRouteImport } from './rou
 import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb.article.$id'
 import { Route as AuthenticatedCrmAccountAccountIdRouteImport } from './routes/_authenticated/crm.account.$accountId'
 import { Route as AuthenticatedClientsClientIdHealthRouteImport } from './routes/_authenticated/clients.$clientId.health'
+import { Route as AuthenticatedAdminLicensingIdRouteImport } from './routes/_authenticated/admin.licensing.$id'
 import { Route as AuthenticatedAdminAutomationsWorkflowsIdRouteImport } from './routes/_authenticated/admin.automations.workflows.$id'
 import { Route as AuthenticatedTasksProjectsProjectIdSprintsSprintIdRouteImport } from './routes/_authenticated/tasks.projects.$projectId.sprints.$sprintId'
 
@@ -793,6 +797,12 @@ const AuthenticatedSettingsWhatsappRoute =
   AuthenticatedSettingsWhatsappRouteImport.update({
     id: '/whatsapp',
     path: '/whatsapp',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsLicenseRoute =
+  AuthenticatedSettingsLicenseRouteImport.update({
+    id: '/license',
+    path: '/license',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedSettingsIntegrationsRoute =
@@ -1400,6 +1410,12 @@ const AuthenticatedRouteLiveRoute = AuthenticatedRouteLiveRouteImport.update({
   path: '/route/live',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminLicensingIndexRoute =
+  AuthenticatedAdminLicensingIndexRouteImport.update({
+    id: '/admin/licensing/',
+    path: '/admin/licensing/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -1462,6 +1478,12 @@ const ApiPublicHooksNarrativesWeeklyCronRoute =
   ApiPublicHooksNarrativesWeeklyCronRouteImport.update({
     id: '/api/public/hooks/narratives-weekly-cron',
     path: '/api/public/hooks/narratives-weekly-cron',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksLicenseDailyRoute =
+  ApiPublicHooksLicenseDailyRouteImport.update({
+    id: '/api/public/hooks/license-daily',
+    path: '/api/public/hooks/license-daily',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicHooksGmailSyncRoute = ApiPublicHooksGmailSyncRouteImport.update({
@@ -1556,6 +1578,12 @@ const AuthenticatedClientsClientIdHealthRoute =
   AuthenticatedClientsClientIdHealthRouteImport.update({
     id: '/clients/$clientId/health',
     path: '/clients/$clientId/health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminLicensingIdRoute =
+  AuthenticatedAdminLicensingIdRouteImport.update({
+    id: '/admin/licensing/$id',
+    path: '/admin/licensing/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminAutomationsWorkflowsIdRoute =
@@ -1719,6 +1747,7 @@ export interface FileRoutesByFullPath {
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -1777,6 +1806,7 @@ export interface FileRoutesByFullPath {
   '/targets/': typeof AuthenticatedTargetsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -1793,6 +1823,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -1804,6 +1835,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/licensing/': typeof AuthenticatedAdminLicensingIndexRoute
   '/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -1942,6 +1974,7 @@ export interface FileRoutesByTo {
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2000,6 +2033,7 @@ export interface FileRoutesByTo {
   '/targets': typeof AuthenticatedTargetsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/visits': typeof AuthenticatedVisitsIndexRoute
+  '/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -2016,6 +2050,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2027,6 +2062,7 @@ export interface FileRoutesByTo {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/licensing': typeof AuthenticatedAdminLicensingIndexRoute
   '/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -2180,6 +2216,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/_authenticated/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2238,6 +2275,7 @@ export interface FileRoutesById {
   '/_authenticated/targets/': typeof AuthenticatedTargetsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/visits/': typeof AuthenticatedVisitsIndexRoute
+  '/_authenticated/admin/licensing/$id': typeof AuthenticatedAdminLicensingIdRoute
   '/_authenticated/clients/$clientId/health': typeof AuthenticatedClientsClientIdHealthRoute
   '/_authenticated/crm/account/$accountId': typeof AuthenticatedCrmAccountAccountIdRoute
   '/_authenticated/kb/article/$id': typeof AuthenticatedKbArticleIdRoute
@@ -2254,6 +2292,7 @@ export interface FileRoutesById {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2265,6 +2304,7 @@ export interface FileRoutesById {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/_authenticated/admin/licensing/': typeof AuthenticatedAdminLicensingIndexRoute
   '/_authenticated/admin/automations/workflows/$id': typeof AuthenticatedAdminAutomationsWorkflowsIdRoute
   '/_authenticated/tasks/projects/$projectId/sprints/$sprintId': typeof AuthenticatedTasksProjectsProjectIdSprintsSprintIdRoute
 }
@@ -2418,6 +2458,7 @@ export interface FileRouteTypes {
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
+    | '/settings/license'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2476,6 +2517,7 @@ export interface FileRouteTypes {
     | '/targets/'
     | '/tasks/'
     | '/visits/'
+    | '/admin/licensing/$id'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/kb/article/$id'
@@ -2492,6 +2534,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2503,6 +2546,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/licensing/'
     | '/admin/automations/workflows/$id'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesByTo: FileRoutesByTo
@@ -2641,6 +2685,7 @@ export interface FileRouteTypes {
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
+    | '/settings/license'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2699,6 +2744,7 @@ export interface FileRouteTypes {
     | '/targets'
     | '/tasks'
     | '/visits'
+    | '/admin/licensing/$id'
     | '/clients/$clientId/health'
     | '/crm/account/$accountId'
     | '/kb/article/$id'
@@ -2715,6 +2761,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2726,6 +2773,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/licensing'
     | '/admin/automations/workflows/$id'
     | '/tasks/projects/$projectId/sprints/$sprintId'
   id:
@@ -2878,6 +2926,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/export'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
+    | '/_authenticated/settings/license'
     | '/_authenticated/settings/whatsapp'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
@@ -2936,6 +2985,7 @@ export interface FileRouteTypes {
     | '/_authenticated/targets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/visits/'
+    | '/_authenticated/admin/licensing/$id'
     | '/_authenticated/clients/$clientId/health'
     | '/_authenticated/crm/account/$accountId'
     | '/_authenticated/kb/article/$id'
@@ -2952,6 +3002,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2963,6 +3014,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/_authenticated/admin/licensing/'
     | '/_authenticated/admin/automations/workflows/$id'
     | '/_authenticated/tasks/projects/$projectId/sprints/$sprintId'
   fileRoutesById: FileRoutesById
@@ -2989,6 +3041,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
   ApiPublicHooksGmailSyncRoute: typeof ApiPublicHooksGmailSyncRoute
+  ApiPublicHooksLicenseDailyRoute: typeof ApiPublicHooksLicenseDailyRoute
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -3709,6 +3762,13 @@ declare module '@tanstack/react-router' {
       path: '/whatsapp'
       fullPath: '/settings/whatsapp'
       preLoaderRoute: typeof AuthenticatedSettingsWhatsappRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/license': {
+      id: '/_authenticated/settings/license'
+      path: '/license'
+      fullPath: '/settings/license'
+      preLoaderRoute: typeof AuthenticatedSettingsLicenseRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/settings/integrations': {
@@ -4446,6 +4506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteLiveRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/licensing/': {
+      id: '/_authenticated/admin/licensing/'
+      path: '/admin/licensing'
+      fullPath: '/admin/licensing/'
+      preLoaderRoute: typeof AuthenticatedAdminLicensingIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -4521,6 +4588,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/narratives-weekly-cron'
       fullPath: '/api/public/hooks/narratives-weekly-cron'
       preLoaderRoute: typeof ApiPublicHooksNarrativesWeeklyCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/license-daily': {
+      id: '/api/public/hooks/license-daily'
+      path: '/api/public/hooks/license-daily'
+      fullPath: '/api/public/hooks/license-daily'
+      preLoaderRoute: typeof ApiPublicHooksLicenseDailyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/gmail-sync': {
@@ -4633,6 +4707,13 @@ declare module '@tanstack/react-router' {
       path: '/clients/$clientId/health'
       fullPath: '/clients/$clientId/health'
       preLoaderRoute: typeof AuthenticatedClientsClientIdHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/licensing/$id': {
+      id: '/_authenticated/admin/licensing/$id'
+      path: '/admin/licensing/$id'
+      fullPath: '/admin/licensing/$id'
+      preLoaderRoute: typeof AuthenticatedAdminLicensingIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/automations/workflows/$id': {
@@ -5003,6 +5084,7 @@ interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
+  AuthenticatedSettingsLicenseRoute: typeof AuthenticatedSettingsLicenseRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -5015,6 +5097,7 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsFormBuilderRoute: AuthenticatedSettingsFormBuilderRoute,
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,
+  AuthenticatedSettingsLicenseRoute: AuthenticatedSettingsLicenseRoute,
   AuthenticatedSettingsWhatsappRoute:
     AuthenticatedSettingsWhatsappRouteWithChildren,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
@@ -5223,8 +5306,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
+  AuthenticatedAdminLicensingIdRoute: typeof AuthenticatedAdminLicensingIdRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
   AuthenticatedKbArticleIdRoute: typeof AuthenticatedKbArticleIdRoute
+  AuthenticatedAdminLicensingIndexRoute: typeof AuthenticatedAdminLicensingIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -5321,9 +5406,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
+  AuthenticatedAdminLicensingIdRoute: AuthenticatedAdminLicensingIdRoute,
   AuthenticatedClientsClientIdHealthRoute:
     AuthenticatedClientsClientIdHealthRoute,
   AuthenticatedKbArticleIdRoute: AuthenticatedKbArticleIdRoute,
+  AuthenticatedAdminLicensingIndexRoute: AuthenticatedAdminLicensingIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -5363,6 +5450,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
   ApiPublicHooksGmailSyncRoute: ApiPublicHooksGmailSyncRoute,
+  ApiPublicHooksLicenseDailyRoute: ApiPublicHooksLicenseDailyRoute,
   ApiPublicHooksNarrativesWeeklyCronRoute:
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,

@@ -4458,6 +4458,146 @@ export type Database = {
           },
         ]
       }
+      license_activation_attempts: {
+        Row: {
+          actor: string | null
+          created_at: string
+          id: string
+          organization_id: string | null
+          succeeded: boolean
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          succeeded?: boolean
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          succeeded?: boolean
+        }
+        Relationships: []
+      }
+      license_events: {
+        Row: {
+          actor: string | null
+          created_at: string
+          details: Json
+          event_type: Database["public"]["Enums"]["license_event_type"]
+          id: string
+          license_id: string
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string
+          details?: Json
+          event_type: Database["public"]["Enums"]["license_event_type"]
+          id?: string
+          license_id: string
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string
+          details?: Json
+          event_type?: Database["public"]["Enums"]["license_event_type"]
+          id?: string
+          license_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_events_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      licenses: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_email: string
+          customer_name: string
+          edition: Database["public"]["Enums"]["license_edition"]
+          expires_at: string | null
+          grace_days: number
+          id: string
+          is_renewal_key: boolean
+          key_hash: string
+          key_prefix: string | null
+          max_users: number | null
+          notes: string | null
+          organization_id: string | null
+          parent_license_id: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["license_status"]
+          term_months: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_email: string
+          customer_name: string
+          edition?: Database["public"]["Enums"]["license_edition"]
+          expires_at?: string | null
+          grace_days?: number
+          id?: string
+          is_renewal_key?: boolean
+          key_hash: string
+          key_prefix?: string | null
+          max_users?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          parent_license_id?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["license_status"]
+          term_months?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string
+          customer_name?: string
+          edition?: Database["public"]["Enums"]["license_edition"]
+          expires_at?: string | null
+          grace_days?: number
+          id?: string
+          is_renewal_key?: boolean
+          key_hash?: string
+          key_prefix?: string | null
+          max_users?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          parent_license_id?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["license_status"]
+          term_months?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "licenses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "licenses_parent_license_id_fkey"
+            columns: ["parent_license_id"]
+            isOneToOne: false
+            referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_prep_briefs: {
         Row: {
           account_id: string | null
@@ -5015,6 +5155,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_active: boolean
           is_super_admin: boolean
           manager_id: string | null
           must_change_password: boolean
@@ -5029,6 +5170,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_active?: boolean
           is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
@@ -5043,6 +5185,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_active?: boolean
           is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
@@ -7831,6 +7974,7 @@ export type Database = {
         Args: { _amount: number; _as_of?: string; _from: string; _to: string }
         Returns: number
       }
+      get_license_state: { Args: { _company: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -7862,6 +8006,8 @@ export type Database = {
           updated_at: string
         }[]
       }
+      license_daily_transition: { Args: never; Returns: number }
+      license_seats_used: { Args: { _company: string }; Returns: number }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -7988,6 +8134,21 @@ export type Database = {
         | "boolean"
         | "file"
         | "user"
+      license_edition: "time_tracker" | "crm" | "suite"
+      license_event_type:
+        | "generated"
+        | "activated"
+        | "renewed"
+        | "seats_changed"
+        | "suspended"
+        | "revoked"
+        | "reinstated"
+        | "expired"
+        | "entered_grace"
+        | "entered_read_only"
+        | "reminder_sent"
+        | "replacement_issued"
+      license_status: "issued" | "active" | "suspended" | "revoked" | "expired"
       notification_category:
         | "general"
         | "lead"
@@ -8247,6 +8408,22 @@ export const Constants = {
         "file",
         "user",
       ],
+      license_edition: ["time_tracker", "crm", "suite"],
+      license_event_type: [
+        "generated",
+        "activated",
+        "renewed",
+        "seats_changed",
+        "suspended",
+        "revoked",
+        "reinstated",
+        "expired",
+        "entered_grace",
+        "entered_read_only",
+        "reminder_sent",
+        "replacement_issued",
+      ],
+      license_status: ["issued", "active", "suspended", "revoked", "expired"],
       notification_category: [
         "general",
         "lead",

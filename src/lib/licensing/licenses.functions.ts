@@ -1,0 +1,438 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+export type LicenseState =
+  | "active"
+  | "expiring_soon"
+  | "in_grace"
+  | "read_only"
+  | "locked";
+
+const editionEnum = z.enum(["time_tracker", "crm", "suite"]);
+
+export const issueLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        customer_name: z.string().trim().min(1).max(160),
+        customer_email: z.string().trim().email().max(255),
+        edition: editionEnum.default("suite"),
+        max_users: z.number().int().min(1).max(100000).nullable().default(null),
+        term_months: z.number().int().min(1).max(60).nullable().default(12),
+        starts_at: z.string().optional(),
+        grace_days: z.number().int().min(0).max(180).default(14),
+        notes: z.string().max(2000).optional(),
+        organization_id: z.string().uuid().nullable().optional(),
+        parent_license_id: z.string().uuid().nullable().optional(),
+        is_renewal_key: z.boolean().default(false),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+
+    const key = h.generateLicenseKey();
+    const key_hash = await h.sha256Hex(key);
+    const starts_at = data.starts_at || h.today();
+    const expires_at = data.term_months ? h.addMonths(starts_at, data.term_months) : null;
+
+    const { data: row, error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .insert({
+        key_hash,
+        key_prefix: key.slice(0, 9),
+        customer_name: data.customer_name,
+        customer_email: data.customer_email,
+        edition: data.edition,
+        max_users: data.max_users,
+        term_months: data.term_months,
+        starts_at,
+        expires_at,
+        grace_days: data.grace_days,
+        status: "issued",
+        organization_id: data.organization_id ?? null,
+        parent_license_id: data.parent_license_id ?? null,
+        is_renewal_key: data.is_renewal_key,
+        notes: data.notes ?? null,
+        created_by: context.userId,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    await h.logEvent(row.id, "generated", {
+      edition: data.edition,
+      max_users: data.max_users,
+      term_months: data.term_months,
+      expires_at,
+      is_renewal_key: data.is_renewal_key,
+    }, context.userId);
+
+    await h.sendLicenseKeyEmail({
+      to: data.customer_email,
+      customerName: data.customer_name,
+      key,
+      edition: data.edition,
+      maxUsers: data.max_users,
+      expiresAt: expires_at,
+    });
+
+    return { id: row.id as string, key, expires_at };
+  });
+
+export const listLicenses = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data, error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select(
+        "id, key_prefix, customer_name, customer_email, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, is_renewal_key, notes, created_at",
+      )
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as any[];
+    const orgIds = Array.from(new Set(rows.map((r) => r.organization_id).filter(Boolean)));
+    const orgs = new Map<string, string>();
+    const seats = new Map<string, number>();
+    if (orgIds.length) {
+      const { data: comps } = await (supabaseAdmin as any)
+        .from("companies")
+        .select("id, name")
+        .in("id", orgIds);
+      for (const c of comps ?? []) orgs.set(c.id, c.name);
+      for (const id of orgIds) seats.set(id, await h.seatsUsed(id));
+    }
+    return rows.map((r) => ({
+      ...r,
+      organization_name: r.organization_id ? orgs.get(r.organization_id) ?? null : null,
+      seats_used: r.organization_id ? seats.get(r.organization_id) ?? 0 : 0,
+    }));
+  });
+
+export const getLicenseDetail = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: lic, error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select(
+        "id, key_prefix, customer_name, customer_email, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at",
+      )
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!lic) throw new Error("License not found");
+    const { data: events } = await (supabaseAdmin as any)
+      .from("license_events")
+      .select("id, event_type, details, actor, created_at")
+      .eq("license_id", data.id)
+      .order("created_at", { ascending: false });
+    let organization_name: string | null = null;
+    let seats_used = 0;
+    if (lic.organization_id) {
+      const { data: comp } = await (supabaseAdmin as any)
+        .from("companies")
+        .select("name")
+        .eq("id", lic.organization_id)
+        .maybeSingle();
+      organization_name = comp?.name ?? null;
+      seats_used = await h.seatsUsed(lic.organization_id);
+    }
+    return { license: { ...lic, organization_name, seats_used }, events: events ?? [] };
+  });
+
+export const updateLicenseStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        action: z.enum(["suspend", "reinstate", "revoke"]),
+        reason: z.string().max(1000).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const status =
+      data.action === "suspend" ? "suspended" : data.action === "revoke" ? "revoked" : "active";
+    const { error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .update({ status })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await h.logEvent(
+      data.id,
+      data.action === "suspend" ? "suspended" : data.action === "revoke" ? "revoked" : "reinstated",
+      { reason: data.reason ?? null },
+      context.userId,
+    );
+    return { ok: true };
+  });
+
+export const changeLicenseTerms = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        add_months: z.number().int().min(0).max(120).optional(),
+        max_users: z.number().int().min(1).max(100000).nullable().optional(),
+        grace_days: z.number().int().min(0).max(180).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: lic } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("expires_at, max_users, grace_days")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!lic) throw new Error("License not found");
+    const patch: Record<string, unknown> = {};
+    if (data.add_months && lic.expires_at) patch.expires_at = h.addMonths(lic.expires_at, data.add_months);
+    if (data.max_users !== undefined) patch.max_users = data.max_users;
+    if (data.grace_days !== undefined) patch.grace_days = data.grace_days;
+    if (!Object.keys(patch).length) return { ok: true };
+    const { error } = await (supabaseAdmin as any).from("licenses").update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await h.logEvent(data.id, data.max_users !== undefined ? "seats_changed" : "renewed", {
+      before: lic,
+      after: patch,
+    }, context.userId);
+    return { ok: true };
+  });
+
+export const renewLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        term_months: z.number().int().min(1).max(60),
+        max_users: z.number().int().min(1).max(100000).nullable().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: lic } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("customer_name, customer_email, edition, expires_at, max_users")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!lic) throw new Error("License not found");
+    const now = h.today();
+    const base = lic.expires_at && lic.expires_at >= now ? lic.expires_at : now;
+    const expires_at = h.addMonths(base, data.term_months);
+    const patch: Record<string, unknown> = { expires_at, status: "active", term_months: data.term_months };
+    if (data.max_users !== undefined) patch.max_users = data.max_users;
+    const { error } = await (supabaseAdmin as any).from("licenses").update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await h.logEvent(data.id, "renewed", { old_expiry: lic.expires_at, new_expiry: expires_at, term_months: data.term_months }, context.userId);
+    await h.sendLicenseNotice({
+      to: lic.customer_email,
+      subject: "Your Lavisho license has been renewed",
+      title: "License renewed",
+      bodyText: `Hello ${lic.customer_name},\n\nYour Lavisho license has been renewed until ${expires_at}.\nSeats: ${(patch.max_users ?? lic.max_users) ?? "Unlimited"}.\n\nThank you for continuing with Lavisho.`,
+    });
+    return { ok: true, expires_at };
+  });
+
+export const issueReplacementKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: old } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!old) throw new Error("License not found");
+
+    const key = h.generateLicenseKey();
+    const key_hash = await h.sha256Hex(key);
+    const { data: row, error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .insert({
+        key_hash,
+        key_prefix: key.slice(0, 9),
+        customer_name: old.customer_name,
+        customer_email: old.customer_email,
+        edition: old.edition,
+        max_users: old.max_users,
+        term_months: old.term_months,
+        starts_at: old.starts_at,
+        expires_at: old.expires_at,
+        grace_days: old.grace_days,
+        status: old.organization_id ? "active" : "issued",
+        organization_id: old.organization_id,
+        parent_license_id: old.id,
+        notes: `Replacement for ${old.key_prefix ?? old.id}`,
+        created_by: context.userId,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    await (supabaseAdmin as any).from("licenses").update({ status: "revoked", organization_id: null }).eq("id", old.id);
+    await h.logEvent(old.id, "revoked", { reason: "replaced", replacement_id: row.id }, context.userId);
+    await h.logEvent(row.id, "replacement_issued", { replaces: old.id }, context.userId);
+    await h.sendLicenseKeyEmail({
+      to: old.customer_email,
+      customerName: old.customer_name,
+      key,
+      edition: old.edition,
+      maxUsers: old.max_users,
+      expiresAt: old.expires_at,
+    });
+    return { id: row.id as string, key };
+  });
+
+export const activateLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ license_key: z.string().min(10).max(64), company_id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertOrgAdmin(context.supabase, context.userId, data.company_id);
+
+    // Rate limit: 5 attempts / org / hour
+    const since = new Date(Date.now() - 3600_000).toISOString();
+    const { count } = await (supabaseAdmin as any)
+      .from("license_activation_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", data.company_id)
+      .gte("created_at", since);
+    if ((count ?? 0) >= 5) throw new Error("Too many activation attempts. Try again in an hour.");
+    await (supabaseAdmin as any)
+      .from("license_activation_attempts")
+      .insert({ organization_id: data.company_id, actor: context.userId });
+
+    const key = h.normalizeKey(data.license_key);
+    const key_hash = await h.sha256Hex(key);
+    const { data: lic } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("*")
+      .eq("key_hash", key_hash)
+      .maybeSingle();
+    if (!lic) throw new Error("This license key was not recognised. Please check and try again.");
+    if (lic.status === "revoked") throw new Error("This license key has been revoked.");
+    if (lic.status === "suspended") throw new Error("This license is suspended. Contact Lavisho support.");
+    if (lic.expires_at && lic.expires_at < h.today() && !lic.is_renewal_key)
+      throw new Error("This license has expired.");
+    if (lic.organization_id && lic.organization_id !== data.company_id)
+      throw new Error("This key is already activated for another organization.");
+
+    // Renewal key: extend the parent license instead of binding a new one
+    if (lic.is_renewal_key && lic.parent_license_id) {
+      const { data: parent } = await (supabaseAdmin as any)
+        .from("licenses")
+        .select("id, expires_at, organization_id")
+        .eq("id", lic.parent_license_id)
+        .maybeSingle();
+      if (!parent || parent.organization_id !== data.company_id)
+        throw new Error("This renewal key does not match your organization's license.");
+      const now = h.today();
+      const base = parent.expires_at && parent.expires_at >= now ? parent.expires_at : now;
+      const expires_at = h.addMonths(base, lic.term_months ?? 12);
+      await (supabaseAdmin as any)
+        .from("licenses")
+        .update({ expires_at, status: "active", max_users: lic.max_users ?? undefined })
+        .eq("id", parent.id);
+      await (supabaseAdmin as any).from("licenses").update({ status: "revoked" }).eq("id", lic.id);
+      await h.logEvent(parent.id, "renewed", { via: "renewal_key", new_expiry: expires_at }, context.userId);
+      return { ok: true, renewed: true, expires_at };
+    }
+
+    const starts_at = lic.starts_at ?? h.today();
+    const { error } = await (supabaseAdmin as any)
+      .from("licenses")
+      .update({ organization_id: data.company_id, status: "active", starts_at })
+      .eq("id", lic.id);
+    if (error) throw new Error(error.message);
+    await h.logEvent(lic.id, "activated", { organization_id: data.company_id }, context.userId);
+    return {
+      ok: true,
+      renewed: false,
+      edition: lic.edition,
+      max_users: lic.max_users,
+      expires_at: lic.expires_at,
+    };
+  });
+
+export const getMyLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ company_id: z.string().uuid().nullable() }).parse(d))
+  .handler(async ({ data }) => {
+    const h = await import("./licenses.server");
+    return await h.licenseStateFor(data.company_id);
+  });
+
+export const setUserActive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ user_id: z.string().uuid(), is_active: z.boolean(), company_id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertOrgAdmin(context.supabase, context.userId, data.company_id);
+    if (data.is_active) await h.assertSeatAvailable(data.company_id);
+    const { error } = await (supabaseAdmin as any)
+      .from("profiles")
+      .update({ is_active: data.is_active })
+      .eq("id", data.user_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const licenseReports = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const h = await import("./licenses.server");
+    await h.assertVendorAdmin(context.supabase, context.userId);
+    const { data: rows } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("id, customer_name, customer_email, edition, status, max_users, expires_at, organization_id")
+      .order("expires_at", { ascending: true, nullsFirst: false });
+    const list = (rows ?? []) as any[];
+    const seats = new Map<string, number>();
+    for (const id of Array.from(new Set(list.map((r) => r.organization_id).filter(Boolean)))) {
+      seats.set(id as string, await h.seatsUsed(id as string));
+    }
+    const enriched = list.map((r) => ({
+      ...r,
+      seats_used: r.organization_id ? seats.get(r.organization_id) ?? 0 : 0,
+      utilization: r.max_users ? Math.round(((r.organization_id ? seats.get(r.organization_id) ?? 0 : 0) / r.max_users) * 100) : null,
+    }));
+    const { data: events } = await (supabaseAdmin as any)
+      .from("license_events")
+      .select("id, license_id, event_type, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    return { licenses: enriched, events: events ?? [] };
+  });
