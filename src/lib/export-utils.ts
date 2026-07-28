@@ -1,17 +1,40 @@
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 export type ExportRow = (string | number)[];
 
-export function exportToExcel(filename: string, sheetName: string, header: string[], rows: ExportRow[]) {
+// The xlsx / jspdf bundles are browser-only and heavy — they are loaded on
+// demand inside each helper so route modules that merely import these
+// functions stay safe to evaluate during server-side rendering.
+async function loadXlsx() {
+  return await import("xlsx");
+}
+
+async function loadPdf() {
+  const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+    import("jspdf"),
+    import("jspdf-autotable"),
+  ]);
+  return { jsPDF, autoTable };
+}
+
+export async function exportToExcel(
+  filename: string,
+  sheetName: string,
+  header: string[],
+  rows: ExportRow[],
+) {
+  const XLSX = await loadXlsx();
   const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31) || "Sheet1");
   XLSX.writeFile(wb, filename.endsWith(".xlsx") ? filename : `${filename}.xlsx`);
 }
 
-export function exportToPDF(filename: string, title: string, header: string[], rows: ExportRow[]) {
+export async function exportToPDF(
+  filename: string,
+  title: string,
+  header: string[],
+  rows: ExportRow[],
+) {
+  const { jsPDF, autoTable } = await loadPdf();
   const doc = new jsPDF({ orientation: header.length > 4 ? "landscape" : "portrait" });
   doc.setFontSize(14);
   doc.text(title, 14, 16);
@@ -28,7 +51,8 @@ export function exportToPDF(filename: string, title: string, header: string[], r
   doc.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
 }
 
-export function exportTextToPDF(filename: string, title: string, text: string) {
+export async function exportTextToPDF(filename: string, title: string, text: string) {
+  const { jsPDF } = await loadPdf();
   const doc = new jsPDF();
   doc.setFontSize(14);
   doc.text(title, 14, 16);
@@ -42,20 +66,21 @@ export function exportTextToPDF(filename: string, title: string, text: string) {
   doc.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
 }
 
-export function exportTranscriptToExcel(
+export async function exportTranscriptToExcel(
   filename: string,
   messages: { role: string; content: string }[],
 ) {
   const header = ["#", "Role", "Message"];
   const rows: ExportRow[] = messages.map((m, i) => [i + 1, m.role, m.content]);
-  exportToExcel(filename, "Chat", header, rows);
+  await exportToExcel(filename, "Chat", header, rows);
 }
 
-export function exportTranscriptToPDF(
+export async function exportTranscriptToPDF(
   filename: string,
   title: string,
   messages: { role: string; content: string }[],
 ) {
+  const { jsPDF, autoTable } = await loadPdf();
   const doc = new jsPDF();
   doc.setFontSize(14);
   doc.text(title, 14, 16);
