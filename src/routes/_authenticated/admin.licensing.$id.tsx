@@ -7,13 +7,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Copy, KeyRound } from "lucide-react";
+import { ArrowLeft, Copy, KeyRound, Mail } from "lucide-react";
 import {
   getLicenseDetail,
   updateLicenseStatus,
   changeLicenseTerms,
   renewLicense,
   issueReplacementKey,
+  resendLicenseEmail,
 } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 
@@ -39,6 +40,7 @@ function LicenseDetailPage() {
   const changeTerms = useServerFn(changeLicenseTerms);
   const renew = useServerFn(renewLicense);
   const replace = useServerFn(issueReplacementKey);
+  const resend = useServerFn(resendLicenseEmail);
 
   const [months, setMonths] = useState("12");
   const [seats, setSeats] = useState("");
