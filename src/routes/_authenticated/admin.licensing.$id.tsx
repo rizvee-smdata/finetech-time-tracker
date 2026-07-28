@@ -7,13 +7,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Copy, KeyRound } from "lucide-react";
+import { ArrowLeft, Copy, KeyRound, Mail } from "lucide-react";
 import {
   getLicenseDetail,
   updateLicenseStatus,
   changeLicenseTerms,
   renewLicense,
   issueReplacementKey,
+  resendLicenseEmail,
 } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 
@@ -39,6 +40,7 @@ function LicenseDetailPage() {
   const changeTerms = useServerFn(changeLicenseTerms);
   const renew = useServerFn(renewLicense);
   const replace = useServerFn(issueReplacementKey);
+  const resend = useServerFn(resendLicenseEmail);
 
   const [months, setMonths] = useState("12");
   const [seats, setSeats] = useState("");
@@ -136,22 +138,33 @@ function LicenseDetailPage() {
             </Button>
           </div>
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={async () => {
-              if (!confirm("Revoke the current key and issue a replacement?")) return;
-              try {
-                const res: any = await replace({ data: { id } });
-                setNewKey(res.key);
-                q.refetch();
-              } catch (e: any) {
-                toast.error(e.message ?? "Failed");
-              }
-            }}
-          >
-            <KeyRound className="mr-2 h-4 w-4" /> Issue replacement key
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => run(() => resend({ data: { id } }), "License details emailed to the customer")}
+            >
+              <Mail className="mr-2 h-4 w-4" /> Resend license email
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                if (!confirm("Revoke the current key and issue a replacement?")) return;
+                try {
+                  const res: any = await replace({ data: { id } });
+                  setNewKey(res.key);
+                  q.refetch();
+                } catch (e: any) {
+                  toast.error(e.message ?? "Failed");
+                }
+              }}
+            >
+              <KeyRound className="mr-2 h-4 w-4" /> Issue replacement key
+            </Button>
+          </div>
+
 
           {newKey && (
             <div className="flex items-center gap-2 rounded-md border bg-muted/40 p-3 font-mono text-xs">
