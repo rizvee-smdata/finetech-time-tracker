@@ -19,7 +19,7 @@ import { Copy, KeyRound, Plus, ShieldCheck } from "lucide-react";
 import { issueLicense, listLicenses, licenseReports } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 
-export const Route = createFileRoute("/_authenticated/admin/licensing")({
+export const Route = createFileRoute("/_authenticated/admin/licensing/")({
   head: () => ({
     meta: [
       { title: "Licensing console — Lavisho TT" },
