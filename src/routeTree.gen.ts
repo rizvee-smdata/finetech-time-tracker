@@ -228,6 +228,7 @@ import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
+import { Route as ApiPublicHooksLicenseDailyRouteImport } from './routes/api/public/hooks/license-daily'
 import { Route as ApiPublicHooksGmailSyncRouteImport } from './routes/api/public/hooks/gmail-sync'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCrmRenewalsRouteImport } from './routes/api/public/hooks/crm-renewals'
@@ -1479,6 +1480,12 @@ const ApiPublicHooksNarrativesWeeklyCronRoute =
     path: '/api/public/hooks/narratives-weekly-cron',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksLicenseDailyRoute =
+  ApiPublicHooksLicenseDailyRouteImport.update({
+    id: '/api/public/hooks/license-daily',
+    path: '/api/public/hooks/license-daily',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksGmailSyncRoute = ApiPublicHooksGmailSyncRouteImport.update({
   id: '/api/public/hooks/gmail-sync',
   path: '/api/public/hooks/gmail-sync',
@@ -1817,6 +1824,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2043,6 +2051,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2284,6 +2293,7 @@ export interface FileRoutesById {
   '/api/public/hooks/crm-renewals': typeof ApiPublicHooksCrmRenewalsRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/gmail-sync': typeof ApiPublicHooksGmailSyncRoute
+  '/api/public/hooks/license-daily': typeof ApiPublicHooksLicenseDailyRoute
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
@@ -2525,6 +2535,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2751,6 +2762,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -2991,6 +3003,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/crm-renewals'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/gmail-sync'
+    | '/api/public/hooks/license-daily'
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
@@ -3028,6 +3041,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCrmRenewalsRoute: typeof ApiPublicHooksCrmRenewalsRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
   ApiPublicHooksGmailSyncRoute: typeof ApiPublicHooksGmailSyncRoute
+  ApiPublicHooksLicenseDailyRoute: typeof ApiPublicHooksLicenseDailyRoute
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
@@ -4576,6 +4590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksNarrativesWeeklyCronRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/license-daily': {
+      id: '/api/public/hooks/license-daily'
+      path: '/api/public/hooks/license-daily'
+      fullPath: '/api/public/hooks/license-daily'
+      preLoaderRoute: typeof ApiPublicHooksLicenseDailyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/gmail-sync': {
       id: '/api/public/hooks/gmail-sync'
       path: '/api/public/hooks/gmail-sync'
@@ -5442,6 +5463,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksCrmRenewalsRoute: ApiPublicHooksCrmRenewalsRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
   ApiPublicHooksGmailSyncRoute: ApiPublicHooksGmailSyncRoute,
+  ApiPublicHooksLicenseDailyRoute: ApiPublicHooksLicenseDailyRoute,
   ApiPublicHooksNarrativesWeeklyCronRoute:
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,
