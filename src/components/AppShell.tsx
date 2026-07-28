@@ -383,6 +383,9 @@ export function AppShell() {
               )}
             </div>
           )}
+          <div className="mb-3 space-y-2">
+            <LicenseBanner />
+          </div>
           <VisitEntryAlertBanner />
           <Outlet />
         </main>
