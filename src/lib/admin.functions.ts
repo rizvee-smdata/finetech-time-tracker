@@ -40,6 +40,8 @@ export const adminCreateUser = createServerFn({ method: "POST" })
   .inputValidator((d) => createUserSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { assertSeatAvailable } = await import("@/lib/licensing/licenses.server");
+    for (const cid of data.company_ids) await assertSeatAvailable(cid);
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
