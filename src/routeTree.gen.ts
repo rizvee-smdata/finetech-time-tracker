@@ -110,6 +110,7 @@ import { Route as AuthenticatedTargetsAllRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSurveysTemplatesRouteImport } from './routes/_authenticated/surveys.templates'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
+import { Route as AuthenticatedSettingsLicenseRouteImport } from './routes/_authenticated/settings.license'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
 import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
@@ -795,6 +796,12 @@ const AuthenticatedSettingsWhatsappRoute =
   AuthenticatedSettingsWhatsappRouteImport.update({
     id: '/whatsapp',
     path: '/whatsapp',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsLicenseRoute =
+  AuthenticatedSettingsLicenseRouteImport.update({
+    id: '/license',
+    path: '/license',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedSettingsIntegrationsRoute =
@@ -1734,6 +1741,7 @@ export interface FileRoutesByFullPath {
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -1959,6 +1967,7 @@ export interface FileRoutesByTo {
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2199,6 +2208,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/_authenticated/settings/license': typeof AuthenticatedSettingsLicenseRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2439,6 +2449,7 @@ export interface FileRouteTypes {
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
+    | '/settings/license'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2664,6 +2675,7 @@ export interface FileRouteTypes {
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
+    | '/settings/license'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2903,6 +2915,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/export'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
+    | '/_authenticated/settings/license'
     | '/_authenticated/settings/whatsapp'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
@@ -3735,6 +3748,13 @@ declare module '@tanstack/react-router' {
       path: '/whatsapp'
       fullPath: '/settings/whatsapp'
       preLoaderRoute: typeof AuthenticatedSettingsWhatsappRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/license': {
+      id: '/_authenticated/settings/license'
+      path: '/license'
+      fullPath: '/settings/license'
+      preLoaderRoute: typeof AuthenticatedSettingsLicenseRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/settings/integrations': {
@@ -5043,6 +5063,7 @@ interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
+  AuthenticatedSettingsLicenseRoute: typeof AuthenticatedSettingsLicenseRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -5055,6 +5076,7 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsFormBuilderRoute: AuthenticatedSettingsFormBuilderRoute,
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,
+  AuthenticatedSettingsLicenseRoute: AuthenticatedSettingsLicenseRoute,
   AuthenticatedSettingsWhatsappRoute:
     AuthenticatedSettingsWhatsappRouteWithChildren,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
