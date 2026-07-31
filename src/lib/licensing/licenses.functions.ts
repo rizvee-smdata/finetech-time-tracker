@@ -327,24 +327,61 @@ export const activateLicense = createServerFn({ method: "POST" })
       .eq("organization_id", data.company_id)
       .gte("created_at", since);
     if ((count ?? 0) >= 5) throw new Error("Too many activation attempts. Try again in an hour.");
-    await (supabaseAdmin as any)
-      .from("license_activation_attempts")
-      .insert({ organization_id: data.company_id, actor: context.userId });
+
+    // The activating user must own a verified mailbox — anonymous or
+    // unverified accounts can never redeem a key.
+    const actorEmail = await h.verifiedEmailOf(context.userId);
 
     const key = h.normalizeKey(data.license_key);
     const key_hash = await h.sha256Hex(key);
+    const key_prefix = key.slice(0, 9);
+
+    const fail = async (reason: string, message: string): Promise<never> => {
+      await h.recordAttempt({
+        companyId: data.company_id,
+        actor: context.userId,
+        actorEmail,
+        keyHash: key_hash,
+        keyPrefix: key_prefix,
+        succeeded: false,
+        reason,
+      });
+      throw new Error(message);
+    };
+
+    // Global per-key lockout: a leaked key being shopped around dies quickly.
+    if ((await h.keyFailureCount(key_hash)) >= h.MAX_KEY_FAILURES) {
+      throw new Error(
+        "This key has been locked after too many failed activation attempts. Contact Lavisho support.",
+      );
+    }
+
     const { data: lic } = await (supabaseAdmin as any)
       .from("licenses")
       .select("*")
       .eq("key_hash", key_hash)
       .maybeSingle();
-    if (!lic) throw new Error("This license key was not recognised. Please check and try again.");
-    if (lic.status === "revoked") throw new Error("This license key has been revoked.");
-    if (lic.status === "suspended") throw new Error("This license is suspended. Contact Lavisho support.");
+    if (!lic) await fail("unknown_key", "This license key was not recognised. Please check and try again.");
+    if (lic.status === "revoked") await fail("revoked", "This license key has been revoked.");
+    if (lic.status === "suspended")
+      await fail("suspended", "This license is suspended. Contact Lavisho support.");
     if (lic.expires_at && lic.expires_at < h.today() && !lic.is_renewal_key)
-      throw new Error("This license has expired.");
+      await fail("expired", "This license has expired.");
     if (lic.organization_id && lic.organization_id !== data.company_id)
-      throw new Error("This key is already activated for another organization.");
+      await fail("bound_elsewhere", "This key is already activated for another organization.");
+
+    // Bind to the customer it was sold to: the redeeming account must be the
+    // licensed mailbox, or another address on the same corporate domain.
+    if (!h.emailMatchesLicense(actorEmail, lic.customer_email)) {
+      await h.logEvent(lic.id, "activation_rejected", {
+        reason: "email_mismatch",
+        organization_id: data.company_id,
+      }, context.userId);
+      await fail(
+        "email_mismatch",
+        "This key was issued to a different customer. Sign in with the email address the license was purchased under, or contact Lavisho support.",
+      );
+    }
 
     // Renewal key: extend the parent license instead of binding a new one
     if (lic.is_renewal_key && lic.parent_license_id) {
