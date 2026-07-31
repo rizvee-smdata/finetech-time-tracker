@@ -4461,23 +4461,35 @@ export type Database = {
       license_activation_attempts: {
         Row: {
           actor: string | null
+          actor_email: string | null
           created_at: string
           id: string
+          key_hash: string | null
+          key_prefix: string | null
           organization_id: string | null
+          reason: string | null
           succeeded: boolean
         }
         Insert: {
           actor?: string | null
+          actor_email?: string | null
           created_at?: string
           id?: string
+          key_hash?: string | null
+          key_prefix?: string | null
           organization_id?: string | null
+          reason?: string | null
           succeeded?: boolean
         }
         Update: {
           actor?: string | null
+          actor_email?: string | null
           created_at?: string
           id?: string
+          key_hash?: string | null
+          key_prefix?: string | null
           organization_id?: string | null
+          reason?: string | null
           succeeded?: boolean
         }
         Relationships: []
