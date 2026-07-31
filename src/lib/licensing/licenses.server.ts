@@ -164,3 +164,100 @@ export async function assertSeatAvailable(companyId: string) {
     throw new Error(`Seat limit reached (${used} of ${max} used). Contact Lavisho to add seats.`);
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * Activation binding: a key may only be redeemed by the customer it
+ * was issued to, and only after N failed tries the key is locked.
+ * ------------------------------------------------------------------ */
+
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com", "googlemail.com", "yahoo.com", "outlook.com", "hotmail.com",
+  "live.com", "icloud.com", "aol.com", "proton.me", "protonmail.com",
+  "gmx.com", "mail.com", "yandex.com", "zoho.com", "qq.com", "163.com",
+]);
+
+export const MAX_KEY_FAILURES = 5;
+
+function domainOf(email: string) {
+  return email.trim().toLowerCase().split("@")[1] ?? "";
+}
+
+/** Returns the activating user's verified email, or throws. */
+export async function verifiedEmailOf(userId: string): Promise<string> {
+  const { data, error } = await (supabaseAdmin as any).auth.admin.getUserById(userId);
+  const user = data?.user;
+  if (error || !user?.email) throw new Error("Could not verify your account email.");
+  const confirmed = user.email_confirmed_at ?? user.confirmed_at;
+  if (!confirmed) {
+    throw new Error("Please verify your email address before activating a license.");
+  }
+  return String(user.email).toLowerCase();
+}
+
+/**
+ * A key issued to customer_email may only be activated by that mailbox, or
+ * by another address on the same corporate domain (never a free-mail domain).
+ */
+export function emailMatchesLicense(actorEmail: string, customerEmail: string): boolean {
+  const a = actorEmail.trim().toLowerCase();
+  const c = customerEmail.trim().toLowerCase();
+  if (a === c) return true;
+  const ad = domainOf(a);
+  const cd = domainOf(c);
+  if (!ad || !cd || ad !== cd) return false;
+  return !FREE_EMAIL_DOMAINS.has(cd);
+}
+
+export async function recordAttempt(args: {
+  companyId: string | null;
+  actor: string | null;
+  actorEmail: string | null;
+  keyHash: string | null;
+  keyPrefix: string | null;
+  succeeded: boolean;
+  reason?: string | null;
+}) {
+  await (supabaseAdmin as any).from("license_activation_attempts").insert({
+    organization_id: args.companyId,
+    actor: args.actor,
+    actor_email: args.actorEmail,
+    key_hash: args.keyHash,
+    key_prefix: args.keyPrefix,
+    succeeded: args.succeeded,
+    reason: args.reason ?? null,
+  });
+}
+
+/** Global (not per-org) failure count for a specific key in the last 24h. */
+export async function keyFailureCount(keyHash: string): Promise<number> {
+  const since = new Date(Date.now() - 86_400_000).toISOString();
+  const { count } = await (supabaseAdmin as any)
+    .from("license_activation_attempts")
+    .select("id", { count: "exact", head: true })
+    .eq("key_hash", keyHash)
+    .eq("succeeded", false)
+    .gte("created_at", since);
+  return Number(count ?? 0);
+}
+
+export async function sendActivationConfirmation(args: {
+  to: string;
+  customerName: string;
+  organizationName: string;
+  actorEmail: string;
+  keyPrefix: string | null;
+}) {
+  await sendLicenseNotice({
+    to: args.to,
+    subject: "Your Lavisho license was just activated",
+    title: "License activated",
+    bodyText: [
+      `Hello ${args.customerName},`,
+      "",
+      `Your Lavisho license (key ${args.keyPrefix ?? "—"}…) was activated for the organization "${args.organizationName}" by ${args.actorEmail} on ${new Date().toUTCString()}.`,
+      "",
+      "The key is now permanently bound to that organization and cannot be used anywhere else.",
+      "If this was not you, contact sales@lavishott.cloud immediately.",
+    ].join("\n"),
+  });
+}
