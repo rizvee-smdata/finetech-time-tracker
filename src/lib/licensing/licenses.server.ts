@@ -82,6 +82,7 @@ export async function sendLicenseKeyEmail(args: {
   edition: string;
   maxUsers: number | null;
   expiresAt: string | null;
+  bindDomain?: string | null;
 }) {
   try {
     await sendTrialNotice(supabaseAdmin, {
@@ -95,6 +96,7 @@ export async function sendLicenseKeyEmail(args: {
         `Edition: ${EDITION_LABEL[args.edition] ?? args.edition}`,
         `Seats: ${args.maxUsers ?? "Unlimited"}`,
         `Valid until: ${args.expiresAt ?? "Perpetual"}`,
+        ...(args.bindDomain ? [`Bound to domain: @${args.bindDomain}`] : []),
         "",
         "To activate: sign in as your organization administrator, go to Settings → License and enter the key above. Keep this key safe — it is shown only once.",
       ].join("\n"),
