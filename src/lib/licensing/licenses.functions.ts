@@ -382,7 +382,7 @@ export const activateLicense = createServerFn({ method: "POST" })
 
     // Bind to the customer it was sold to: the redeeming account must be the
     // licensed mailbox, or another address on the same corporate domain.
-    if (!h.emailMatchesLicense(actorEmail, lic.customer_email)) {
+    if (!h.emailMatchesLicense(actorEmail, lic.customer_email, lic.bind_domain)) {
       await h.logEvent(lic.id, "activation_rejected", {
         reason: "email_mismatch",
         organization_id: data.company_id,
