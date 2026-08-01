@@ -20,8 +20,106 @@ import { fetchProducts } from "@/lib/crm/products";
 import { fetchPartners } from "@/lib/crm/partners";
 import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
 import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+type CustomerOption = {
+  id: string;
+  customer_name: string;
+  contact_person: string | null;
+  designation: string | null;
+  email: string | null;
+  phone: string | null;
+};
+
+/** Searchable customer picker — handles thousands of rows without truncation. */
+function CustomerCombobox({
+  value,
+  options,
+  onTextChange,
+  onPick,
+}: {
+  value: string;
+  options: CustomerOption[];
+  onTextChange: (v: string) => void;
+  onPick: (c: CustomerOption) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const filtered = (q
+    ? options.filter((c) =>
+        [c.customer_name, c.contact_person, c.email, c.phone]
+          .filter(Boolean)
+          .some((s) => String(s).toLowerCase().includes(q)),
+      )
+    : options
+  ).slice(0, 200);
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) setQuery(value); }}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          className={cn("w-full justify-between font-normal", !value && "text-muted-foreground")}
+        >
+          <span className="truncate">{value || "Start typing — pick existing or add new"}</span>
+          <ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command shouldFilter={false}>
+          <CommandInput placeholder="Search customers…" value={query} onValueChange={setQuery} />
+          <CommandList className="max-h-72">
+            <CommandEmpty className="py-3 px-3 text-sm">
+              {query.trim() ? (
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => { onTextChange(query.trim()); setOpen(false); }}
+                >
+                  Use “{query.trim()}” as a new customer
+                </button>
+              ) : (
+                "No customers yet."
+              )}
+            </CommandEmpty>
+            <CommandGroup>
+              {query.trim() && !options.some((c) => c.customer_name.toLowerCase() === q) && (
+                <CommandItem
+                  value={`__new__${query}`}
+                  onSelect={() => { onTextChange(query.trim()); setOpen(false); }}
+                >
+                  Use “{query.trim()}” as a new customer
+                </CommandItem>
+              )}
+              {filtered.map((c) => (
+                <CommandItem
+                  key={c.id}
+                  value={c.id}
+                  onSelect={() => { onPick(c); setOpen(false); }}
+                >
+                  <div className="min-w-0">
+                    <div className="truncate text-sm">{c.customer_name}</div>
+                    <div className="truncate text-xs text-muted-foreground">
+                      {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
+                    </div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const sb = supabase as any;
+
 
 export function LeadFormDialog({
   open, onOpenChange, lead,
