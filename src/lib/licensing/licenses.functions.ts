@@ -18,9 +18,11 @@ export const issueLicense = createServerFn({ method: "POST" })
       .object({
         customer_name: z.string().trim().min(1).max(160),
         customer_email: z.string().trim().email().max(255),
+        bind_domain: z.string().trim().max(255).optional().nullable(),
         edition: editionEnum.default("suite"),
         max_users: z.number().int().min(1).max(100000).nullable().default(null),
-        term_months: z.number().int().min(1).max(60).nullable().default(12),
+        term_years: z.number().int().min(1).max(10).nullable().optional(),
+        term_months: z.number().int().min(1).max(120).nullable().default(12),
         starts_at: z.string().optional(),
         grace_days: z.number().int().min(0).max(180).default(14),
         notes: z.string().max(2000).optional(),
