@@ -4531,6 +4531,7 @@ export type Database = {
       }
       licenses: {
         Row: {
+          bind_domain: string | null
           created_at: string
           created_by: string | null
           customer_email: string
@@ -4552,6 +4553,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bind_domain?: string | null
           created_at?: string
           created_by?: string | null
           customer_email: string
@@ -4573,6 +4575,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bind_domain?: string | null
           created_at?: string
           created_by?: string | null
           customer_email?: string
