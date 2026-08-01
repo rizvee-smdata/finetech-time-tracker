@@ -99,18 +99,29 @@ export function LeadFormDialog({
     queryKey: ["crm-customers-suggest", companyId],
     enabled: !!companyId && open,
     queryFn: async () => {
-      const { data, error } = await sb
-        .from("customers")
-        .select("id, customer_name, contact_person, designation, email, phone")
-        .eq("company_id", companyId)
-        .eq("kind", "customer")
-        .is("deleted_at", null)
-        .order("customer_name")
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
+      // Page through so large customer lists are never truncated (the old
+      // 500-row cap silently dropped names late in the alphabet).
+      const page = 1000;
+      let from = 0;
+      const all: any[] = [];
+      for (;;) {
+        const { data, error } = await sb
+          .from("customers")
+          .select("id, customer_name, contact_person, designation, email, phone")
+          .eq("company_id", companyId)
+          .eq("kind", "customer")
+          .is("deleted_at", null)
+          .order("customer_name")
+          .range(from, from + page - 1);
+        if (error) throw error;
+        all.push(...(data ?? []));
+        if (!data || data.length < page) break;
+        from += page;
+      }
+      return all as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
     },
   });
+
   const accounts = useQuery({
     queryKey: ["crm-accounts-suggest", companyId],
     enabled: !!companyId && open,
