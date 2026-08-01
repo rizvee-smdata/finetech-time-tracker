@@ -87,7 +87,9 @@ function LicenseDetailPage() {
           <dl className="grid grid-cols-2 gap-y-2">
             <dt className="text-muted-foreground">Status</dt><dd className="capitalize">{l.status}</dd>
             <dt className="text-muted-foreground">Organization</dt><dd>{l.organization_name ?? "Not activated"}</dd>
-            <dt className="text-muted-foreground">Seats</dt><dd>{l.seats_used} / {l.max_users ?? "Unlimited"}</dd>
+            <dt className="text-muted-foreground">Bound domain</dt><dd>{l.bind_domain ? `@${l.bind_domain}` : "Customer email domain"}</dd>
+            <dt className="text-muted-foreground">Users</dt><dd>{l.seats_used} / {l.max_users ?? "Unlimited"}</dd>
+            <dt className="text-muted-foreground">Subscription</dt><dd>{l.term_months ? `${(l.term_months / 12).toFixed(l.term_months % 12 ? 1 : 0)} year(s)` : "Perpetual"}</dd>
             <dt className="text-muted-foreground">Starts</dt><dd>{l.starts_at}</dd>
             <dt className="text-muted-foreground">Expires</dt><dd>{l.expires_at ?? "Perpetual"}</dd>
             <dt className="text-muted-foreground">Grace days</dt><dd>{l.grace_days}</dd>
