@@ -20,8 +20,106 @@ import { fetchProducts } from "@/lib/crm/products";
 import { fetchPartners } from "@/lib/crm/partners";
 import { fetchCustomFieldDefs } from "@/lib/crm/customFields";
 import { CustomFieldsSection } from "@/components/form-builder/CustomFieldsSection";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+type CustomerOption = {
+  id: string;
+  customer_name: string;
+  contact_person: string | null;
+  designation: string | null;
+  email: string | null;
+  phone: string | null;
+};
+
+/** Searchable customer picker — handles thousands of rows without truncation. */
+function CustomerCombobox({
+  value,
+  options,
+  onTextChange,
+  onPick,
+}: {
+  value: string;
+  options: CustomerOption[];
+  onTextChange: (v: string) => void;
+  onPick: (c: CustomerOption) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const filtered = (q
+    ? options.filter((c) =>
+        [c.customer_name, c.contact_person, c.email, c.phone]
+          .filter(Boolean)
+          .some((s) => String(s).toLowerCase().includes(q)),
+      )
+    : options
+  ).slice(0, 200);
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) setQuery(value); }}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          className={cn("w-full justify-between font-normal", !value && "text-muted-foreground")}
+        >
+          <span className="truncate">{value || "Start typing — pick existing or add new"}</span>
+          <ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command shouldFilter={false}>
+          <CommandInput placeholder="Search customers…" value={query} onValueChange={setQuery} />
+          <CommandList className="max-h-72">
+            <CommandEmpty className="py-3 px-3 text-sm">
+              {query.trim() ? (
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => { onTextChange(query.trim()); setOpen(false); }}
+                >
+                  Use “{query.trim()}” as a new customer
+                </button>
+              ) : (
+                "No customers yet."
+              )}
+            </CommandEmpty>
+            <CommandGroup>
+              {query.trim() && !options.some((c) => c.customer_name.toLowerCase() === q) && (
+                <CommandItem
+                  value={`__new__${query}`}
+                  onSelect={() => { onTextChange(query.trim()); setOpen(false); }}
+                >
+                  Use “{query.trim()}” as a new customer
+                </CommandItem>
+              )}
+              {filtered.map((c) => (
+                <CommandItem
+                  key={c.id}
+                  value={c.id}
+                  onSelect={() => { onPick(c); setOpen(false); }}
+                >
+                  <div className="min-w-0">
+                    <div className="truncate text-sm">{c.customer_name}</div>
+                    <div className="truncate text-xs text-muted-foreground">
+                      {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
+                    </div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const sb = supabase as any;
+
 
 export function LeadFormDialog({
   open, onOpenChange, lead,
@@ -99,18 +197,29 @@ export function LeadFormDialog({
     queryKey: ["crm-customers-suggest", companyId],
     enabled: !!companyId && open,
     queryFn: async () => {
-      const { data, error } = await sb
-        .from("customers")
-        .select("id, customer_name, contact_person, designation, email, phone")
-        .eq("company_id", companyId)
-        .eq("kind", "customer")
-        .is("deleted_at", null)
-        .order("customer_name")
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
+      // Page through so large customer lists are never truncated (the old
+      // 500-row cap silently dropped names late in the alphabet).
+      const page = 1000;
+      let from = 0;
+      const all: any[] = [];
+      for (;;) {
+        const { data, error } = await sb
+          .from("customers")
+          .select("id, customer_name, contact_person, designation, email, phone")
+          .eq("company_id", companyId)
+          .eq("kind", "customer")
+          .is("deleted_at", null)
+          .order("customer_name")
+          .range(from, from + page - 1);
+        if (error) throw error;
+        all.push(...(data ?? []));
+        if (!data || data.length < page) break;
+        from += page;
+      }
+      return all as Array<{ id: string; customer_name: string; contact_person: string | null; designation: string | null; email: string | null; phone: string | null }>;
     },
   });
+
   const accounts = useQuery({
     queryKey: ["crm-accounts-suggest", companyId],
     enabled: !!companyId && open,
@@ -120,7 +229,7 @@ export function LeadFormDialog({
         .select("id, name")
         .eq("company_id", companyId)
         .order("name")
-        .limit(500);
+        .limit(5000);
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; name: string }>;
     },
@@ -216,46 +325,23 @@ export function LeadFormDialog({
         <div className="grid gap-4 py-2">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Customer name *">
-              <Input
-                list="lead-customer-suggestions"
+              <CustomerCombobox
                 value={form.customer_name || ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  // Datalist value is unique per contact so picking a specific
-                  // person (e.g. Agrani Bank + Mr. Reazul) loads their details,
-                  // not the first contact for that customer.
-                  const match = (customers.data ?? []).find((c) => {
-                    const key = [c.customer_name, c.contact_person || c.email || c.phone]
-                      .filter(Boolean).join(" — ");
-                    return key === v;
-                  });
-                  if (match) {
-                    setForm({
-                      ...form,
-                      customer_name: match.customer_name,
-                      contact_person: match.contact_person || "",
-                      designation: match.designation || "",
-                      email: match.email || "",
-                      phone: match.phone || "",
-                    });
-                  } else {
-                    setForm({ ...form, customer_name: v });
-                  }
-                }}
-                placeholder="Start typing — pick existing or add new"
+                options={customers.data ?? []}
+                onTextChange={(v) => setForm((f: any) => ({ ...f, customer_name: v }))}
+                onPick={(c) =>
+                  setForm((f: any) => ({
+                    ...f,
+                    customer_name: c.customer_name,
+                    contact_person: c.contact_person || "",
+                    designation: c.designation || "",
+                    email: c.email || "",
+                    phone: c.phone || "",
+                  }))
+                }
               />
-              <datalist id="lead-customer-suggestions">
-                {(customers.data ?? []).map((c) => {
-                  const label = [c.customer_name, c.contact_person || c.email || c.phone]
-                    .filter(Boolean).join(" — ");
-                  return (
-                    <option key={c.id} value={label}>
-                      {[c.contact_person, c.email, c.phone].filter(Boolean).join(" · ")}
-                    </option>
-                  );
-                })}
-              </datalist>
             </Field>
+
             <Field label="Company">
               <Input
                 list="lead-company-suggestions"
