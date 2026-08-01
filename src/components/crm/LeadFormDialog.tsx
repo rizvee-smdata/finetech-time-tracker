@@ -131,7 +131,7 @@ export function LeadFormDialog({
         .select("id, name")
         .eq("company_id", companyId)
         .order("name")
-        .limit(500);
+        .limit(5000);
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; name: string }>;
     },
