@@ -108,9 +108,10 @@ function LicensingConsole() {
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: "",
+    bind_domain: "",
     edition: "suite",
     max_users: "25",
-    term_months: "12",
+    term_years: "1",
     grace_days: "14",
     notes: "",
   });
@@ -121,9 +122,11 @@ function LicensingConsole() {
         data: {
           customer_name: form.customer_name,
           customer_email: form.customer_email,
+          bind_domain: form.bind_domain || null,
           edition: form.edition as any,
           max_users: form.max_users ? Number(form.max_users) : null,
-          term_months: form.term_months ? Number(form.term_months) : null,
+          term_years: form.term_years ? Number(form.term_years) : null,
+          term_months: form.term_years ? Number(form.term_years) * 12 : null,
           grace_days: Number(form.grace_days || 14),
           notes: form.notes || undefined,
           is_renewal_key: false,
