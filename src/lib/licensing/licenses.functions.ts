@@ -40,7 +40,12 @@ export const issueLicense = createServerFn({ method: "POST" })
     const key = h.generateLicenseKey();
     const key_hash = await h.sha256Hex(key);
     const starts_at = data.starts_at || h.today();
-    const expires_at = data.term_months ? h.addMonths(starts_at, data.term_months) : null;
+    const term_months = data.term_years ? data.term_years * 12 : data.term_months;
+    const bind_domain = data.bind_domain ? h.normalizeDomain(data.bind_domain) : null;
+    if (bind_domain && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(bind_domain)) {
+      throw new Error("Enter a valid company domain, e.g. acme.com");
+    }
+    const expires_at = term_months ? h.addMonths(starts_at, term_months) : null;
 
     const { data: row, error } = await (supabaseAdmin as any)
       .from("licenses")
@@ -49,9 +54,10 @@ export const issueLicense = createServerFn({ method: "POST" })
         key_prefix: key.slice(0, 9),
         customer_name: data.customer_name,
         customer_email: data.customer_email,
+        bind_domain,
         edition: data.edition,
         max_users: data.max_users,
-        term_months: data.term_months,
+        term_months,
         starts_at,
         expires_at,
         grace_days: data.grace_days,
@@ -69,7 +75,8 @@ export const issueLicense = createServerFn({ method: "POST" })
     await h.logEvent(row.id, "generated", {
       edition: data.edition,
       max_users: data.max_users,
-      term_months: data.term_months,
+      term_months,
+      bind_domain,
       expires_at,
       is_renewal_key: data.is_renewal_key,
     }, context.userId);
@@ -81,6 +88,7 @@ export const issueLicense = createServerFn({ method: "POST" })
       edition: data.edition,
       maxUsers: data.max_users,
       expiresAt: expires_at,
+      bindDomain: bind_domain,
     });
 
     return { id: row.id as string, key, expires_at };
