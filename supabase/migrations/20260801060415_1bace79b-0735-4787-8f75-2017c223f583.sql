@@ -1,0 +1,1 @@
+ALTER TABLE public.licenses ADD COLUMN IF NOT EXISTS bind_domain text;

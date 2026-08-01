@@ -108,9 +108,10 @@ function LicensingConsole() {
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: "",
+    bind_domain: "",
     edition: "suite",
     max_users: "25",
-    term_months: "12",
+    term_years: "1",
     grace_days: "14",
     notes: "",
   });
@@ -121,9 +122,11 @@ function LicensingConsole() {
         data: {
           customer_name: form.customer_name,
           customer_email: form.customer_email,
+          bind_domain: form.bind_domain || null,
           edition: form.edition as any,
           max_users: form.max_users ? Number(form.max_users) : null,
-          term_months: form.term_months ? Number(form.term_months) : null,
+          term_years: form.term_years ? Number(form.term_years) : null,
+          term_months: form.term_years ? Number(form.term_years) * 12 : null,
           grace_days: Number(form.grace_days || 14),
           notes: form.notes || undefined,
           is_renewal_key: false,
@@ -281,6 +284,17 @@ function LicensingConsole() {
               <Label>Customer email</Label>
               <Input type="email" value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} />
             </div>
+            <div className="grid gap-1.5">
+              <Label>Bind to company domain</Label>
+              <Input
+                value={form.bind_domain}
+                onChange={(e) => setForm({ ...form, bind_domain: e.target.value })}
+                placeholder="acme.com"
+              />
+              <p className="text-xs text-muted-foreground">
+                Only users with an email on this domain can activate the key. Leave blank to bind to the customer email's domain.
+              </p>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
                 <Label>Edition</Label>
@@ -295,12 +309,21 @@ function LicensingConsole() {
                 </select>
               </div>
               <div className="grid gap-1.5">
-                <Label>Seats (blank = unlimited)</Label>
+                <Label>Number of users (blank = unlimited)</Label>
                 <Input value={form.max_users} onChange={(e) => setForm({ ...form, max_users: e.target.value })} />
               </div>
               <div className="grid gap-1.5">
-                <Label>Term months (blank = perpetual)</Label>
-                <Input value={form.term_months} onChange={(e) => setForm({ ...form, term_months: e.target.value })} />
+                <Label>Subscription years</Label>
+                <select
+                  value={form.term_years}
+                  onChange={(e) => setForm({ ...form, term_years: e.target.value })}
+                  className="h-10 rounded-md border bg-background px-3 text-sm"
+                >
+                  {[1, 2, 3, 4, 5, 10].map((y) => (
+                    <option key={y} value={String(y)}>{y} year{y > 1 ? "s" : ""}</option>
+                  ))}
+                  <option value="">Perpetual</option>
+                </select>
               </div>
               <div className="grid gap-1.5">
                 <Label>Grace days</Label>

@@ -18,9 +18,11 @@ export const issueLicense = createServerFn({ method: "POST" })
       .object({
         customer_name: z.string().trim().min(1).max(160),
         customer_email: z.string().trim().email().max(255),
+        bind_domain: z.string().trim().max(255).optional().nullable(),
         edition: editionEnum.default("suite"),
         max_users: z.number().int().min(1).max(100000).nullable().default(null),
-        term_months: z.number().int().min(1).max(60).nullable().default(12),
+        term_years: z.number().int().min(1).max(10).nullable().optional(),
+        term_months: z.number().int().min(1).max(120).nullable().default(12),
         starts_at: z.string().optional(),
         grace_days: z.number().int().min(0).max(180).default(14),
         notes: z.string().max(2000).optional(),
@@ -38,7 +40,12 @@ export const issueLicense = createServerFn({ method: "POST" })
     const key = h.generateLicenseKey();
     const key_hash = await h.sha256Hex(key);
     const starts_at = data.starts_at || h.today();
-    const expires_at = data.term_months ? h.addMonths(starts_at, data.term_months) : null;
+    const term_months = data.term_years ? data.term_years * 12 : data.term_months;
+    const bind_domain = data.bind_domain ? h.normalizeDomain(data.bind_domain) : null;
+    if (bind_domain && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(bind_domain)) {
+      throw new Error("Enter a valid company domain, e.g. acme.com");
+    }
+    const expires_at = term_months ? h.addMonths(starts_at, term_months) : null;
 
     const { data: row, error } = await (supabaseAdmin as any)
       .from("licenses")
@@ -47,9 +54,10 @@ export const issueLicense = createServerFn({ method: "POST" })
         key_prefix: key.slice(0, 9),
         customer_name: data.customer_name,
         customer_email: data.customer_email,
+        bind_domain,
         edition: data.edition,
         max_users: data.max_users,
-        term_months: data.term_months,
+        term_months,
         starts_at,
         expires_at,
         grace_days: data.grace_days,
@@ -67,7 +75,8 @@ export const issueLicense = createServerFn({ method: "POST" })
     await h.logEvent(row.id, "generated", {
       edition: data.edition,
       max_users: data.max_users,
-      term_months: data.term_months,
+      term_months,
+      bind_domain,
       expires_at,
       is_renewal_key: data.is_renewal_key,
     }, context.userId);
@@ -79,6 +88,7 @@ export const issueLicense = createServerFn({ method: "POST" })
       edition: data.edition,
       maxUsers: data.max_users,
       expiresAt: expires_at,
+      bindDomain: bind_domain,
     });
 
     return { id: row.id as string, key, expires_at };
@@ -93,7 +103,7 @@ export const listLicenses = createServerFn({ method: "GET" })
     const { data, error } = await (supabaseAdmin as any)
       .from("licenses")
       .select(
-        "id, key_prefix, customer_name, customer_email, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, is_renewal_key, notes, created_at",
+        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, is_renewal_key, notes, created_at",
       )
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
@@ -126,7 +136,7 @@ export const getLicenseDetail = createServerFn({ method: "GET" })
     const { data: lic, error } = await (supabaseAdmin as any)
       .from("licenses")
       .select(
-        "id, key_prefix, customer_name, customer_email, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at",
+        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at",
       )
       .eq("id", data.id)
       .maybeSingle();
@@ -372,7 +382,7 @@ export const activateLicense = createServerFn({ method: "POST" })
 
     // Bind to the customer it was sold to: the redeeming account must be the
     // licensed mailbox, or another address on the same corporate domain.
-    if (!h.emailMatchesLicense(actorEmail, lic.customer_email)) {
+    if (!h.emailMatchesLicense(actorEmail, lic.customer_email, lic.bind_domain)) {
       await h.logEvent(lic.id, "activation_rejected", {
         reason: "email_mismatch",
         organization_id: data.company_id,

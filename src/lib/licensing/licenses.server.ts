@@ -82,6 +82,7 @@ export async function sendLicenseKeyEmail(args: {
   edition: string;
   maxUsers: number | null;
   expiresAt: string | null;
+  bindDomain?: string | null;
 }) {
   try {
     await sendTrialNotice(supabaseAdmin, {
@@ -95,6 +96,7 @@ export async function sendLicenseKeyEmail(args: {
         `Edition: ${EDITION_LABEL[args.edition] ?? args.edition}`,
         `Seats: ${args.maxUsers ?? "Unlimited"}`,
         `Valid until: ${args.expiresAt ?? "Perpetual"}`,
+        ...(args.bindDomain ? [`Bound to domain: @${args.bindDomain}`] : []),
         "",
         "To activate: sign in as your organization administrator, go to Settings → License and enter the key above. Keep this key safe — it is shown only once.",
       ].join("\n"),
@@ -198,11 +200,28 @@ export async function verifiedEmailOf(userId: string): Promise<string> {
  * A key issued to customer_email may only be activated by that mailbox, or
  * by another address on the same corporate domain (never a free-mail domain).
  */
-export function emailMatchesLicense(actorEmail: string, customerEmail: string): boolean {
+export function normalizeDomain(raw: string): string {
+  return raw.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").replace(/^@/, "");
+}
+
+export function emailMatchesLicense(
+  actorEmail: string,
+  customerEmail: string,
+  bindDomain?: string | null,
+): boolean {
   const a = actorEmail.trim().toLowerCase();
+  const ad = domainOf(a);
+
+  // An explicitly bound domain is authoritative: only mailboxes on that
+  // corporate domain (or its subdomains) may redeem the key.
+  if (bindDomain) {
+    const bd = normalizeDomain(bindDomain);
+    if (!bd || FREE_EMAIL_DOMAINS.has(bd)) return false;
+    return ad === bd || ad.endsWith(`.${bd}`);
+  }
+
   const c = customerEmail.trim().toLowerCase();
   if (a === c) return true;
-  const ad = domainOf(a);
   const cd = domainOf(c);
   if (!ad || !cd || ad !== cd) return false;
   return !FREE_EMAIL_DOMAINS.has(cd);
