@@ -1,23 +1,23 @@
-name: Deploy to Ubuntu Server
+name: SSH Test Deploy
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  ssh-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy
+      - name: SSH into GCP VM
         uses: appleboy/ssh-action@v1.2.2
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: rizvee
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          port: 22
           script: |
+            echo "SSH Connected Successfully"
             whoami
             hostname
-
-        
+            uptime
+            docker ps
