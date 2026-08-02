@@ -20,12 +20,4 @@ jobs:
             whoami
             hostname
 
-            cd /path/to/your/project
-
-            git pull origin main
-
-            docker compose down
-            docker compose build
-            docker compose up -d
-
-            docker ps
+        
