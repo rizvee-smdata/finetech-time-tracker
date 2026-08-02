@@ -1,6 +1,84 @@
 name: Debug SSH Deploy
 
 on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Check environment
+        run: |
+          echo "Runner:"
+          uname -a
+
+          echo "Current directory:"
+          pwd
+
+          echo "Files:"
+          ls -la
+
+
+      - name: Check GCP secrets
+        run: |
+          if [ -z "${{ secrets.GCP_HOST }}" ]; then
+            echo "❌ GCP_HOST missing"
+          else
+            echo "✅ GCP_HOST exists"
+          fi
+
+          if [ -z "${{ secrets.GCP_USERNAME }}" ]; then
+            echo "❌ GCP_USERNAME missing"
+          else
+            echo "✅ GCP_USERNAME exists"
+          fi
+
+          if [ -z "${{ secrets.GCP_SSH_KEY }}" ]; then
+            echo "❌ GCP_SSH_KEY missing"
+          else
+            echo "✅ GCP_SSH_KEY exists"
+          fi
+
+
+      - name: Test SSH connection
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          port: 22
+          debug: true
+
+          script: |
+            echo "SSH connected successfully"
+
+            echo "Hostname:"
+            hostname
+
+            echo "User:"
+            whoami
+
+            echo "Uptime:"
+            uptime
+
+            echo "Docker version:"
+            docker --version || echo "Docker not installed"
+
+            echo "Running containers:"
+            docker ps || truename: Debug SSH Deploy
+
+on:
   workflow_dispatch:
 
 jobs:
