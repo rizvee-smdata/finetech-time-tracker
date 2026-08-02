@@ -25,39 +25,24 @@ jobs:
           ls -la
 
 
-      - name: Check Docker Hub secrets
-        run: |
-          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
-            echo "DOCKERHUB_USERNAME is missing"
-          else
-            echo "DOCKERHUB_USERNAME exists"
-          fi
-
-          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-            echo "DOCKERHUB_TOKEN is missing"
-          else
-            echo "DOCKERHUB_TOKEN exists"
-          fi
-
-
-      - name: Check GCP SSH secrets
+      - name: Check GCP secrets
         run: |
           if [ -z "${{ secrets.GCP_HOST }}" ]; then
-            echo "GCP_HOST is missing"
+            echo "❌ GCP_HOST missing"
           else
-            echo "GCP_HOST exists"
+            echo "✅ GCP_HOST exists"
           fi
 
           if [ -z "${{ secrets.GCP_USERNAME }}" ]; then
-            echo "GCP_USERNAME is missing"
+            echo "❌ GCP_USERNAME missing"
           else
-            echo "GCP_USERNAME exists"
+            echo "✅ GCP_USERNAME exists"
           fi
 
           if [ -z "${{ secrets.GCP_SSH_KEY }}" ]; then
-            echo "GCP_SSH_KEY is missing"
+            echo "❌ GCP_SSH_KEY missing"
           else
-            echo "GCP_SSH_KEY exists"
+            echo "✅ GCP_SSH_KEY exists"
           fi
 
 
@@ -72,8 +57,11 @@ jobs:
 
           script: |
             echo "SSH connected successfully"
+
             hostname
+
             whoami
+
             uptime
 
             echo "Docker status:"
