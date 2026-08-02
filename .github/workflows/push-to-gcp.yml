@@ -7,16 +7,13 @@ on:
 
   workflow_dispatch:
 
-
 jobs:
   debug:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
-
 
       - name: Check environment
         run: |
@@ -28,7 +25,6 @@ jobs:
 
           echo "Files:"
           ls -la
-
 
       - name: Check GCP secrets
         run: |
@@ -50,30 +46,43 @@ jobs:
             echo "✅ GCP_SSH_KEY exists"
           fi
 
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.GCP_HOST }} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.GCP_HOST }}
-          username: ${{ secrets.GCP_USERNAME }}
-          key: ${{ secrets.GCP_SSH_KEY }}
-          port: 22
-          debug: true
-
-          script: |
-            echo "SSH connected successfully"
+        run: |
+          ssh -vvv \
+            -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=20 \
+            ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_HOST }} \
+            '
+            echo "=========================="
+            echo "SSH Connected Successfully"
+            echo "=========================="
 
             echo "Hostname:"
             hostname
 
-            echo "User:"
+            echo "Current User:"
             whoami
 
             echo "Uptime:"
             uptime
 
-            echo "Docker version:"
+            echo "Docker:"
             docker --version || echo "Docker not installed"
 
-            echo "Running containers:"
+            echo "Running Containers:"
             docker ps || true
+
+            echo "Done."
+            '
