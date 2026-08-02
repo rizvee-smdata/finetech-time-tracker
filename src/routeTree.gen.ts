@@ -35,6 +35,7 @@ import { Route as AuthenticatedDealsRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedHolidaysRouteImport } from './routes/_authenticated/holidays'
 import { Route as AuthenticatedManagerRouteImport } from './routes/_authenticated/manager'
+import { Route as AuthenticatedNarrativesRouteImport } from './routes/_authenticated/narratives'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
@@ -54,9 +55,7 @@ import { Route as TrialVerifyRouteImport } from './routes/trial.verify'
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
-import { Route as AuthenticatedAdminErpRouteImport } from './routes/_authenticated/admin.erp'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
-import { Route as AuthenticatedAdminPurgeRouteImport } from './routes/_authenticated/admin.purge'
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_authenticated/admin.trial-requests'
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
@@ -129,7 +128,6 @@ import { Route as AuthenticatedKbAskRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedManagerDashboardRouteImport } from './routes/_authenticated/manager.dashboard'
 import { Route as AuthenticatedManagerReportsRouteImport } from './routes/_authenticated/manager.reports'
 import { Route as AuthenticatedManagerTeamRouteImport } from './routes/_authenticated/manager.team'
-import { Route as AuthenticatedNarrativesIndexRouteImport } from './routes/_authenticated/narratives.index'
 import { Route as AuthenticatedNarrativesIdRouteImport } from './routes/_authenticated/narratives.$id'
 import { Route as AuthenticatedNarrativesSettingsRouteImport } from './routes/_authenticated/narratives.settings'
 import { Route as AuthenticatedObjectsApiNameRouteImport } from './routes/_authenticated/objects.$apiName'
@@ -166,14 +164,12 @@ import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_aut
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
-import { Route as AuthenticatedSettingsApiRouteImport } from './routes/_authenticated/settings.api'
 import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
 import { Route as AuthenticatedSettingsCustomObjectsRouteImport } from './routes/_authenticated/settings.custom-objects'
 import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
 import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_authenticated/settings.form-builder'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings.integrations'
 import { Route as AuthenticatedSettingsLicenseRouteImport } from './routes/_authenticated/settings.license'
-import { Route as AuthenticatedSettingsPermissionsRouteImport } from './routes/_authenticated/settings.permissions'
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as AuthenticatedSurveysIndexRouteImport } from './routes/_authenticated/surveys.index'
 import { Route as AuthenticatedSurveysNewRouteImport } from './routes/_authenticated/surveys.new'
@@ -242,14 +238,9 @@ import { Route as ApiPublicHooksLicenseDailyRouteImport } from './routes/api/pub
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
 import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
-import { Route as ApiPublicHooksRenewalRemindersRouteImport } from './routes/api/public/hooks/renewal-reminders'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
 import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
-import { Route as ApiPublicHooksWebhookDispatchRouteImport } from './routes/api/public/hooks/webhook-dispatch'
-import { Route as ApiPublicLicenseVerifyRouteImport } from './routes/api/public/license/verify'
-import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
-import { Route as ApiPublicV1OpenapiDotjsonRouteImport } from './routes/api/public/v1/openapi[.]json'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -389,6 +380,11 @@ const AuthenticatedManagerRoute = AuthenticatedManagerRouteImport.update({
   path: '/manager',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNarrativesRoute = AuthenticatedNarrativesRouteImport.update({
+  id: '/narratives',
+  path: '/narratives',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
@@ -487,19 +483,9 @@ const AuthenticatedAdminAutomationsRoute =
     path: '/admin/automations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminErpRoute = AuthenticatedAdminErpRouteImport.update({
-  id: '/admin/erp',
-  path: '/admin/erp',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   id: '/admin/map',
   path: '/admin/map',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminPurgeRoute = AuthenticatedAdminPurgeRouteImport.update({
-  id: '/admin/purge',
-  path: '/admin/purge',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoutesRoute =
@@ -911,23 +897,17 @@ const AuthenticatedManagerTeamRoute =
     path: '/team',
     getParentRoute: () => AuthenticatedManagerRoute,
   } as any)
-const AuthenticatedNarrativesIndexRoute =
-  AuthenticatedNarrativesIndexRouteImport.update({
-    id: '/narratives/',
-    path: '/narratives/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedNarrativesIdRoute =
   AuthenticatedNarrativesIdRouteImport.update({
-    id: '/narratives/$id',
-    path: '/narratives/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedNarrativesRoute,
   } as any)
 const AuthenticatedNarrativesSettingsRoute =
   AuthenticatedNarrativesSettingsRouteImport.update({
-    id: '/narratives/settings',
-    path: '/narratives/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedNarrativesRoute,
   } as any)
 const AuthenticatedObjectsApiNameRoute =
   AuthenticatedObjectsApiNameRouteImport.update({
@@ -1130,12 +1110,6 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
-const AuthenticatedSettingsApiRoute =
-  AuthenticatedSettingsApiRouteImport.update({
-    id: '/api',
-    path: '/api',
-    getParentRoute: () => AuthenticatedSettingsRoute,
-  } as any)
 const AuthenticatedSettingsCurrencyRoute =
   AuthenticatedSettingsCurrencyRouteImport.update({
     id: '/currency',
@@ -1170,12 +1144,6 @@ const AuthenticatedSettingsLicenseRoute =
   AuthenticatedSettingsLicenseRouteImport.update({
     id: '/license',
     path: '/license',
-    getParentRoute: () => AuthenticatedSettingsRoute,
-  } as any)
-const AuthenticatedSettingsPermissionsRoute =
-  AuthenticatedSettingsPermissionsRouteImport.update({
-    id: '/permissions',
-    path: '/permissions',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedSettingsWhatsappRoute =
@@ -1572,12 +1540,6 @@ const ApiPublicHooksProcessRemindersRoute =
     path: '/api/public/hooks/process-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHooksRenewalRemindersRoute =
-  ApiPublicHooksRenewalRemindersRouteImport.update({
-    id: '/api/public/hooks/renewal-reminders',
-    path: '/api/public/hooks/renewal-reminders',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicHooksTmsOverdueScanRoute =
   ApiPublicHooksTmsOverdueScanRouteImport.update({
     id: '/api/public/hooks/tms-overdue-scan',
@@ -1594,28 +1556,6 @@ const ApiPublicHooksVisitReminderCheckRoute =
   ApiPublicHooksVisitReminderCheckRouteImport.update({
     id: '/api/public/hooks/visit-reminder-check',
     path: '/api/public/hooks/visit-reminder-check',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicHooksWebhookDispatchRoute =
-  ApiPublicHooksWebhookDispatchRouteImport.update({
-    id: '/api/public/hooks/webhook-dispatch',
-    path: '/api/public/hooks/webhook-dispatch',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicLicenseVerifyRoute = ApiPublicLicenseVerifyRouteImport.update({
-  id: '/api/public/license/verify',
-  path: '/api/public/license/verify',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
-  id: '/api/public/v1/$',
-  path: '/api/public/v1/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicV1OpenapiDotjsonRoute =
-  ApiPublicV1OpenapiDotjsonRouteImport.update({
-    id: '/api/public/v1/openapi.json',
-    path: '/api/public/v1/openapi.json',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
@@ -1685,6 +1625,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -1706,9 +1647,7 @@ export interface FileRoutesByFullPath {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/admin/erp': typeof AuthenticatedAdminErpRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
-  '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -1803,14 +1742,12 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
-  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/license': typeof AuthenticatedSettingsLicenseRoute
-  '/settings/permissions': typeof AuthenticatedSettingsPermissionsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -1860,7 +1797,6 @@ export interface FileRoutesByFullPath {
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/kb/': typeof AuthenticatedKbIndexRoute
-  '/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1891,14 +1827,9 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
-  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
-  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
-  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
-  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
-  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -1929,6 +1860,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/scan': typeof AuthenticatedScanRouteWithChildren
@@ -1942,9 +1874,7 @@ export interface FileRoutesByTo {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/admin/erp': typeof AuthenticatedAdminErpRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
-  '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -2039,14 +1969,12 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
-  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
   '/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/license': typeof AuthenticatedSettingsLicenseRoute
-  '/settings/permissions': typeof AuthenticatedSettingsPermissionsRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2096,7 +2024,6 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/followups': typeof AuthenticatedFollowupsIndexRoute
   '/kb': typeof AuthenticatedKbIndexRoute
-  '/narratives': typeof AuthenticatedNarrativesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -2127,14 +2054,9 @@ export interface FileRoutesByTo {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
-  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
-  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
-  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
-  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
-  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -2172,6 +2094,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/holidays': typeof AuthenticatedHolidaysRoute
   '/_authenticated/manager': typeof AuthenticatedManagerRouteWithChildren
+  '/_authenticated/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -2193,9 +2116,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
-  '/_authenticated/admin/erp': typeof AuthenticatedAdminErpRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
-  '/_authenticated/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -2290,14 +2211,12 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
-  '/_authenticated/settings/api': typeof AuthenticatedSettingsApiRoute
   '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/_authenticated/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
   '/_authenticated/settings/form-builder': typeof AuthenticatedSettingsFormBuilderRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/license': typeof AuthenticatedSettingsLicenseRoute
-  '/_authenticated/settings/permissions': typeof AuthenticatedSettingsPermissionsRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRouteWithChildren
   '/_authenticated/surveys/new': typeof AuthenticatedSurveysNewRoute
   '/_authenticated/surveys/templates': typeof AuthenticatedSurveysTemplatesRoute
@@ -2347,7 +2266,6 @@ export interface FileRoutesById {
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/_authenticated/kb/': typeof AuthenticatedKbIndexRoute
-  '/_authenticated/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -2378,14 +2296,9 @@ export interface FileRoutesById {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
-  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
-  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
-  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
-  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
-  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -2423,6 +2336,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/holidays'
     | '/manager'
+    | '/narratives'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -2444,9 +2358,7 @@ export interface FileRouteTypes {
     | '/admin/account-review'
     | '/admin/audit'
     | '/admin/automations'
-    | '/admin/erp'
     | '/admin/map'
-    | '/admin/purge'
     | '/admin/routes'
     | '/admin/trial-requests'
     | '/ai-visits/$id'
@@ -2541,14 +2453,12 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
-    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/license'
-    | '/settings/permissions'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2598,7 +2508,6 @@ export interface FileRouteTypes {
     | '/expenses/'
     | '/followups/'
     | '/kb/'
-    | '/narratives/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -2629,14 +2538,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
-    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
-    | '/api/public/hooks/webhook-dispatch'
-    | '/api/public/license/verify'
-    | '/api/public/v1/$'
-    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -2667,6 +2571,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/holidays'
     | '/manager'
+    | '/narratives'
     | '/partners'
     | '/preferences'
     | '/scan'
@@ -2680,9 +2585,7 @@ export interface FileRouteTypes {
     | '/admin/account-review'
     | '/admin/audit'
     | '/admin/automations'
-    | '/admin/erp'
     | '/admin/map'
-    | '/admin/purge'
     | '/admin/routes'
     | '/admin/trial-requests'
     | '/ai-visits/$id'
@@ -2777,14 +2680,12 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
-    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
     | '/settings/form-builder'
     | '/settings/integrations'
     | '/settings/license'
-    | '/settings/permissions'
     | '/settings/whatsapp'
     | '/surveys/new'
     | '/surveys/templates'
@@ -2834,7 +2735,6 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/followups'
     | '/kb'
-    | '/narratives'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -2865,14 +2765,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
-    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
-    | '/api/public/hooks/webhook-dispatch'
-    | '/api/public/license/verify'
-    | '/api/public/v1/$'
-    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -2909,6 +2804,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/holidays'
     | '/_authenticated/manager'
+    | '/_authenticated/narratives'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -2930,9 +2826,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/account-review'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/automations'
-    | '/_authenticated/admin/erp'
     | '/_authenticated/admin/map'
-    | '/_authenticated/admin/purge'
     | '/_authenticated/admin/routes'
     | '/_authenticated/admin/trial-requests'
     | '/_authenticated/ai-visits/$id'
@@ -3027,14 +2921,12 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
-    | '/_authenticated/settings/api'
     | '/_authenticated/settings/currency'
     | '/_authenticated/settings/custom-objects'
     | '/_authenticated/settings/export'
     | '/_authenticated/settings/form-builder'
     | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/license'
-    | '/_authenticated/settings/permissions'
     | '/_authenticated/settings/whatsapp'
     | '/_authenticated/surveys/new'
     | '/_authenticated/surveys/templates'
@@ -3084,7 +2976,6 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/'
     | '/_authenticated/followups/'
     | '/_authenticated/kb/'
-    | '/_authenticated/narratives/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -3115,14 +3006,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
-    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
-    | '/api/public/hooks/webhook-dispatch'
-    | '/api/public/license/verify'
-    | '/api/public/v1/$'
-    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -3159,14 +3045,9 @@ export interface RootRouteChildren {
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
-  ApiPublicHooksRenewalRemindersRoute: typeof ApiPublicHooksRenewalRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
-  ApiPublicHooksWebhookDispatchRoute: typeof ApiPublicHooksWebhookDispatchRoute
-  ApiPublicLicenseVerifyRoute: typeof ApiPublicLicenseVerifyRoute
-  ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
-  ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -3358,6 +3239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManagerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/narratives': {
+      id: '/_authenticated/narratives'
+      path: '/narratives'
+      fullPath: '/narratives'
+      preLoaderRoute: typeof AuthenticatedNarrativesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partners': {
       id: '/_authenticated/partners'
       path: '/partners'
@@ -3491,25 +3379,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAutomationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/erp': {
-      id: '/_authenticated/admin/erp'
-      path: '/admin/erp'
-      fullPath: '/admin/erp'
-      preLoaderRoute: typeof AuthenticatedAdminErpRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/map': {
       id: '/_authenticated/admin/map'
       path: '/admin/map'
       fullPath: '/admin/map'
       preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/purge': {
-      id: '/_authenticated/admin/purge'
-      path: '/admin/purge'
-      fullPath: '/admin/purge'
-      preLoaderRoute: typeof AuthenticatedAdminPurgeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/routes': {
@@ -4016,26 +3890,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManagerTeamRouteImport
       parentRoute: typeof AuthenticatedManagerRoute
     }
-    '/_authenticated/narratives/': {
-      id: '/_authenticated/narratives/'
-      path: '/narratives'
-      fullPath: '/narratives/'
-      preLoaderRoute: typeof AuthenticatedNarrativesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/narratives/$id': {
       id: '/_authenticated/narratives/$id'
-      path: '/narratives/$id'
+      path: '/$id'
       fullPath: '/narratives/$id'
       preLoaderRoute: typeof AuthenticatedNarrativesIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedNarrativesRoute
     }
     '/_authenticated/narratives/settings': {
       id: '/_authenticated/narratives/settings'
-      path: '/narratives/settings'
+      path: '/settings'
       fullPath: '/narratives/settings'
       preLoaderRoute: typeof AuthenticatedNarrativesSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedNarrativesRoute
     }
     '/_authenticated/objects/$apiName': {
       id: '/_authenticated/objects/$apiName'
@@ -4275,13 +4142,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/_authenticated/settings/api': {
-      id: '/_authenticated/settings/api'
-      path: '/api'
-      fullPath: '/settings/api'
-      preLoaderRoute: typeof AuthenticatedSettingsApiRouteImport
-      parentRoute: typeof AuthenticatedSettingsRoute
-    }
     '/_authenticated/settings/currency': {
       id: '/_authenticated/settings/currency'
       path: '/currency'
@@ -4322,13 +4182,6 @@ declare module '@tanstack/react-router' {
       path: '/license'
       fullPath: '/settings/license'
       preLoaderRoute: typeof AuthenticatedSettingsLicenseRouteImport
-      parentRoute: typeof AuthenticatedSettingsRoute
-    }
-    '/_authenticated/settings/permissions': {
-      id: '/_authenticated/settings/permissions'
-      path: '/permissions'
-      fullPath: '/settings/permissions'
-      preLoaderRoute: typeof AuthenticatedSettingsPermissionsRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/settings/whatsapp': {
@@ -4807,13 +4660,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/hooks/renewal-reminders': {
-      id: '/api/public/hooks/renewal-reminders'
-      path: '/api/public/hooks/renewal-reminders'
-      fullPath: '/api/public/hooks/renewal-reminders'
-      preLoaderRoute: typeof ApiPublicHooksRenewalRemindersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/tms-overdue-scan': {
       id: '/api/public/hooks/tms-overdue-scan'
       path: '/api/public/hooks/tms-overdue-scan'
@@ -4833,34 +4679,6 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/visit-reminder-check'
       fullPath: '/api/public/hooks/visit-reminder-check'
       preLoaderRoute: typeof ApiPublicHooksVisitReminderCheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/webhook-dispatch': {
-      id: '/api/public/hooks/webhook-dispatch'
-      path: '/api/public/hooks/webhook-dispatch'
-      fullPath: '/api/public/hooks/webhook-dispatch'
-      preLoaderRoute: typeof ApiPublicHooksWebhookDispatchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/license/verify': {
-      id: '/api/public/license/verify'
-      path: '/api/public/license/verify'
-      fullPath: '/api/public/license/verify'
-      preLoaderRoute: typeof ApiPublicLicenseVerifyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/v1/$': {
-      id: '/api/public/v1/$'
-      path: '/api/public/v1/$'
-      fullPath: '/api/public/v1/$'
-      preLoaderRoute: typeof ApiPublicV1SplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/v1/openapi.json': {
-      id: '/api/public/v1/openapi.json'
-      path: '/api/public/v1/openapi.json'
-      fullPath: '/api/public/v1/openapi.json'
-      preLoaderRoute: typeof ApiPublicV1OpenapiDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/auth/preview': {
@@ -5097,6 +4915,22 @@ const AuthenticatedManagerRouteChildren: AuthenticatedManagerRouteChildren = {
 const AuthenticatedManagerRouteWithChildren =
   AuthenticatedManagerRoute._addFileChildren(AuthenticatedManagerRouteChildren)
 
+interface AuthenticatedNarrativesRouteChildren {
+  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
+  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
+}
+
+const AuthenticatedNarrativesRouteChildren: AuthenticatedNarrativesRouteChildren =
+  {
+    AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
+    AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
+  }
+
+const AuthenticatedNarrativesRouteWithChildren =
+  AuthenticatedNarrativesRoute._addFileChildren(
+    AuthenticatedNarrativesRouteChildren,
+  )
+
 interface AuthenticatedPlanningRouteChildren {
   AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
   AuthenticatedPlanningNewRoute: typeof AuthenticatedPlanningNewRoute
@@ -5245,20 +5079,17 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
   )
 
 interface AuthenticatedSettingsRouteChildren {
-  AuthenticatedSettingsApiRoute: typeof AuthenticatedSettingsApiRoute
   AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
   AuthenticatedSettingsCustomObjectsRoute: typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
   AuthenticatedSettingsFormBuilderRoute: typeof AuthenticatedSettingsFormBuilderRoute
   AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
   AuthenticatedSettingsLicenseRoute: typeof AuthenticatedSettingsLicenseRoute
-  AuthenticatedSettingsPermissionsRoute: typeof AuthenticatedSettingsPermissionsRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRouteWithChildren
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
-  AuthenticatedSettingsApiRoute: AuthenticatedSettingsApiRoute,
   AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
   AuthenticatedSettingsCustomObjectsRoute:
     AuthenticatedSettingsCustomObjectsRouteWithChildren,
@@ -5267,7 +5098,6 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsIntegrationsRoute:
     AuthenticatedSettingsIntegrationsRoute,
   AuthenticatedSettingsLicenseRoute: AuthenticatedSettingsLicenseRoute,
-  AuthenticatedSettingsPermissionsRoute: AuthenticatedSettingsPermissionsRoute,
   AuthenticatedSettingsWhatsappRoute:
     AuthenticatedSettingsWhatsappRouteWithChildren,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
@@ -5404,6 +5234,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHolidaysRoute: typeof AuthenticatedHolidaysRoute
   AuthenticatedManagerRoute: typeof AuthenticatedManagerRouteWithChildren
+  AuthenticatedNarrativesRoute: typeof AuthenticatedNarrativesRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -5422,9 +5253,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
-  AuthenticatedAdminErpRoute: typeof AuthenticatedAdminErpRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
-  AuthenticatedAdminPurgeRoute: typeof AuthenticatedAdminPurgeRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
   AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
@@ -5444,8 +5273,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
-  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
-  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
   AuthenticatedObjectsApiNameRoute: typeof AuthenticatedObjectsApiNameRoute
   AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
   AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
@@ -5478,7 +5305,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
-  AuthenticatedNarrativesIndexRoute: typeof AuthenticatedNarrativesIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedAdminLicensingIdRoute: typeof AuthenticatedAdminLicensingIdRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
@@ -5504,6 +5330,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHolidaysRoute: AuthenticatedHolidaysRoute,
   AuthenticatedManagerRoute: AuthenticatedManagerRouteWithChildren,
+  AuthenticatedNarrativesRoute: AuthenticatedNarrativesRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
@@ -5523,9 +5350,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminAutomationsRoute:
     AuthenticatedAdminAutomationsRouteWithChildren,
-  AuthenticatedAdminErpRoute: AuthenticatedAdminErpRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
-  AuthenticatedAdminPurgeRoute: AuthenticatedAdminPurgeRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
   AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
@@ -5546,8 +5371,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
-  AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
-  AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
   AuthenticatedObjectsApiNameRoute: AuthenticatedObjectsApiNameRoute,
   AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
   AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
@@ -5582,7 +5405,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
-  AuthenticatedNarrativesIndexRoute: AuthenticatedNarrativesIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedAdminLicensingIdRoute: AuthenticatedAdminLicensingIdRoute,
   AuthenticatedClientsClientIdHealthRoute:
@@ -5633,15 +5455,10 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
-  ApiPublicHooksRenewalRemindersRoute: ApiPublicHooksRenewalRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
   ApiPublicHooksVisitAnalyticsAlertsRoute:
     ApiPublicHooksVisitAnalyticsAlertsRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
-  ApiPublicHooksWebhookDispatchRoute: ApiPublicHooksWebhookDispatchRoute,
-  ApiPublicLicenseVerifyRoute: ApiPublicLicenseVerifyRoute,
-  ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
-  ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
