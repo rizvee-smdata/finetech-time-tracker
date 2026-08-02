@@ -14,14 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Dockerfile exists
+      - name: Debug workspace
         run: |
           echo "Current directory:"
           pwd
-          echo "Files:"
+          
+          echo "Repository files:"
           ls -la
-          echo "Searching Dockerfile:"
-          find . -name Dockerfile
+          
+          echo "Dockerfile location:"
+          find . -name Dockerfile -type f
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -32,11 +34,13 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            -f Dockerfile \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest .
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+          docker push \
+            ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
 
 
       - name: Deploy to GCP VM
@@ -48,42 +52,25 @@ jobs:
 
           script: |
 
-            echo "Checking Docker..."
-
             if ! command -v docker >/dev/null 2>&1; then
               curl -fsSL https://get.docker.com | sh
               sudo usermod -aG docker $USER
             fi
 
-
-            echo "Login Docker Hub..."
-
             docker login \
               -u ${{ secrets.DOCKERHUB_USERNAME }} \
               -p ${{ secrets.DOCKERHUB_TOKEN }}
 
-
-            echo "Pull latest image..."
-
             docker pull \
               ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
 
-
-            echo "Stopping old container..."
-
             docker stop time-tracker || true
             docker rm time-tracker || true
-
-
-            echo "Starting new container..."
 
             docker run -d \
               --name time-tracker \
               --restart unless-stopped \
               -p 3000:3000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
-
-
-            echo "Deployment completed"
 
             docker ps
