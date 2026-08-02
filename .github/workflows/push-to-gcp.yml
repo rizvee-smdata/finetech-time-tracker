@@ -1,18 +1,80 @@
-name: Test GCP Host
+name: Debug SSH Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-host:
+  debug:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check GCP Host
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Check environment
+        run: |
+          echo "Runner:"
+          uname -a
+
+          echo "Current directory:"
+          pwd
+
+          echo "Files:"
+          ls -la
+
+
+      - name: Check Docker Hub secrets
+        run: |
+          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
+            echo "DOCKERHUB_USERNAME is missing"
+          else
+            echo "DOCKERHUB_USERNAME exists"
+          fi
+
+          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "DOCKERHUB_TOKEN is missing"
+          else
+            echo "DOCKERHUB_TOKEN exists"
+          fi
+
+
+      - name: Check GCP SSH secrets
         run: |
           if [ -z "${{ secrets.GCP_HOST }}" ]; then
-            echo "GCP_HOST is empty"
-            exit 1
+            echo "GCP_HOST is missing"
           else
-            echo "GCP_HOST is configured"
+            echo "GCP_HOST exists"
           fi
+
+          if [ -z "${{ secrets.GCP_USERNAME }}" ]; then
+            echo "GCP_USERNAME is missing"
+          else
+            echo "GCP_USERNAME exists"
+          fi
+
+          if [ -z "${{ secrets.GCP_SSH_KEY }}" ]; then
+            echo "GCP_SSH_KEY is missing"
+          else
+            echo "GCP_SSH_KEY exists"
+          fi
+
+
+      - name: Test SSH connection
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          port: 22
+          debug: true
+
+          script: |
+            echo "SSH connected successfully"
+            hostname
+            whoami
+            uptime
+
+            echo "Docker status:"
+            docker --version || echo "Docker not installed"
