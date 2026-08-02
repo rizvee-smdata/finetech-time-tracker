@@ -20,11 +20,11 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/twin-care:latest .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest .
 
       - name: Push image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/twin-care:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
 
       - name: Deploy to GCP VM
         uses: appleboy/ssh-action@v1.2.2
