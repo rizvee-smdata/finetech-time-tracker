@@ -36,6 +36,7 @@ import {
   Search,
   GitBranch,
   Boxes,
+  Trash2,
 
 
 } from "lucide-react";
@@ -216,6 +217,7 @@ const adminSection: NavSection = {
     { to: "/audit", label: "Audit log", icon: ScrollText },
     { to: "/settings/currency", label: "Currency & FX", icon: Settings },
     { to: "/settings/custom-objects", label: "Custom Objects", icon: Boxes },
+    { to: "/admin/purge", label: "Purge data", icon: Trash2 },
     { to: "/settings", label: "Settings", icon: Settings },
   ],
 

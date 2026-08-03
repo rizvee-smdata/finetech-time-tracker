@@ -8036,6 +8036,10 @@ export type Database = {
         Args: { _company: string; _from: string }
         Returns: string
       }
+      purge_company_data: {
+        Args: { _company_id: string; _confirm?: string; _mode?: string }
+        Returns: Json
+      }
       purge_old_soft_deletes: { Args: never; Returns: undefined }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }

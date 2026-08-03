@@ -210,6 +210,7 @@ import { Route as AuthenticatedAiVisitsHistoryRouteImport } from './routes/_auth
 import { Route as AuthenticatedAiVisitsIdRouteImport } from './routes/_authenticated/ai-visits.$id'
 import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_authenticated/admin.trial-requests'
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
+import { Route as AuthenticatedAdminPurgeRouteImport } from './routes/_authenticated/admin.purge'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -1378,6 +1379,11 @@ const AuthenticatedAdminRoutesRoute =
     path: '/admin/routes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPurgeRoute = AuthenticatedAdminPurgeRouteImport.update({
+  id: '/admin/purge',
+  path: '/admin/purge',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   id: '/admin/map',
   path: '/admin/map',
@@ -1648,6 +1654,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -1875,6 +1882,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/admin/map': typeof AuthenticatedAdminMapRoute
+  '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -2117,6 +2125,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
+  '/_authenticated/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
   '/_authenticated/admin/trial-requests': typeof AuthenticatedAdminTrialRequestsRoute
   '/_authenticated/ai-visits/$id': typeof AuthenticatedAiVisitsIdRoute
@@ -2359,6 +2368,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/automations'
     | '/admin/map'
+    | '/admin/purge'
     | '/admin/routes'
     | '/admin/trial-requests'
     | '/ai-visits/$id'
@@ -2586,6 +2596,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/automations'
     | '/admin/map'
+    | '/admin/purge'
     | '/admin/routes'
     | '/admin/trial-requests'
     | '/ai-visits/$id'
@@ -2827,6 +2838,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/map'
+    | '/_authenticated/admin/purge'
     | '/_authenticated/admin/routes'
     | '/_authenticated/admin/trial-requests'
     | '/_authenticated/ai-visits/$id'
@@ -4464,6 +4476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRoutesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/purge': {
+      id: '/_authenticated/admin/purge'
+      path: '/admin/purge'
+      fullPath: '/admin/purge'
+      preLoaderRoute: typeof AuthenticatedAdminPurgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/map': {
       id: '/_authenticated/admin/map'
       path: '/admin/map'
@@ -5254,6 +5273,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
+  AuthenticatedAdminPurgeRoute: typeof AuthenticatedAdminPurgeRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
   AuthenticatedAdminTrialRequestsRoute: typeof AuthenticatedAdminTrialRequestsRoute
   AuthenticatedAiVisitsIdRoute: typeof AuthenticatedAiVisitsIdRoute
@@ -5351,6 +5371,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAutomationsRoute:
     AuthenticatedAdminAutomationsRouteWithChildren,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
+  AuthenticatedAdminPurgeRoute: AuthenticatedAdminPurgeRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
   AuthenticatedAdminTrialRequestsRoute: AuthenticatedAdminTrialRequestsRoute,
   AuthenticatedAiVisitsIdRoute: AuthenticatedAiVisitsIdRoute,
