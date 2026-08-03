@@ -36,6 +36,7 @@ import {
   Search,
   GitBranch,
   Boxes,
+  Trash2,
 
 
 } from "lucide-react";
