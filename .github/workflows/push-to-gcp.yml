@@ -60,7 +60,7 @@ jobs:
             docker run -d \
               --name time-tracker \
               --restart unless-stopped \
-              -p 3000:8000 \
+              -p 3000:8080 \
               ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
 
             echo "Running containers:"
