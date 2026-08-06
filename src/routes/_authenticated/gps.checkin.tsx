@@ -18,7 +18,8 @@ import { haversineMeters } from "@/lib/maps/haversine";
 const GEOFENCE_M = 200;
 
 export const Route = createFileRoute("/_authenticated/gps/checkin")({
-  validateSearch: (s: Record<string, unknown>) => ({ leadId: typeof s.leadId === "string" ? s.leadId : undefined }),
+  validateSearch: (s: Record<string, unknown>): { leadId?: string } =>
+    typeof s.leadId === "string" ? { leadId: s.leadId } : {},
   component: CheckinPage,
 });
 

@@ -24,7 +24,15 @@ export async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
+/** The licence generator only runs on the vendor's own deployment. */
+export function vendorConsoleEnabled(): boolean {
+  return String(process.env['VENDOR_CONSOLE'] ?? "").toLowerCase() === "true";
+}
+
 export async function assertVendorAdmin(supabase: any, userId: string) {
+  if (!vendorConsoleEnabled()) {
+    throw new Error("The licensing console is not available on this deployment.");
+  }
   const { data } = await supabase
     .from("profiles")
     .select("is_super_admin")
