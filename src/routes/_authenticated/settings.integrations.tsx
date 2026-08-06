@@ -32,9 +32,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const sb = supabase as any;
 
 export const Route = createFileRoute("/_authenticated/settings/integrations")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    connected: s.connected === "1" || s.connected === 1 ? 1 : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): { connected?: 1 } =>
+    s.connected === "1" || s.connected === 1 ? { connected: 1 } : {},
   component: IntegrationsPage,
 });
 
