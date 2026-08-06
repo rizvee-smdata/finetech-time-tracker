@@ -37,9 +37,8 @@ import { fmtMoney, grandTotal, lineTotal, totalImplementationDays } from "@/lib/
 import { generateProposal } from "@/lib/proposals/generate.functions";
 
 export const Route = createFileRoute("/_authenticated/proposals/new")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    fromDeal: typeof search.fromDeal === "string" ? search.fromDeal : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { fromDeal?: string } =>
+    typeof search.fromDeal === "string" ? { fromDeal: search.fromDeal } : {},
   component: ProposalWizardPage,
 });
 
