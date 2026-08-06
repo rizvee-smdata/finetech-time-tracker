@@ -206,12 +206,16 @@ const staffSection: NavSection = {
   ],
 };
 
+import { VENDOR_CONSOLE_ENABLED } from "@/lib/licensing/vendor";
+
 const adminSection: NavSection = {
   key: "admin",
   label: "Administration",
   items: [
     { to: "/admin/trial-requests", label: "Trial requests", icon: ScrollText },
-    { to: "/admin/licensing", label: "Licensing", icon: ShieldCheck },
+    ...(VENDOR_CONSOLE_ENABLED
+      ? [{ to: "/admin/licensing", label: "Licensing", icon: ShieldCheck }]
+      : []),
     { to: "/settings/license", label: "License & seats", icon: ShieldCheck },
     { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
