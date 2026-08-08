@@ -210,7 +210,7 @@ const adminSection: NavSection = {
   label: "Administration",
   items: [
     { to: "/admin/trial-requests", label: "Trial requests", icon: ScrollText },
-    { to: "/admin/licensing", label: "Licensing", icon: ShieldCheck },
+   // { to: "/admin/licensing", label: "Licensing", icon: ShieldCheck },
     { to: "/settings/license", label: "License & seats", icon: ShieldCheck },
     { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
