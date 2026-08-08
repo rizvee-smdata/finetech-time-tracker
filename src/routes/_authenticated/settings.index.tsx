@@ -429,13 +429,18 @@ function CreateUserCard() {
 
   const m = useMutation({
     mutationFn: async () => fn({ data: form }),
-    onSuccess: () => {
-      toast.success("User created");
+    onSuccess: (res: any) => {
+      toast.success(
+        res?.reused
+          ? "Existing account re-linked — password, role and companies updated"
+          : "User created",
+      );
       setForm({ full_name: "", email: "", password: "", role: "employee", company_ids: [] });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Failed to create user"),
   });
+
 
   return (
     <Card className="p-6">
