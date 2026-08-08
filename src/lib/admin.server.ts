@@ -1,3 +1,31 @@
+import { z } from "zod";
+
+export const createUserSchema = z.object({
+  email: z.string().trim().email().max(255),
+  password: z.string().min(8).max(72),
+  full_name: z.string().trim().min(1).max(120),
+  role: z.enum(["admin", "manager", "employee"]),
+  company_ids: z.array(z.string().uuid()).optional().default([]),
+});
+
+export const customerRowSchema = z.object({
+  customer_name: z.string().trim().min(1).max(200),
+  contact_person: z.string().trim().max(200).optional().nullable(),
+  designation: z.string().trim().max(120).optional().nullable(),
+  email: z.string().trim().email().max(255).optional().nullable().or(z.literal("")),
+  phone: z.string().trim().max(40).optional().nullable(),
+});
+
+export const companySchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  slug: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, dashes"),
+});
+
 export async function getAdminCallerContext(supabase: any, userId: string) {
   const [{ data: roles }, { data: profile }, { data: memberships }] = await Promise.all([
     supabase.from("user_roles").select("role").eq("user_id", userId),

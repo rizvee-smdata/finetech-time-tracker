@@ -1,15 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertAdmin, assertSuperAdmin } from "@/lib/admin.server";
-
-const createUserSchema = z.object({
-  email: z.string().trim().email().max(255),
-  password: z.string().min(8).max(72),
-  full_name: z.string().trim().min(1).max(120),
-  role: z.enum(["admin", "manager", "employee"]),
-  company_ids: z.array(z.string().uuid()).optional().default([]),
-});
+import {
+  assertAdmin,
+  assertSuperAdmin,
+  companySchema,
+  createUserSchema,
+  customerRowSchema,
+} from "@/lib/admin.server";
 
 export const adminCreateUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -140,19 +138,11 @@ export const adminListUsers = createServerFn({ method: "GET" })
     );
   });
 
-const customerRow = z.object({
-  customer_name: z.string().trim().min(1).max(200),
-  contact_person: z.string().trim().max(200).optional().nullable(),
-  designation: z.string().trim().max(120).optional().nullable(),
-  email: z.string().trim().email().max(255).optional().nullable().or(z.literal("")),
-  phone: z.string().trim().max(40).optional().nullable(),
-});
-
 export const importCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z.object({
-      rows: z.array(customerRow).min(1).max(2000),
+      rows: z.array(customerRowSchema).min(1).max(2000),
       company_id: z.string().uuid().nullable().optional(),
       kind: z.enum(["customer", "partner", "consultant"]).optional(),
     }).parse(d),
@@ -178,11 +168,6 @@ export const importCustomers = createServerFn({ method: "POST" })
   });
 
 // ---------- Companies ----------
-
-const companySchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  slug: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, dashes"),
-});
 
 export const adminCreateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
