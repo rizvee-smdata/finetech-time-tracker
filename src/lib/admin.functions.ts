@@ -42,26 +42,76 @@ export const adminCreateUser = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { assertSeatAvailable } = await import("@/lib/licensing/licenses.server");
     for (const cid of data.company_ids) await assertSeatAvailable(cid);
+    const email = data.email.toLowerCase();
+    let newUserId: string | null = null;
+    let reused = false;
+
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
+      email,
       password: data.password,
       email_confirm: true,
       user_metadata: { full_name: data.full_name },
     });
-    if (error) throw new Error(error.message);
-    const newUserId = created.user!.id;
-    if (data.role !== "employee") {
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", newUserId);
-      const { error: rErr } = await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: newUserId, role: data.role });
-      if (rErr) throw new Error(rErr.message);
-    }
-    if (data.company_ids.length) {
+
+    if (error) {
+      const alreadyExists =
+        /already/i.test(error.message) && /regist|exist/i.test(error.message);
+      if (!alreadyExists) throw new Error(error.message);
+
+      // The auth account already exists (e.g. created before, or left over after a
+      // company was removed). Re-use it and (re)attach role + company memberships.
+      const { data: existingProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .ilike("email", email)
+        .maybeSingle();
+      newUserId = (existingProfile as { id: string } | null)?.id ?? null;
+
+      if (!newUserId) {
+        // Fall back to scanning the auth users list.
+        for (let page = 1; page <= 20 && !newUserId; page++) {
+          const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+            page,
+            perPage: 200,
+          });
+          if (listErr) throw new Error(listErr.message);
+          const match = list.users.find((u) => (u.email ?? "").toLowerCase() === email);
+          if (match) newUserId = match.id;
+          if (list.users.length < 200) break;
+        }
+      }
+      if (!newUserId) throw new Error("An account with this email exists but could not be found.");
+
+      reused = true;
+      const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(newUserId, {
+        password: data.password,
+        email_confirm: true,
+        user_metadata: { full_name: data.full_name },
+      });
+      if (updErr) throw new Error(updErr.message);
       await supabaseAdmin
-        .from("company_members")
-        .insert(data.company_ids.map((cid) => ({ company_id: cid, user_id: newUserId })));
+        .from("profiles")
+        .upsert({ id: newUserId, full_name: data.full_name, email }, { onConflict: "id" });
+    } else {
+      newUserId = created.user!.id;
     }
+
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", newUserId);
+    const { error: rErr } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: newUserId, role: data.role });
+    if (rErr) throw new Error(rErr.message);
+
+    if (data.company_ids.length) {
+      const { error: mErr } = await supabaseAdmin
+        .from("company_members")
+        .upsert(
+          data.company_ids.map((cid) => ({ company_id: cid, user_id: newUserId })),
+          { onConflict: "company_id,user_id" },
+        );
+      if (mErr) throw new Error(mErr.message);
+    }
+
     // Force password change on first login
     await supabaseAdmin
       .from("profiles")
