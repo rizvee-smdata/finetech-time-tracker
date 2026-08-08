@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 async function getCallerContext(supabase: any, userId: string) {
   const [{ data: roles }, { data: profile }, { data: memberships }] = await Promise.all([
@@ -40,48 +39,27 @@ export const adminCreateUser = createServerFn({ method: "POST" })
   .inputValidator((d) => createUserSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { assertSeatAvailable } = await import("@/lib/licensing/licenses.server");
     for (const cid of data.company_ids) await assertSeatAvailable(cid);
     const email = data.email.toLowerCase();
     let newUserId: string | null = null;
     let reused = false;
 
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.full_name },
-    });
+    // Look up the auth account before creating it. Error-message matching is not
+    // reliable across Auth API versions and previously skipped the relink path.
+    for (let page = 1; page <= 100 && !newUserId; page++) {
+      const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+        page,
+        perPage: 200,
+      });
+      if (listErr) throw new Error(listErr.message);
+      const match = list.users.find((user) => (user.email ?? "").toLowerCase() === email);
+      if (match) newUserId = match.id;
+      if (list.users.length < 200) break;
+    }
 
-    if (error) {
-      const alreadyExists =
-        /already/i.test(error.message) && /regist|exist/i.test(error.message);
-      if (!alreadyExists) throw new Error(error.message);
-
-      // The auth account already exists (e.g. created before, or left over after a
-      // company was removed). Re-use it and (re)attach role + company memberships.
-      const { data: existingProfile } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .ilike("email", email)
-        .maybeSingle();
-      newUserId = (existingProfile as { id: string } | null)?.id ?? null;
-
-      if (!newUserId) {
-        // Fall back to scanning the auth users list.
-        for (let page = 1; page <= 20 && !newUserId; page++) {
-          const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
-            page,
-            perPage: 200,
-          });
-          if (listErr) throw new Error(listErr.message);
-          const match = list.users.find((u) => (u.email ?? "").toLowerCase() === email);
-          if (match) newUserId = match.id;
-          if (list.users.length < 200) break;
-        }
-      }
-      if (!newUserId) throw new Error("An account with this email exists but could not be found.");
-
+    if (newUserId) {
       reused = true;
       const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(newUserId, {
         password: data.password,
@@ -93,7 +71,15 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         .from("profiles")
         .upsert({ id: newUserId, full_name: data.full_name, email }, { onConflict: "id" });
     } else {
-      newUserId = created.user!.id;
+      const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: data.password,
+        email_confirm: true,
+        user_metadata: { full_name: data.full_name },
+      });
+      if (createErr) throw new Error(createErr.message);
+      if (!created.user) throw new Error("The user account was not created.");
+      newUserId = created.user.id;
     }
 
     await supabaseAdmin.from("user_roles").delete().eq("user_id", newUserId);
@@ -125,6 +111,7 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ user_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.user_id === context.userId) throw new Error("You cannot delete your own account");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
     if (error) throw new Error(error.message);
@@ -141,6 +128,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
       password: data.password,
     });
@@ -156,6 +144,7 @@ export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const caller = await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profiles }, { data: roles }, { data: members }] = await Promise.all([
       supabaseAdmin.from("profiles").select("id, full_name, email, created_at, is_super_admin"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
@@ -193,6 +182,7 @@ export const importCustomers = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const rows = data.rows.map((r) => ({
       customer_name: r.customer_name,
       contact_person: r.contact_person || null,
@@ -222,6 +212,7 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
   .inputValidator((d) => companySchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: created, error } = await supabaseAdmin
       .from("companies")
       .insert({ name: data.name, slug: data.slug })
@@ -236,6 +227,7 @@ export const adminUpdateCompany = createServerFn({ method: "POST" })
   .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("companies")
       .update({ name: data.name, slug: data.slug })
@@ -249,6 +241,7 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -258,6 +251,7 @@ export const adminListCompanies = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const caller = await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: companies }, { data: members }] = await Promise.all([
       supabaseAdmin.from("companies").select("*").order("name"),
       supabaseAdmin.from("company_members").select("company_id, user_id"),
@@ -282,6 +276,7 @@ export const adminSetUserCompanies = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("company_members").delete().eq("user_id", data.user_id);
     if (data.company_ids.length) {
       const { error } = await supabaseAdmin
