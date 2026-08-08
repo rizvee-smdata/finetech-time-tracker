@@ -18,44 +18,57 @@ export const adminCreateUser = createServerFn({ method: "POST" })
     const { assertSeatAvailable } = await import("@/lib/licensing/licenses.server");
     for (const cid of data.company_ids) await assertSeatAvailable(cid);
     const email = data.email.toLowerCase();
-    let newUserId: string | null = null;
-    let reused = false;
+    const { data: existingProfile, error: profileLookupError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("email", email)
+      .maybeSingle();
+    if (profileLookupError) throw new Error(profileLookupError.message);
+    let newUserId: string | null = existingProfile?.id ?? null;
+    let reused = Boolean(newUserId);
 
-    // Look up the auth account before creating it. Error-message matching is not
-    // reliable across Auth API versions and previously skipped the relink path.
-    for (let page = 1; page <= 100 && !newUserId; page++) {
-      const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
-        page,
-        perPage: 200,
-      });
-      if (listErr) throw new Error(listErr.message);
-      const match = list.users.find((user) => (user.email ?? "").toLowerCase() === email);
-      if (match) newUserId = match.id;
-      if (list.users.length < 200) break;
-    }
-
-    if (newUserId) {
-      reused = true;
-      const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(newUserId, {
-        password: data.password,
-        email_confirm: true,
-        user_metadata: { full_name: data.full_name },
-      });
-      if (updErr) throw new Error(updErr.message);
-      await supabaseAdmin
-        .from("profiles")
-        .upsert({ id: newUserId, full_name: data.full_name, email }, { onConflict: "id" });
-    } else {
+    if (!newUserId) {
       const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
         email,
         password: data.password,
         email_confirm: true,
         user_metadata: { full_name: data.full_name },
       });
-      if (createErr) throw new Error(createErr.message);
-      if (!created.user) throw new Error("The user account was not created.");
-      newUserId = created.user.id;
+      if (createErr?.code === "email_exists") {
+        // A legacy auth account may exist without its profile row. Scan every
+        // page until Auth returns an empty page; short pages are not terminal.
+        for (let page = 1; page <= 100 && !newUserId; page++) {
+          const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+            page,
+            perPage: 200,
+          });
+          if (listErr) throw new Error(listErr.message);
+          if (list.users.length === 0) break;
+          const match = list.users.find((user) => (user.email ?? "").toLowerCase() === email);
+          if (match) newUserId = match.id;
+        }
+        if (!newUserId) throw new Error("The existing account could not be linked. Please try again.");
+        reused = true;
+      } else {
+        if (createErr) throw new Error(createErr.message);
+        if (!created.user) throw new Error("The user account was not created.");
+        newUserId = created.user.id;
+      }
     }
+
+    if (reused) {
+      const { error: updateAuthError } = await supabaseAdmin.auth.admin.updateUserById(newUserId, {
+        password: data.password,
+        email_confirm: true,
+        user_metadata: { full_name: data.full_name },
+      });
+      if (updateAuthError) throw new Error(updateAuthError.message);
+    }
+
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .upsert({ id: newUserId, full_name: data.full_name, email }, { onConflict: "id" });
+    if (profileError) throw new Error(profileError.message);
 
     await supabaseAdmin.from("user_roles").delete().eq("user_id", newUserId);
     const { error: rErr } = await supabaseAdmin
