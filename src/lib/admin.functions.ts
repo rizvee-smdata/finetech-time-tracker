@@ -117,7 +117,7 @@ export const adminCreateUser = createServerFn({ method: "POST" })
       .from("profiles")
       .update({ must_change_password: true })
       .eq("id", newUserId);
-    return { ok: true, id: newUserId };
+    return { ok: true, id: newUserId, reused };
   });
 
 export const adminDeleteUser = createServerFn({ method: "POST" })
