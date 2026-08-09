@@ -15,8 +15,11 @@ export const adminCreateUser = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { assertSeatAvailable } = await import("@/lib/licensing/licenses.server");
-    for (const cid of data.company_ids) await assertSeatAvailable(cid);
+    const { assertSeatAvailable, assertWritable } = await import("@/lib/licensing/licenses.server");
+    for (const cid of data.company_ids) {
+      await assertWritable(cid);
+      await assertSeatAvailable(cid);
+    }
     const email = data.email.toLowerCase();
     const { data: existingProfile, error: profileLookupError } = await supabaseAdmin
       .from("profiles")
