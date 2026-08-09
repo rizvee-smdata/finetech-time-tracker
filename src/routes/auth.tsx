@@ -61,7 +61,13 @@ function AuthPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forceLogout = params.get("logout") === "1";
+    const deactivated = params.get("deactivated") === "1";
     const ssoToken = getSsoTokenFromHash();
+    if (deactivated) {
+      toast.error("This account has been deactivated. Contact your administrator.");
+      window.history.replaceState({}, "", "/auth");
+    }
+
     (async () => {
       if (forceLogout) {
         await supabase.auth.signOut();

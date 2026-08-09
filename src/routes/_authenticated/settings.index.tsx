@@ -15,6 +15,8 @@ import {
   adminDeleteCompany,
   adminListCompanies,
   adminSetUserCompanies,
+  adminSetUserActive,
+
 } from "@/lib/admin.functions";
 import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
 import {
@@ -501,6 +503,8 @@ function UsersListCard() {
   const list = useServerFn(adminListCompanies);
   const delUser = useServerFn(adminDeleteUser);
   const resetPwd = useServerFn(adminResetPassword);
+  const setActive = useServerFn(adminSetUserActive);
+
   const qc = useQueryClient();
   const { user } = useAuth();
   const { data: users } = useQuery({ queryKey: ["admin-users"], queryFn: () => fn() });
@@ -528,6 +532,17 @@ function UsersListCard() {
     onSuccess: () => { toast.success("User deleted"); qc.invalidateQueries({ queryKey: ["admin-users"] }); },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const activeM = useMutation({
+    mutationFn: async (v: { id: string; is_active: boolean }) =>
+      setActive({ data: { user_id: v.id, is_active: v.is_active } }),
+    onSuccess: (_d, v) => {
+      toast.success(v.is_active ? "User reactivated" : "User deactivated — sign-in blocked, data kept");
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
 
   const pwdM = useMutation({
     mutationFn: async () => resetPwd({ data: { user_id: pwdUserId!, password: newPwd } }),
@@ -602,14 +617,18 @@ function UsersListCard() {
         {pagedUsers.map((u: any) => {
           const userCompanies = (companies ?? []).filter((c: any) => u.company_ids?.includes(c.id));
           const isSelf = u.id === user?.id;
+          const isInactive = u.is_active === false;
           return (
-            <div key={u.id} className="space-y-2 py-3">
+            <div key={u.id} className={`space-y-2 py-3 ${isInactive ? "opacity-70" : ""}`}>
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-medium">{u.full_name || u.email}</div>
                   <div className="text-xs text-muted-foreground">{u.email}</div>
                 </div>
                 <div className="flex flex-wrap items-center gap-1">
+                  <Badge variant={isInactive ? "destructive" : "outline"}>
+                    {isInactive ? "Inactive" : "Active"}
+                  </Badge>
                   {(u.roles ?? []).map((r: string) => (
                     <Badge key={r} variant={r === "admin" ? "default" : "secondary"}>{r}</Badge>
                   ))}
@@ -621,6 +640,24 @@ function UsersListCard() {
                     onClick={() => { setPwdUserId(u.id); setNewPwd(""); }}>
                     Change password
                   </Button>
+                  {!isSelf && (
+                    <Button
+                      size="sm"
+                      variant={isInactive ? "outline" : "ghost"}
+                      disabled={activeM.isPending}
+                      onClick={() => {
+                        if (isInactive) {
+                          activeM.mutate({ id: u.id, is_active: true });
+                        } else if (
+                          confirm(`Deactivate ${u.email}? They can no longer sign in, but all their records stay visible to admins and managers.`)
+                        ) {
+                          activeM.mutate({ id: u.id, is_active: false });
+                        }
+                      }}
+                    >
+                      {isInactive ? "Reactivate" : "Deactivate"}
+                    </Button>
+                  )}
                   {!isSelf && (
                     <Button size="icon" variant="ghost"
                       onClick={() => { if (confirm(`Delete ${u.email}? This permanently removes the account.`)) delM.mutate(u.id); }}>
