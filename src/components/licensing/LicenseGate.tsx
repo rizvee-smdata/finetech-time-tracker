@@ -16,11 +16,13 @@ export function LicenseGate({ path, children }: { path: string; children: React.
   const { isSuperAdmin } = useAuth();
 
   const allowed =
-    path.startsWith("/settings") || path.startsWith("/admin/licensing") || isSuperAdmin;
+    path.startsWith("/settings/license") || path.startsWith("/admin/licensing") || isSuperAdmin;
 
-  if (loading || !info || info.state !== "locked" || allowed || info.reason === "no_license" || info.reason === "no_organization") {
+  if (loading || !info || info.state !== "locked" || allowed || info.reason === "no_organization") {
     return <>{children}</>;
   }
+
+  const unlicensed = info.reason === "no_license";
 
   return (
     <div className="grid min-h-[60vh] place-items-center">
