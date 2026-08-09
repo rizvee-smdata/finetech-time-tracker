@@ -18,6 +18,7 @@ import {
 } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 import { VENDOR_CONSOLE_ENABLED, VendorConsoleDisabled } from "@/components/licensing/VendorConsoleDisabled";
+import { isVendorAdminEmail } from "@/lib/licensing/vendor";
 
 export const Route = createFileRoute("/_authenticated/admin/licensing/$id")({
   head: () => ({
@@ -34,7 +35,6 @@ export const Route = createFileRoute("/_authenticated/admin/licensing/$id")({
 });
 
 function LicenseDetailPage() {
-  if (!VENDOR_CONSOLE_ENABLED) return <VendorConsoleDisabled />;
   const { id } = useParams({ from: "/_authenticated/admin/licensing/$id" });
   const { isSuperAdmin } = useAuth();
   const detail = useServerFn(getLicenseDetail);

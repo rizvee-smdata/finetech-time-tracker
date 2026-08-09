@@ -19,6 +19,7 @@ import { Copy, KeyRound, Plus, ShieldCheck } from "lucide-react";
 import { issueLicense, listLicenses, licenseReports } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 import { VENDOR_CONSOLE_ENABLED, VendorConsoleDisabled } from "@/components/licensing/VendorConsoleDisabled";
+import { isVendorAdminEmail } from "@/lib/licensing/vendor";
 
 export const Route = createFileRoute("/_authenticated/admin/licensing/")({
   head: () => ({
@@ -65,7 +66,6 @@ function download(name: string, csv: string) {
 }
 
 function LicensingConsole() {
-  if (!VENDOR_CONSOLE_ENABLED) return <VendorConsoleDisabled />;
   const { isSuperAdmin } = useAuth();
   const list = useServerFn(listLicenses);
   const reports = useServerFn(licenseReports);
