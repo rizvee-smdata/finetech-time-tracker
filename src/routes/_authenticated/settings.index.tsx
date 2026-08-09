@@ -15,6 +15,8 @@ import {
   adminDeleteCompany,
   adminListCompanies,
   adminSetUserCompanies,
+  adminSetUserActive,
+
 } from "@/lib/admin.functions";
 import { backupConfig, backupData, restoreBackup } from "@/lib/backup.functions";
 import {
