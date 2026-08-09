@@ -52,9 +52,10 @@ function LicenseDetailPage() {
   const q = useQuery({
     queryKey: ["license", id],
     queryFn: () => detail({ data: { id } }),
-    enabled: isSuperAdmin,
+    enabled: vendorAllowed && isSuperAdmin,
   });
 
+  if (!vendorAllowed) return <VendorConsoleDisabled />;
   if (!isSuperAdmin) return <div className="p-6 text-sm text-muted-foreground">Vendor admin access required.</div>;
   if (!q.data) return <div className="p-6 text-sm text-muted-foreground">Loading…</div>;
 

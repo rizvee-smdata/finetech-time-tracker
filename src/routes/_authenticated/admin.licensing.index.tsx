@@ -79,11 +79,11 @@ function LicensingConsole() {
   const [open, setOpen] = useState(false);
   const [issuedKey, setIssuedKey] = useState<string | null>(null);
 
-  const q = useQuery({ queryKey: ["licenses"], queryFn: () => list(), enabled: isSuperAdmin });
+  const q = useQuery({ queryKey: ["licenses"], queryFn: () => list(), enabled: vendorAllowed && isSuperAdmin });
   const rq = useQuery({
     queryKey: ["license-reports"],
     queryFn: () => reports(),
-    enabled: isSuperAdmin && tab === "reports",
+    enabled: vendorAllowed && isSuperAdmin && tab === "reports",
   });
 
   const rows = useMemo(() => {
@@ -143,6 +143,7 @@ function LicensingConsole() {
     }
   }
 
+  if (!vendorAllowed) return <VendorConsoleDisabled />;
   if (!isSuperAdmin) {
     return <div className="p-6 text-sm text-muted-foreground">Vendor admin access required.</div>;
   }
