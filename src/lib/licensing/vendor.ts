@@ -19,15 +19,9 @@ export const VENDOR_CONSOLE_ENABLED =
  * and even for other super admins. Override with a comma-separated list in
  * VITE_VENDOR_ADMIN_EMAILS (client) / VENDOR_ADMIN_EMAILS (server).
  */
-export const DEFAULT_VENDOR_ADMIN_EMAILS = ["fazlur@smartdataltd.com"];
+import { parseVendorAdminEmails } from "./vendor-emails";
 
-export function parseVendorAdminEmails(raw: string | undefined | null): string[] {
-  const list = String(raw ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return list.length ? list : DEFAULT_VENDOR_ADMIN_EMAILS;
-}
+export { DEFAULT_VENDOR_ADMIN_EMAILS, parseVendorAdminEmails } from "./vendor-emails";
 
 export const VENDOR_ADMIN_EMAILS = parseVendorAdminEmails(
   import.meta.env.VITE_VENDOR_ADMIN_EMAILS as string | undefined,
