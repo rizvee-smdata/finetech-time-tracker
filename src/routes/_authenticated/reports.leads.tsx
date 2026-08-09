@@ -102,6 +102,9 @@ function LeadsReportPage() {
       if (row.stage === "lost") return "LOST";
       return row.stage ?? "";
     }
+    if (key === "company_name") {
+      return row.company_name || row.customer_name || "";
+    }
     if (key.startsWith("cf:")) {
       const k = key.slice(3);
       const v = row.custom_fields?.[k];
