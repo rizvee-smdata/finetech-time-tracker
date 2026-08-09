@@ -79,9 +79,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setRoles((data ?? []).map((r) => r.role as AppRole));
     }
-    const { data: prof } = await supabase.from("profiles").select("is_super_admin").eq("id", uid).maybeSingle();
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("is_super_admin, is_active")
+      .eq("id", uid)
+      .maybeSingle();
+    if (prof && (prof as any).is_active === false) {
+      await supabase.auth.signOut();
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth?deactivated=1";
+      }
+      return;
+    }
     setIsSuperAdmin(Boolean((prof as any)?.is_super_admin));
   }, []);
+
 
   useEffect(() => {
     let mounted = true;
