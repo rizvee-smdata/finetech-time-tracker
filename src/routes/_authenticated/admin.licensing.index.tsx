@@ -19,6 +19,7 @@ import { Copy, KeyRound, Plus, ShieldCheck } from "lucide-react";
 import { issueLicense, listLicenses, licenseReports } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 import { VENDOR_CONSOLE_ENABLED, VendorConsoleDisabled } from "@/components/licensing/VendorConsoleDisabled";
+import { isVendorAdminEmail } from "@/lib/licensing/vendor";
 
 export const Route = createFileRoute("/_authenticated/admin/licensing/")({
   head: () => ({
@@ -65,8 +66,8 @@ function download(name: string, csv: string) {
 }
 
 function LicensingConsole() {
-  if (!VENDOR_CONSOLE_ENABLED) return <VendorConsoleDisabled />;
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, user } = useAuth();
+  const vendorAllowed = VENDOR_CONSOLE_ENABLED && isVendorAdminEmail(user?.email);
   const list = useServerFn(listLicenses);
   const reports = useServerFn(licenseReports);
   const issue = useServerFn(issueLicense);
@@ -78,11 +79,11 @@ function LicensingConsole() {
   const [open, setOpen] = useState(false);
   const [issuedKey, setIssuedKey] = useState<string | null>(null);
 
-  const q = useQuery({ queryKey: ["licenses"], queryFn: () => list(), enabled: isSuperAdmin });
+  const q = useQuery({ queryKey: ["licenses"], queryFn: () => list(), enabled: vendorAllowed && isSuperAdmin });
   const rq = useQuery({
     queryKey: ["license-reports"],
     queryFn: () => reports(),
-    enabled: isSuperAdmin && tab === "reports",
+    enabled: vendorAllowed && isSuperAdmin && tab === "reports",
   });
 
   const rows = useMemo(() => {
@@ -142,6 +143,7 @@ function LicensingConsole() {
     }
   }
 
+  if (!vendorAllowed) return <VendorConsoleDisabled />;
   if (!isSuperAdmin) {
     return <div className="p-6 text-sm text-muted-foreground">Vendor admin access required.</div>;
   }

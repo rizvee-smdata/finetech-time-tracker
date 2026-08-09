@@ -18,6 +18,7 @@ import {
 } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL } from "@/lib/licensing/useLicense";
 import { VENDOR_CONSOLE_ENABLED, VendorConsoleDisabled } from "@/components/licensing/VendorConsoleDisabled";
+import { isVendorAdminEmail } from "@/lib/licensing/vendor";
 
 export const Route = createFileRoute("/_authenticated/admin/licensing/$id")({
   head: () => ({
@@ -34,9 +35,9 @@ export const Route = createFileRoute("/_authenticated/admin/licensing/$id")({
 });
 
 function LicenseDetailPage() {
-  if (!VENDOR_CONSOLE_ENABLED) return <VendorConsoleDisabled />;
   const { id } = useParams({ from: "/_authenticated/admin/licensing/$id" });
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, user } = useAuth();
+  const vendorAllowed = VENDOR_CONSOLE_ENABLED && isVendorAdminEmail(user?.email);
   const detail = useServerFn(getLicenseDetail);
   const setStatus = useServerFn(updateLicenseStatus);
   const changeTerms = useServerFn(changeLicenseTerms);
@@ -51,9 +52,10 @@ function LicenseDetailPage() {
   const q = useQuery({
     queryKey: ["license", id],
     queryFn: () => detail({ data: { id } }),
-    enabled: isSuperAdmin,
+    enabled: vendorAllowed && isSuperAdmin,
   });
 
+  if (!vendorAllowed) return <VendorConsoleDisabled />;
   if (!isSuperAdmin) return <div className="p-6 text-sm text-muted-foreground">Vendor admin access required.</div>;
   if (!q.data) return <div className="p-6 text-sm text-muted-foreground">Loading…</div>;
 

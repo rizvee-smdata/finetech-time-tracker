@@ -33,12 +33,17 @@ export async function assertVendorAdmin(supabase: any, userId: string) {
   if (!vendorConsoleEnabled()) {
     throw new Error("The licensing console is not available on this deployment.");
   }
+  const { parseVendorAdminEmails } = await import("@/lib/licensing/vendor-emails");
+  const allowed = parseVendorAdminEmails(process.env['VENDOR_ADMIN_EMAILS']);
   const { data } = await supabase
     .from("profiles")
-    .select("is_super_admin")
+    .select("is_super_admin, email")
     .eq("id", userId)
     .maybeSingle();
   if (!data?.is_super_admin) throw new Error("Vendor admin access required");
+  if (!allowed.includes(String(data.email ?? "").trim().toLowerCase())) {
+    throw new Error("Only the software vendor may issue licence keys.");
+  }
 }
 
 export async function assertOrgAdmin(supabase: any, userId: string, companyId: string) {

@@ -13,3 +13,20 @@
  */
 export const VENDOR_CONSOLE_ENABLED =
   String(import.meta.env.VITE_VENDOR_CONSOLE ?? "").toLowerCase() === "true";
+
+/**
+ * Only these mailboxes may generate licence keys, even on the vendor instance
+ * and even for other super admins. Override with a comma-separated list in
+ * VITE_VENDOR_ADMIN_EMAILS (client) / VENDOR_ADMIN_EMAILS (server).
+ */
+import { parseVendorAdminEmails } from "./vendor-emails";
+
+export { DEFAULT_VENDOR_ADMIN_EMAILS, parseVendorAdminEmails } from "./vendor-emails";
+
+export const VENDOR_ADMIN_EMAILS = parseVendorAdminEmails(
+  import.meta.env.VITE_VENDOR_ADMIN_EMAILS as string | undefined,
+);
+
+export function isVendorAdminEmail(email: string | null | undefined): boolean {
+  return !!email && VENDOR_ADMIN_EMAILS.includes(email.trim().toLowerCase());
+}

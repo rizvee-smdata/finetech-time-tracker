@@ -1,4 +1,4 @@
-import { VENDOR_CONSOLE_ENABLED } from "@/lib/licensing/vendor";
+import { VENDOR_CONSOLE_ENABLED, isVendorAdminEmail } from "@/lib/licensing/vendor";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -255,10 +255,15 @@ export function AppShell() {
     );
   }
 
+  const canIssueLicences = isVendorAdminEmail(user?.email);
+  const adminItems = adminSection.items.filter(
+    (i) => i.to !== "/admin/licensing" || canIssueLicences,
+  );
+
   const sections: NavSection[] = [
     ...navSections,
     ...(isStaff ? [staffSection] : []),
-    ...(isAdmin ? [adminSection] : []),
+    ...(isAdmin ? [{ ...adminSection, items: adminItems }] : []),
   ];
 
   const switcher = companies.length > 0 && (
