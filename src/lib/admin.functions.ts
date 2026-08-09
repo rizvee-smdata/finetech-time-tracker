@@ -131,16 +131,52 @@ export const adminResetPassword = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const adminSetUserActive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      user_id: z.string().uuid(),
+      is_active: z.boolean(),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    if (data.user_id === context.userId) throw new Error("You cannot deactivate your own account");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: target, error: targetErr } = await supabaseAdmin
+      .from("profiles")
+      .select("is_super_admin")
+      .eq("id", data.user_id)
+      .maybeSingle();
+    if (targetErr) throw new Error(targetErr.message);
+    if (target?.is_super_admin) throw new Error("Super admin accounts cannot be deactivated");
+
+    // Block/allow sign-in at the auth layer, keep all historical data intact.
+    const { error: banErr } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
+      ban_duration: data.is_active ? "none" : "876000h",
+    });
+    if (banErr) throw new Error(banErr.message);
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ is_active: data.is_active })
+      .eq("id", data.user_id);
+    if (error) throw new Error(error.message);
+    return { ok: true, is_active: data.is_active };
+  });
+
 export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const caller = await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profiles }, { data: roles }, { data: members }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, email, created_at, is_super_admin"),
+      supabaseAdmin.from("profiles").select("id, full_name, email, created_at, is_super_admin, is_active"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.from("company_members").select("user_id, company_id"),
     ]);
+
     const allowed = new Set(caller.companyIds);
     const rows = (profiles ?? []).map((p) => ({
       ...p,
