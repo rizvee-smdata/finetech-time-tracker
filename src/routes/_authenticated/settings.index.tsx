@@ -617,14 +617,18 @@ function UsersListCard() {
         {pagedUsers.map((u: any) => {
           const userCompanies = (companies ?? []).filter((c: any) => u.company_ids?.includes(c.id));
           const isSelf = u.id === user?.id;
+          const isInactive = u.is_active === false;
           return (
-            <div key={u.id} className="space-y-2 py-3">
+            <div key={u.id} className={`space-y-2 py-3 ${isInactive ? "opacity-70" : ""}`}>
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-medium">{u.full_name || u.email}</div>
                   <div className="text-xs text-muted-foreground">{u.email}</div>
                 </div>
                 <div className="flex flex-wrap items-center gap-1">
+                  <Badge variant={isInactive ? "destructive" : "outline"}>
+                    {isInactive ? "Inactive" : "Active"}
+                  </Badge>
                   {(u.roles ?? []).map((r: string) => (
                     <Badge key={r} variant={r === "admin" ? "default" : "secondary"}>{r}</Badge>
                   ))}
@@ -637,11 +641,32 @@ function UsersListCard() {
                     Change password
                   </Button>
                   {!isSelf && (
+                    <Button
+                      size="sm"
+                      variant={isInactive ? "outline" : "ghost"}
+                      disabled={activeM.isPending}
+                      onClick={() => {
+                        if (isInactive) {
+                          activeM.mutate({ id: u.id, is_active: true });
+                        } else if (
+                          confirm(`Deactivate ${u.email}? They can no longer sign in, but all their records stay visible to admins and managers.`)
+                        ) {
+                          activeM.mutate({ id: u.id, is_active: false });
+                        }
+                      }}
+                    >
+                      {isInactive ? "Reactivate" : "Deactivate"}
+                    </Button>
+                  )}
+                  {!isSelf && (
                     <Button size="icon" variant="ghost"
                       onClick={() => { if (confirm(`Delete ${u.email}? This permanently removes the account.`)) delM.mutate(u.id); }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
+                </div>
+              </div>
+
                 </div>
               </div>
               <div className="flex flex-wrap gap-1">
