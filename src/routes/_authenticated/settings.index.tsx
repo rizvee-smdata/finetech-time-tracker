@@ -531,6 +531,17 @@ function UsersListCard() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const activeM = useMutation({
+    mutationFn: async (v: { id: string; is_active: boolean }) =>
+      setActive({ data: { user_id: v.id, is_active: v.is_active } }),
+    onSuccess: (_d, v) => {
+      toast.success(v.is_active ? "User reactivated" : "User deactivated — sign-in blocked, data kept");
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+
   const pwdM = useMutation({
     mutationFn: async () => resetPwd({ data: { user_id: pwdUserId!, password: newPwd } }),
     onSuccess: () => { toast.success("Password updated"); setPwdUserId(null); setNewPwd(""); },
