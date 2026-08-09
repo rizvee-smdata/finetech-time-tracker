@@ -503,6 +503,8 @@ function UsersListCard() {
   const list = useServerFn(adminListCompanies);
   const delUser = useServerFn(adminDeleteUser);
   const resetPwd = useServerFn(adminResetPassword);
+  const setActive = useServerFn(adminSetUserActive);
+
   const qc = useQueryClient();
   const { user } = useAuth();
   const { data: users } = useQuery({ queryKey: ["admin-users"], queryFn: () => fn() });
