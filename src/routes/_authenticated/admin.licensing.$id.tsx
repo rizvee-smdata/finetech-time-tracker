@@ -36,7 +36,8 @@ export const Route = createFileRoute("/_authenticated/admin/licensing/$id")({
 
 function LicenseDetailPage() {
   const { id } = useParams({ from: "/_authenticated/admin/licensing/$id" });
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, user } = useAuth();
+  const vendorAllowed = VENDOR_CONSOLE_ENABLED && isVendorAdminEmail(user?.email);
   const detail = useServerFn(getLicenseDetail);
   const setStatus = useServerFn(updateLicenseStatus);
   const changeTerms = useServerFn(changeLicenseTerms);

@@ -66,7 +66,8 @@ function download(name: string, csv: string) {
 }
 
 function LicensingConsole() {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, user } = useAuth();
+  const vendorAllowed = VENDOR_CONSOLE_ENABLED && isVendorAdminEmail(user?.email);
   const list = useServerFn(listLicenses);
   const reports = useServerFn(licenseReports);
   const issue = useServerFn(issueLicense);
