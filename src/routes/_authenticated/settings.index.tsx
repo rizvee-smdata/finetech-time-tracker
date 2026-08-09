@@ -666,9 +666,6 @@ function UsersListCard() {
                   )}
                 </div>
               </div>
-
-                </div>
-              </div>
               <div className="flex flex-wrap gap-1">
                 {userCompanies.map((c: any) => (
                   <Badge key={c.id} variant="outline">{c.name}</Badge>
