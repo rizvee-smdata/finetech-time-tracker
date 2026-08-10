@@ -160,14 +160,19 @@ function LeadDetail() {
           </div>
           <div className="text-right space-y-1">
             <Badge variant="outline" className={meta.badge}>{meta.label}</Badge>
-            <div className="text-2xl font-bold">{formatMoney(lead.expected_value, lead.currency)}</div>
-            <div className="text-xs text-muted-foreground">{lead.probability}% probability</div>
-            {lead.expected_close_date && (
+            <div className="text-2xl font-bold">
+              {hiddenField("crm_leads", "expected_value") ? MASK : formatMoney(lead.expected_value, lead.currency)}
+            </div>
+            {!hiddenField("crm_leads", "probability") && (
+              <div className="text-xs text-muted-foreground">{lead.probability}% probability</div>
+            )}
+            {lead.expected_close_date && !hiddenField("crm_leads", "expected_close_date") && (
               <div className="text-xs text-muted-foreground flex items-center justify-end gap-1">
                 <Calendar className="h-3 w-3" />Close {format(new Date(lead.expected_close_date), "MMM d, yyyy")}
               </div>
             )}
           </div>
+
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
