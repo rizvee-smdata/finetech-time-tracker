@@ -470,6 +470,18 @@ export const getMyLicense = createServerFn({ method: "POST" })
     return await h.licenseStateFor(data.company_id);
   });
 
+/** Force an immediate check-in with the central licence server. */
+export const recheckLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ company_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const h = await import("./licenses.server");
+    await h.assertOrgAdmin(context.supabase, context.userId, data.company_id);
+    return await h.licenseStateFor(data.company_id, { force: true });
+  });
+
+
+
 export const setUserActive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
