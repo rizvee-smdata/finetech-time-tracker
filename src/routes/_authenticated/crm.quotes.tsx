@@ -245,6 +245,9 @@ function QuotesPage() {
                 <div className="font-semibold">{formatMoney(Number(q.amount) || 0, q.currency)}</div>
               </div>
               {user?.id && <ShareQuoteButton quoteId={q.id} userId={user.id} />}
+              {companyId && q.status === "accepted" && (
+                <PushQuoteToErpButton quoteId={q.id} companyId={companyId} />
+              )}
               {canApprove && q.approval_status === "pending" && (
                 <div className="flex gap-1">
                   <Button
