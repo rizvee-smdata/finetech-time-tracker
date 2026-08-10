@@ -38,7 +38,7 @@ function pathsFor(name: string) {
   };
 }
 
-export const Route = createFileRoute("/api/public/v1/openapi[.]json")({
+export const Route = createFileRoute("/api/public/v1/openapi.json")({
   server: {
     handlers: {
       GET: async ({ request }) => {

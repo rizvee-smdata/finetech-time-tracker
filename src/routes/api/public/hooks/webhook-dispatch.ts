@@ -102,7 +102,6 @@ export const Route = createFileRoute("/api/public/hooks/webhook-dispatch")({
                 next_attempt_at: new Date(Date.now() + delay * 60_000).toISOString(),
               })
               .eq("id", row.id);
-            await sb.rpc("noop").catch?.(() => {});
             await sb
               .from("webhook_endpoints")
               .update({ last_failure_at: new Date().toISOString() })
