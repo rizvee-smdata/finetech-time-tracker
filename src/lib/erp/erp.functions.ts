@@ -166,7 +166,7 @@ export const pushQuoteToErp = createServerFn({ method: "POST" })
       payload: invoice,
       created_by: context.userId,
     });
-    return result;
+    return { ok: result.ok, externalId: result.externalId ?? null, message: result.message };
   });
 
 /** Push customers that have never been synced to this connection. */
