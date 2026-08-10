@@ -167,9 +167,20 @@ export async function licenseStateFor(companyId: string | null, opts: { force?: 
   const { data } = await (supabaseAdmin as any).rpc("get_license_state", { _company: companyId });
   const state = (data ?? {}) as any;
 
+  if (state.license_id) {
+    const { data: meta } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("last_verified_at, remote_status")
+      .eq("id", state.license_id)
+      .maybeSingle();
+    state.last_verified_at = meta?.last_verified_at ?? null;
+    state.remote_status = meta?.remote_status ?? null;
+  }
+
   if (remote.licenseServerUrl()) {
     const offline = await remote.offlineLockdown(companyId);
-    state.last_verified_at = state.last_verified_at ?? null;
+    state.license_server = true;
+
     if (offline) {
       state.offline_days = offline.days;
       state.offline_grace_days = remote.offlineGraceDays();
