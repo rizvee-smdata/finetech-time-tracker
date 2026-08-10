@@ -136,7 +136,7 @@ export const getLicenseDetail = createServerFn({ method: "GET" })
     const { data: lic, error } = await (supabaseAdmin as any)
       .from("licenses")
       .select(
-        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at",
+        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at, last_verified_at",
       )
       .eq("id", data.id)
       .maybeSingle();
