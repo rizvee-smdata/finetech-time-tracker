@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -6,21 +6,39 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileText, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, FileText, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { STAGES, type CrmStage } from "@/lib/crm/types";
 
 const sb = supabase as any;
 
-const TEMPLATE_HEADERS = [
-  "customer_name", "company_name", "contact_person", "phone", "email",
-  "stage", "priority", "expected_value", "currency", "probability",
-  "expected_close_date", "location", "notes",
+type FieldDef = { key: string; label: string; required?: boolean };
+
+const FIELDS: FieldDef[] = [
+  { key: "customer_name", label: "Customer name", required: true },
+  { key: "company_name", label: "Company name" },
+  { key: "contact_person", label: "Contact person" },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "stage", label: "Stage" },
+  { key: "priority", label: "Priority" },
+  { key: "expected_value", label: "Expected value" },
+  { key: "currency", label: "Currency" },
+  { key: "probability", label: "Probability (0-100)" },
+  { key: "expected_close_date", label: "Expected close date" },
+  { key: "location", label: "Location" },
+  { key: "notes", label: "Notes" },
 ];
+
+const TEMPLATE_HEADERS = FIELDS.map((f) => f.key);
 
 const TEMPLATE_CSV =
   TEMPLATE_HEADERS.join(",") + "\n" +
   "Acme Corp,Acme Inc,Jane Doe,+1234567890,jane@acme.com,new,medium,5000,USD,20,2026-12-31,New York,Initial contact from website";
+
+const IGNORE = "__ignore__";
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -59,16 +77,58 @@ const PRIORITIES = new Set(["low", "medium", "high"]);
 type ParsedRow = {
   ok: boolean;
   error?: string;
+  duplicate?: string;
   data: Record<string, any>;
-  raw: string[];
 };
 
-function buildRows(rows: string[][]): ParsedRow[] {
+function normStr(s?: string | null) { return (s ?? "").trim().toLowerCase(); }
+function normPhone(s?: string | null) { return (s ?? "").replace(/\D+/g, ""); }
+
+/** Guess a field for a CSV header. */
+function autoMap(header: string): string {
+  const h = header.trim().toLowerCase().replace(/[\s\-]+/g, "_");
+  const direct = FIELDS.find((f) => f.key === h);
+  if (direct) return direct.key;
+  const alias: Record<string, string> = {
+    name: "customer_name", customer: "customer_name", client: "customer_name", account: "customer_name",
+    account_name: "customer_name", client_name: "customer_name",
+    company: "company_name", organisation: "company_name", organization: "company_name",
+    contact: "contact_person", contact_name: "contact_person", person: "contact_person",
+    mobile: "phone", telephone: "phone", phone_number: "phone", tel: "phone",
+    email_address: "email", mail: "email", e_mail: "email",
+    status: "stage", pipeline_stage: "stage",
+    value: "expected_value", amount: "expected_value", deal_value: "expected_value", revenue: "expected_value",
+    close_date: "expected_close_date", closing_date: "expected_close_date", expected_close: "expected_close_date",
+    city: "location", country: "location", address: "location",
+    comment: "notes", comments: "notes", remarks: "notes", description: "notes",
+    prob: "probability", win_probability: "probability",
+  };
+  return alias[h] ?? IGNORE;
+}
+
+type ExistingLead = { customer_name: string | null; email: string | null; phone: string | null };
+
+function buildRows(
+  rows: string[][],
+  mapping: string[],
+  existing: ExistingLead[],
+  skipDupes: boolean,
+): ParsedRow[] {
   if (rows.length === 0) return [];
-  const headers = rows[0].map((h) => h.trim().toLowerCase());
+
+  const byEmail = new Set(existing.map((e) => normStr(e.email)).filter(Boolean));
+  const byPhone = new Set(existing.map((e) => normPhone(e.phone)).filter((p) => p.length >= 6));
+  const byName = new Set(existing.map((e) => normStr(e.customer_name)).filter(Boolean));
+  const seenEmail = new Set<string>();
+  const seenName = new Set<string>();
+
   return rows.slice(1).map((raw) => {
     const obj: Record<string, string> = {};
-    headers.forEach((h, idx) => { obj[h] = (raw[idx] ?? "").trim(); });
+    mapping.forEach((field, idx) => {
+      if (field === IGNORE) return;
+      obj[field] = (raw[idx] ?? "").trim();
+    });
+
     const data: Record<string, any> = {};
     let error: string | undefined;
 
@@ -91,7 +151,7 @@ function buildRows(rows: string[][]): ParsedRow[] {
     data.priority = priority;
 
     if (obj.expected_value) {
-      const v = Number(obj.expected_value);
+      const v = Number(String(obj.expected_value).replace(/[,\s]/g, ""));
       if (Number.isNaN(v)) error = error ?? `Invalid expected_value: ${obj.expected_value}`;
       else data.expected_value = v;
     }
@@ -111,7 +171,19 @@ function buildRows(rows: string[][]): ParsedRow[] {
       else data.expected_close_date = obj.expected_close_date;
     }
 
-    return { ok: !error, error, data, raw };
+    // Duplicate detection (against existing leads and earlier rows in this file)
+    let duplicate: string | undefined;
+    const e = normStr(data.email);
+    const p = normPhone(data.phone);
+    const n = normStr(data.customer_name);
+    if (e && (byEmail.has(e) || seenEmail.has(e))) duplicate = "Same email already exists";
+    else if (p.length >= 6 && byPhone.has(p)) duplicate = "Same phone already exists";
+    else if (n && (byName.has(n) || seenName.has(n))) duplicate = "Same customer name already exists";
+    if (e) seenEmail.add(e);
+    if (n) seenName.add(n);
+
+    const ok = !error && !(skipDupes && duplicate);
+    return { ok, error, duplicate, data };
   });
 }
 
@@ -124,18 +196,43 @@ export function ImportLeadsDialog({
 }) {
   const { companyId, user } = useAuth();
   const [csvText, setCsvText] = useState("");
-  const [preview, setPreview] = useState<ParsedRow[] | null>(null);
+  const [rawRows, setRawRows] = useState<string[][] | null>(null);
+  const [mapping, setMapping] = useState<string[]>([]);
+  const [skipDupes, setSkipDupes] = useState(true);
   const [importing, setImporting] = useState(false);
+  const [existing, setExisting] = useState<ExistingLead[]>([]);
+  const [lastBatch, setLastBatch] = useState<{ id: string; count: number } | null>(null);
+
+  useEffect(() => {
+    if (!open || !companyId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await sb
+        .from("crm_leads")
+        .select("customer_name, email, phone")
+        .eq("company_id", companyId)
+        .limit(5000);
+      if (!cancelled) setExisting((data ?? []) as ExistingLead[]);
+    })();
+    return () => { cancelled = true; };
+  }, [open, companyId]);
+
+  const headers = rawRows?.[0] ?? [];
+
+  const preview = useMemo(
+    () => (rawRows ? buildRows(rawRows, mapping, existing, skipDupes) : null),
+    [rawRows, mapping, existing, skipDupes],
+  );
 
   function handlePaste(text: string) {
     setCsvText(text);
     const rows = parseCsv(text);
-    setPreview(buildRows(rows));
+    setRawRows(rows.length ? rows : null);
+    setMapping(rows.length ? rows[0].map(autoMap) : []);
   }
 
   async function handleFile(file: File) {
-    const text = await file.text();
-    handlePaste(text);
+    handlePaste(await file.text());
   }
 
   function downloadTemplate() {
@@ -146,6 +243,14 @@ export function ImportLeadsDialog({
     URL.revokeObjectURL(url);
   }
 
+  async function undoImport(batchId: string) {
+    const { error } = await sb.from("crm_leads").delete().eq("import_batch_id", batchId);
+    if (error) { toast.error("Undo failed: " + error.message); return; }
+    setLastBatch(null);
+    toast.success("Import rolled back");
+    onImported();
+  }
+
   async function doImport() {
     if (!preview || !companyId || !user) return;
     const valid = preview.filter((r) => r.ok);
@@ -154,12 +259,14 @@ export function ImportLeadsDialog({
       return;
     }
     setImporting(true);
+    const batchId = crypto.randomUUID();
     const payload = valid.map((r) => ({
       ...r.data,
       company_id: companyId,
       created_by: user.id,
       source: "manual",
       lead_source: "manual",
+      import_batch_id: batchId,
     }));
     const { error } = await sb.from("crm_leads").insert(payload);
     setImporting(false);
@@ -167,15 +274,20 @@ export function ImportLeadsDialog({
       toast.error(error.message);
       return;
     }
-    toast.success(`Imported ${valid.length} lead${valid.length > 1 ? "s" : ""}`);
-    setPreview(null);
+    setLastBatch({ id: batchId, count: valid.length });
+    toast.success(`Imported ${valid.length} lead${valid.length > 1 ? "s" : ""}`, {
+      duration: 10000,
+      action: { label: "Undo", onClick: () => undoImport(batchId) },
+    });
+    setRawRows(null);
     setCsvText("");
     onImported();
-    onOpenChange(false);
   }
 
   const validCount = preview?.filter((r) => r.ok).length ?? 0;
-  const errorCount = preview?.filter((r) => !r.ok).length ?? 0;
+  const errorCount = preview?.filter((r) => r.error).length ?? 0;
+  const dupeCount = preview?.filter((r) => !r.error && r.duplicate).length ?? 0;
+  const missingRequired = FIELDS.filter((f) => f.required && !mapping.includes(f.key));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,6 +312,12 @@ export function ImportLeadsDialog({
                 <span><Upload className="mr-2 h-4 w-4" />Upload CSV file</span>
               </Button>
             </label>
+            {lastBatch && (
+              <Button variant="outline" size="sm" className="text-destructive hover:text-destructive"
+                onClick={() => undoImport(lastBatch.id)}>
+                Undo last import ({lastBatch.count})
+              </Button>
+            )}
           </div>
 
           <div>
@@ -207,21 +325,62 @@ export function ImportLeadsDialog({
             <Textarea
               value={csvText}
               onChange={(e) => handlePaste(e.target.value)}
-              rows={6}
+              rows={5}
               className="font-mono text-xs"
               placeholder={TEMPLATE_CSV}
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Required header: <code>customer_name</code>. Optional: {TEMPLATE_HEADERS.slice(1).join(", ")}.
+              Any column names work — map them to CRM fields below. Only <code>customer_name</code> is required.
             </p>
           </div>
 
+          {headers.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs">Map your columns</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {headers.map((h, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="w-1/2 truncate text-xs font-mono text-muted-foreground" title={h}>
+                      {h || `Column ${idx + 1}`}
+                    </span>
+                    <Select
+                      value={mapping[idx] ?? IGNORE}
+                      onValueChange={(v) => setMapping((m) => m.map((x, i) => (i === idx ? v : x)))}
+                    >
+                      <SelectTrigger className="h-8 flex-1 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={IGNORE}>— Ignore —</SelectItem>
+                        {FIELDS.map((f) => (
+                          <SelectItem key={f.key} value={f.key}>{f.label}{f.required ? " *" : ""}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+              {missingRequired.length > 0 && (
+                <p className="text-xs text-destructive">
+                  Map a column to: {missingRequired.map((f) => f.label).join(", ")}
+                </p>
+              )}
+              <label className="flex items-center gap-2 text-xs">
+                <Checkbox checked={skipDupes} onCheckedChange={(v) => setSkipDupes(!!v)} />
+                Skip rows that match an existing lead (email, phone or customer name)
+              </label>
+            </div>
+          )}
+
           {preview && preview.length > 0 && (
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex flex-wrap items-center gap-2 text-sm">
                 <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20" variant="outline">
-                  <CheckCircle2 className="h-3 w-3 mr-1" />{validCount} valid
+                  <CheckCircle2 className="h-3 w-3 mr-1" />{validCount} will import
                 </Badge>
+                {dupeCount > 0 && (
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/20">
+                    <Copy className="h-3 w-3 mr-1" />{dupeCount} duplicate{dupeCount === 1 ? "" : "s"}
+                  </Badge>
+                )}
                 {errorCount > 0 && (
                   <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
                     <AlertCircle className="h-3 w-3 mr-1" />{errorCount} with errors
@@ -241,16 +400,18 @@ export function ImportLeadsDialog({
                   </thead>
                   <tbody>
                     {preview.slice(0, 50).map((r, i) => (
-                      <tr key={i} className={!r.ok ? "bg-destructive/5" : ""}>
+                      <tr key={i} className={r.error ? "bg-destructive/5" : r.duplicate ? "bg-amber-500/5" : ""}>
                         <td className="p-2 text-muted-foreground">{i + 1}</td>
                         <td className="p-2">{r.data.customer_name || <em className="text-muted-foreground">—</em>}</td>
                         <td className="p-2">{r.data.stage}</td>
                         <td className="p-2">{r.data.expected_value ?? ""}</td>
                         <td className="p-2">
-                          {r.ok ? (
-                            <span className="text-emerald-600">OK</span>
-                          ) : (
+                          {r.error ? (
                             <span className="text-destructive">{r.error}</span>
+                          ) : r.duplicate ? (
+                            <span className="text-amber-700">{r.duplicate}{skipDupes ? " — skipped" : " — importing anyway"}</span>
+                          ) : (
+                            <span className="text-emerald-600">OK</span>
                           )}
                         </td>
                       </tr>
@@ -266,8 +427,8 @@ export function ImportLeadsDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={doImport} disabled={!preview || validCount === 0 || importing}>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+          <Button onClick={doImport} disabled={!preview || validCount === 0 || importing || missingRequired.length > 0}>
             {importing ? "Importing…" : `Import ${validCount} lead${validCount !== 1 ? "s" : ""}`}
           </Button>
         </DialogFooter>
