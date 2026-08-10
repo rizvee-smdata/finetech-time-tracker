@@ -19,10 +19,10 @@ import {
   type QuoteLineItem,
 } from "@/lib/crm/products";
 import { formatMoney } from "@/lib/crm/types";
+import { fetchApprovalRule, quoteNeedsApproval, logApproval } from "@/lib/crm/approvals";
 
 const sb = supabase as any;
 
-const APPROVAL_THRESHOLD = 15; // % discount above which approval is required
 
 type Props = {
   open: boolean;
