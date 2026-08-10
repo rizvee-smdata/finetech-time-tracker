@@ -11,8 +11,10 @@ export interface TemplateEntry {
 
 import { template as followupTemplate } from './followup'
 import { template as trialNoticeTemplate } from './trial-notice'
+import { template as renewalReminderTemplate } from './renewal-reminder'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   followup: followupTemplate,
   'trial-notice': trialNoticeTemplate,
+  'renewal-reminder': renewalReminderTemplate,
 }
