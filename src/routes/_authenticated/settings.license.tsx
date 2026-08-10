@@ -88,7 +88,26 @@ function LicenseSettingsPage() {
                 </span>
               )}
             </dd>
+            <dt className="text-muted-foreground">Verified with Lavisho</dt>
+            <dd className="flex flex-wrap items-center gap-2">
+              <span>
+                {(info as any).last_verified_at
+                  ? new Date((info as any).last_verified_at).toLocaleString()
+                  : "Not yet checked"}
+              </span>
+              {(info as any).remote_status === "unreachable" && (
+                <span className="text-amber-600">
+                  licence server unreachable{(info as any).offline_days != null ? ` for ${(info as any).offline_days}d` : ""}
+                </span>
+              )}
+              {canManage && (
+                <Button variant="outline" size="sm" onClick={recheck} disabled={checking}>
+                  {checking ? "Checking…" : "Check now"}
+                </Button>
+              )}
+            </dd>
           </dl>
+
 
           <div className="mt-4">
             <div className="mb-1 flex justify-between text-xs">
