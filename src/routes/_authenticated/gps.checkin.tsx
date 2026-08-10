@@ -124,11 +124,28 @@ function CheckinPage() {
       }
       // Auto-close all prior open field check-ins (check-out is optional now)
       const checkinTime = new Date().toISOString();
-      const { error: closeError } = await supabase.from("visit_checkins").update({
+      const closePrior = async () => await supabase.from("visit_checkins").update({
         checkout_time: checkinTime,
         checkout_lat: pos.lat, checkout_lng: pos.lng,
       }).eq("user_id", user.id).eq("company_id", companyId).is("checkout_time", null);
-      if (closeError) throw closeError;
+      const clientNameEarly = mode === "customer" ? (customer!.customer_name ?? "") : otherName.trim();
+      const baseRow = {
+        user_id: user.id, company_id: companyId, lead_id: null, client_name: clientNameEarly,
+        account_id: mode === "customer" ? customer!.id : null,
+        checkin_lat: pos.lat, checkin_lng: pos.lng, checkin_time: checkinTime,
+        distance_from_client_m: distance, is_geofence_valid: mode === "other" ? true : !!withinFence,
+        override_reason: override || null, notes: notes || null,
+      };
+
+      // No connectivity: park the whole check-in (media included) in the offline outbox.
+      if (!navigator.onLine) {
+        const media: { field: string; blob: Blob; ext: string }[] = [];
+        if (selfie) media.push({ field: "selfie_url", blob: selfie, ext: selfie.name.split(".").pop() || "jpg" });
+        if (voiceBlob) media.push({ field: "voice_url", blob: voiceBlob, ext: "webm" });
+        await enqueue("visit_checkin", { ...baseRow, selfie_url: null, voice_url: null }, media);
+        return { queued: true as const };
+      }
+
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
       const clientName = mode === "customer" ? (customer!.customer_name ?? "") : otherName.trim();
