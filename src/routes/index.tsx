@@ -167,24 +167,13 @@ function LandingPage() {
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {REELS.map((r) => (
-              <div key={r.label} className="group overflow-hidden rounded-xl border border-border bg-card">
-                <div className="relative aspect-[9/16] w-full overflow-hidden bg-gradient-to-br from-primary/15 via-primary/5 to-background">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background/90 shadow-md ring-1 ring-border">
-                      <PlayCircle className="h-8 w-8 text-primary" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-4">
-                    <div className="text-sm font-semibold">{r.label}</div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <p className="text-xs text-muted-foreground">{r.desc}</p>
-                </div>
-              </div>
+              <ReelCard key={r.label} reel={r} />
             ))}
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">Reels are placeholders — swap in your real recordings anytime.</p>
+          <p className="mt-6 text-xs text-muted-foreground">
+            Drop your recordings into <code>/public/reels/</code> using the file names above to replace these.
+          </p>
+
         </div>
       </section>
 
