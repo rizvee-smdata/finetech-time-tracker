@@ -232,6 +232,7 @@ import { Route as ApiPublicHooksWebhookDispatchRouteImport } from './routes/api/
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
+import { Route as ApiPublicHooksRenewalRemindersRouteImport } from './routes/api/public/hooks/renewal-reminders'
 import { Route as ApiPublicHooksProcessRemindersRouteImport } from './routes/api/public/hooks/process-reminders'
 import { Route as ApiPublicHooksOfficeWorkReminderRouteImport } from './routes/api/public/hooks/office-work-reminder'
 import { Route as ApiPublicHooksNarrativesWeeklyCronRouteImport } from './routes/api/public/hooks/narratives-weekly-cron'
@@ -1508,6 +1509,12 @@ const ApiPublicHooksTmsOverdueScanRoute =
     path: '/api/public/hooks/tms-overdue-scan',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksRenewalRemindersRoute =
+  ApiPublicHooksRenewalRemindersRouteImport.update({
+    id: '/api/public/hooks/renewal-reminders',
+    path: '/api/public/hooks/renewal-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksProcessRemindersRoute =
   ApiPublicHooksProcessRemindersRouteImport.update({
     id: '/api/public/hooks/process-reminders',
@@ -1877,6 +1884,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -2111,6 +2119,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -2360,6 +2369,7 @@ export interface FileRoutesById {
   '/api/public/hooks/narratives-weekly-cron': typeof ApiPublicHooksNarrativesWeeklyCronRoute
   '/api/public/hooks/office-work-reminder': typeof ApiPublicHooksOfficeWorkReminderRoute
   '/api/public/hooks/process-reminders': typeof ApiPublicHooksProcessRemindersRoute
+  '/api/public/hooks/renewal-reminders': typeof ApiPublicHooksRenewalRemindersRoute
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
@@ -2609,6 +2619,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
@@ -2843,6 +2854,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
@@ -3091,6 +3103,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/narratives-weekly-cron'
     | '/api/public/hooks/office-work-reminder'
     | '/api/public/hooks/process-reminders'
+    | '/api/public/hooks/renewal-reminders'
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
@@ -3133,6 +3146,7 @@ export interface RootRouteChildren {
   ApiPublicHooksNarrativesWeeklyCronRoute: typeof ApiPublicHooksNarrativesWeeklyCronRoute
   ApiPublicHooksOfficeWorkReminderRoute: typeof ApiPublicHooksOfficeWorkReminderRoute
   ApiPublicHooksProcessRemindersRoute: typeof ApiPublicHooksProcessRemindersRoute
+  ApiPublicHooksRenewalRemindersRoute: typeof ApiPublicHooksRenewalRemindersRoute
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
@@ -4709,6 +4723,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksTmsOverdueScanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/renewal-reminders': {
+      id: '/api/public/hooks/renewal-reminders'
+      path: '/api/public/hooks/renewal-reminders'
+      fullPath: '/api/public/hooks/renewal-reminders'
+      preLoaderRoute: typeof ApiPublicHooksRenewalRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/process-reminders': {
       id: '/api/public/hooks/process-reminders'
       path: '/api/public/hooks/process-reminders'
@@ -5603,6 +5624,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksNarrativesWeeklyCronRoute,
   ApiPublicHooksOfficeWorkReminderRoute: ApiPublicHooksOfficeWorkReminderRoute,
   ApiPublicHooksProcessRemindersRoute: ApiPublicHooksProcessRemindersRoute,
+  ApiPublicHooksRenewalRemindersRoute: ApiPublicHooksRenewalRemindersRoute,
   ApiPublicHooksTmsOverdueScanRoute: ApiPublicHooksTmsOverdueScanRoute,
   ApiPublicHooksVisitAnalyticsAlertsRoute:
     ApiPublicHooksVisitAnalyticsAlertsRoute,
@@ -5619,13 +5641,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
