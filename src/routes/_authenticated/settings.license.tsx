@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound, ShieldCheck } from "lucide-react";
-import { activateLicense } from "@/lib/licensing/licenses.functions";
+import { activateLicense, recheckLicense } from "@/lib/licensing/licenses.functions";
 import { EDITION_LABEL, useLicense } from "@/lib/licensing/useLicense";
 
 export const Route = createFileRoute("/_authenticated/settings/license")({
@@ -39,6 +39,25 @@ function LicenseSettingsPage() {
   const activate = useServerFn(activateLicense);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const recheckFn = useServerFn(recheckLicense);
+
+  async function recheck() {
+    if (!companyId) return;
+    setChecking(true);
+    try {
+      const res: any = await recheckFn({ data: { company_id: companyId } });
+      toast[res?.state === "locked" ? "error" : "success"](
+        res?.remote_message ?? (res?.state === "locked" ? "Licence is not active" : "Licence verified"),
+      );
+      refetch();
+    } catch (e: any) {
+      toast.error(e.message ?? "Could not reach the licence server");
+    } finally {
+      setChecking(false);
+    }
+  }
+
 
   const canManage = isAdmin || isSuperAdmin;
   const seatPct = info?.max_users ? Math.min(100, Math.round(((info.seats_used ?? 0) / info.max_users) * 100)) : 0;
@@ -88,7 +107,26 @@ function LicenseSettingsPage() {
                 </span>
               )}
             </dd>
+            <dt className="text-muted-foreground">Verified with Lavisho</dt>
+            <dd className="flex flex-wrap items-center gap-2">
+              <span>
+                {(info as any).last_verified_at
+                  ? new Date((info as any).last_verified_at).toLocaleString()
+                  : "Not yet checked"}
+              </span>
+              {(info as any).remote_status === "unreachable" && (
+                <span className="text-amber-600">
+                  licence server unreachable{(info as any).offline_days != null ? ` for ${(info as any).offline_days}d` : ""}
+                </span>
+              )}
+              {canManage && (
+                <Button variant="outline" size="sm" onClick={recheck} disabled={checking}>
+                  {checking ? "Checking…" : "Check now"}
+                </Button>
+              )}
+            </dd>
           </dl>
+
 
           <div className="mt-4">
             <div className="mb-1 flex justify-between text-xs">

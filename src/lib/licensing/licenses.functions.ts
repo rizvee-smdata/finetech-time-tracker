@@ -136,7 +136,7 @@ export const getLicenseDetail = createServerFn({ method: "GET" })
     const { data: lic, error } = await (supabaseAdmin as any)
       .from("licenses")
       .select(
-        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at",
+        "id, key_prefix, customer_name, customer_email, bind_domain, edition, max_users, term_months, starts_at, expires_at, grace_days, status, organization_id, parent_license_id, is_renewal_key, notes, created_at, updated_at, last_verified_at",
       )
       .eq("id", data.id)
       .maybeSingle();
@@ -469,6 +469,18 @@ export const getMyLicense = createServerFn({ method: "POST" })
     const h = await import("./licenses.server");
     return await h.licenseStateFor(data.company_id);
   });
+
+/** Force an immediate check-in with the central licence server. */
+export const recheckLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ company_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const h = await import("./licenses.server");
+    await h.assertOrgAdmin(context.supabase, context.userId, data.company_id);
+    return await h.licenseStateFor(data.company_id, { force: true });
+  });
+
+
 
 export const setUserActive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

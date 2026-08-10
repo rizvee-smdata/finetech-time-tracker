@@ -151,11 +151,49 @@ export async function seatsUsed(companyId: string): Promise<number> {
   return Number(data ?? 0);
 }
 
-export async function licenseStateFor(companyId: string | null) {
+export async function licenseStateFor(companyId: string | null, opts: { force?: boolean } = {}) {
   if (!companyId) return { state: "locked", reason: "no_organization" } as any;
+
+  // Self-hosted instances check in with the central licence server first, so a
+  // licence deactivated by the vendor stops this copy of the app.
+  const remote = await import("./remote.server");
+  let heartbeat: any = { checked: false };
+  if (remote.licenseServerUrl()) {
+    try {
+      heartbeat = await remote.heartbeatForCompany(companyId, { force: opts.force });
+    } catch { /* fall through to local state */ }
+  }
+
   const { data } = await (supabaseAdmin as any).rpc("get_license_state", { _company: companyId });
-  return data as any;
+  const state = (data ?? {}) as any;
+
+  if (state.license_id) {
+    const { data: meta } = await (supabaseAdmin as any)
+      .from("licenses")
+      .select("last_verified_at, remote_status")
+      .eq("id", state.license_id)
+      .maybeSingle();
+    state.last_verified_at = meta?.last_verified_at ?? null;
+    state.remote_status = meta?.remote_status ?? null;
+  }
+
+  if (remote.licenseServerUrl()) {
+    const offline = await remote.offlineLockdown(companyId);
+    state.license_server = true;
+
+    if (offline) {
+      state.offline_days = offline.days;
+      state.offline_grace_days = remote.offlineGraceDays();
+      if (offline.locked && state.state !== "locked") {
+        state.state = "locked";
+        state.reason = "license_server_unreachable";
+      }
+    }
+    if (heartbeat?.message) state.remote_message = heartbeat.message;
+  }
+  return state;
 }
+
 
 /** Throws when the organization may not perform write operations. */
 export async function assertWritable(companyId: string | null) {
