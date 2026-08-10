@@ -57,6 +57,12 @@ function BoardPage() {
 
   const move = useMutation({
     mutationFn: async ({ id, status_id }: { id: string; status_id: string }) => {
+      // Offline: queue the status change so the board stays usable in the field.
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        const { enqueue } = await import("@/lib/offline/queue");
+        await enqueue("task_update", { id, status_id });
+        return;
+      }
       const { error } = await supabase.from("tms_tasks").update({ status_id }).eq("id", id);
       if (error) throw error;
     },
