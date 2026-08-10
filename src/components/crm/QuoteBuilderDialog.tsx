@@ -258,14 +258,20 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
           </div>
 
           {needsApproval && (
-            <div className="flex items-center gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 text-xs">
-              <ShieldAlert className="h-4 w-4 text-amber-600" />
-              <span>Discount of {discountPct}% requires manager approval before sending.</span>
+            <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 text-xs">
+              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <div className="space-y-0.5">
+                <div className="font-medium">Manager approval required before sending</div>
+                {approvalCheck.reasons.map((r) => (
+                  <div key={r} className="text-muted-foreground">{r}</div>
+                ))}
+              </div>
               {isEdit && quote.approval_status && (
                 <Badge variant="outline" className="ml-auto capitalize">{String(quote.approval_status).replace("_", " ")}</Badge>
               )}
             </div>
           )}
+
 
           <div className="grid gap-1"><Label>Internal notes</Label><Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
         </div>
