@@ -341,7 +341,7 @@ function CheckinPage() {
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
         </div>
 
-        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !online || checkInMut.isPending || (mode === "customer" ? !customer : !otherName.trim())}>
+        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || checkInMut.isPending || (mode === "customer" ? !customer : !otherName.trim())}>
           <CheckCircle2 className="mr-2 h-5 w-5" />{openCheckin ? "CHECK IN AT NEXT VISIT" : "CHECK IN"}
         </Button>
       </Card>
