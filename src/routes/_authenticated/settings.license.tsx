@@ -39,6 +39,25 @@ function LicenseSettingsPage() {
   const activate = useServerFn(activateLicense);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const recheckFn = useServerFn(recheckLicense);
+
+  async function recheck() {
+    if (!companyId) return;
+    setChecking(true);
+    try {
+      const res: any = await recheckFn({ data: { company_id: companyId } });
+      toast[res?.state === "locked" ? "error" : "success"](
+        res?.remote_message ?? (res?.state === "locked" ? "Licence is not active" : "Licence verified"),
+      );
+      refetch();
+    } catch (e: any) {
+      toast.error(e.message ?? "Could not reach the licence server");
+    } finally {
+      setChecking(false);
+    }
+  }
+
 
   const canManage = isAdmin || isSuperAdmin;
   const seatPct = info?.max_users ? Math.min(100, Math.round(((info.seats_used ?? 0) / info.max_users) * 100)) : 0;
