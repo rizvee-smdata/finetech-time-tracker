@@ -7621,6 +7621,7 @@ export type Database = {
           id: string
           next_attempt_at: string
           payload: Json
+          request_id: number | null
           response_body: string | null
           response_code: number | null
           status: string
@@ -7635,6 +7636,7 @@ export type Database = {
           id?: string
           next_attempt_at?: string
           payload: Json
+          request_id?: number | null
           response_body?: string | null
           response_code?: number | null
           status?: string
@@ -7649,6 +7651,7 @@ export type Database = {
           id?: string
           next_attempt_at?: string
           payload?: Json
+          request_id?: number | null
           response_body?: string | null
           response_code?: number | null
           status?: string
@@ -8182,6 +8185,7 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      dispatch_webhooks: { Args: never; Returns: number }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
