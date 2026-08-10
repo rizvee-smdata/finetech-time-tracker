@@ -158,6 +158,7 @@ function LandingPage() {
         </div>
       </section>
 
+
       {/* Reels */}
       <section id="reels" className="border-b border-border bg-muted/30 py-20">
         <div className="mx-auto max-w-6xl px-6">
