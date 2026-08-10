@@ -24,9 +24,13 @@ export async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
-/** The licence generator only runs on the vendor's own deployment. */
+/**
+ * The licence generator runs by default; customer deployments switch it off
+ * with VENDOR_CONSOLE=false. Access is still limited to the vendor admin
+ * allowlist (VENDOR_ADMIN_EMAILS).
+ */
 export function vendorConsoleEnabled(): boolean {
-  return String(process.env['VENDOR_CONSOLE'] ?? "").toLowerCase() === "true";
+  return String(process.env['VENDOR_CONSOLE'] ?? "true").toLowerCase() !== "false";
 }
 
 export async function assertVendorAdmin(supabase: any, userId: string) {
