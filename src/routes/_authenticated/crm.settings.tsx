@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { STAGES } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
 import { fetchCustomFieldDefs, slugifyKey, type CustomFieldDef } from "@/lib/crm/customFields";
+import { fetchApprovalRule, saveApprovalRule, type ApprovalRule } from "@/lib/crm/approvals";
+
 import { Switch } from "@/components/ui/switch";
 import { format, startOfMonth, addMonths, subMonths } from "date-fns";
 
