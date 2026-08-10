@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { useRef, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import {
   MapPin,
