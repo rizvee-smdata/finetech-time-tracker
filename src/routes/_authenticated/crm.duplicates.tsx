@@ -275,3 +275,206 @@ function DupeGroup({
     </Card>
   );
 }
+
+// ---------------------------------------------------------------- customers
+
+type Customer = {
+  id: string;
+  customer_name: string | null;
+  contact_person: string | null;
+  email: string | null;
+  phone: string | null;
+  location: string | null;
+  created_at: string;
+};
+
+const CUSTOMER_FK: { table: string; column: string }[] = [
+  { table: "crm_leads", column: "partner_id" },
+  { table: "customer_visits", column: "account_id" },
+  { table: "visit_alert_log", column: "account_id" },
+  { table: "visit_checkins", column: "account_id" },
+  { table: "visit_snoozes", column: "customer_id" },
+  { table: "visit_gap_scores", column: "customer_id" },
+  { table: "office_work_tasks", column: "customer_id" },
+];
+
+function CustomerDuplicates() {
+  const { companyId, isStaff, isAdmin } = useAuth();
+  const qc = useQueryClient();
+  const canMerge = isStaff || isAdmin;
+  const [strategy, setStrategy] = useState<Strategy>("name");
+
+  const customers = useQuery({
+    queryKey: ["customers-dupe-scan", companyId],
+    enabled: !!companyId,
+    queryFn: async (): Promise<Customer[]> => {
+      const { data, error } = await sb
+        .from("customers")
+        .select("id, customer_name, contact_person, email, phone, location, created_at")
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false })
+        .limit(5000);
+      if (error) throw error;
+      return (data ?? []) as Customer[];
+    },
+  });
+
+  const groups = useMemo(() => {
+    const map = new Map<string, Customer[]>();
+    for (const c of customers.data ?? []) {
+      let key: string | null = null;
+      if (strategy === "email") key = norm(c.email, "email");
+      else if (strategy === "phone") key = norm(c.phone, "phone");
+      else key = norm(c.customer_name, "name");
+      if (!key || key.length < 3) continue;
+      const arr = map.get(key) ?? [];
+      arr.push(c);
+      map.set(key, arr);
+    }
+    return Array.from(map.entries())
+      .filter(([, arr]) => arr.length > 1)
+      .sort((a, b) => b[1].length - a[1].length);
+  }, [customers.data, strategy]);
+
+  const merge = useMutation({
+    mutationFn: async (p: { primaryId: string; mergeIds: string[] }) => {
+      for (const fk of CUSTOMER_FK) {
+        const { error } = await sb.from(fk.table).update({ [fk.column]: p.primaryId }).in(fk.column, p.mergeIds);
+        if (error) throw new Error(`${fk.table}: ${error.message}`);
+      }
+      const { error: delErr } = await sb.from("customers").delete().in("id", p.mergeIds);
+      if (delErr) throw delErr;
+    },
+    onSuccess: () => {
+      toast.success("Merged customers");
+      qc.invalidateQueries({ queryKey: ["customers-dupe-scan"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    },
+    onError: (e: any) => toast.error("Merge failed: " + e.message),
+  });
+
+  const totalDupes = groups.reduce((acc, [, arr]) => acc + arr.length - 1, 0);
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-medium">Match by</span>
+          <Select value={strategy} onValueChange={(v) => setStrategy(v as Strategy)}>
+            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Same customer name</SelectItem>
+              <SelectItem value="email">Same email</SelectItem>
+              <SelectItem value="phone">Same phone (digits only)</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="ml-auto text-xs text-muted-foreground">
+            {groups.length} duplicate group{groups.length === 1 ? "" : "s"} ·{" "}
+            <span className={totalDupes > 0 ? "font-semibold text-amber-700" : ""}>
+              {totalDupes} extra record{totalDupes === 1 ? "" : "s"}
+            </span>
+          </div>
+        </div>
+      </Card>
+
+      {customers.isLoading ? (
+        <Card className="p-8 text-center text-sm text-muted-foreground">Scanning…</Card>
+      ) : groups.length === 0 ? (
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          <Copy className="mx-auto mb-2 size-8 opacity-50" />
+          No duplicate customers found by {strategy}. 🎉
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {groups.map(([key, items]) => (
+            <CustomerDupeGroup
+              key={key}
+              matchValue={key}
+              items={items}
+              strategy={strategy}
+              canMerge={canMerge}
+              onMerge={(primaryId, mergeIds) => merge.mutate({ primaryId, mergeIds })}
+              pending={merge.isPending}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CustomerDupeGroup({
+  matchValue, items, strategy, canMerge, onMerge, pending,
+}: {
+  matchValue: string;
+  items: Customer[];
+  strategy: Strategy;
+  canMerge: boolean;
+  onMerge: (primaryId: string, mergeIds: string[]) => void;
+  pending: boolean;
+}) {
+  const sorted = useMemo(
+    () => [...items].sort((a, b) => +parseISO(a.created_at) - +parseISO(b.created_at)),
+    [items],
+  );
+  const [primaryId, setPrimaryId] = useState(sorted[0].id);
+  const Icon = strategy === "email" ? Mail : strategy === "phone" ? Phone : Building2;
+
+  function handleMerge() {
+    const mergeIds = items.filter((i) => i.id !== primaryId).map((i) => i.id);
+    if (mergeIds.length === 0) return;
+    if (!window.confirm(
+      `Merge ${mergeIds.length} customer record${mergeIds.length === 1 ? "" : "s"} into the primary?\n\n` +
+      "Visits, check-ins, office tasks and linked deals will move to the primary customer. " +
+      "The duplicate customer record(s) will be deleted. This cannot be undone."
+    )) return;
+    onMerge(primaryId, mergeIds);
+  }
+
+  return (
+    <Card className="p-4">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <AlertCircle className="size-4 text-amber-600" />
+        <span className="text-sm font-semibold">{items.length} matches</span>
+        <Badge variant="outline" className="font-mono text-xs">
+          <Icon className="mr-1 size-3" />
+          {matchValue}
+        </Badge>
+        {canMerge && (
+          <Button size="sm" className="ml-auto" onClick={handleMerge} disabled={pending}>
+            <GitMerge className="size-4" /> Merge {items.length - 1} into primary
+          </Button>
+        )}
+      </div>
+      <div className="divide-y rounded-md border">
+        {sorted.map((c) => (
+          <label
+            key={c.id}
+            className={"flex cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-muted/30 " + (c.id === primaryId ? "bg-emerald-500/5" : "")}
+          >
+            <input
+              type="radio"
+              name={`primary-cust-${matchValue}`}
+              checked={c.id === primaryId}
+              onChange={() => setPrimaryId(c.id)}
+              className="size-4 accent-emerald-600"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{c.customer_name}</span>
+                {c.contact_person && <span className="text-sm text-muted-foreground">· {c.contact_person}</span>}
+                {c.id === primaryId && <Badge className="bg-emerald-500/20 text-emerald-700">Primary (kept)</Badge>}
+              </div>
+              <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                {c.email && <span>{c.email}</span>}
+                {c.phone && <span>{c.phone}</span>}
+                {c.location && <span>{c.location}</span>}
+                <span>Created {format(parseISO(c.created_at), "MMM d, yyyy")}</span>
+              </div>
+            </div>
+          </label>
+        ))}
+      </div>
+    </Card>
+  );
+}
