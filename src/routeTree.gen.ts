@@ -214,6 +214,7 @@ import { Route as AuthenticatedAdminTrialRequestsRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminRoutesRouteImport } from './routes/_authenticated/admin.routes'
 import { Route as AuthenticatedAdminPurgeRouteImport } from './routes/_authenticated/admin.purge'
 import { Route as AuthenticatedAdminMapRouteImport } from './routes/_authenticated/admin.map'
+import { Route as AuthenticatedAdminErpRouteImport } from './routes/_authenticated/admin.erp'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminAccountReviewRouteImport } from './routes/_authenticated/admin.account-review'
@@ -1406,6 +1407,11 @@ const AuthenticatedAdminMapRoute = AuthenticatedAdminMapRouteImport.update({
   path: '/admin/map',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminErpRoute = AuthenticatedAdminErpRouteImport.update({
+  id: '/admin/erp',
+  path: '/admin/erp',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminAutomationsRoute =
   AuthenticatedAdminAutomationsRouteImport.update({
     id: '/admin/automations',
@@ -1687,6 +1693,7 @@ export interface FileRoutesByFullPath {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
+  '/admin/erp': typeof AuthenticatedAdminErpRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -1920,6 +1927,7 @@ export interface FileRoutesByTo {
   '/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
+  '/admin/erp': typeof AuthenticatedAdminErpRoute
   '/admin/map': typeof AuthenticatedAdminMapRoute
   '/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -2168,6 +2176,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/account-review': typeof AuthenticatedAdminAccountReviewRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRouteWithChildren
+  '/_authenticated/admin/erp': typeof AuthenticatedAdminErpRoute
   '/_authenticated/admin/map': typeof AuthenticatedAdminMapRoute
   '/_authenticated/admin/purge': typeof AuthenticatedAdminPurgeRoute
   '/_authenticated/admin/routes': typeof AuthenticatedAdminRoutesRoute
@@ -2416,6 +2425,7 @@ export interface FileRouteTypes {
     | '/admin/account-review'
     | '/admin/audit'
     | '/admin/automations'
+    | '/admin/erp'
     | '/admin/map'
     | '/admin/purge'
     | '/admin/routes'
@@ -2649,6 +2659,7 @@ export interface FileRouteTypes {
     | '/admin/account-review'
     | '/admin/audit'
     | '/admin/automations'
+    | '/admin/erp'
     | '/admin/map'
     | '/admin/purge'
     | '/admin/routes'
@@ -2896,6 +2907,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/account-review'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/automations'
+    | '/_authenticated/admin/erp'
     | '/_authenticated/admin/map'
     | '/_authenticated/admin/purge'
     | '/_authenticated/admin/routes'
@@ -4571,6 +4583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMapRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/erp': {
+      id: '/_authenticated/admin/erp'
+      path: '/admin/erp'
+      fullPath: '/admin/erp'
+      preLoaderRoute: typeof AuthenticatedAdminErpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/automations': {
       id: '/_authenticated/admin/automations'
       path: '/admin/automations'
@@ -5378,6 +5397,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAccountReviewRoute: typeof AuthenticatedAdminAccountReviewRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRouteWithChildren
+  AuthenticatedAdminErpRoute: typeof AuthenticatedAdminErpRoute
   AuthenticatedAdminMapRoute: typeof AuthenticatedAdminMapRoute
   AuthenticatedAdminPurgeRoute: typeof AuthenticatedAdminPurgeRoute
   AuthenticatedAdminRoutesRoute: typeof AuthenticatedAdminRoutesRoute
@@ -5476,6 +5496,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminAutomationsRoute:
     AuthenticatedAdminAutomationsRouteWithChildren,
+  AuthenticatedAdminErpRoute: AuthenticatedAdminErpRoute,
   AuthenticatedAdminMapRoute: AuthenticatedAdminMapRoute,
   AuthenticatedAdminPurgeRoute: AuthenticatedAdminPurgeRoute,
   AuthenticatedAdminRoutesRoute: AuthenticatedAdminRoutesRoute,
