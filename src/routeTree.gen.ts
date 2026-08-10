@@ -228,6 +228,7 @@ import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/em
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicV1OpenapiDotjsonRouteImport } from './routes/api/public/v1/openapi[.]json'
 import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
+import { Route as ApiPublicLicenseVerifyRouteImport } from './routes/api/public/license/verify'
 import { Route as ApiPublicHooksWebhookDispatchRouteImport } from './routes/api/public/hooks/webhook-dispatch'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
@@ -1485,6 +1486,11 @@ const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
   path: '/api/public/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLicenseVerifyRoute = ApiPublicLicenseVerifyRouteImport.update({
+  id: '/api/public/license/verify',
+  path: '/api/public/license/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksWebhookDispatchRoute =
   ApiPublicHooksWebhookDispatchRouteImport.update({
     id: '/api/public/hooks/webhook-dispatch',
@@ -1889,6 +1895,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
   '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -2124,6 +2131,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
   '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -2374,6 +2382,7 @@ export interface FileRoutesById {
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
   '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/license/verify': typeof ApiPublicLicenseVerifyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
   '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -2624,6 +2633,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/license/verify'
     | '/api/public/v1/$'
     | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
@@ -2859,6 +2869,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/license/verify'
     | '/api/public/v1/$'
     | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
@@ -3108,6 +3119,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
     | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/license/verify'
     | '/api/public/v1/$'
     | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
@@ -3151,6 +3163,7 @@ export interface RootRouteChildren {
   ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
   ApiPublicHooksWebhookDispatchRoute: typeof ApiPublicHooksWebhookDispatchRoute
+  ApiPublicLicenseVerifyRoute: typeof ApiPublicLicenseVerifyRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
   ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -4695,6 +4708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/license/verify': {
+      id: '/api/public/license/verify'
+      path: '/api/public/license/verify'
+      fullPath: '/api/public/license/verify'
+      preLoaderRoute: typeof ApiPublicLicenseVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/webhook-dispatch': {
       id: '/api/public/hooks/webhook-dispatch'
       path: '/api/public/hooks/webhook-dispatch'
@@ -5630,6 +5650,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksVisitAnalyticsAlertsRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
   ApiPublicHooksWebhookDispatchRoute: ApiPublicHooksWebhookDispatchRoute,
+  ApiPublicLicenseVerifyRoute: ApiPublicLicenseVerifyRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
   ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -5641,13 +5662,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
