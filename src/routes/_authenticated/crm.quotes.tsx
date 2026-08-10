@@ -159,7 +159,7 @@ function QuotesPage() {
     return totals;
   }, [quotes.data]);
 
-  const canApprove = isStaff || isAdmin;
+  const canApprove = canApproveQuote(approvalRule.data, user?.id, isStaff || isAdmin);
 
   return (
     <div className="space-y-4">
