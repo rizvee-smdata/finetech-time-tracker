@@ -34,7 +34,6 @@ import { Route as AuthenticatedProposalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticated/partners'
-import { Route as AuthenticatedNarrativesRouteImport } from './routes/_authenticated/narratives'
 import { Route as AuthenticatedManagerRouteImport } from './routes/_authenticated/manager'
 import { Route as AuthenticatedHolidaysRouteImport } from './routes/_authenticated/holidays'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
@@ -61,6 +60,7 @@ import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders.index'
 import { Route as AuthenticatedProposalsIndexRouteImport } from './routes/_authenticated/proposals.index'
 import { Route as AuthenticatedPlanningIndexRouteImport } from './routes/_authenticated/planning.index'
+import { Route as AuthenticatedNarrativesIndexRouteImport } from './routes/_authenticated/narratives.index'
 import { Route as AuthenticatedKbIndexRouteImport } from './routes/_authenticated/kb.index'
 import { Route as AuthenticatedFollowupsIndexRouteImport } from './routes/_authenticated/followups.index'
 import { Route as AuthenticatedExpensesIndexRouteImport } from './routes/_authenticated/expenses.index'
@@ -383,11 +383,6 @@ const AuthenticatedPartnersRoute = AuthenticatedPartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedNarrativesRoute = AuthenticatedNarrativesRouteImport.update({
-  id: '/narratives',
-  path: '/narratives',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedManagerRoute = AuthenticatedManagerRouteImport.update({
   id: '/manager',
   path: '/manager',
@@ -527,6 +522,12 @@ const AuthenticatedPlanningIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedPlanningRoute,
+  } as any)
+const AuthenticatedNarrativesIndexRoute =
+  AuthenticatedNarrativesIndexRouteImport.update({
+    id: '/narratives/',
+    path: '/narratives/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedKbIndexRoute = AuthenticatedKbIndexRouteImport.update({
   id: '/kb/',
@@ -1019,15 +1020,15 @@ const AuthenticatedObjectsApiNameRoute =
   } as any)
 const AuthenticatedNarrativesSettingsRoute =
   AuthenticatedNarrativesSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedNarrativesRoute,
+    id: '/narratives/settings',
+    path: '/narratives/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedNarrativesIdRoute =
   AuthenticatedNarrativesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedNarrativesRoute,
+    id: '/narratives/$id',
+    path: '/narratives/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedManagerTeamRoute =
   AuthenticatedManagerTeamRouteImport.update({
@@ -1684,7 +1685,6 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
-  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/preferences': typeof AuthenticatedPreferencesRoute
@@ -1860,6 +1860,7 @@ export interface FileRoutesByFullPath {
   '/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/kb/': typeof AuthenticatedKbIndexRoute
+  '/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/planning/': typeof AuthenticatedPlanningIndexRoute
   '/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -1928,7 +1929,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/holidays': typeof AuthenticatedHolidaysRoute
   '/manager': typeof AuthenticatedManagerRouteWithChildren
-  '/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/partners': typeof AuthenticatedPartnersRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/scan': typeof AuthenticatedScanRouteWithChildren
@@ -2096,6 +2096,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesIndexRoute
   '/followups': typeof AuthenticatedFollowupsIndexRoute
   '/kb': typeof AuthenticatedKbIndexRoute
+  '/narratives': typeof AuthenticatedNarrativesIndexRoute
   '/planning': typeof AuthenticatedPlanningIndexRoute
   '/proposals': typeof AuthenticatedProposalsIndexRoute
   '/reminders': typeof AuthenticatedRemindersIndexRoute
@@ -2171,7 +2172,6 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/holidays': typeof AuthenticatedHolidaysRoute
   '/_authenticated/manager': typeof AuthenticatedManagerRouteWithChildren
-  '/_authenticated/narratives': typeof AuthenticatedNarrativesRouteWithChildren
   '/_authenticated/partners': typeof AuthenticatedPartnersRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRouteWithChildren
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
@@ -2347,6 +2347,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses/': typeof AuthenticatedExpensesIndexRoute
   '/_authenticated/followups/': typeof AuthenticatedFollowupsIndexRoute
   '/_authenticated/kb/': typeof AuthenticatedKbIndexRoute
+  '/_authenticated/narratives/': typeof AuthenticatedNarrativesIndexRoute
   '/_authenticated/planning/': typeof AuthenticatedPlanningIndexRoute
   '/_authenticated/proposals/': typeof AuthenticatedProposalsIndexRoute
   '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
@@ -2422,7 +2423,6 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/holidays'
     | '/manager'
-    | '/narratives'
     | '/partners'
     | '/planning'
     | '/preferences'
@@ -2598,6 +2598,7 @@ export interface FileRouteTypes {
     | '/expenses/'
     | '/followups/'
     | '/kb/'
+    | '/narratives/'
     | '/planning/'
     | '/proposals/'
     | '/reminders/'
@@ -2666,7 +2667,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/holidays'
     | '/manager'
-    | '/narratives'
     | '/partners'
     | '/preferences'
     | '/scan'
@@ -2834,6 +2834,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/followups'
     | '/kb'
+    | '/narratives'
     | '/planning'
     | '/proposals'
     | '/reminders'
@@ -2908,7 +2909,6 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/holidays'
     | '/_authenticated/manager'
-    | '/_authenticated/narratives'
     | '/_authenticated/partners'
     | '/_authenticated/planning'
     | '/_authenticated/preferences'
@@ -3084,6 +3084,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses/'
     | '/_authenticated/followups/'
     | '/_authenticated/kb/'
+    | '/_authenticated/narratives/'
     | '/_authenticated/planning/'
     | '/_authenticated/proposals/'
     | '/_authenticated/reminders/'
@@ -3350,13 +3351,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/narratives': {
-      id: '/_authenticated/narratives'
-      path: '/narratives'
-      fullPath: '/narratives'
-      preLoaderRoute: typeof AuthenticatedNarrativesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/manager': {
       id: '/_authenticated/manager'
       path: '/manager'
@@ -3538,6 +3532,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/'
       preLoaderRoute: typeof AuthenticatedPlanningIndexRouteImport
       parentRoute: typeof AuthenticatedPlanningRoute
+    }
+    '/_authenticated/narratives/': {
+      id: '/_authenticated/narratives/'
+      path: '/narratives'
+      fullPath: '/narratives/'
+      preLoaderRoute: typeof AuthenticatedNarrativesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kb/': {
       id: '/_authenticated/kb/'
@@ -4129,17 +4130,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/narratives/settings': {
       id: '/_authenticated/narratives/settings'
-      path: '/settings'
+      path: '/narratives/settings'
       fullPath: '/narratives/settings'
       preLoaderRoute: typeof AuthenticatedNarrativesSettingsRouteImport
-      parentRoute: typeof AuthenticatedNarrativesRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/narratives/$id': {
       id: '/_authenticated/narratives/$id'
-      path: '/$id'
+      path: '/narratives/$id'
       fullPath: '/narratives/$id'
       preLoaderRoute: typeof AuthenticatedNarrativesIdRouteImport
-      parentRoute: typeof AuthenticatedNarrativesRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/manager/team': {
       id: '/_authenticated/manager/team'
@@ -5096,22 +5097,6 @@ const AuthenticatedManagerRouteChildren: AuthenticatedManagerRouteChildren = {
 const AuthenticatedManagerRouteWithChildren =
   AuthenticatedManagerRoute._addFileChildren(AuthenticatedManagerRouteChildren)
 
-interface AuthenticatedNarrativesRouteChildren {
-  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
-  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
-}
-
-const AuthenticatedNarrativesRouteChildren: AuthenticatedNarrativesRouteChildren =
-  {
-    AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
-    AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
-  }
-
-const AuthenticatedNarrativesRouteWithChildren =
-  AuthenticatedNarrativesRoute._addFileChildren(
-    AuthenticatedNarrativesRouteChildren,
-  )
-
 interface AuthenticatedPlanningRouteChildren {
   AuthenticatedPlanningPlanIdRoute: typeof AuthenticatedPlanningPlanIdRoute
   AuthenticatedPlanningNewRoute: typeof AuthenticatedPlanningNewRoute
@@ -5419,7 +5404,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHolidaysRoute: typeof AuthenticatedHolidaysRoute
   AuthenticatedManagerRoute: typeof AuthenticatedManagerRouteWithChildren
-  AuthenticatedNarrativesRoute: typeof AuthenticatedNarrativesRouteWithChildren
   AuthenticatedPartnersRoute: typeof AuthenticatedPartnersRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRouteWithChildren
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
@@ -5460,6 +5444,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKbCategoryRoute: typeof AuthenticatedKbCategoryRoute
   AuthenticatedKbAdminRoute: typeof AuthenticatedKbAdminRoute
   AuthenticatedKbAskRoute: typeof AuthenticatedKbAskRoute
+  AuthenticatedNarrativesIdRoute: typeof AuthenticatedNarrativesIdRoute
+  AuthenticatedNarrativesSettingsRoute: typeof AuthenticatedNarrativesSettingsRoute
   AuthenticatedObjectsApiNameRoute: typeof AuthenticatedObjectsApiNameRoute
   AuthenticatedPredictorHistoryRoute: typeof AuthenticatedPredictorHistoryRoute
   AuthenticatedPredictorMeRoute: typeof AuthenticatedPredictorMeRoute
@@ -5492,6 +5478,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVoiceHistoryRoute: typeof AuthenticatedVoiceHistoryRoute
   AuthenticatedFollowupsIndexRoute: typeof AuthenticatedFollowupsIndexRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
+  AuthenticatedNarrativesIndexRoute: typeof AuthenticatedNarrativesIndexRoute
   AuthenticatedVisitsIndexRoute: typeof AuthenticatedVisitsIndexRoute
   AuthenticatedAdminLicensingIdRoute: typeof AuthenticatedAdminLicensingIdRoute
   AuthenticatedClientsClientIdHealthRoute: typeof AuthenticatedClientsClientIdHealthRoute
@@ -5517,7 +5504,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHolidaysRoute: AuthenticatedHolidaysRoute,
   AuthenticatedManagerRoute: AuthenticatedManagerRouteWithChildren,
-  AuthenticatedNarrativesRoute: AuthenticatedNarrativesRouteWithChildren,
   AuthenticatedPartnersRoute: AuthenticatedPartnersRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRouteWithChildren,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
@@ -5560,6 +5546,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKbCategoryRoute: AuthenticatedKbCategoryRoute,
   AuthenticatedKbAdminRoute: AuthenticatedKbAdminRoute,
   AuthenticatedKbAskRoute: AuthenticatedKbAskRoute,
+  AuthenticatedNarrativesIdRoute: AuthenticatedNarrativesIdRoute,
+  AuthenticatedNarrativesSettingsRoute: AuthenticatedNarrativesSettingsRoute,
   AuthenticatedObjectsApiNameRoute: AuthenticatedObjectsApiNameRoute,
   AuthenticatedPredictorHistoryRoute: AuthenticatedPredictorHistoryRoute,
   AuthenticatedPredictorMeRoute: AuthenticatedPredictorMeRoute,
@@ -5594,6 +5582,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVoiceHistoryRoute: AuthenticatedVoiceHistoryRoute,
   AuthenticatedFollowupsIndexRoute: AuthenticatedFollowupsIndexRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
+  AuthenticatedNarrativesIndexRoute: AuthenticatedNarrativesIndexRoute,
   AuthenticatedVisitsIndexRoute: AuthenticatedVisitsIndexRoute,
   AuthenticatedAdminLicensingIdRoute: AuthenticatedAdminLicensingIdRoute,
   AuthenticatedClientsClientIdHealthRoute:
@@ -5662,3 +5651,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
