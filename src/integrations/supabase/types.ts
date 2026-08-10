@@ -4817,14 +4817,17 @@ export type Database = {
           is_renewal_key: boolean
           key_hash: string
           key_prefix: string | null
+          last_verified_at: string | null
           max_users: number | null
           notes: string | null
           organization_id: string | null
           parent_license_id: string | null
+          remote_status: string | null
           starts_at: string
           status: Database["public"]["Enums"]["license_status"]
           term_months: number | null
           updated_at: string
+          verify_failed_since: string | null
         }
         Insert: {
           bind_domain?: string | null
@@ -4839,14 +4842,17 @@ export type Database = {
           is_renewal_key?: boolean
           key_hash: string
           key_prefix?: string | null
+          last_verified_at?: string | null
           max_users?: number | null
           notes?: string | null
           organization_id?: string | null
           parent_license_id?: string | null
+          remote_status?: string | null
           starts_at?: string
           status?: Database["public"]["Enums"]["license_status"]
           term_months?: number | null
           updated_at?: string
+          verify_failed_since?: string | null
         }
         Update: {
           bind_domain?: string | null
@@ -4861,14 +4867,17 @@ export type Database = {
           is_renewal_key?: boolean
           key_hash?: string
           key_prefix?: string | null
+          last_verified_at?: string | null
           max_users?: number | null
           notes?: string | null
           organization_id?: string | null
           parent_license_id?: string | null
+          remote_status?: string | null
           starts_at?: string
           status?: Database["public"]["Enums"]["license_status"]
           term_months?: number | null
           updated_at?: string
+          verify_failed_since?: string | null
         }
         Relationships: [
           {
