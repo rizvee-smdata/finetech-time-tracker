@@ -333,11 +333,11 @@ function AddActivity({ leadId, userId }: { leadId: string; userId: string }) {
     if (!title.trim()) return toast.error("Title required");
     setBusy(true);
     try {
-      await addActivity({ lead_id: leadId, activity_type: type, title: title.trim(), body: body || undefined, user_id: userId });
+      const res = await addActivity({ lead_id: leadId, activity_type: type, title: title.trim(), body: body || undefined, user_id: userId });
       setTitle(""); setBody("");
       qc.invalidateQueries({ queryKey: ["crm-activities", leadId] });
       qc.invalidateQueries({ queryKey: ["crm-lead", leadId] });
-      toast.success("Logged");
+      toast.success(res.queued ? "Saved offline — will sync automatically" : "Logged");
     } catch (e: any) { toast.error(e.message); }
     finally { setBusy(false); }
   }
