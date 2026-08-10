@@ -2032,6 +2032,7 @@ export type Database = {
           expected_close_date: string | null
           expected_value: number | null
           id: string
+          import_batch_id: string | null
           is_renewal: boolean
           last_activity_at: string
           lead_source: Database["public"]["Enums"]["crm_lead_source_v2"]
@@ -2085,6 +2086,7 @@ export type Database = {
           expected_close_date?: string | null
           expected_value?: number | null
           id?: string
+          import_batch_id?: string | null
           is_renewal?: boolean
           last_activity_at?: string
           lead_source?: Database["public"]["Enums"]["crm_lead_source_v2"]
@@ -2138,6 +2140,7 @@ export type Database = {
           expected_close_date?: string | null
           expected_value?: number | null
           id?: string
+          import_batch_id?: string | null
           is_renewal?: boolean
           last_activity_at?: string
           lead_source?: Database["public"]["Enums"]["crm_lead_source_v2"]
