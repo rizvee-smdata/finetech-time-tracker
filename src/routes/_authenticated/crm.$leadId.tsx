@@ -3,6 +3,9 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
+import { MASK } from "@/lib/permissions/fields";
+
 import {
   fetchLead, fetchActivities, fetchQuotes, fetchAttachments, fetchLeadTasks,
   updateLeadStage, addActivity, fetchCompanyMembers, fetchAssignableMembers, fetchRelatedVisits,
@@ -43,9 +46,11 @@ export const Route = createFileRoute("/_authenticated/crm/$leadId")({
 function LeadDetail() {
   const { leadId } = Route.useParams();
   const { user } = useAuth();
+  const { hidden: hiddenField } = usePermissions();
   const nav = useNavigate();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
+
 
   const leadQ = useQuery({ queryKey: ["crm-lead", leadId], queryFn: () => fetchLead(leadId) });
   const lead = leadQ.data;
@@ -160,14 +165,19 @@ function LeadDetail() {
           </div>
           <div className="text-right space-y-1">
             <Badge variant="outline" className={meta.badge}>{meta.label}</Badge>
-            <div className="text-2xl font-bold">{formatMoney(lead.expected_value, lead.currency)}</div>
-            <div className="text-xs text-muted-foreground">{lead.probability}% probability</div>
-            {lead.expected_close_date && (
+            <div className="text-2xl font-bold">
+              {hiddenField("crm_leads", "expected_value") ? MASK : formatMoney(lead.expected_value, lead.currency)}
+            </div>
+            {!hiddenField("crm_leads", "probability") && (
+              <div className="text-xs text-muted-foreground">{lead.probability}% probability</div>
+            )}
+            {lead.expected_close_date && !hiddenField("crm_leads", "expected_close_date") && (
               <div className="text-xs text-muted-foreground flex items-center justify-end gap-1">
                 <Calendar className="h-3 w-3" />Close {format(new Date(lead.expected_close_date), "MMM d, yyyy")}
               </div>
             )}
           </div>
+
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">

@@ -5139,6 +5139,53 @@ export type Database = {
         }
         Relationships: []
       }
+      permission_profiles: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          hidden_fields: Json
+          id: string
+          name: string
+          readonly_fields: Json
+          record_visibility: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          hidden_fields?: Json
+          id?: string
+          name: string
+          readonly_fields?: Json
+          record_visibility?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          hidden_fields?: Json
+          id?: string
+          name?: string
+          readonly_fields?: Json
+          record_visibility?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permission_profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_limits: {
         Row: {
           ai_calls_per_month: number
@@ -5268,6 +5315,7 @@ export type Database = {
           is_super_admin: boolean
           manager_id: string | null
           must_change_password: boolean
+          permission_profile_id: string | null
           phone: string | null
           updated_at: string
           whatsapp_number: string | null
@@ -5283,6 +5331,7 @@ export type Database = {
           is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
+          permission_profile_id?: string | null
           phone?: string | null
           updated_at?: string
           whatsapp_number?: string | null
@@ -5298,6 +5347,7 @@ export type Database = {
           is_super_admin?: boolean
           manager_id?: string | null
           must_change_password?: boolean
+          permission_profile_id?: string | null
           phone?: string | null
           updated_at?: string
           whatsapp_number?: string | null
@@ -5315,6 +5365,13 @@ export type Database = {
             columns: ["manager_id"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_permission_profile_id_fkey"
+            columns: ["permission_profile_id"]
+            isOneToOne: false
+            referencedRelation: "permission_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -8243,6 +8300,8 @@ export type Database = {
         }
         Returns: number
       }
+      pp_field_rules: { Args: { _user: string }; Returns: Json }
+      pp_record_scope: { Args: { _user: string }; Returns: string }
       previous_working_day: {
         Args: { _company: string; _from: string }
         Returns: string
