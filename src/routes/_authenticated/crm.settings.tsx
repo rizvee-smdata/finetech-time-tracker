@@ -145,7 +145,7 @@ function ApprovalsTab({ companyId }: { companyId: string }) {
                     onChange={() =>
                       patch({
                         approver_ids: checked
-                          ? approvers.filter((x) => x !== m.id)
+                          ? approvers.filter((x: string) => x !== m.id)
                           : [...approvers, m.id],
                       })
                     }
