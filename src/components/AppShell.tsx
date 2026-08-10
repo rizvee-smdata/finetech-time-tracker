@@ -40,9 +40,11 @@ import {
   Trash2,
 
 
+  Plug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/branding";
+import { OfflineStatusBar } from "@/components/offline/OfflineStatusBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -222,6 +224,7 @@ const adminSection: NavSection = {
     { to: "/settings/currency", label: "Currency & FX", icon: Settings },
     { to: "/settings/custom-objects", label: "Custom Objects", icon: Boxes },
     { to: "/settings/api", label: "API & Webhooks", icon: GitBranch },
+    { to: "/admin/erp", label: "Accounting & ERP", icon: Plug },
     { to: "/settings/permissions", label: "Permissions", icon: ShieldCheck },
 
     { to: "/admin/purge", label: "Purge data", icon: Trash2 },
@@ -287,6 +290,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-background">
+      <OfflineStatusBar />
       {/* Top bar (mobile) */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur md:hidden">
         <button

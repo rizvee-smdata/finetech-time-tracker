@@ -14,6 +14,7 @@ import { MapPin, Camera, Mic, Square, CheckCircle2, AlertTriangle, WifiOff, LogO
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { haversineMeters } from "@/lib/maps/haversine";
+import { enqueue } from "@/lib/offline/queue";
 
 const GEOFENCE_M = 200;
 
@@ -124,10 +125,29 @@ function CheckinPage() {
       }
       // Auto-close all prior open field check-ins (check-out is optional now)
       const checkinTime = new Date().toISOString();
-      const { error: closeError } = await supabase.from("visit_checkins").update({
+      const closePrior = async () => await supabase.from("visit_checkins").update({
         checkout_time: checkinTime,
         checkout_lat: pos.lat, checkout_lng: pos.lng,
       }).eq("user_id", user.id).eq("company_id", companyId).is("checkout_time", null);
+      const clientNameEarly = mode === "customer" ? (customer!.customer_name ?? "") : otherName.trim();
+      const baseRow = {
+        user_id: user.id, company_id: companyId, lead_id: null, client_name: clientNameEarly,
+        account_id: mode === "customer" ? customer!.id : null,
+        checkin_lat: pos.lat, checkin_lng: pos.lng, checkin_time: checkinTime,
+        distance_from_client_m: distance, is_geofence_valid: mode === "other" ? true : !!withinFence,
+        override_reason: override || null, notes: notes || null,
+      };
+
+      // No connectivity: park the whole check-in (media included) in the offline outbox.
+      if (!navigator.onLine) {
+        const media: { field: string; blob: Blob; ext: string }[] = [];
+        if (selfie) media.push({ field: "selfie_url", blob: selfie, ext: selfie.name.split(".").pop() || "jpg" });
+        if (voiceBlob) media.push({ field: "voice_url", blob: voiceBlob, ext: "webm" });
+        await enqueue("visit_checkin", { ...baseRow, selfie_url: null, voice_url: null }, media);
+        return { queued: true as const };
+      }
+
+      const { error: closeError } = await closePrior();
       if (closeError) throw closeError;
       const selfie_url = selfie ? await uploadMedia(selfie, selfie.name.split(".").pop() || "jpg") : null;
       const voice_url = voiceBlob ? await uploadMedia(voiceBlob, "webm") : null;
@@ -141,9 +161,10 @@ function CheckinPage() {
         override_reason: override || null, selfie_url, voice_url, notes: notes || null,
       });
       if (error) throw error;
+      return { queued: false as const };
     },
-    onSuccess: () => {
-      toast.success("Checked in");
+    onSuccess: (r) => {
+      toast.success(r?.queued ? "Saved offline — will sync automatically" : "Checked in");
       setSelfie(null); setVoiceBlob(null); setOverride(""); setNotes("");
       qc.invalidateQueries({ queryKey: ["open-checkin"] });
     },
@@ -153,16 +174,21 @@ function CheckinPage() {
   const checkOutMut = useMutation({
     mutationFn: async () => {
       if (!openCheckin) throw new Error("No active check-in");
-      const { error } = await supabase.from("visit_checkins").update({
+      const patch = {
         checkout_time: new Date().toISOString(),
         checkout_lat: pos?.lat ?? null, checkout_lng: pos?.lng ?? null,
-      }).eq("id", openCheckin.id);
+      };
+      if (!navigator.onLine) {
+        await enqueue("visit_checkout", { id: openCheckin.id, ...patch });
+        return { queued: true as const };
+      }
+      const { error } = await supabase.from("visit_checkins").update(patch).eq("id", openCheckin.id);
       if (error) throw error;
       try {
         await supabase.functions.invoke("compute-mileage", { body: { date: format(new Date(), "yyyy-MM-dd") } });
       } catch {}
     },
-    onSuccess: () => { toast.success("Checked out"); qc.invalidateQueries({ queryKey: ["open-checkin"] }); },
+    onSuccess: (r: any) => { toast.success(r?.queued ? "Check-out saved offline" : "Checked out"); qc.invalidateQueries({ queryKey: ["open-checkin"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -192,7 +218,7 @@ function CheckinPage() {
 
       {!online && (
         <Card className="flex items-center gap-2 border-warning bg-warning/10 p-3 text-sm">
-          <WifiOff className="h-4 w-4" />Offline — connect to submit your check-in.
+          <WifiOff className="h-4 w-4" />Offline — your check-in is saved on the device and syncs automatically.
         </Card>
       )}
 
@@ -315,7 +341,7 @@ function CheckinPage() {
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
         </div>
 
-        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || !online || checkInMut.isPending || (mode === "customer" ? !customer : !otherName.trim())}>
+        <Button size="lg" className="h-14 w-full text-base" onClick={() => checkInMut.mutate()} disabled={!pos || checkInMut.isPending || (mode === "customer" ? !customer : !otherName.trim())}>
           <CheckCircle2 className="mr-2 h-5 w-5" />{openCheckin ? "CHECK IN AT NEXT VISIT" : "CHECK IN"}
         </Button>
       </Card>

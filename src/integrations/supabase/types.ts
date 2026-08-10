@@ -3449,6 +3449,142 @@ export type Database = {
           },
         ]
       }
+      erp_connections: {
+        Row: {
+          company_id: string
+          config: Json
+          created_at: string
+          created_by: string | null
+          default_currency: string | null
+          id: string
+          is_active: boolean
+          last_status: string | null
+          last_sync_at: string | null
+          name: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          default_currency?: string | null
+          id?: string
+          is_active?: boolean
+          last_status?: string | null
+          last_sync_at?: string | null
+          name: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          default_currency?: string | null
+          id?: string
+          is_active?: boolean
+          last_status?: string | null
+          last_sync_at?: string | null
+          name?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      erp_entity_map: {
+        Row: {
+          company_id: string
+          connection_id: string
+          created_at: string
+          entity_type: string
+          external_id: string
+          id: string
+          local_id: string
+        }
+        Insert: {
+          company_id: string
+          connection_id: string
+          created_at?: string
+          entity_type: string
+          external_id: string
+          id?: string
+          local_id: string
+        }
+        Update: {
+          company_id?: string
+          connection_id?: string
+          created_at?: string
+          entity_type?: string
+          external_id?: string
+          id?: string
+          local_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "erp_entity_map_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "erp_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      erp_sync_log: {
+        Row: {
+          company_id: string
+          connection_id: string | null
+          created_at: string
+          created_by: string | null
+          direction: string
+          entity_type: string
+          external_id: string | null
+          id: string
+          local_id: string | null
+          message: string | null
+          payload: Json | null
+          status: string
+        }
+        Insert: {
+          company_id: string
+          connection_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          direction?: string
+          entity_type: string
+          external_id?: string | null
+          id?: string
+          local_id?: string | null
+          message?: string | null
+          payload?: Json | null
+          status: string
+        }
+        Update: {
+          company_id?: string
+          connection_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          direction?: string
+          entity_type?: string
+          external_id?: string | null
+          id?: string
+          local_id?: string | null
+          message?: string | null
+          payload?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "erp_sync_log_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "erp_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exchange_rates: {
         Row: {
           as_of: string
