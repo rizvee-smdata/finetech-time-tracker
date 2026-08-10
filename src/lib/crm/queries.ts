@@ -96,9 +96,16 @@ export async function addActivity(input: {
   title: string;
   body?: string;
   user_id: string;
-}) {
+}): Promise<{ queued: boolean }> {
+  // No signal in the field: park the note in the offline outbox and replay on reconnect.
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    const { enqueue } = await import("@/lib/offline/queue");
+    await enqueue("lead_note", input);
+    return { queued: true };
+  }
   const { error } = await sb.from("crm_lead_activities").insert(input);
   if (error) throw error;
+  return { queued: false };
 }
 
 export async function fetchQuotes(leadId: string): Promise<Quote[]> {
