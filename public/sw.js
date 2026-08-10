@@ -1,6 +1,6 @@
 /* Offline-first service worker: app shell precache + stale-while-revalidate for static assets.
    API and auth traffic always goes to the network — queued writes are handled in IndexedDB by the app. */
-const CACHE = "lavisho-shell-v1";
+const CACHE = "lavisho-shell-v2";
 const SHELL = ["/", "/manifest.json", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -29,11 +29,26 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);
-      const cached = await cache.match(isNavigation ? "/" : req);
 
+      // Pages: always network-first so users never see a stale or wrong page.
+      // The cached shell is only a last resort when the device is offline.
+      if (isNavigation) {
+        try {
+          const res = await fetch(req);
+          if (res && res.status === 200 && res.type === "basic") void cache.put("/", res.clone());
+          return res;
+        } catch {
+          const shell = (await cache.match(req)) || (await cache.match("/"));
+          if (shell) return shell;
+          return new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+        }
+      }
+
+      // Static assets: stale-while-revalidate.
+      const cached = await cache.match(req);
       const network = fetch(req)
         .then((res) => {
-          if (res && res.status === 200 && res.type === "basic") cache.put(isNavigation ? "/" : req, res.clone());
+          if (res && res.status === 200 && res.type === "basic") void cache.put(req, res.clone());
           return res;
         })
         .catch(() => null);
@@ -44,10 +59,6 @@ self.addEventListener("fetch", (event) => {
       }
       const res = await network;
       if (res) return res;
-      if (isNavigation) {
-        const shell = await cache.match("/");
-        if (shell) return shell;
-      }
       return new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
     })(),
   );

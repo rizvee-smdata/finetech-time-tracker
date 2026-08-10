@@ -104,6 +104,30 @@ export function registerOutboxHandler(kind: OutboxKind, handler: OutboxHandler) 
 
 let flushing = false;
 
+/** After this many failed replays an item stops auto-retrying and waits for a manual retry. */
+export const MAX_AUTO_ATTEMPTS = 5;
+
+export function isStuck(item: OutboxItem) {
+  return item.attempts >= MAX_AUTO_ATTEMPTS;
+}
+
+/** Clear the error/attempt counter so a stuck item is retried on the next sync. */
+export async function retryItem(id: string) {
+  const rows = await listOutbox();
+  const item = rows.find((r) => r.id === id);
+  if (!item) return;
+  await tx("readwrite", (s) => s.put({ ...item, attempts: 0, lastError: undefined }));
+  notify();
+}
+
+export async function retryAllStuck() {
+  const rows = await listOutbox();
+  for (const item of rows.filter(isStuck)) {
+    await tx("readwrite", (s) => s.put({ ...item, attempts: 0, lastError: undefined }));
+  }
+  notify();
+}
+
 /** Replay queued items oldest-first. Stops at the first network failure so order is preserved. */
 export async function flushOutbox(): Promise<{ sent: number; failed: number; skipped: number }> {
   if (flushing || typeof navigator === "undefined" || !navigator.onLine) return { sent: 0, failed: 0, skipped: 0 };
@@ -114,7 +138,9 @@ export async function flushOutbox(): Promise<{ sent: number; failed: number; ski
   try {
     for (const item of await listOutbox()) {
       const handler = handlers.get(item.kind);
-      if (!handler) {
+      // Never silently discard captured field data: stuck items stay in the outbox
+      // until the user retries or discards them explicitly.
+      if (!handler || isStuck(item)) {
         skipped++;
         continue;
       }
@@ -128,10 +154,6 @@ export async function flushOutbox(): Promise<{ sent: number; failed: number; ski
         failed++;
         // Give up on this pass if the device dropped offline mid-flush.
         if (!navigator.onLine) break;
-        // Permanently broken records shouldn't block the queue forever.
-        if (item.attempts + 1 >= 5) {
-          await removeItem(item.id);
-        }
       }
     }
   } finally {
