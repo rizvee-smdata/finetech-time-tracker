@@ -140,12 +140,8 @@ function LeadDuplicates() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold">Duplicate leads</h1>
-        <p className="text-sm text-muted-foreground">
-          Find leads that look like the same person or company, then merge them into one record.
-        </p>
-      </div>
+
+
 
       <Card className="p-4">
         <div className="flex flex-wrap items-center gap-2">
