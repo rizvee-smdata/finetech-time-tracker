@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   PlayCircle,
   Pause,
+  Loader2,
+  AlertCircle,
+  RotateCw,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -311,17 +314,35 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
 function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string; poster?: string } }) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = useState(false)
+  const [loading, setLoading] = useState(Boolean(reel.src))
   const [unavailable, setUnavailable] = useState(!reel.src)
 
   const toggle = () => {
     const v = videoRef.current
     if (!v) return
     if (v.paused) {
-      void v.play().then(() => setPlaying(true)).catch(() => setUnavailable(true))
+      setLoading(true)
+      void v
+        .play()
+        .then(() => {
+          setPlaying(true)
+          setLoading(false)
+        })
+        .catch(() => {
+          setLoading(false)
+          setUnavailable(true)
+        })
     } else {
       v.pause()
       setPlaying(false)
     }
+  }
+
+  const retry = () => {
+    const v = videoRef.current
+    setUnavailable(false)
+    setLoading(true)
+    if (v) v.load()
   }
 
   return (
@@ -337,7 +358,15 @@ function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string;
             loop
             muted
             preload="metadata"
-            onError={() => setUnavailable(true)}
+            onLoadStart={() => setLoading(true)}
+            onWaiting={() => setLoading(true)}
+            onCanPlay={() => setLoading(false)}
+            onLoadedData={() => setLoading(false)}
+            onPlaying={() => setLoading(false)}
+            onError={() => {
+              setLoading(false)
+              setUnavailable(true)
+            }}
             onPause={() => setPlaying(false)}
             onPlay={() => setPlaying(true)}
             onClick={toggle}
@@ -345,8 +374,29 @@ function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string;
         )}
 
         {unavailable ? (
-          <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
-            <span className="text-xs font-medium text-muted-foreground">Reel coming soon</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
+            <AlertCircle className="h-5 w-5 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">
+              {reel.src ? "This reel couldn't load" : 'Reel coming soon'}
+            </span>
+            {reel.src && (
+              <button
+                type="button"
+                onClick={retry}
+                className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-2.5 py-1.5 text-xs font-semibold text-foreground transition hover:bg-accent"
+              >
+                <RotateCw className="h-3.5 w-3.5" /> Try again
+              </button>
+            )}
+          </div>
+        ) : loading ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/40 backdrop-blur-[1px]"
+          >
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span className="text-[11px] font-medium text-muted-foreground">Loading reel…</span>
           </div>
         ) : (
           <button
@@ -377,6 +427,7 @@ function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string;
     </div>
   )
 }
+
 
 
 function HeroMock() {
