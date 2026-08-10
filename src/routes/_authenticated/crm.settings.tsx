@@ -39,12 +39,14 @@ function SettingsPage() {
       <Tabs defaultValue="targets">
         <TabsList>
           <TabsTrigger value="targets">Targets</TabsTrigger>
+          <TabsTrigger value="approvals">Quote Approvals</TabsTrigger>
           <TabsTrigger value="competitors">Competitors</TabsTrigger>
           <TabsTrigger value="templates">Document Templates</TabsTrigger>
           <TabsTrigger value="custom_fields">Custom Lead Fields</TabsTrigger>
           <TabsTrigger value="stages">Pipeline Stages</TabsTrigger>
         </TabsList>
         <TabsContent value="targets" className="space-y-3"><TargetsTab companyId={companyId} /></TabsContent>
+        <TabsContent value="approvals" className="space-y-3"><ApprovalsTab companyId={companyId} /></TabsContent>
         <TabsContent value="competitors" className="space-y-3"><CompetitorsTab companyId={companyId} /></TabsContent>
         <TabsContent value="templates" className="space-y-3"><TemplatesTab companyId={companyId} /></TabsContent>
         <TabsContent value="custom_fields" className="space-y-3"><CustomFieldsTab companyId={companyId} /></TabsContent>
@@ -53,6 +55,112 @@ function SettingsPage() {
     </div>
   );
 }
+
+// =========================================================
+function ApprovalsTab({ companyId }: { companyId: string }) {
+  const qc = useQueryClient();
+  const rule = useQuery({
+    queryKey: ["crm-approval-rule", companyId],
+    queryFn: () => fetchApprovalRule(companyId),
+  });
+  const members = useQuery({
+    queryKey: ["crm-members", companyId],
+    queryFn: () => fetchCompanyMembers(companyId),
+  });
+
+  const [draft, setDraft] = useState<ApprovalRule | null>(null);
+  const current = draft ?? rule.data ?? null;
+
+  function patch(p: Partial<ApprovalRule>) {
+    if (!current) return;
+    setDraft({ ...current, ...p });
+  }
+
+  async function save() {
+    if (!current) return;
+    try {
+      await saveApprovalRule({ ...current, company_id: companyId });
+      setDraft(null);
+      qc.invalidateQueries({ queryKey: ["crm-approval-rule", companyId] });
+      toast.success("Approval rules saved");
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to save");
+    }
+  }
+
+  if (!current) return <p className="text-sm text-muted-foreground">Loading…</p>;
+
+  const approvers = current.approver_ids ?? [];
+
+  return (
+    <>
+      <Card className="p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Switch
+            id="appr-enabled"
+            checked={current.enabled}
+            onCheckedChange={(v) => patch({ enabled: v })}
+          />
+          <Label htmlFor="appr-enabled" className="text-sm">Require manager approval for discounted / large quotes</Label>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-1">
+            <Label className="text-xs">Discount threshold (%)</Label>
+            <Input
+              type="number" min={0} max={100} step="0.5"
+              value={current.discount_threshold_pct}
+              onChange={(e) => patch({ discount_threshold_pct: Number(e.target.value) })}
+            />
+            <p className="text-[11px] text-muted-foreground">Quotes with a discount at or above this need approval.</p>
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-xs">Quote value threshold (optional)</Label>
+            <Input
+              type="number" min={0} step="100"
+              placeholder="No limit"
+              value={current.amount_threshold ?? ""}
+              onChange={(e) => patch({ amount_threshold: e.target.value === "" ? null : Number(e.target.value) })}
+            />
+            <p className="text-[11px] text-muted-foreground">Quotes at or above this total also need approval.</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs">Designated approvers</Label>
+          <p className="text-[11px] text-muted-foreground">
+            If none are selected, any admin or staff manager can approve.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(members.data ?? []).map((m) => {
+              const checked = approvers.includes(m.id);
+              return (
+                <label key={m.id} className="flex items-center gap-2 rounded-md border p-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4"
+                    checked={checked}
+                    onChange={() =>
+                      patch({
+                        approver_ids: checked
+                          ? approvers.filter((x) => x !== m.id)
+                          : [...approvers, m.id],
+                      })
+                    }
+                  />
+                  <span className="truncate">{m.full_name ?? m.email}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
+        <Button onClick={save} disabled={!draft}>Save approval rules</Button>
+      </Card>
+    </>
+  );
+}
+
 
 // =========================================================
 function TargetsTab({ companyId }: { companyId: string }) {
