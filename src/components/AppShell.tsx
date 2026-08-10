@@ -40,6 +40,7 @@ import {
   Trash2,
 
 
+  Plug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/branding";
