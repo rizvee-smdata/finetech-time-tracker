@@ -116,6 +116,7 @@ import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_
 import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
 import { Route as AuthenticatedSettingsCustomObjectsRouteImport } from './routes/_authenticated/settings.custom-objects'
 import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
+import { Route as AuthenticatedSettingsApiRouteImport } from './routes/_authenticated/settings.api'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
@@ -837,6 +838,12 @@ const AuthenticatedSettingsCurrencyRoute =
   AuthenticatedSettingsCurrencyRouteImport.update({
     id: '/currency',
     path: '/currency',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsApiRoute =
+  AuthenticatedSettingsApiRouteImport.update({
+    id: '/api',
+    path: '/api',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedScorecardTeamRoute =
@@ -1769,6 +1776,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -2000,6 +2008,7 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -2246,6 +2255,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/_authenticated/settings/api': typeof AuthenticatedSettingsApiRoute
   '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/_authenticated/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -2492,6 +2502,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
@@ -2723,6 +2734,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
@@ -2968,6 +2980,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
+    | '/_authenticated/settings/api'
     | '/_authenticated/settings/currency'
     | '/_authenticated/settings/custom-objects'
     | '/_authenticated/settings/export'
@@ -3857,6 +3870,13 @@ declare module '@tanstack/react-router' {
       path: '/currency'
       fullPath: '/settings/currency'
       preLoaderRoute: typeof AuthenticatedSettingsCurrencyRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/api': {
+      id: '/_authenticated/settings/api'
+      path: '/api'
+      fullPath: '/settings/api'
+      preLoaderRoute: typeof AuthenticatedSettingsApiRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/scorecard/team': {
@@ -5160,6 +5180,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
   )
 
 interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsApiRoute: typeof AuthenticatedSettingsApiRoute
   AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
   AuthenticatedSettingsCustomObjectsRoute: typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
@@ -5171,6 +5192,7 @@ interface AuthenticatedSettingsRouteChildren {
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsApiRoute: AuthenticatedSettingsApiRoute,
   AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
   AuthenticatedSettingsCustomObjectsRoute:
     AuthenticatedSettingsCustomObjectsRouteWithChildren,
