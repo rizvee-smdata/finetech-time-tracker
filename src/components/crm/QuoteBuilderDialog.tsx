@@ -85,7 +85,12 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
   }, [isEdit, existing.data]);
 
   const totals = useMemo(() => calcQuoteTotals(items, taxPct, discountPct), [items, taxPct, discountPct]);
-  const needsApproval = discountPct >= APPROVAL_THRESHOLD;
+  const approvalCheck = useMemo(
+    () => quoteNeedsApproval(approvalRule.data, discountPct, totals.total),
+    [approvalRule.data, discountPct, totals.total],
+  );
+  const needsApproval = approvalCheck.needed;
+
 
   function addBlank() {
     setItems((cur) => [...cur, { product_id: null, name: "", quantity: 1, unit_price: 0, discount_pct: 0, total: 0, sort_order: cur.length }]);
