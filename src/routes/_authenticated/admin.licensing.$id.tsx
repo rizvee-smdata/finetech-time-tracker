@@ -97,7 +97,10 @@ function LicenseDetailPage() {
             <dt className="text-muted-foreground">Starts</dt><dd>{l.starts_at}</dd>
             <dt className="text-muted-foreground">Expires</dt><dd>{l.expires_at ?? "Perpetual"}</dd>
             <dt className="text-muted-foreground">Grace days</dt><dd>{l.grace_days}</dd>
+            <dt className="text-muted-foreground">Last check-in</dt>
+            <dd>{l.last_verified_at ? new Date(l.last_verified_at).toLocaleString() : "Never"}</dd>
           </dl>
+
           {l.notes && <p className="mt-3 text-muted-foreground">{l.notes}</p>}
         </section>
 
