@@ -222,6 +222,8 @@ const adminSection: NavSection = {
     { to: "/settings/currency", label: "Currency & FX", icon: Settings },
     { to: "/settings/custom-objects", label: "Custom Objects", icon: Boxes },
     { to: "/settings/api", label: "API & Webhooks", icon: GitBranch },
+    { to: "/settings/permissions", label: "Permissions", icon: ShieldCheck },
+
     { to: "/admin/purge", label: "Purge data", icon: Trash2 },
     { to: "/settings", label: "Settings", icon: Settings },
   ],
