@@ -3,6 +3,9 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
+import { MASK } from "@/lib/permissions/fields";
+
 import {
   fetchLead, fetchActivities, fetchQuotes, fetchAttachments, fetchLeadTasks,
   updateLeadStage, addActivity, fetchCompanyMembers, fetchAssignableMembers, fetchRelatedVisits,
