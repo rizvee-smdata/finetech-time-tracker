@@ -215,9 +215,6 @@ const adminSection: NavSection = {
   label: "Administration",
   items: [
     { to: "/admin/trial-requests", label: "Trial requests", icon: ScrollText },
-    ...(VENDOR_CONSOLE_ENABLED
-      ? [{ to: "/admin/licensing", label: "Licensing", icon: ShieldCheck }]
-      : []),
     { to: "/settings/license", label: "License & seats", icon: ShieldCheck },
     { to: "/admin/automations", label: "Automations", icon: GitBranch },
     { to: "/audit", label: "Audit log", icon: ScrollText },
@@ -236,7 +233,7 @@ const adminSection: NavSection = {
 
 
 export function AppShell() {
-  const { user, isStaff, isAdmin, companies, companyId, setCompanyId, company, loading, signOut } = useAuth();
+  const { user, isStaff, isAdmin, isSuperAdmin, companies, companyId, setCompanyId, company, loading, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const path = router.state.location.pathname;
@@ -261,15 +258,18 @@ export function AppShell() {
     );
   }
 
-  const canIssueLicences = isVendorAdminEmail(user?.email);
-  const adminItems = adminSection.items.filter(
-    (i) => i.to !== "/admin/licensing" || canIssueLicences,
-  );
+  const canIssueLicences = VENDOR_CONSOLE_ENABLED && isSuperAdmin && isVendorAdminEmail(user?.email);
+  const adminItems: NavItem[] = [
+    ...(canIssueLicences
+      ? [{ to: "/admin/licensing", label: "License Generator", icon: ShieldCheck }]
+      : []),
+    ...adminSection.items,
+  ];
 
   const sections: NavSection[] = [
     ...navSections,
     ...(isStaff ? [staffSection] : []),
-    ...(isAdmin ? [{ ...adminSection, items: adminItems }] : []),
+    ...(isAdmin || canIssueLicences ? [{ ...adminSection, items: adminItems }] : []),
   ];
 
   const switcher = companies.length > 0 && (
