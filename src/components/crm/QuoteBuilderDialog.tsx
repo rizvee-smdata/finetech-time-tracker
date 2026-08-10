@@ -46,11 +46,18 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
     enabled: open,
   });
 
+  const approvalRule = useQuery({
+    queryKey: ["crm-approval-rule", companyId],
+    queryFn: () => fetchApprovalRule(companyId),
+    enabled: open && !!companyId,
+  });
+
   const existing = useQuery({
     queryKey: ["crm-quote-items", quote?.id],
     queryFn: () => fetchQuoteLineItems(quote.id),
     enabled: open && isEdit,
   });
+
 
   const [title, setTitle] = useState("");
   const [validUntil, setValidUntil] = useState("");
