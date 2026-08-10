@@ -106,11 +106,16 @@ function LicenseDetailPage() {
 
         <section className="space-y-3 rounded-lg border p-4">
           <h2 className="font-medium">Actions</h2>
+          <p className="text-xs text-muted-foreground">
+            Deactivating takes effect on the customer instance at its next check-in with this licence server
+            (or immediately when they press “Check now” in Settings → License).
+          </p>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => run(() => setStatus({ data: { id, action: "suspend" } }), "License suspended")}>Suspend</Button>
-            <Button variant="outline" size="sm" onClick={() => run(() => setStatus({ data: { id, action: "reinstate" } }), "License reinstated")}>Reinstate</Button>
+            <Button variant="outline" size="sm" onClick={() => run(() => setStatus({ data: { id, action: "suspend" } }), "License deactivated")}>Deactivate (suspend)</Button>
+            <Button variant="outline" size="sm" onClick={() => run(() => setStatus({ data: { id, action: "reinstate" } }), "License reactivated")}>Reactivate</Button>
             <Button
               variant="destructive"
+
               size="sm"
               onClick={() => {
                 if (confirm("Revoke this license? The customer will be locked out immediately.")) {
