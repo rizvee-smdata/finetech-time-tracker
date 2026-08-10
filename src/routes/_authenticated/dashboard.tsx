@@ -129,7 +129,10 @@ function Dashboard() {
             ))}
           </div>
         </Card>
+
+        <RenewalAlertsCard />
       </div>
+
     </div>
   );
 }
