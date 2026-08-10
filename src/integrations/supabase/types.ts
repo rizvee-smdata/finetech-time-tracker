@@ -133,6 +133,100 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          scopes: string[]
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          scopes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          scopes?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_request_logs: {
+        Row: {
+          api_key_id: string | null
+          company_id: string | null
+          created_at: string
+          duration_ms: number | null
+          id: string
+          method: string
+          path: string
+          status_code: number
+        }
+        Insert: {
+          api_key_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          method: string
+          path: string
+          status_code: number
+        }
+        Update: {
+          api_key_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          method?: string
+          path?: string
+          status_code?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_request_logs_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_config: {
         Row: {
           app_name: string
@@ -7516,6 +7610,115 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          company_id: string
+          created_at: string
+          delivered_at: string | null
+          endpoint_id: string
+          event: string
+          id: string
+          next_attempt_at: string
+          payload: Json
+          response_body: string | null
+          response_code: number | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          company_id: string
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id: string
+          event: string
+          id?: string
+          next_attempt_at?: string
+          payload: Json
+          response_body?: string | null
+          response_code?: number | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          company_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id?: string
+          event?: string
+          id?: string
+          next_attempt_at?: string
+          payload?: Json
+          response_body?: string | null
+          response_code?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_endpoints: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          events: string[]
+          failure_count: number
+          id: string
+          is_active: boolean
+          last_failure_at: string | null
+          last_success_at: string | null
+          secret: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          secret: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          secret?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_endpoints_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_message_log: {
         Row: {
           body: string | null
@@ -7982,6 +8185,10 @@ export type Database = {
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
+      enqueue_webhook_event: {
+        Args: { _company: string; _event: string; _payload: Json }
         Returns: number
       }
       evaluate_lead_routing: { Args: { _lead_id: string }; Returns: string }
