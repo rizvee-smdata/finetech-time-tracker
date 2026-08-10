@@ -116,6 +116,7 @@ import { Route as AuthenticatedSettingsFormBuilderRouteImport } from './routes/_
 import { Route as AuthenticatedSettingsExportRouteImport } from './routes/_authenticated/settings.export'
 import { Route as AuthenticatedSettingsCustomObjectsRouteImport } from './routes/_authenticated/settings.custom-objects'
 import { Route as AuthenticatedSettingsCurrencyRouteImport } from './routes/_authenticated/settings.currency'
+import { Route as AuthenticatedSettingsApiRouteImport } from './routes/_authenticated/settings.api'
 import { Route as AuthenticatedScorecardTeamRouteImport } from './routes/_authenticated/scorecard.team'
 import { Route as AuthenticatedScorecardMeRouteImport } from './routes/_authenticated/scorecard.me'
 import { Route as AuthenticatedScorecardHistoryRouteImport } from './routes/_authenticated/scorecard.history'
@@ -223,6 +224,9 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicV1OpenapiDotjsonRouteImport } from './routes/api/public/v1/openapi[.]json'
+import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
+import { Route as ApiPublicHooksWebhookDispatchRouteImport } from './routes/api/public/hooks/webhook-dispatch'
 import { Route as ApiPublicHooksVisitReminderCheckRouteImport } from './routes/api/public/hooks/visit-reminder-check'
 import { Route as ApiPublicHooksVisitAnalyticsAlertsRouteImport } from './routes/api/public/hooks/visit-analytics-alerts'
 import { Route as ApiPublicHooksTmsOverdueScanRouteImport } from './routes/api/public/hooks/tms-overdue-scan'
@@ -834,6 +838,12 @@ const AuthenticatedSettingsCurrencyRoute =
   AuthenticatedSettingsCurrencyRouteImport.update({
     id: '/currency',
     path: '/currency',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsApiRoute =
+  AuthenticatedSettingsApiRouteImport.update({
+    id: '/api',
+    path: '/api',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedScorecardTeamRoute =
@@ -1450,6 +1460,23 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1OpenapiDotjsonRoute =
+  ApiPublicV1OpenapiDotjsonRouteImport.update({
+    id: '/api/public/v1/openapi.json',
+    path: '/api/public/v1/openapi.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
+  id: '/api/public/v1/$',
+  path: '/api/public/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksWebhookDispatchRoute =
+  ApiPublicHooksWebhookDispatchRouteImport.update({
+    id: '/api/public/hooks/webhook-dispatch',
+    path: '/api/public/hooks/webhook-dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksVisitReminderCheckRoute =
   ApiPublicHooksVisitReminderCheckRouteImport.update({
     id: '/api/public/hooks/visit-reminder-check',
@@ -1749,6 +1776,7 @@ export interface FileRoutesByFullPath {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -1837,6 +1865,9 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -1977,6 +2008,7 @@ export interface FileRoutesByTo {
   '/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -2065,6 +2097,9 @@ export interface FileRoutesByTo {
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -2220,6 +2255,7 @@ export interface FileRoutesById {
   '/_authenticated/scorecard/history': typeof AuthenticatedScorecardHistoryRoute
   '/_authenticated/scorecard/me': typeof AuthenticatedScorecardMeRoute
   '/_authenticated/scorecard/team': typeof AuthenticatedScorecardTeamRoute
+  '/_authenticated/settings/api': typeof AuthenticatedSettingsApiRoute
   '/_authenticated/settings/currency': typeof AuthenticatedSettingsCurrencyRoute
   '/_authenticated/settings/custom-objects': typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   '/_authenticated/settings/export': typeof AuthenticatedSettingsExportRoute
@@ -2308,6 +2344,9 @@ export interface FileRoutesById {
   '/api/public/hooks/tms-overdue-scan': typeof ApiPublicHooksTmsOverdueScanRoute
   '/api/public/hooks/visit-analytics-alerts': typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   '/api/public/hooks/visit-reminder-check': typeof ApiPublicHooksVisitReminderCheckRoute
+  '/api/public/hooks/webhook-dispatch': typeof ApiPublicHooksWebhookDispatchRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -2463,6 +2502,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
@@ -2551,6 +2591,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
+    | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -2691,6 +2734,7 @@ export interface FileRouteTypes {
     | '/scorecard/history'
     | '/scorecard/me'
     | '/scorecard/team'
+    | '/settings/api'
     | '/settings/currency'
     | '/settings/custom-objects'
     | '/settings/export'
@@ -2779,6 +2823,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
+    | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -2933,6 +2980,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scorecard/history'
     | '/_authenticated/scorecard/me'
     | '/_authenticated/scorecard/team'
+    | '/_authenticated/settings/api'
     | '/_authenticated/settings/currency'
     | '/_authenticated/settings/custom-objects'
     | '/_authenticated/settings/export'
@@ -3021,6 +3069,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/tms-overdue-scan'
     | '/api/public/hooks/visit-analytics-alerts'
     | '/api/public/hooks/visit-reminder-check'
+    | '/api/public/hooks/webhook-dispatch'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -3060,6 +3111,9 @@ export interface RootRouteChildren {
   ApiPublicHooksTmsOverdueScanRoute: typeof ApiPublicHooksTmsOverdueScanRoute
   ApiPublicHooksVisitAnalyticsAlertsRoute: typeof ApiPublicHooksVisitAnalyticsAlertsRoute
   ApiPublicHooksVisitReminderCheckRoute: typeof ApiPublicHooksVisitReminderCheckRoute
+  ApiPublicHooksWebhookDispatchRoute: typeof ApiPublicHooksWebhookDispatchRoute
+  ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
+  ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -3818,6 +3872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsCurrencyRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/api': {
+      id: '/_authenticated/settings/api'
+      path: '/api'
+      fullPath: '/settings/api'
+      preLoaderRoute: typeof AuthenticatedSettingsApiRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/scorecard/team': {
       id: '/_authenticated/scorecard/team'
       path: '/team'
@@ -4567,6 +4628,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/openapi.json': {
+      id: '/api/public/v1/openapi.json'
+      path: '/api/public/v1/openapi.json'
+      fullPath: '/api/public/v1/openapi.json'
+      preLoaderRoute: typeof ApiPublicV1OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/$': {
+      id: '/api/public/v1/$'
+      path: '/api/public/v1/$'
+      fullPath: '/api/public/v1/$'
+      preLoaderRoute: typeof ApiPublicV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/webhook-dispatch': {
+      id: '/api/public/hooks/webhook-dispatch'
+      path: '/api/public/hooks/webhook-dispatch'
+      fullPath: '/api/public/hooks/webhook-dispatch'
+      preLoaderRoute: typeof ApiPublicHooksWebhookDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/visit-reminder-check': {
       id: '/api/public/hooks/visit-reminder-check'
       path: '/api/public/hooks/visit-reminder-check'
@@ -5098,6 +5180,7 @@ const AuthenticatedSettingsWhatsappRouteWithChildren =
   )
 
 interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsApiRoute: typeof AuthenticatedSettingsApiRoute
   AuthenticatedSettingsCurrencyRoute: typeof AuthenticatedSettingsCurrencyRoute
   AuthenticatedSettingsCustomObjectsRoute: typeof AuthenticatedSettingsCustomObjectsRouteWithChildren
   AuthenticatedSettingsExportRoute: typeof AuthenticatedSettingsExportRoute
@@ -5109,6 +5192,7 @@ interface AuthenticatedSettingsRouteChildren {
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsApiRoute: AuthenticatedSettingsApiRoute,
   AuthenticatedSettingsCurrencyRoute: AuthenticatedSettingsCurrencyRoute,
   AuthenticatedSettingsCustomObjectsRoute:
     AuthenticatedSettingsCustomObjectsRouteWithChildren,
@@ -5480,6 +5564,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksVisitAnalyticsAlertsRoute:
     ApiPublicHooksVisitAnalyticsAlertsRoute,
   ApiPublicHooksVisitReminderCheckRoute: ApiPublicHooksVisitReminderCheckRoute,
+  ApiPublicHooksWebhookDispatchRoute: ApiPublicHooksWebhookDispatchRoute,
+  ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
+  ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -5489,13 +5576,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
