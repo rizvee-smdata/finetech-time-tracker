@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { useRef, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import {
   MapPin,
@@ -11,6 +12,7 @@ import {
   ArrowRight,
   ShieldCheck,
   PlayCircle,
+  Pause,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -42,11 +44,11 @@ const FEATURES = [
   { icon: BarChart3, title: 'Reports & analytics', desc: 'Live scorecards, client health, route plans and executive dashboards.' },
 ]
 
-const REELS = [
-  { label: 'GPS check-in flow', desc: 'Geofence, selfie, voice — under 20 seconds.' },
-  { label: 'CRM pipeline', desc: 'Drag deals through stages with live forecast.' },
-  { label: 'Task board', desc: 'Assign, comment, log time — all in one place.' },
-  { label: 'AI copilot', desc: 'Ask questions, get briefings and anomaly alerts.' },
+const REELS: { label: string; desc: string; src?: string; poster?: string }[] = [
+  { label: 'GPS check-in flow', desc: 'Geofence, selfie, voice — under 20 seconds.', src: '/reels/gps-checkin.mp4' },
+  { label: 'CRM pipeline', desc: 'Drag deals through stages with live forecast.', src: '/reels/crm-pipeline.mp4' },
+  { label: 'Task board', desc: 'Assign, comment, log time — all in one place.', src: '/reels/task-board.mp4' },
+  { label: 'AI copilot', desc: 'Ask questions, get briefings and anomaly alerts.', src: '/reels/ai-copilot.mp4' },
 ]
 
 const PLANS = [
@@ -157,6 +159,7 @@ function LandingPage() {
         </div>
       </section>
 
+
       {/* Reels */}
       <section id="reels" className="border-b border-border bg-muted/30 py-20">
         <div className="mx-auto max-w-6xl px-6">
@@ -167,24 +170,13 @@ function LandingPage() {
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {REELS.map((r) => (
-              <div key={r.label} className="group overflow-hidden rounded-xl border border-border bg-card">
-                <div className="relative aspect-[9/16] w-full overflow-hidden bg-gradient-to-br from-primary/15 via-primary/5 to-background">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background/90 shadow-md ring-1 ring-border">
-                      <PlayCircle className="h-8 w-8 text-primary" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-4">
-                    <div className="text-sm font-semibold">{r.label}</div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <p className="text-xs text-muted-foreground">{r.desc}</p>
-                </div>
-              </div>
+              <ReelCard key={r.label} reel={r} />
             ))}
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">Reels are placeholders — swap in your real recordings anytime.</p>
+          <p className="mt-6 text-xs text-muted-foreground">
+            Drop your recordings into <code>/public/reels/</code> using the file names above to replace these.
+          </p>
+
         </div>
       </section>
 
@@ -315,6 +307,77 @@ function TopBar() {
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return <div className="text-xs font-semibold uppercase tracking-widest text-primary">{children}</div>
 }
+
+function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string; poster?: string } }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [unavailable, setUnavailable] = useState(!reel.src)
+
+  const toggle = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      void v.play().then(() => setPlaying(true)).catch(() => setUnavailable(true))
+    } else {
+      v.pause()
+      setPlaying(false)
+    }
+  }
+
+  return (
+    <div className="group overflow-hidden rounded-xl border border-border bg-card">
+      <div className="relative aspect-[9/16] w-full overflow-hidden bg-gradient-to-br from-primary/15 via-primary/5 to-background">
+        {reel.src && !unavailable && (
+          <video
+            ref={videoRef}
+            src={reel.src}
+            poster={reel.poster}
+            className="absolute inset-0 h-full w-full object-cover"
+            playsInline
+            loop
+            muted
+            preload="metadata"
+            onError={() => setUnavailable(true)}
+            onPause={() => setPlaying(false)}
+            onPlay={() => setPlaying(true)}
+            onClick={toggle}
+          />
+        )}
+
+        {unavailable ? (
+          <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
+            <span className="text-xs font-medium text-muted-foreground">Reel coming soon</span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={playing ? `Pause ${reel.label}` : `Play ${reel.label}`}
+            className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+              playing ? 'opacity-0 hover:opacity-100' : 'opacity-100'
+            }`}
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-background/90 shadow-md ring-1 ring-border">
+              {playing ? (
+                <Pause className="h-7 w-7 text-primary" />
+              ) : (
+                <PlayCircle className="h-8 w-8 text-primary" />
+              )}
+            </span>
+          </button>
+        )}
+
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-4">
+          <div className="text-sm font-semibold">{reel.label}</div>
+        </div>
+      </div>
+      <div className="p-4">
+        <p className="text-xs text-muted-foreground">{reel.desc}</p>
+      </div>
+    </div>
+  )
+}
+
 
 function HeroMock() {
   return (
