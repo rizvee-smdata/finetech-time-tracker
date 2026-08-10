@@ -93,6 +93,12 @@ function QuotesPage() {
     },
   });
 
+  const approvalRule = useQuery({
+    queryKey: ["crm-approval-rule", companyId],
+    queryFn: () => fetchApprovalRule(companyId!),
+    enabled: !!companyId,
+  });
+
   const decideMut = useMutation({
     mutationFn: async (p: { id: string; approve: boolean; comment?: string }) => {
       const { error } = await sb
@@ -105,6 +111,15 @@ function QuotesPage() {
         })
         .eq("id", p.id);
       if (error) throw error;
+      if (companyId) {
+        await logApproval({
+          companyId,
+          entityId: p.id,
+          action: p.approve ? "approved" : "rejected",
+          actorId: user?.id,
+          comments: p.comment ?? null,
+        });
+      }
     },
     onSuccess: (_d, v) => {
       toast.success(v.approve ? "Quote approved" : "Quote rejected");
@@ -112,6 +127,7 @@ function QuotesPage() {
     },
     onError: (e: any) => toast.error("Failed: " + e.message),
   });
+
 
   const filtered = useMemo(() => {
     const list = quotes.data ?? [];
