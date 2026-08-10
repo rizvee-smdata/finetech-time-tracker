@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, ClipboardList, Users, Bell, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
+import { RenewalAlertsCard } from "@/components/crm/RenewalAlertsCard";
+
 
 function formatDateTime(value: string | null | undefined) {
   if (!value) return "—";
