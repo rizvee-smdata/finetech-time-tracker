@@ -307,6 +307,77 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return <div className="text-xs font-semibold uppercase tracking-widest text-primary">{children}</div>
 }
 
+function ReelCard({ reel }: { reel: { label: string; desc: string; src?: string; poster?: string } }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [unavailable, setUnavailable] = useState(!reel.src)
+
+  const toggle = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      void v.play().then(() => setPlaying(true)).catch(() => setUnavailable(true))
+    } else {
+      v.pause()
+      setPlaying(false)
+    }
+  }
+
+  return (
+    <div className="group overflow-hidden rounded-xl border border-border bg-card">
+      <div className="relative aspect-[9/16] w-full overflow-hidden bg-gradient-to-br from-primary/15 via-primary/5 to-background">
+        {reel.src && !unavailable && (
+          <video
+            ref={videoRef}
+            src={reel.src}
+            poster={reel.poster}
+            className="absolute inset-0 h-full w-full object-cover"
+            playsInline
+            loop
+            muted
+            preload="metadata"
+            onError={() => setUnavailable(true)}
+            onPause={() => setPlaying(false)}
+            onPlay={() => setPlaying(true)}
+            onClick={toggle}
+          />
+        )}
+
+        {unavailable ? (
+          <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
+            <span className="text-xs font-medium text-muted-foreground">Reel coming soon</span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={playing ? `Pause ${reel.label}` : `Play ${reel.label}`}
+            className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+              playing ? 'opacity-0 hover:opacity-100' : 'opacity-100'
+            }`}
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-background/90 shadow-md ring-1 ring-border">
+              {playing ? (
+                <Pause className="h-7 w-7 text-primary" />
+              ) : (
+                <PlayCircle className="h-8 w-8 text-primary" />
+              )}
+            </span>
+          </button>
+        )}
+
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-4">
+          <div className="text-sm font-semibold">{reel.label}</div>
+        </div>
+      </div>
+      <div className="p-4">
+        <p className="text-xs text-muted-foreground">{reel.desc}</p>
+      </div>
+    </div>
+  )
+}
+
+
 function HeroMock() {
   return (
     <div className="relative">
