@@ -13,8 +13,10 @@ import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { Check, X, FileText } from "lucide-react";
 import { ShareQuoteButton } from "@/components/portal/ShareQuoteButton";
+import { fetchApprovalRule, canApproveQuote, logApproval } from "@/lib/crm/approvals";
 
 const sb = supabase as any;
+
 
 export const Route = createFileRoute("/_authenticated/crm/quotes")({
   component: QuotesPage,
@@ -91,6 +93,12 @@ function QuotesPage() {
     },
   });
 
+  const approvalRule = useQuery({
+    queryKey: ["crm-approval-rule", companyId],
+    queryFn: () => fetchApprovalRule(companyId!),
+    enabled: !!companyId,
+  });
+
   const decideMut = useMutation({
     mutationFn: async (p: { id: string; approve: boolean; comment?: string }) => {
       const { error } = await sb
@@ -103,6 +111,15 @@ function QuotesPage() {
         })
         .eq("id", p.id);
       if (error) throw error;
+      if (companyId) {
+        await logApproval({
+          companyId,
+          entityId: p.id,
+          action: p.approve ? "approved" : "rejected",
+          actorId: user?.id,
+          comments: p.comment ?? null,
+        });
+      }
     },
     onSuccess: (_d, v) => {
       toast.success(v.approve ? "Quote approved" : "Quote rejected");
@@ -110,6 +127,7 @@ function QuotesPage() {
     },
     onError: (e: any) => toast.error("Failed: " + e.message),
   });
+
 
   const filtered = useMemo(() => {
     const list = quotes.data ?? [];
@@ -141,7 +159,7 @@ function QuotesPage() {
     return totals;
   }, [quotes.data]);
 
-  const canApprove = isStaff || isAdmin;
+  const canApprove = canApproveQuote(approvalRule.data, user?.id, isStaff || isAdmin);
 
   return (
     <div className="space-y-4">

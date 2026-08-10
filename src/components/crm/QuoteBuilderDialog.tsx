@@ -19,10 +19,10 @@ import {
   type QuoteLineItem,
 } from "@/lib/crm/products";
 import { formatMoney } from "@/lib/crm/types";
+import { fetchApprovalRule, quoteNeedsApproval, logApproval } from "@/lib/crm/approvals";
 
 const sb = supabase as any;
 
-const APPROVAL_THRESHOLD = 15; // % discount above which approval is required
 
 type Props = {
   open: boolean;
@@ -46,11 +46,18 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
     enabled: open,
   });
 
+  const approvalRule = useQuery({
+    queryKey: ["crm-approval-rule", companyId],
+    queryFn: () => fetchApprovalRule(companyId),
+    enabled: open && !!companyId,
+  });
+
   const existing = useQuery({
     queryKey: ["crm-quote-items", quote?.id],
     queryFn: () => fetchQuoteLineItems(quote.id),
     enabled: open && isEdit,
   });
+
 
   const [title, setTitle] = useState("");
   const [validUntil, setValidUntil] = useState("");
@@ -78,7 +85,12 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
   }, [isEdit, existing.data]);
 
   const totals = useMemo(() => calcQuoteTotals(items, taxPct, discountPct), [items, taxPct, discountPct]);
-  const needsApproval = discountPct >= APPROVAL_THRESHOLD;
+  const approvalCheck = useMemo(
+    () => quoteNeedsApproval(approvalRule.data, discountPct, totals.total),
+    [approvalRule.data, discountPct, totals.total],
+  );
+  const needsApproval = approvalCheck.needed;
+
 
   function addBlank() {
     setItems((cur) => [...cur, { product_id: null, name: "", quantity: 1, unit_price: 0, discount_pct: 0, total: 0, sort_order: cur.length }]);
@@ -109,7 +121,9 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
     setBusy(true);
     try {
       let quoteId = quote?.id;
-      const approval_status = action === "request_approval" || needsApproval ? "requested" : "not_requested";
+      const alreadyApproved = isEdit && quote?.approval_status === "approved";
+      const requesting = (action === "request_approval" || needsApproval) && !alreadyApproved;
+      const approval_status = requesting ? "pending" : alreadyApproved ? "approved" : "not_requested";
 
       const basePayload = {
         title: title.trim(),
@@ -120,8 +134,8 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
         subtotal: totals.subtotal,
         amount: totals.total,
         approval_status,
-        approval_requested_at: approval_status === "requested" ? new Date().toISOString() : null,
-        approval_requested_by: approval_status === "requested" ? userId : null,
+        approval_requested_at: requesting ? new Date().toISOString() : null,
+        approval_requested_by: requesting ? userId : null,
       };
 
       if (isEdit) {
@@ -142,15 +156,26 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
 
       await replaceQuoteLineItems(quoteId, items);
 
+      if (requesting) {
+        await logApproval({
+          companyId,
+          entityId: quoteId,
+          action: "requested",
+          actorId: userId,
+          comments: approvalCheck.reasons.join("; "),
+          metadata: { discount_pct: discountPct, amount: totals.total },
+        });
+      }
+
       if (action === "send") {
-        const currentApproval = isEdit ? quote.approval_status : approval_status;
-        if (needsApproval && currentApproval !== "approved") {
-          toast.error(`Discount ≥ ${APPROVAL_THRESHOLD}% needs approval first`);
+        if (needsApproval && !alreadyApproved) {
+          toast.error("Approval required before sending — request submitted");
         } else {
           const { error } = await sb.from("crm_quotes").update({ status: "sent" }).eq("id", quoteId);
           if (error) throw error;
         }
       }
+
 
 
       qc.invalidateQueries({ queryKey: ["crm-quotes", leadId] });
@@ -233,14 +258,20 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
           </div>
 
           {needsApproval && (
-            <div className="flex items-center gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 text-xs">
-              <ShieldAlert className="h-4 w-4 text-amber-600" />
-              <span>Discount of {discountPct}% requires manager approval before sending.</span>
+            <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 text-xs">
+              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <div className="space-y-0.5">
+                <div className="font-medium">Manager approval required before sending</div>
+                {approvalCheck.reasons.map((r) => (
+                  <div key={r} className="text-muted-foreground">{r}</div>
+                ))}
+              </div>
               {isEdit && quote.approval_status && (
                 <Badge variant="outline" className="ml-auto capitalize">{String(quote.approval_status).replace("_", " ")}</Badge>
               )}
             </div>
           )}
+
 
           <div className="grid gap-1"><Label>Internal notes</Label><Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
         </div>

@@ -1627,6 +1627,47 @@ export type Database = {
           },
         ]
       }
+      crm_approval_rules: {
+        Row: {
+          amount_threshold: number | null
+          approver_ids: string[]
+          company_id: string
+          created_at: string
+          discount_threshold_pct: number
+          enabled: boolean
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_threshold?: number | null
+          approver_ids?: string[]
+          company_id: string
+          created_at?: string
+          discount_threshold_pct?: number
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_threshold?: number | null
+          approver_ids?: string[]
+          company_id?: string
+          created_at?: string
+          discount_threshold_pct?: number
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_approval_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_call_logs: {
         Row: {
           called_at: string
