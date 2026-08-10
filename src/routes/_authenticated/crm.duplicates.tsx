@@ -7,16 +7,39 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatMoney } from "@/lib/crm/types";
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
-import { Copy, GitMerge, AlertCircle, Mail, Phone, User } from "lucide-react";
+import { Copy, GitMerge, AlertCircle, Mail, Phone, User, Building2 } from "lucide-react";
 
 const sb = supabase as any;
 
 export const Route = createFileRoute("/_authenticated/crm/duplicates")({
   component: DuplicatesPage,
 });
+
+function DuplicatesPage() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-semibold">Duplicates</h1>
+        <p className="text-sm text-muted-foreground">
+          Find leads or customer accounts that look like the same person or company, then merge them into one record.
+        </p>
+      </div>
+      <Tabs defaultValue="leads">
+        <TabsList>
+          <TabsTrigger value="leads">Leads</TabsTrigger>
+          <TabsTrigger value="customers">Customers</TabsTrigger>
+        </TabsList>
+        <TabsContent value="leads" className="mt-4"><LeadDuplicates /></TabsContent>
+        <TabsContent value="customers" className="mt-4"><CustomerDuplicates /></TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
 
 type Lead = {
   id: string;
