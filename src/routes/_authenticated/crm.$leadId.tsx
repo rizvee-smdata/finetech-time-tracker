@@ -43,9 +43,11 @@ export const Route = createFileRoute("/_authenticated/crm/$leadId")({
 function LeadDetail() {
   const { leadId } = Route.useParams();
   const { user } = useAuth();
+  const { hidden: hiddenField } = usePermissions();
   const nav = useNavigate();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
+
 
   const leadQ = useQuery({ queryKey: ["crm-lead", leadId], queryFn: () => fetchLead(leadId) });
   const lead = leadQ.data;
