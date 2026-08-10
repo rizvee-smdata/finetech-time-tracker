@@ -69,7 +69,7 @@ function norm(s: string | null | undefined, kind: Strategy): string | null {
   return v.replace(/\s+/g, " ");
 }
 
-function DuplicatesPage() {
+function LeadDuplicates() {
   const { companyId, isStaff, isAdmin } = useAuth();
   const qc = useQueryClient();
   const canMerge = isStaff || isAdmin;
