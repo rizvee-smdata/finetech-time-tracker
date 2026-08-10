@@ -42,11 +42,11 @@ const FEATURES = [
   { icon: BarChart3, title: 'Reports & analytics', desc: 'Live scorecards, client health, route plans and executive dashboards.' },
 ]
 
-const REELS = [
-  { label: 'GPS check-in flow', desc: 'Geofence, selfie, voice — under 20 seconds.' },
-  { label: 'CRM pipeline', desc: 'Drag deals through stages with live forecast.' },
-  { label: 'Task board', desc: 'Assign, comment, log time — all in one place.' },
-  { label: 'AI copilot', desc: 'Ask questions, get briefings and anomaly alerts.' },
+const REELS: { label: string; desc: string; src?: string; poster?: string }[] = [
+  { label: 'GPS check-in flow', desc: 'Geofence, selfie, voice — under 20 seconds.', src: '/reels/gps-checkin.mp4' },
+  { label: 'CRM pipeline', desc: 'Drag deals through stages with live forecast.', src: '/reels/crm-pipeline.mp4' },
+  { label: 'Task board', desc: 'Assign, comment, log time — all in one place.', src: '/reels/task-board.mp4' },
+  { label: 'AI copilot', desc: 'Ask questions, get briefings and anomaly alerts.', src: '/reels/ai-copilot.mp4' },
 ]
 
 const PLANS = [
