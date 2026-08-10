@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ShieldCheck,
   PlayCircle,
+  Pause,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
