@@ -121,7 +121,9 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
     setBusy(true);
     try {
       let quoteId = quote?.id;
-      const approval_status = action === "request_approval" || needsApproval ? "requested" : "not_requested";
+      const alreadyApproved = isEdit && quote?.approval_status === "approved";
+      const requesting = (action === "request_approval" || needsApproval) && !alreadyApproved;
+      const approval_status = requesting ? "pending" : alreadyApproved ? "approved" : "not_requested";
 
       const basePayload = {
         title: title.trim(),
@@ -132,8 +134,8 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
         subtotal: totals.subtotal,
         amount: totals.total,
         approval_status,
-        approval_requested_at: approval_status === "requested" ? new Date().toISOString() : null,
-        approval_requested_by: approval_status === "requested" ? userId : null,
+        approval_requested_at: requesting ? new Date().toISOString() : null,
+        approval_requested_by: requesting ? userId : null,
       };
 
       if (isEdit) {
@@ -154,15 +156,26 @@ export function QuoteBuilderDialog({ open, onOpenChange, leadId, companyId, user
 
       await replaceQuoteLineItems(quoteId, items);
 
+      if (requesting) {
+        await logApproval({
+          companyId,
+          entityId: quoteId,
+          action: "requested",
+          actorId: userId,
+          comments: approvalCheck.reasons.join("; "),
+          metadata: { discount_pct: discountPct, amount: totals.total },
+        });
+      }
+
       if (action === "send") {
-        const currentApproval = isEdit ? quote.approval_status : approval_status;
-        if (needsApproval && currentApproval !== "approved") {
-          toast.error(`Discount ≥ ${APPROVAL_THRESHOLD}% needs approval first`);
+        if (needsApproval && !alreadyApproved) {
+          toast.error("Approval required before sending — request submitted");
         } else {
           const { error } = await sb.from("crm_quotes").update({ status: "sent" }).eq("id", quoteId);
           if (error) throw error;
         }
       }
+
 
 
       qc.invalidateQueries({ queryKey: ["crm-quotes", leadId] });
