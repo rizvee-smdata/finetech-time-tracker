@@ -296,7 +296,7 @@ function CompaniesCard() {
   const update = useServerFn(adminUpdateCompany);
   const del = useServerFn(adminDeleteCompany);
   const qc = useQueryClient();
-  const { refreshCompanies } = useAuth();
+  const { refreshCompanies, isSuperAdmin } = useAuth();
 
   const { data } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
   const [form, setForm] = useState({ name: "", slug: "" });
