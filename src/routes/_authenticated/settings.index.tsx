@@ -360,6 +360,8 @@ function CompaniesCard() {
           <Button type="submit" disabled={createM.isPending}>Add company</Button>
         </div>
       </form>
+      )}
+
 
       <div className="divide-y divide-border">
         {(data ?? []).map((c: any) => (
