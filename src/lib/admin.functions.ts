@@ -3,6 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   assertAdmin,
+  assertSuperAdmin,
+
   companySchema,
   createUserSchema,
   customerRowSchema,
@@ -224,9 +226,8 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.parse(d))
   .handler(async ({ data, context }) => {
-    // Admins (and super admins) can create companies. The creator is added as a
-    // member so the new company is immediately visible to them.
-    await assertAdmin(context.supabase, context.userId);
+    // Only super admins may create companies.
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: created, error } = await supabaseAdmin
       .from("companies")
@@ -240,14 +241,13 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
     return created;
   });
 
+
 export const adminUpdateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const caller = await assertAdmin(context.supabase, context.userId);
-    if (!caller.isSuperAdmin && !caller.companyIds.includes(data.id)) {
-      throw new Error("You can only edit companies you belong to");
-    }
+    await assertSuperAdmin(context.supabase, context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("companies")
@@ -261,10 +261,8 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const caller = await assertAdmin(context.supabase, context.userId);
-    if (!caller.isSuperAdmin && !caller.companyIds.includes(data.id)) {
-      throw new Error("You can only delete companies you belong to");
-    }
+    await assertSuperAdmin(context.supabase, context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
     if (error) throw new Error(error.message);

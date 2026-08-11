@@ -296,7 +296,7 @@ function CompaniesCard() {
   const update = useServerFn(adminUpdateCompany);
   const del = useServerFn(adminDeleteCompany);
   const qc = useQueryClient();
-  const { refreshCompanies } = useAuth();
+  const { refreshCompanies, isSuperAdmin } = useAuth();
 
   const { data } = useQuery({ queryKey: ["admin-companies"], queryFn: () => list() });
   const [form, setForm] = useState({ name: "", slug: "" });
@@ -329,7 +329,14 @@ function CompaniesCard() {
         <Building2 className="h-5 w-5 text-primary" />
         <h2 className="font-semibold">Lavisho Group companies</h2>
       </div>
+      {!isSuperAdmin && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Only a super admin can add, rename or remove companies.
+        </p>
+      )}
+      {isSuperAdmin && (
       <form
+
         onSubmit={(e) => { e.preventDefault(); createM.mutate(); }}
         className="mb-6 grid gap-3 md:grid-cols-[1fr,1fr,auto]"
       >
@@ -353,6 +360,8 @@ function CompaniesCard() {
           <Button type="submit" disabled={createM.isPending}>Add company</Button>
         </div>
       </form>
+      )}
+
 
       <div className="divide-y divide-border">
         {(data ?? []).map((c: any) => (
@@ -377,6 +386,7 @@ function CompaniesCard() {
                   <div className="font-medium">{c.name}</div>
                   <div className="text-xs text-muted-foreground">{c.slug} · {c.member_count} member{c.member_count === 1 ? "" : "s"}</div>
                 </div>
+                {isSuperAdmin && (
                 <div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setEditing({ id: c.id, name: c.name, slug: c.slug })}>
                     <Pencil className="h-4 w-4" />
@@ -386,7 +396,9 @@ function CompaniesCard() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
+                )}
               </>
+
             )}
           </div>
         ))}
