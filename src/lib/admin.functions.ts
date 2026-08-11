@@ -261,10 +261,8 @@ export const adminDeleteCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const caller = await assertAdmin(context.supabase, context.userId);
-    if (!caller.isSuperAdmin && !caller.companyIds.includes(data.id)) {
-      throw new Error("You can only delete companies you belong to");
-    }
+    await assertSuperAdmin(context.supabase, context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
