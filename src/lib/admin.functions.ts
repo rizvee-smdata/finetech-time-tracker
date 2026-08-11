@@ -3,7 +3,6 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   assertAdmin,
-  assertSuperAdmin,
   companySchema,
   createUserSchema,
   customerRowSchema,
