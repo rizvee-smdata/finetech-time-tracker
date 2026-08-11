@@ -224,9 +224,8 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.parse(d))
   .handler(async ({ data, context }) => {
-    // Admins (and super admins) can create companies. The creator is added as a
-    // member so the new company is immediately visible to them.
-    await assertAdmin(context.supabase, context.userId);
+    // Only super admins may create companies.
+    await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: created, error } = await supabaseAdmin
       .from("companies")
@@ -239,6 +238,7 @@ export const adminCreateCompany = createServerFn({ method: "POST" })
       .insert({ company_id: (created as any).id, user_id: context.userId });
     return created;
   });
+
 
 export const adminUpdateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
