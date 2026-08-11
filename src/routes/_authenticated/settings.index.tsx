@@ -386,6 +386,7 @@ function CompaniesCard() {
                   <div className="font-medium">{c.name}</div>
                   <div className="text-xs text-muted-foreground">{c.slug} · {c.member_count} member{c.member_count === 1 ? "" : "s"}</div>
                 </div>
+                {isSuperAdmin && (
                 <div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setEditing({ id: c.id, name: c.name, slug: c.slug })}>
                     <Pencil className="h-4 w-4" />
@@ -395,7 +396,9 @@ function CompaniesCard() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
+                )}
               </>
+
             )}
           </div>
         ))}
