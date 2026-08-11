@@ -1,0 +1,76 @@
+```yaml
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - prod
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg VITE_SUPABASE_PROJECT_ID="${{ secrets.VITE_SUPABASE_PROJECT_ID }}" \
+            --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
+            --build-arg VITE_SUPABASE_PUBLISHABLE_KEY="${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}" \
+            --build-arg VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY="${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY }}" \
+            --build-arg VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID="${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID }}" \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push \
+            ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+
+      - name: Deploy to GCP VM
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            echo "Connected to:"
+            hostname
+
+            echo "Logging into Docker Hub..."
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+              -u "${{ secrets.DOCKERHUB_USERNAME }}" \
+              --password-stdin
+
+            echo "Pulling latest image..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+
+            echo "Stopping old container..."
+            docker stop time-tracker || true
+            docker rm time-tracker || true
+
+            echo "Starting new container..."
+            docker run -d \
+              --name time-tracker \
+              --restart unless-stopped \
+              -p 3000:8080 \
+              ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+
+            echo "Running containers:"
+            docker ps
+
+            echo "Deployment completed."
+```
