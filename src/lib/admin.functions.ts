@@ -246,10 +246,8 @@ export const adminUpdateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => companySchema.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const caller = await assertAdmin(context.supabase, context.userId);
-    if (!caller.isSuperAdmin && !caller.companyIds.includes(data.id)) {
-      throw new Error("You can only edit companies you belong to");
-    }
+    await assertSuperAdmin(context.supabase, context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("companies")
