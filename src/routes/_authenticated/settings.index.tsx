@@ -329,7 +329,14 @@ function CompaniesCard() {
         <Building2 className="h-5 w-5 text-primary" />
         <h2 className="font-semibold">Lavisho Group companies</h2>
       </div>
+      {!isSuperAdmin && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Only a super admin can add, rename or remove companies.
+        </p>
+      )}
+      {isSuperAdmin && (
       <form
+
         onSubmit={(e) => { e.preventDefault(); createM.mutate(); }}
         className="mb-6 grid gap-3 md:grid-cols-[1fr,1fr,auto]"
       >
