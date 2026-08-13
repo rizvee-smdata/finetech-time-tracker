@@ -29,12 +29,12 @@ jobs:
             --build-arg VITE_SUPABASE_PUBLISHABLE_KEY="${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}" \
             --build-arg VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY="${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY }}" \
             --build-arg VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID="${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID }}" \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest .
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker-new:latest .
 
       - name: Push Docker image
         run: |
           docker push \
-            ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker-new:latest
 
       - name: Deploy to GCP VM
         uses: appleboy/ssh-action@v1.2.2
@@ -55,10 +55,13 @@ jobs:
               --password-stdin
 
             echo "Pulling latest image..."
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+            docker pull \
+              ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker-new:latest
 
             echo "Stopping old container..."
             docker stop time-tracker || true
+
+            echo "Removing old container..."
             docker rm time-tracker || true
 
             echo "Starting new container..."
@@ -66,10 +69,9 @@ jobs:
               --name time-tracker \
               --restart unless-stopped \
               -p 3000:8080 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/time-tracker-new:latest
 
             echo "Running containers:"
             docker ps
 
             echo "Deployment completed."
-
