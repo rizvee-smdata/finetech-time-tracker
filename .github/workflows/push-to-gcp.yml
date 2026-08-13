@@ -14,7 +14,69 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+         # ==========================================
+      # Debug - Check GitHub Secrets
+      # ==========================================
+      - name: Check environment secrets
+        shell: bash
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          GOOGLE_MAPS_BROWSER_KEY: ${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY }}
+          GOOGLE_MAPS_TRACKING_ID: ${{ secrets.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          echo "=========================================="
+          echo "Checking GitHub Secrets"
+          echo "=========================================="
 
+          if [ -n "$SUPABASE_PROJECT_ID" ]; then
+            echo "VITE_SUPABASE_PROJECT_ID: SET"
+          else
+            echo "VITE_SUPABASE_PROJECT_ID: MISSING"
+          fi
+
+          if [ -n "$SUPABASE_URL" ]; then
+            echo "VITE_SUPABASE_URL: SET"
+            echo "Supabase URL: ${SUPABASE_URL}"
+          else
+            echo "VITE_SUPABASE_URL: MISSING"
+          fi
+
+          if [ -n "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY: SET"
+            echo "Publishable key length: ${#SUPABASE_PUBLISHABLE_KEY}"
+          else
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY: MISSING"
+          fi
+
+          if [ -n "$GOOGLE_MAPS_BROWSER_KEY" ]; then
+            echo "VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY: SET"
+          else
+            echo "VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY: MISSING"
+          fi
+
+          if [ -n "$GOOGLE_MAPS_TRACKING_ID" ]; then
+            echo "VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID: SET"
+          else
+            echo "VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID: MISSING"
+          fi
+
+          if [ -n "$DOCKERHUB_USERNAME" ]; then
+            echo "DOCKERHUB_USERNAME: SET"
+          else
+            echo "DOCKERHUB_USERNAME: MISSING"
+          fi
+
+          if [ -n "$DOCKERHUB_TOKEN" ]; then
+            echo "DOCKERHUB_TOKEN: SET"
+          else
+            echo "DOCKERHUB_TOKEN: MISSING"
+          fi
+
+          echo "=========================================="
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
