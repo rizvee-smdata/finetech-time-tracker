@@ -3,7 +3,7 @@ name: Build & Deploy
 on:
   push:
     branches:
-      - prod
+      - finetech-prod
 
   workflow_dispatch:
 
