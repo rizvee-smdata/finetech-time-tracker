@@ -12,14 +12,11 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
- vite: {
-    server: {
-      allowedHosts: [
-        "crm.fcpl.biz",
-        "fcpl.biz",
-        "crm.gocloudlk.com",
-        "gocloudlk.com",
-      ],
-    },
+  vite: {
+  server: {
+    allowedHosts: [
+       "finetechsolution.duckdns.org",
+    ],
   },
+},
 });
