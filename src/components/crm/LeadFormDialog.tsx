@@ -589,6 +589,34 @@ export function LeadFormDialog({
             )}
           </div>
 
+          
+           {(customFieldDefs.data ?? []).length > 0 && (
+            <div className="rounded-md border p-3">
+              <div className="mb-2 text-xs font-semibold text-muted-foreground">Custom lead fields</div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {(customFieldDefs.data ?? []).map((d) => (
+                  <Field key={d.id} label={`${d.label}${d.is_required ? " *" : ""}`}>
+                    <Input
+                      type={d.field_type === "number" ? "number" : "text"}
+                      value={(() => {
+                        const v = ((form.custom_fields ?? {}) as Record<string, unknown>)[d.field_key];
+                        return v == null ? "" : String(v);
+                      })()}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          custom_fields: {
+                            ...((form.custom_fields ?? {}) as Record<string, unknown>),
+                            [d.field_key]: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                ))}
+              </div>
+            </div>
+          )}
 
           {companyId && (
             <CustomFieldsSection
