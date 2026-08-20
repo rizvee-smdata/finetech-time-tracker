@@ -465,7 +465,11 @@ export function ImportLeadsDialog({
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
           <Button onClick={doImport} disabled={!preview || validCount === 0 || importing || missingRequired.length > 0}>
-            {importing ? "Importing…" : `Import ${validCount} lead${validCount !== 1 ? "s" : ""}`}
+            {importing
+              ? progress
+                ? `Importing… ${progress.done}/${progress.total}`
+                : "Importing…"
+              : `Import ${validCount} lead${validCount !== 1 ? "s" : ""}`}
           </Button>
         </DialogFooter>
       </DialogContent>
