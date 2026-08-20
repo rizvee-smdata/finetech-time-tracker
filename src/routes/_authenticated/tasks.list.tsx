@@ -199,6 +199,7 @@ function ListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10" title="Mark complete">Done</TableHead>
                 <SortableHead label="Title" k="title" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <SortableHead label="Project" k="project" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <SortableHead label="Customer" k="customer" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
@@ -212,7 +213,16 @@ function ListPage() {
             <TableBody>
               {pg.paged.map((t) => (
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => setEditing(t)}>
-                  <TableCell className="font-medium max-w-[280px] truncate">{t.title}</TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={!!t.tms_task_statuses?.is_terminal}
+                      disabled={toggleDone.isPending}
+                      aria-label={t.tms_task_statuses?.is_terminal ? "Reopen task" : "Mark task complete"}
+                      onCheckedChange={(v) => toggleDone.mutate({ task: t, done: !!v })}
+                    />
+                  </TableCell>
+                  <TableCell className={cn("font-medium max-w-[280px] truncate", t.tms_task_statuses?.is_terminal && "line-through text-muted-foreground")}>{t.title}</TableCell>
+
                   <TableCell className="text-sm text-muted-foreground">{t.tms_projects?.name ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
                     {t.crm_leads?.customer_name || t.crm_leads?.company_name || "—"}
