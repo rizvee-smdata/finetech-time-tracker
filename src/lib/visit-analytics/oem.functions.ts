@@ -26,13 +26,8 @@ export const getOemHealth = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data, context }): Promise<{ rows: OemHealthRow[] }> => {
     const { supabase, userId } = context;
-    let membershipQuery = supabase
-      .from("company_members")
-      .select("company_id")
-      .eq("user_id", userId);
-    if (data.companyId) membershipQuery = membershipQuery.eq("company_id", data.companyId);
-    const { data: cm } = await membershipQuery.limit(1).maybeSingle();
-    const companyId = cm?.company_id;
+    const { resolveCompanyScope } = await import("./company-scope.server");
+    const companyId = await resolveCompanyScope(supabase as any, userId, data.companyId);
     if (!companyId) return { rows: [] };
 
     const since = new Date(Date.now() - data.periodDays * 86400_000).toISOString();
