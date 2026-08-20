@@ -81,7 +81,17 @@ function TaskDetailPage() {
               </Link>
             )}
           </div>
-          <Button variant="outline" onClick={() => setEditing(true)}><Pencil className="size-4 mr-2" /> Edit</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={t.tms_task_statuses?.is_terminal ? "outline" : "default"}
+              disabled={toggleDone.isPending}
+              onClick={() => toggleDone.mutate(!t.tms_task_statuses?.is_terminal)}
+            >
+              <Check className="size-4 mr-2" />
+              {t.tms_task_statuses?.is_terminal ? "Reopen" : "Mark complete"}
+            </Button>
+            <Button variant="outline" onClick={() => setEditing(true)}><Pencil className="size-4 mr-2" /> Edit</Button>
+          </div>
         </div>
 
         {t.description && (
