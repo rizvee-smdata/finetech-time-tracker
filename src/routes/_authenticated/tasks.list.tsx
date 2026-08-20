@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { fetchProjects, fetchStatuses, fetchTasks } from "@/lib/tms/queries";
+import { fetchProjects, fetchStatuses, fetchTasks, setTaskDone } from "@/lib/tms/queries";
+
 import type { TaskWithRels } from "@/lib/tms/types";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
