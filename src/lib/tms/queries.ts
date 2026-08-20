@@ -104,3 +104,22 @@ export async function fetchCompanyMembers(companyId: string) {
     .map(({ id, full_name, avatar_url, email }: any) => ({ id, full_name, avatar_url, email }))
     .sort((a, b) => (a.full_name ?? a.email ?? "").localeCompare(b.full_name ?? b.email ?? ""));
 }
+
+/** Toggle a task between its terminal ("Done") status and the first open status.
+ *  Prefers project-scoped statuses, falling back to the company defaults. */
+export async function setTaskDone(
+  task: { id: string; company_id: string; project_id?: string | null; status_id?: string | null },
+  done: boolean,
+) {
+  const statuses = await fetchStatuses(task.company_id, task.project_id ?? null);
+  const target = done
+    ? statuses.find((s) => s.is_terminal)
+    : statuses.find((s) => !s.is_terminal);
+  if (!target) throw new Error(done ? "No 'Done' status configured" : "No open status configured");
+  const { error } = await supabase
+    .from("tms_tasks")
+    .update({ status_id: target.id })
+    .eq("id", task.id);
+  if (error) throw error;
+  return target;
+}
