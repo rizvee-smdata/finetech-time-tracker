@@ -200,6 +200,7 @@ export function ImportLeadsDialog({
   const [mapping, setMapping] = useState<string[]>([]);
   const [skipDupes, setSkipDupes] = useState(true);
   const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [existing, setExisting] = useState<ExistingLead[]>([]);
   const [lastBatch, setLastBatch] = useState<{ id: string; count: number } | null>(null);
 
@@ -259,6 +260,7 @@ export function ImportLeadsDialog({
       return;
     }
     setImporting(true);
+    setProgress({ done: 0, total: valid.length });
     const batchId = crypto.randomUUID();
     const payload = valid.map((r) => ({
       ...r.data,
@@ -268,14 +270,48 @@ export function ImportLeadsDialog({
       lead_source: "manual",
       import_batch_id: batchId,
     }));
-    const { error } = await sb.from("crm_leads").insert(payload);
-    setImporting(false);
-    if (error) {
-      toast.error(error.message);
+
+    // Insert in small chunks. A single large insert can stall behind PostgREST /
+    // RLS evaluation and leave the dialog stuck on "Importing…" forever.
+    const CHUNK = 50;
+    let inserted = 0;
+    let failure: string | null = null;
+    try {
+      for (let i = 0; i < payload.length; i += CHUNK) {
+        const chunk = payload.slice(i, i + CHUNK);
+        const { error } = await Promise.race([
+          sb.from("crm_leads").insert(chunk, { returning: "minimal" }),
+          new Promise<{ error: { message: string } }>((resolve) =>
+            setTimeout(
+              () => resolve({ error: { message: "Server did not respond in time. Please retry." } }),
+              45_000,
+            ),
+          ),
+        ]);
+        if (error) { failure = error.message; break; }
+        inserted += chunk.length;
+        setProgress({ done: inserted, total: payload.length });
+      }
+    } catch (e: any) {
+      failure = e?.message ?? "Unexpected error during import";
+    } finally {
+      setImporting(false);
+      setProgress(null);
+    }
+
+    if (inserted > 0) setLastBatch({ id: batchId, count: inserted });
+
+    if (failure) {
+      toast.error(
+        inserted > 0
+          ? `Imported ${inserted} of ${payload.length}. Stopped: ${failure}`
+          : `Import failed: ${failure}`,
+      );
+      onImported();
       return;
     }
-    setLastBatch({ id: batchId, count: valid.length });
-    toast.success(`Imported ${valid.length} lead${valid.length > 1 ? "s" : ""}`, {
+
+    toast.success(`Imported ${inserted} lead${inserted > 1 ? "s" : ""}`, {
       duration: 10000,
       action: { label: "Undo", onClick: () => undoImport(batchId) },
     });
