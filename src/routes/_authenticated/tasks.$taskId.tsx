@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ChevronLeft, Pencil, Clock, Paperclip, ListChecks, GitBranch, Activity as ActivityIcon,
-  MessageSquare, Upload, Trash2, Download, X,
+  MessageSquare, Upload, Trash2, Download, X, Check,
 } from "lucide-react";
 import { PriorityBadge } from "@/components/tms/PriorityBadge";
 import { AssigneeAvatars } from "@/components/tms/AssigneeAvatars";
@@ -22,7 +22,7 @@ import { TaskFormDialog } from "@/components/tms/TaskFormDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import type { TaskWithRels } from "@/lib/tms/types";
-import { fetchTasks } from "@/lib/tms/queries";
+import { fetchTasks, setTaskDone } from "@/lib/tms/queries";
 
 export const Route = createFileRoute("/_authenticated/tasks/$taskId")({
   component: TaskDetailPage,
@@ -49,6 +49,23 @@ function TaskDetailPage() {
       if (error) throw error;
       return data as unknown as TaskWithRels;
     },
+  });
+
+  const qcTop = useQueryClient();
+  const toggleDone = useMutation({
+    mutationFn: (done: boolean) => {
+      const t = task.data!;
+      return setTaskDone(
+        { id: t.id, company_id: t.company_id, project_id: t.project_id, status_id: t.status_id },
+        done,
+      );
+    },
+    onSuccess: (status, done) => {
+      toast.success(done ? "Marked complete" : `Reopened as ${status.name}`);
+      qcTop.invalidateQueries({ queryKey: ["tms-task", taskId] });
+      qcTop.invalidateQueries({ queryKey: ["tms-tasks"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   if (task.isLoading) return <Skeleton className="h-60" />;
