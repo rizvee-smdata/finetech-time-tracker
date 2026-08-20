@@ -120,6 +120,22 @@ function ListPage() {
 
   const pg = usePagination(sorted, 20);
 
+  const qc = useQueryClient();
+  const toggleDone = useMutation({
+    mutationFn: ({ task, done }: { task: TaskWithRels; done: boolean }) =>
+      setTaskDone(
+        { id: task.id, company_id: companyId!, project_id: task.project_id, status_id: task.status_id },
+        done,
+      ),
+    onSuccess: (status, vars) => {
+      toast.success(vars.done ? "Marked complete" : `Reopened as ${status.name}`);
+      qc.invalidateQueries({ queryKey: ["tms-tasks"] });
+      qc.invalidateQueries({ queryKey: ["daily-tasks"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
 
   return (
     <div className="space-y-3">
