@@ -244,6 +244,13 @@ export function LeadFormDialog({
     const cfOut: Record<string, unknown> = {};
     for (const d of defs) {
       const raw = cfIn[d.field_key];
+      if (d.field_type === "multiselect") {
+        const arr = Array.isArray(raw) ? (raw as string[]) : [];
+        if (d.is_required && arr.length === 0) return toast.error(`${d.label} is required`);
+        if (arr.length === 0) delete cfOut[d.field_key];
+        else cfOut[d.field_key] = arr;
+        continue;
+      }
       const str = raw == null ? "" : String(raw).trim();
       if (d.is_required && str === "") {
         return toast.error(`${d.label} is required`);
@@ -594,26 +601,54 @@ export function LeadFormDialog({
             <div className="rounded-md border p-3">
               <div className="mb-2 text-xs font-semibold text-muted-foreground">Custom lead fields</div>
               <div className="grid gap-3 sm:grid-cols-2">
-                {(customFieldDefs.data ?? []).map((d) => (
-                  <Field key={d.id} label={`${d.label}${d.is_required ? " *" : ""}`}>
-                    <Input
-                      type={d.field_type === "number" ? "number" : "text"}
-                      value={(() => {
-                        const v = ((form.custom_fields ?? {}) as Record<string, unknown>)[d.field_key];
-                        return v == null ? "" : String(v);
-                      })()}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          custom_fields: {
-                            ...((form.custom_fields ?? {}) as Record<string, unknown>),
-                            [d.field_key]: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </Field>
-                ))}
+                {(customFieldDefs.data ?? []).map((d) => {
+                  const cf = (form.custom_fields ?? {}) as Record<string, unknown>;
+                  const setVal = (v: unknown) =>
+                    setForm({ ...form, custom_fields: { ...cf, [d.field_key]: v } });
+                  const raw = cf[d.field_key];
+                  return (
+                    <Field key={d.id} label={`${d.label}${d.is_required ? " *" : ""}`}>
+                      {d.field_type === "select" ? (
+                        <Select value={typeof raw === "string" ? raw : ""} onValueChange={setVal}>
+                          <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                          <SelectContent>
+                            {(d.options ?? []).map((o) => (
+                              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : d.field_type === "multiselect" ? (
+                        <div className="flex flex-wrap gap-2 rounded-md border p-2">
+                          {(d.options ?? []).map((o) => {
+                            const arr = Array.isArray(raw) ? (raw as string[]) : [];
+                            const on = arr.includes(o.value);
+                            return (
+                              <button
+                                type="button"
+                                key={o.value}
+                                onClick={() => setVal(on ? arr.filter((x) => x !== o.value) : [...arr, o.value])}
+                                className={`px-2 py-1 rounded text-xs border transition ${
+                                  on ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-accent"
+                                }`}
+                              >
+                                {o.label}
+                              </button>
+                            );
+                          })}
+                          {(d.options ?? []).length === 0 && (
+                            <span className="text-xs text-muted-foreground">No options configured</span>
+                          )}
+                        </div>
+                      ) : (
+                        <Input
+                          type={d.field_type === "number" ? "number" : d.field_type === "date" ? "date" : "text"}
+                          value={raw == null ? "" : String(raw)}
+                          onChange={(e) => setVal(e.target.value)}
+                        />
+                      )}
+                    </Field>
+                  );
+                })}
               </div>
             </div>
           )}

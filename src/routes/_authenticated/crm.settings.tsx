@@ -15,7 +15,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { STAGES } from "@/lib/crm/types";
 import { fetchCompanyMembers } from "@/lib/crm/queries";
-import { fetchCustomFieldDefs, slugifyKey, type CustomFieldDef } from "@/lib/crm/customFields";
+import { fetchCustomFieldDefs, slugifyKey, CUSTOM_FIELD_TYPE_LABELS, type CustomFieldDef, type CustomFieldType } from "@/lib/crm/customFields";
 import { fetchApprovalRule, saveApprovalRule, type ApprovalRule } from "@/lib/crm/approvals";
 
 import { Switch } from "@/components/ui/switch";
@@ -426,8 +426,10 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
   const qc = useQueryClient();
   const { user } = useAuth();
   const [label, setLabel] = useState("");
-  const [fieldType, setFieldType] = useState<"text" | "number">("text");
+  const [fieldType, setFieldType] = useState<CustomFieldType>("text");
   const [required, setRequired] = useState(false);
+  const [optionsText, setOptionsText] = useState("");
+  const needsOptions = fieldType === "select" || fieldType === "multiselect";
 
   const list = useQuery({
     queryKey: ["crm-custom-fields", companyId],
@@ -442,19 +444,44 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
     let i = 2;
     while (existingKeys.has(key)) key = `${slugifyKey(trimmed)}_${i++}`;
     const sort_order = (list.data ?? []).length;
+    const options = needsOptions
+      ? optionsText
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean)
+          .map((l) => ({ value: l, label: l }))
+      : [];
+    if (needsOptions && options.length === 0) return toast.error("Add at least one dropdown option");
     const { error } = await sb.from("crm_custom_field_defs").insert({
       company_id: companyId,
       field_key: key,
       label: trimmed,
       field_type: fieldType,
+      options,
       is_required: required,
       sort_order,
       created_by: user?.id,
     });
     if (error) return toast.error(error.message);
-    setLabel(""); setFieldType("text"); setRequired(false);
+    setLabel(""); setFieldType("text"); setRequired(false); setOptionsText("");
     qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
     toast.success("Custom field added");
+  }
+
+  async function editOptions(f: CustomFieldDef) {
+    const current = (f.options ?? []).map((o) => o.label).join(", ");
+    const next = window.prompt(`Options for "${f.label}" (comma separated)`, current);
+    if (next == null) return;
+    const options = next
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => ({ value: s, label: s }));
+    if (options.length === 0) return toast.error("At least one option required");
+    const { error } = await sb.from("crm_custom_field_defs").update({ options }).eq("id", f.id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+    toast.success("Options updated");
   }
 
   async function toggleActive(f: CustomFieldDef) {
@@ -487,11 +514,12 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
           </div>
           <div className="grid gap-1">
             <Label className="text-xs">Type</Label>
-            <Select value={fieldType} onValueChange={(v) => setFieldType(v as "text" | "number")}>
+            <Select value={fieldType} onValueChange={(v) => setFieldType(v as CustomFieldType)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="text">Text</SelectItem>
-                <SelectItem value="number">Number</SelectItem>
+                {(Object.keys(CUSTOM_FIELD_TYPE_LABELS) as CustomFieldType[]).map((t) => (
+                  <SelectItem key={t} value={t}>{CUSTOM_FIELD_TYPE_LABELS[t]}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -501,6 +529,17 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
           </div>
           <Button onClick={add}><Plus className="mr-2 h-4 w-4" />Add field</Button>
         </div>
+        {needsOptions && (
+          <div className="grid gap-1">
+            <Label className="text-xs">Dropdown options (one per line)</Label>
+            <Textarea
+              rows={4}
+              value={optionsText}
+              onChange={(e) => setOptionsText(e.target.value)}
+              placeholder={"Government\nPrivate\nNGO"}
+            />
+          </div>
+        )}
       </Card>
 
       <div className="space-y-2">
@@ -509,10 +548,22 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{f.label}</span>
-                <Badge variant="outline" className="capitalize">{f.field_type}</Badge>
+                <Badge variant="outline" className="capitalize">
+                  {CUSTOM_FIELD_TYPE_LABELS[f.field_type] ?? f.field_type}
+                </Badge>
                 {!f.is_active && <Badge variant="secondary">Inactive</Badge>}
               </div>
               <div className="text-[11px] text-muted-foreground mt-0.5">key: <code>{f.field_key}</code></div>
+              {(f.field_type === "select" || f.field_type === "multiselect") && (
+                <div className="mt-1 flex items-center gap-2 flex-wrap">
+                  {(f.options ?? []).map((o) => (
+                    <Badge key={o.value} variant="secondary" className="text-[10px]">{o.label}</Badge>
+                  ))}
+                  <Button size="sm" variant="link" className="h-auto p-0 text-[11px]" onClick={() => editOptions(f)}>
+                    Edit options
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">

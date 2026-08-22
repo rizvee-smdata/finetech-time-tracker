@@ -2,15 +2,28 @@ import { supabase } from "@/integrations/supabase/client";
 
 const sb = supabase as any;
 
+export type CustomFieldType = "text" | "number" | "select" | "multiselect" | "date";
+
+export type CustomFieldOption = { value: string; label: string };
+
 export type CustomFieldDef = {
   id: string;
   company_id: string;
   field_key: string;
   label: string;
-  field_type: "text" | "number";
+  field_type: CustomFieldType;
+  options: CustomFieldOption[] | null;
   is_required: boolean;
   sort_order: number;
   is_active: boolean;
+};
+
+export const CUSTOM_FIELD_TYPE_LABELS: Record<CustomFieldType, string> = {
+  text: "Text",
+  number: "Number",
+  select: "Dropdown",
+  multiselect: "Multi-select",
+  date: "Date",
 };
 
 export async function fetchCustomFieldDefs(companyId: string, opts?: { activeOnly?: boolean }): Promise<CustomFieldDef[]> {
