@@ -26,18 +26,38 @@ export const Route = createFileRoute("/_authenticated/tasks/projects/$projectId"
 function ProjectDetailPage() {
   const { projectId } = useParams({ from: "/_authenticated/tasks/projects/$projectId" });
   const { companyId } = useAuth();
+  const qc = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
 
   const project = useQuery({
     queryKey: ["tms-project", projectId],
     queryFn: async () => {
       const { data, error } = await supabase.from("tms_projects").select("*").eq("id", projectId).single();
       if (error) throw error;
-      return data;
+      return data as typeof data & { project_type?: string | null };
     },
+  });
+
+  const closeProject = useMutation({
+    mutationFn: async (reopen: boolean) => {
+      const { error } = await supabase
+        .from("tms_projects")
+        .update(reopen ? { status: "active", archived_at: null } : { status: "completed", archived_at: new Date().toISOString() })
+        .eq("id", projectId);
+      if (error) throw error;
+    },
+    onSuccess: (_d, reopen) => {
+      toast.success(reopen ? "Project reopened" : "Project closed");
+      qc.invalidateQueries({ queryKey: ["tms-project", projectId] });
+      qc.invalidateQueries({ queryKey: ["tms-projects"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   if (project.isLoading) return <Skeleton className="h-40" />;
   if (!project.data) return <Card className="p-6">Project not found.</Card>;
+
+  const isClosed = !!project.data.archived_at || project.data.status === "completed";
 
   return (
     <div className="space-y-4">
@@ -53,11 +73,26 @@ function ProjectDetailPage() {
               <h1 className="text-2xl font-semibold">{project.data.name}</h1>
               <Badge variant="outline" className="capitalize">{project.data.status}</Badge>
               <Badge variant="outline" className="capitalize">{project.data.visibility}</Badge>
+              {project.data.project_type && (
+                <Badge variant="secondary" className="capitalize">{project.data.project_type}</Badge>
+              )}
+              {project.data.archived_at && <Badge variant="secondary">Closed</Badge>}
             </div>
             {project.data.description && <p className="text-sm text-muted-foreground mt-1">{project.data.description}</p>}
           </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+              <Pencil className="size-3.5 mr-1" /> Edit
+            </Button>
+            <Button variant="outline" size="sm" disabled={closeProject.isPending} onClick={() => closeProject.mutate(isClosed)}>
+              {isClosed ? <RotateCcw className="size-3.5 mr-1" /> : <CheckCircle2 className="size-3.5 mr-1" />}
+              {isClosed ? "Reopen" : "Close project"}
+            </Button>
+          </div>
         </div>
       </Card>
+
+      <ProjectFormDialog open={editOpen} onOpenChange={setEditOpen} project={project.data as never} />
 
       <Tabs defaultValue="tasks">
         <TabsList>
