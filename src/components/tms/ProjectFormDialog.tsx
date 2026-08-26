@@ -89,8 +89,8 @@ export function ProjectFormDialog({
           company_id: companyId,
           project_id: (data as { id: string }).id,
           name: sprintName.trim(),
-          start_date: sprintStart || null,
-          end_date: sprintEnd || null,
+          start_date: sprintStart || new Date().toISOString().slice(0, 10),
+          end_date: sprintEnd || new Date().toISOString().slice(0, 10),
         });
         if (sErr) throw sErr;
       }
