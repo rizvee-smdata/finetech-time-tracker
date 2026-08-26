@@ -15,7 +15,7 @@ import { Plus, Trash2, Pencil } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { STAGES } from "@/lib/crm/types";
-import { fetchCompanyMembers } from "@/lib/crm/queries";
+import { fetchAssignableMembers } from "@/lib/crm/queries";
 import { fetchCustomFieldDefs, slugifyKey, CUSTOM_FIELD_TYPE_LABELS, type CustomFieldDef, type CustomFieldType } from "@/lib/crm/customFields";
 import { fetchApprovalRule, saveApprovalRule, type ApprovalRule } from "@/lib/crm/approvals";
 
@@ -67,8 +67,8 @@ function ApprovalsTab({ companyId }: { companyId: string }) {
     queryFn: () => fetchApprovalRule(companyId),
   });
   const members = useQuery({
-    queryKey: ["crm-members", companyId],
-    queryFn: () => fetchCompanyMembers(companyId),
+    queryKey: ["crm-assignable-members", companyId],
+    queryFn: () => fetchAssignableMembers(companyId),
   });
 
   const [draft, setDraft] = useState<ApprovalRule | null>(null);
@@ -175,8 +175,8 @@ function TargetsTab({ companyId }: { companyId: string }) {
   const periodKey = format(period, "yyyy-MM-dd");
 
   const members = useQuery({
-    queryKey: ["crm-members", companyId],
-    queryFn: () => fetchCompanyMembers(companyId),
+    queryKey: ["crm-assignable-members", companyId],
+    queryFn: () => fetchAssignableMembers(companyId),
   });
 
   const targets = useQuery({
