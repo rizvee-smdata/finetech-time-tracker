@@ -469,21 +469,7 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
     toast.success("Custom field added");
   }
 
-  async function editOptions(f: CustomFieldDef) {
-    const current = (f.options ?? []).map((o) => o.label).join(", ");
-    const next = window.prompt(`Options for "${f.label}" (comma separated)`, current);
-    if (next == null) return;
-    const options = next
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => ({ value: s, label: s }));
-    if (options.length === 0) return toast.error("At least one option required");
-    const { error } = await sb.from("crm_custom_field_defs").update({ options }).eq("id", f.id);
-    if (error) return toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
-    toast.success("Options updated");
-  }
+  const [editing, setEditing] = useState<CustomFieldDef | null>(null);
 
   async function toggleActive(f: CustomFieldDef) {
     const { error } = await sb.from("crm_custom_field_defs").update({ is_active: !f.is_active }).eq("id", f.id);
