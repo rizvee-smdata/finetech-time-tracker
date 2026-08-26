@@ -62,11 +62,13 @@ function ProjectDetailPage() {
       <Tabs defaultValue="tasks">
         <TabsList>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="gantt"><GanttChartSquare className="size-4 mr-1.5" /> Gantt</TabsTrigger>
           <TabsTrigger value="sprints"><Repeat className="size-4 mr-1.5" /> Sprints</TabsTrigger>
           <TabsTrigger value="milestones"><Flag className="size-4 mr-1.5" /> Milestones</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tasks"><TasksTab projectId={projectId} companyId={companyId} /></TabsContent>
+        <TabsContent value="gantt"><ProjectGanttTab projectId={projectId} companyId={companyId} /></TabsContent>
         <TabsContent value="sprints"><SprintsTab projectId={projectId} companyId={companyId} /></TabsContent>
         <TabsContent value="milestones"><MilestonesTab projectId={projectId} companyId={companyId} /></TabsContent>
       </Tabs>
