@@ -6436,6 +6436,7 @@ export type Database = {
           id: string
           name: string
           owner_id: string
+          project_type: string | null
           start_date: string | null
           status: Database["public"]["Enums"]["tms_project_status"]
           updated_at: string
@@ -6454,6 +6455,7 @@ export type Database = {
           id?: string
           name: string
           owner_id: string
+          project_type?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["tms_project_status"]
           updated_at?: string
@@ -6472,6 +6474,7 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string
+          project_type?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["tms_project_status"]
           updated_at?: string

@@ -1,0 +1,1 @@
+ALTER TABLE public.tms_projects ADD COLUMN IF NOT EXISTS project_type text;
