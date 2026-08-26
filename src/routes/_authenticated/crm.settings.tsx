@@ -561,6 +561,9 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
                 <Switch checked={f.is_active} onCheckedChange={() => toggleActive(f)} id={`act-${f.id}`} />
                 <Label htmlFor={`act-${f.id}`} className="text-xs">Active</Label>
               </div>
+              <Button size="icon" variant="ghost" onClick={() => setEditing(f)} title="Edit field">
+                <Pencil className="h-4 w-4" />
+              </Button>
               <Button size="icon" variant="ghost" onClick={() => remove(f.id)}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
@@ -571,6 +574,119 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
           <p className="text-sm text-muted-foreground">No custom fields yet. Add your first one above.</p>
         )}
       </div>
+
+      <EditCustomFieldDialog
+        field={editing}
+        onClose={() => setEditing(null)}
+        onSaved={() => {
+          setEditing(null);
+          qc.invalidateQueries({ queryKey: ["crm-custom-fields", companyId] });
+        }}
+      />
     </>
+  );
+}
+
+function EditCustomFieldDialog({
+  field,
+  onClose,
+  onSaved,
+}: {
+  field: CustomFieldDef | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [label, setLabel] = useState("");
+  const [fieldType, setFieldType] = useState<CustomFieldType>("text");
+  const [optionsText, setOptionsText] = useState("");
+  const [required, setRequired] = useState(false);
+  const [active, setActive] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
+
+  if (field && loadedId !== field.id) {
+    setLoadedId(field.id);
+    setLabel(field.label);
+    setFieldType(field.field_type);
+    setOptionsText((field.options ?? []).map((o) => o.label).join("\n"));
+    setRequired(field.is_required);
+    setActive(field.is_active);
+  }
+
+  const needsOptions = fieldType === "select" || fieldType === "multiselect";
+
+  async function save() {
+    if (!field) return;
+    if (!label.trim()) return toast.error("Label required");
+    const options = needsOptions
+      ? optionsText.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => ({ value: l, label: l }))
+      : [];
+    if (needsOptions && options.length === 0) return toast.error("Add at least one option");
+    setSaving(true);
+    const { error } = await sb
+      .from("crm_custom_field_defs")
+      .update({
+        label: label.trim(),
+        field_type: fieldType,
+        options,
+        is_required: required,
+        is_active: active,
+      })
+      .eq("id", field.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Field updated");
+    onSaved();
+  }
+
+  return (
+    <Dialog open={!!field} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Edit custom field</DialogTitle>
+          <DialogDescription>
+            Changes apply to the lead form for everyone in this company. The field key stays the same so existing data is preserved.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="grid gap-1">
+            <Label className="text-xs">Field label</Label>
+            <Input value={label} onChange={(e) => setLabel(e.target.value)} />
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-xs">Type</Label>
+            <Select value={fieldType} onValueChange={(v) => setFieldType(v as CustomFieldType)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(Object.keys(CUSTOM_FIELD_TYPE_LABELS) as CustomFieldType[]).map((t) => (
+                  <SelectItem key={t} value={t}>{CUSTOM_FIELD_TYPE_LABELS[t]}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {needsOptions && (
+            <div className="grid gap-1">
+              <Label className="text-xs">Options (one per line)</Label>
+              <Textarea rows={5} value={optionsText} onChange={(e) => setOptionsText(e.target.value)} />
+            </div>
+          )}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Switch checked={required} onCheckedChange={setRequired} id="edit-req" />
+              <Label htmlFor="edit-req" className="text-xs">Required</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={active} onCheckedChange={setActive} id="edit-act" />
+              <Label htmlFor="edit-act" className="text-xs">Active</Label>
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground">key: <code>{field?.field_key}</code></p>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
