@@ -546,7 +546,7 @@ function CustomFieldsTab({ companyId }: { companyId: string }) {
                   {(f.options ?? []).map((o) => (
                     <Badge key={o.value} variant="secondary" className="text-[10px]">{o.label}</Badge>
                   ))}
-                  <Button size="sm" variant="link" className="h-auto p-0 text-[11px]" onClick={() => editOptions(f)}>
+                  <Button size="sm" variant="link" className="h-auto p-0 text-[11px]" onClick={() => setEditing(f)}>
                     Edit options
                   </Button>
                 </div>
