@@ -145,23 +145,23 @@ export async function fetchCompanyMembers(companyId: string) {
   if (memberError) throw memberError;
   const ids = (mem ?? []).map((m: any) => m.user_id);
   if (!ids.length) return [] as { id: string; full_name: string | null; email: string | null }[];
-  // Exclude admins & super-admins — the assignee list is for sales people (managers/employees) only
-  const { data: roles } = await sb
-    .from("user_roles")
-    .select("user_id, role")
-    .in("user_id", ids);
-  const adminIds = new Set((roles ?? []).filter((r: any) => r.role === "admin").map((r: any) => r.user_id));
+  // Admins are regular team members too — they can own leads and be assigned tasks,
+  // so only vendor super-admins are excluded here.
   const { data: profs, error: profileError } = await sb
     .from("profiles")
     .select("id, full_name, email, is_super_admin, department")
     .in("id", ids);
   if (profileError) throw profileError;
-  return (profs ?? [])
-    .filter((p: any) => !p.is_super_admin && !adminIds.has(p.id))
-    .filter((p: any) => (p.department || "").trim().toLowerCase() === "sales")
+  const eligible = (profs ?? []).filter((p: any) => !p.is_super_admin);
+  const salesOnly = eligible.filter((p: any) => (p.department || "").trim().toLowerCase() === "sales");
+  // Fall back to all members when nobody has their department set to "sales",
+  // otherwise the filter renders an empty list.
+  const chosen = salesOnly.length ? salesOnly : eligible;
+  return chosen
     .map(({ id, full_name, email }: any) => ({ id, full_name, email }))
     .sort((a: any, b: any) => (a.full_name || a.email || "").localeCompare(b.full_name || b.email || "")) as { id: string; full_name: string | null; email: string | null }[];
 }
+
 
 // Broader assignee list — includes all company members except super-admins.
 // Used by lead Create/Edit forms so leads can be assigned to anyone, not just
