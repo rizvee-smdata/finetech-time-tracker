@@ -76,6 +76,16 @@ function ProjectDetailPage() {
   );
 }
 
+function ProjectGanttTab({ projectId, companyId }: { projectId: string; companyId: string | null }) {
+  const tasks = useQuery({
+    queryKey: ["tms-tasks", "project-gantt", projectId],
+    enabled: !!companyId,
+    queryFn: () => fetchTasks({ companyId: companyId!, projectId, includeDone: true }),
+  });
+  if (tasks.isLoading) return <Skeleton className="h-48" />;
+  return <GanttChart tasks={tasks.data ?? []} groupByProject={false} />;
+}
+
 function TasksTab({ projectId, companyId }: { projectId: string; companyId: string | null }) {
   const tasks = useQuery({
     queryKey: ["tms-tasks", "project", projectId],
