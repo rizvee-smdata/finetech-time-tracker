@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 import { PaginationBar, usePagination } from "@/components/PageSizeSelect";
 
-type Visibility = Database["public"]["Enums"]["tms_project_visibility"];
 type Status = Database["public"]["Enums"]["tms_project_status"];
 
 export const Route = createFileRoute("/_authenticated/tasks/projects")({
