@@ -72,6 +72,10 @@ function ProjectsPage() {
 }
 
 function ProjectCard({ project }: { project: TmsProject }) {
+  const qc = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+  const p = project as TmsProject & { project_type?: string | null };
+
   const stats = useQuery({
     queryKey: ["tms-project-stats", project.id],
     queryFn: async () => {
@@ -84,118 +88,71 @@ function ProjectCard({ project }: { project: TmsProject }) {
     },
   });
 
-  return (
-    <Link to="/tasks/projects/$projectId" params={{ projectId: project.id }}>
-      <Card className="p-4 hover:shadow-md transition-shadow h-full">
-        <div className="flex items-start gap-3">
-          <div
-            className="size-10 rounded-lg flex items-center justify-center text-lg shrink-0"
-            style={{ background: (project.color ?? "#6366f1") + "22", color: project.color ?? "#6366f1" }}
-          >
-            <Folder className="size-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold truncate">{project.name}</h3>
-              {project.archived_at && <Badge variant="secondary">Archived</Badge>}
-              <Badge variant="outline" className="capitalize text-xs">{project.status}</Badge>
-            </div>
-            {project.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{project.description}</p>
-            )}
-            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-              <span>{stats.data?.total ?? 0} tasks</span>
-              <span className="capitalize">· {project.visibility}</span>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
-
-function ProjectFormDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { companyId, user } = useAuth();
-  const qc = useQueryClient();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [color, setColor] = useState("#6366f1");
-  const [visibility, setVisibility] = useState<Visibility>("public");
-  const [status, setStatus] = useState<Status>("active");
-
-  const save = useMutation({
-    mutationFn: async () => {
-      if (!name.trim()) throw new Error("Name required");
-      if (!companyId || !user) throw new Error("No session");
-      const { error } = await supabase.from("tms_projects").insert({
-        company_id: companyId,
-        owner_id: user.id,
-        created_by: user.id,
-        name: name.trim(),
-        description: description.trim() || null,
-        color,
-        visibility,
-        status,
-      });
+  const closeProject = useMutation({
+    mutationFn: async (reopen: boolean) => {
+      const { error } = await supabase
+        .from("tms_projects")
+        .update(
+          reopen
+            ? { status: "active" as Status, archived_at: null }
+            : { status: "completed" as Status, archived_at: new Date().toISOString() },
+        )
+        .eq("id", project.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Project created");
+    onSuccess: (_d, reopen) => {
+      toast.success(reopen ? "Project reopened" : "Project closed");
       qc.invalidateQueries({ queryKey: ["tms-projects"] });
-      setName(""); setDescription("");
-      onOpenChange(false);
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const isClosed = !!project.archived_at || project.status === "completed";
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>New project</DialogTitle></DialogHeader>
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); save.mutate(); }}>
-          <div className="grid gap-1.5">
-            <Label>Name *</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Description</Label>
-            <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="grid gap-1.5">
-              <Label>Color</Label>
-              <Input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 p-1" />
+    <>
+      <Card className="p-4 hover:shadow-md transition-shadow h-full flex flex-col">
+        <Link to="/tasks/projects/$projectId" params={{ projectId: project.id }} className="flex-1">
+          <div className="flex items-start gap-3">
+            <div
+              className="size-10 rounded-lg flex items-center justify-center text-lg shrink-0"
+              style={{ background: (project.color ?? "#6366f1") + "22", color: project.color ?? "#6366f1" }}
+            >
+              <Folder className="size-5" />
             </div>
-            <div className="grid gap-1.5">
-              <Label>Visibility</Label>
-              <Select value={visibility} onValueChange={(v) => setVisibility(v as Visibility)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="public">Public</SelectItem>
-                  <SelectItem value="restricted">Restricted</SelectItem>
-                  <SelectItem value="private">Private</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as Status)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="planning">Planning</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="on_hold">On hold</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-semibold truncate">{project.name}</h3>
+                {project.archived_at && <Badge variant="secondary">Closed</Badge>}
+                <Badge variant="outline" className="capitalize text-xs">{project.status}</Badge>
+                {p.project_type && <Badge variant="secondary" className="capitalize text-xs">{p.project_type}</Badge>}
+              </div>
+              {project.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{project.description}</p>
+              )}
+              <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                <span>{stats.data?.total ?? 0} tasks</span>
+                <span className="capitalize">· {project.visibility}</span>
+              </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={save.isPending}>{save.isPending ? "Saving…" : "Create"}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </Link>
+        <div className="flex items-center gap-2 pt-3 mt-3 border-t">
+          <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            <Pencil className="size-3.5 mr-1" /> Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={closeProject.isPending}
+            onClick={() => closeProject.mutate(isClosed)}
+          >
+            {isClosed ? <RotateCcw className="size-3.5 mr-1" /> : <CheckCircle2 className="size-3.5 mr-1" />}
+            {isClosed ? "Reopen" : "Close"}
+          </Button>
+        </div>
+      </Card>
+      <ProjectFormDialog open={editOpen} onOpenChange={setEditOpen} project={p as never} />
+    </>
   );
 }
