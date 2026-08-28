@@ -15,8 +15,12 @@ export default defineConfig({
   vite: {
   server: {
     allowedHosts: [
-       "finetechsolution.duckdns.org",
+      "crm.fcpl.biz",
+      "fcpl.biz",
+      "crm.gocloudlk.com",
+      "gocloudlk.com",
     ],
   },
+    
 },
 });
